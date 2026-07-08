@@ -84,12 +84,13 @@ that interactive tooling (the **[nimony-lsp](docs/nimony-lsp)** language server'
 live as-you-type diagnostics, in particular) has a compile path that stays warm
 and cheap. These are the concrete wins, most user-visible first.
 
-| Win | What it does | Measured | Commit |
-|---|---|---|---|
-| **Parallel dependency discovery** | The cold dep-discovery DFS ran `nifler` one module at a time via a blocking exec. A new breadth-first pre-pass (`preNifle`) runs `nifler` over the *whole import closure in parallel* first, so the DFS then only does cheap in-memory work. Self-healing: a missed module falls back to the serial path. | Discovery wall **0.43s → 0.24s (1.77×)** | `fd6636ee` |
-| **Incremental structured cursor traversal** | `nimsem` walks the module structure with an incremental cursor rather than re-materializing it, cutting redundant work on re-check (toward #2064). | — | `67fbca90` |
-| **Warm-worker daemon (`nimsem serve`)** | A persistent semcheck worker that keeps the interner (`pool`), the loaded-interface cache (`prog.mods`) and derived indexes warm across requests, so shared interfaces (notably `std/system`) are parsed/interned once per *session* instead of once per module. JSONL protocol (envelope v0), with a dirty-buffer `setOverlay` seam for editor clients. Foundation for interactive rebuilds. | system interned **1× / session** vs 1× / module | `b072aed4` |
-| **Batch-intern ceiling + proof** | Measured the index-intern cost that a daemon removes (`-d:idxProfile`): on `tall.nim` (41 imports, 164 procs) `system.s.idx.nif` was re-interned **107×**, ~505ms aggregate CPU. Proved the fix: running 20 modules in **one** `nimsem m` invocation interns `system` once (20→1), cutting index parse+intern CPU **91.6ms → 8.6ms** (~1.3× wall). Recommendation: ship in-process depth-batching before the full daemon. | index intern **91.6ms → 8.6ms** (20 modules) | `15a5cde5` |
+| Win | What it does | Measured |
+|---|---|---|
+| [Parallel dependency discovery](changes/ic-parallel-deps) | A breadth-first pre-pass (`preNifle`) runs `nifler` over the *whole import closure in parallel* before the DFS, which then does only cheap in-memory work. Self-healing serial fallback. | discovery wall **0.43s → 0.24s (1.77×)** |
+| [Incremental cursor traversal](changes/ic-cursor-traversal) | `nimsem` walks the module structure with an incremental cursor instead of re-materializing it (toward #2064). | — |
+| [Warm-worker daemon (`nimsem serve`)](changes/ic-warm-daemon) | Persistent semcheck worker; keeps the interner, interface cache and indexes warm across requests. JSONL protocol with a dirty-buffer seam. Foundation for interactive rebuilds. | `system` interned **1× / session** |
+| [Batch-intern ceiling + proof](changes/ic-batch-intern) | Measured the re-intern cost a daemon removes (`system.s.idx.nif` re-interned **107×** on `tall.nim`) and proved batching 20 modules in one process fixes it. | index intern **91.6ms → 8.6ms** |
+{: .ledger}
 
 **Why this matters for editors.** A whole-project `nimony check` is ~1.1s cold
 but only **~10–25ms** on an incremental warm re-check. That gap is exactly what
