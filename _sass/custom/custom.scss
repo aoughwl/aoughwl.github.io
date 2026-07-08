@@ -17,7 +17,6 @@
   --zebra:         #101012;
   --pill-bg:       #1a1a1e;
   --pill-border:   #35353c;
-  --logo:          url('/assets/aoughwl-logo-white.png');
   --shadow:        0 1px 0 rgba(255,255,255,.04);
 }
 
@@ -34,7 +33,6 @@
   --zebra:         #f8f8f9;
   --pill-bg:       #f1f1f3;
   --pill-border:   #ccccd2;
-  --logo:          url('/assets/aoughwl-logo-black.png');
   --shadow:        0 1px 0 rgba(0,0,0,.03);
 }
 
@@ -59,13 +57,14 @@ body {
 .site-header { border-bottom: 1px solid var(--border); }
 .site-title { color: var(--text) !important; font-family: $display; }
 
-/* logo swaps with the theme via --logo (beats JtD's inline/SCSS url) */
+/* logo swaps with the theme (beats JtD's own background-image) */
 .site-logo {
-  background-image: var(--logo) !important;
   background-repeat: no-repeat;
   background-position: left center;
   background-size: contain;
 }
+[data-theme="dark"]  .site-logo { background-image: url('/assets/aoughwl-logo-white.png') !important; }
+[data-theme="light"] .site-logo { background-image: url('/assets/aoughwl-logo-black.png') !important; }
 
 .main { background: var(--bg); }
 .main-content-wrap { background: var(--bg); }
