@@ -75,7 +75,7 @@ The server implements **26 LSP methods**:
 | Group | Methods |
 |---|---|
 | Diagnostics | live (as-you-type) + on-save `publishDiagnostics`, with `relatedInformation` |
-| Navigation | definition, declaration, references, type definition, implementation |
+| Navigation | definition, declaration, references (cross-module), type definition, implementation |
 | Reading | hover (signature + doc comment), completion (module, imported exports, dot-context members / UFCS) |
 | Structure | documentSymbol, workspace/symbol, folding ranges, selection ranges |
 | Editing | rename (+ prepareRename), signature help (overload-aware), document highlight |
@@ -85,6 +85,13 @@ The server implements **26 LSP methods**:
 
 Compiler-synthesized hooks (`=destroy`, `$`, backtick/dotted junk) are filtered
 out of the outline and completion so you see only real symbols.
+
+Member completion (`obj.`) resolves the receiver's fully-qualified type and
+gathers its fields **and** UFCS methods across every module, walking the
+`object of Base` inheritance chain — so a `Circle` value offers `Shape`'s
+inherited fields and methods too, each annotated with its type. **References**
+and **rename** span modules: a usage or rename in another open file is found and
+updated, not left dangling.
 
 ### Optional warm-daemon backend
 
