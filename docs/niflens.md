@@ -68,6 +68,9 @@ symId (exact / prefix) or human base name.
 | `query` | subtrees matching a needle → canonical NIF snippet |
 | `serve` | line-oriented stdio daemon (one process across requests) |
 
-**Roadmap:** have `serve` cache parsed `TokenBuf`s of hot modules across requests,
-and extract a shared NIF core module a Nimony LSP links directly — the
-persistent-index daemon that is the structural perf win for both consumers.
+**Status & roadmap:** the `serve` daemon and the shared NIF core both exist. The
+remaining convergence step — having **[nimony-lsp](nimony-lsp)** link niflens's
+core directly (instead of its own in-process NIF readers) — is deliberately
+deferred: it wants a real extraction with tests, not a blind cross-repo
+restructure. Next for `serve` itself: cache parsed `TokenBuf`s of hot modules
+across requests, the persistent-index win that benefits both consumers.

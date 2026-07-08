@@ -76,6 +76,31 @@ event loop — **46/46** under Node. Each row is documented on the
 
 ---
 
+## Incremental compilation & the tooling backend
+
+Nimony's design already leans on cached, typed NIF artifacts per module — which
+makes it a natural fit for *fast re-checks*. This tree pushes that further so
+that interactive tooling (the **[nimony-lsp](docs/nimony-lsp)** language server's
+live as-you-type diagnostics, in particular) has a compile path that stays warm
+and cheap. These are the concrete wins, most user-visible first.
+
+| Win | What it does | Measured | Commit |
+|---|---|---|---|
+| **Parallel dependency discovery** | The cold dep-discovery DFS ran `nifler` one module at a time via a blocking exec. A new breadth-first pre-pass (`preNifle`) runs `nifler` over the *whole import closure in parallel* first, so the DFS then only does cheap in-memory work. Self-healing: a missed module falls back to the serial path. | Discovery wall **0.43s → 0.24s (1.77×)** | `fd6636ee` |
+| **Incremental structured cursor traversal** | `nimsem` walks the module structure with an incremental cursor rather than re-materializing it, cutting redundant work on re-check (toward #2064). | — | `67fbca90` |
+| **Warm-worker daemon (`nimsem serve`)** | A persistent semcheck worker that keeps the interner (`pool`), the loaded-interface cache (`prog.mods`) and derived indexes warm across requests, so shared interfaces (notably `std/system`) are parsed/interned once per *session* instead of once per module. JSONL protocol (envelope v0), with a dirty-buffer `setOverlay` seam for editor clients. Foundation for interactive rebuilds. | system interned **1× / session** vs 1× / module | `b072aed4` |
+| **Batch-intern ceiling + proof** | Measured the index-intern cost that a daemon removes (`-d:idxProfile`): on `tall.nim` (41 imports, 164 procs) `system.s.idx.nif` was re-interned **107×**, ~505ms aggregate CPU. Proved the fix: running 20 modules in **one** `nimsem m` invocation interns `system` once (20→1), cutting index parse+intern CPU **91.6ms → 8.6ms** (~1.3× wall). Recommendation: ship in-process depth-batching before the full daemon. | index intern **91.6ms → 8.6ms** (20 modules) | `15a5cde5` |
+
+**Why this matters for editors.** A whole-project `nimony check` is ~1.1s cold
+but only **~10–25ms** on an incremental warm re-check. That gap is exactly what
+lets nimony-lsp publish diagnostics *on every keystroke* (against the unsaved
+buffer, in an isolated nimcache) without a background daemon — see the
+[nimony-lsp](docs/nimony-lsp) page. The `nimsem serve` daemon above is the
+next-tier backend for when cross-module query latency (go-to-def / references on
+huge trees) needs to be warm too; it's wired into nimony-lsp as an opt-in path.
+
+---
+
 ## Issues Fixed
 
 Eight compiler fixes over stock upstream. Each row opens its own writeup —
