@@ -39,5 +39,5 @@ compiler actually resolved — not a regex approximation. Every capability has b
 driven end-to-end against the compiled server binary and verified against
 `nimony` 0.4.0.
 
-See the [repo README](https://github.com/aoughwl/nimony-lsp) for build, editor
-setup, configuration, coordinate conventions, and the data-format ground truth.
+See the **[full reference](../reference/nimony-lsp)** for build, editor setup,
+configuration, coordinate conventions, and the data-format ground truth.

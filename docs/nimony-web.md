@@ -2,6 +2,7 @@
 title: nimony-web
 parent: Projects
 nav_order: 1
+has_children: true
 ---
 
 # nimony-web — JavaScript & WebAssembly backends

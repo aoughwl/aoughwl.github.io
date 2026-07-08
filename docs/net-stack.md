@@ -115,5 +115,7 @@ persistent H2-coalescing handles, file-backed cookie jars, a `Share` pool).
 
 ---
 
-Full API tables, layout, design notes, and limitations for each library live in
-its repo README (linked above).
+Full API symbol tables, layout, design notes, and limitations for each library are
+archived verbatim under **Reference**:
+[tcp](../reference/tcp) · [net](../reference/net) · [http](../reference/http) ·
+[serve](../reference/serve) · [requests](../reference/requests).

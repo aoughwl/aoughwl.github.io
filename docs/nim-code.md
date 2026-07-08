@@ -59,5 +59,5 @@ Loaded from a plugin directory — nothing is published to a registry:
 claude --plugin-dir /path/to/nim-code
 ```
 
-See the [repo README](https://github.com/aoughwl/nim-code) for the full MCP tool
+See the **[full reference](../reference/nim-code)** for the complete MCP tool
 reference, configuration, hooks, and toolchain-detection details.
