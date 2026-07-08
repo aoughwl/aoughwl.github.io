@@ -47,50 +47,51 @@ top.
 
 ## Features Added
 
-### `.passive` / async ergonomics — compiler side
+Compiler support that makes nimony's `{.passive.}` CPS coroutines usable as a real
+async library. Each links to its full writeup in the [Changelog](changelog).
 
-The compiler support that makes nimony's `{.passive.}` CPS coroutines usable as a
-real async library. The runtime itself ships in
-**[nimony-web](docs/nimony-web)**.
-
-| Feature | What it enables | Where |
-|---|---|---|
-| Cross-module `.passive` | `await` / `sleepAsync` / coroutine helpers resolve & compose across module boundaries | `hexer/coro_transform.nim`, `hexer/cps.nim` |
-| `delay <call>` in generics | Spawn a coroutine from inside a generic proc (needed for generic `race[T]`) | `nimony/sem.nim` (`semDelay`) |
-| `suspend()` in generic `.passive` | Generic passive procs that park now instantiate | `nimony/sem.nim` (`semSuspend`) |
-| Proc-pragma macros (e.g. `{.async.}`) | A macro can receive & return a `proc` routine — and works when **imported** and on cross-bit targets | `lib/std/private/macros_nif.nim`, `nimony/semcall.nim`, `nimony/macro_plugin.nim` |
+| # | Feature | Files | Verified by |
+|---|---|---|---|
+| [F1](changes/feat-cross-module-passive) | [Cross-module `.passive`](changes/feat-cross-module-passive) | `coro_transform.nim` `cps.nim` | `tsleep3` `tgather2` |
+| [F2](changes/feat-delay-in-generics) | [`delay <call>` inside generics](changes/feat-delay-in-generics) | `sem.nim` | `tgenrace` |
+| [F3](changes/feat-suspend-in-generic-passive) | [`suspend()` in a generic `.passive` proc](changes/feat-suspend-in-generic-passive) | `sem.nim` | cps suite |
+| [F4](changes/feat-proc-pragma-macros) | [Proc-pragma macros (`{.async.}`)](changes/feat-proc-pragma-macros) | `macros_nif.nim` `semcall.nim` `macro_plugin.nim` | `tasyncsugar` |
+{: .ledger}
 
 ### The async runtime — `aoughwl/nimony-web`
 
 A complete cooperative-async runtime over these coroutines, driven by the host
-event loop. Verified end-to-end under Node — **46/46**. Full docs on the
-**[nimony-web](docs/nimony-web)** page.
+event loop — **46/46** under Node. Each row is documented on the
+**[async runtime](docs/nimony-web/async)** page.
 
-| Feature | What it gives you | Verified by |
+| Feature | What it gives you | Docs |
 |---|---|---|
-| `Future[T]` + `await` | Value-returning async, importable across modules | `tfut1/2/3` |
-| Dispatcher | `callSoon` / `drainReady` / `runForever`, reentrancy-guarded FIFO | all async tests |
-| Importable `sleepAsync` | Reusable `{.passive.}` sleep, called cross-module | `tsleep3` |
-| Generic `gather` / `all` | Await many futures, importable & generic | `tgather`, `tgather2` |
-| Generic `race[T]` / `any` | First-to-finish wins, returns the real `T` (not a fixed `Future[int]`) | `tgenrace`, `trace` |
-| `{.async.}` proc sugar | Write `{.async.}` instead of `{.passive.}`, imported from `asyncmacros` | `tasyncsugar` |
+| `Future[T]` + `await` | value-returning async, importable across modules | [async](docs/nimony-web/async) |
+| Dispatcher | `callSoon` / `drainReady` / `runForever`, reentrancy-guarded FIFO | [async](docs/nimony-web/async) |
+| Importable `sleepAsync` | reusable `{.passive.}` sleep, called cross-module | [async](docs/nimony-web/async) |
+| Generic `gather` / `all` | await many futures, importable & generic | [async](docs/nimony-web/async) |
+| Generic `race[T]` / `any` | first-to-finish wins, returns the real `T` | [async](docs/nimony-web/async) |
+| `{.async.}` proc sugar | write `{.async.}` instead of `{.passive.}` | [async](docs/nimony-web/async) |
+{: .ledger}
 
 ---
 
 ## Issues Fixed
 
-| # | Issue | Root cause | Fix (files) | Verified |
-|---|---|---|---|---|
-| 1 | `.passive` coroutine helpers didn't resolve across modules (`could not find symbol: …init.<caller>`) | helpers mangled with the *caller's* module suffix; the wrapper wasn't published into the defining module's index | `coroSuffix` from the defining module + publish the foreign wrapper | `tsleep3`, `tgather2` |
-| 2 | `delay <call>` inside a generic proc → `[Bug] expected ')'` | `semDelay` wasn't idempotent — a generic body is flattened once, then re-semmed on instantiation | make `semDelay` re-entrant (`sem.nim`) | cps suite |
-| 3 | Macro plugins failed to compile for any file outside the repo (`cannot open <mod>.s.deps.nif`) | `nimonyDir()/src/lib` was only added per-dir, so module suffixes disagreed | add it unconditionally in `setupPaths` (`semos.nim`) | macros suite |
-| 4 | A `.passive` proc capturing a `.raises` non-void result crashed hexer (`assert n.kind==Symbol`) | coro lifts the result local to `(dot(deref env)fld)` | copy the non-Symbol operand verbatim (`constparams.nim`) — removes the crash | cps suite |
-| 5 | Proc-pragma macros silently dropped the routine (“expression expected”) | NimNode NIF codec had no `"proc"` case → round-tripped to empty | add `of "proc": nnkProcDef` + map back (`macros_nif.nim`) | macros suite |
-| 6 | `suspend()` in a generic `.passive` proc → “Continuation must be discarded” on instantiation | `semSuspend` typed `(suspend)` as `Continuation`, but `suspend` is `void` | type it `void` (`sem.nim`) | cps suite |
-| 7 | Generic `race[T]` spawned via `delay raceW(...)` failed to link on **both** native and JS (`loadForeign`: “Symbol not found: raceW.0.coro.<sfx>”) | `semDelay`'s generic-instantiation branch copied the delayed callee verbatim, so a generic callee was never instantiated → its `.coro` frame type was never emitted | reconstruct `(call …)`, re-sem it, then re-flatten to `(delay …)` (`sem.nim`) | `tgenrace` (native + JS) |
-| 8a | An **imported** macro wasn't recognized (“macro '…' not compiled”) | an imported macro's declaration is checked in its *defining* module, so it's absent from the importer's `compiledMacros` | fall back to the on-disk plugin the dependency build produced — `macroPluginExists` (`semcall.nim`, `macro_plugin.nim`) | `tasyncsugar` |
-| 8b | Macro plugin build failed on cross-bit targets (“Pointer size mismatch…”) | a macro plugin is a HOST-native tool but inherited the target compile's `--bits:NN` | strip `--bits:` from the forwarded args — `hostifyPluginArgs` (`macro_plugin.nim`) | `tasyncsugar` |
-| 8c | Macro plugin built but **segfaulted** at run on a cross-bit target | the host plugin reused the target's stdlib artifacts from the shared nifcache | build the plugin in an isolated host-bits nifcache, seeded with `import std/[syncio, macros]` (`macro_plugin.nim`) | `tasyncsugar` |
+Eight compiler fixes over stock upstream. Each row opens its own writeup —
+symptom, root cause, the fix, files, and the verifying test.
+
+| # | Issue | Verified by |
+|---|---|---|
+| [1](changes/issue-1) | [`.passive` helpers didn't resolve across modules](changes/issue-1) | `tsleep3` `tgather2` |
+| [2](changes/issue-2) | [`delay <call>` crashed inside a generic proc](changes/issue-2) | cps suite |
+| [3](changes/issue-3) | [Macro plugins failed to compile outside the repo](changes/issue-3) | macros suite |
+| [4](changes/issue-4) | [`.passive` capturing a `.raises` result crashed hexer](changes/issue-4) | cps suite |
+| [5](changes/issue-5) | [Proc-pragma macros silently dropped the routine](changes/issue-5) | macros suite |
+| [6](changes/issue-6) | [`suspend()` in a generic `.passive` proc was mis-typed](changes/issue-6) | cps suite |
+| [7](changes/issue-7) | [Generic `race[T]` spawned via `delay` failed to link](changes/issue-7) | `tgenrace` |
+| [8](changes/issue-8) | [Imported `{.async.}` macros: three cross-target failures](changes/issue-8) | `tasyncsugar` |
+{: .ledger}
 
 ---
 

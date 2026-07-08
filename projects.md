@@ -18,7 +18,9 @@ repo READMEs are short stubs that point here.
 | [niflens](docs/niflens) — NIF lens CLI for tooling | `aoughwl/niflens` | public |
 | [nimony-lsp](docs/nimony-lsp) — Language Server + VSCode extension | `aoughwl/nimony-lsp` | public |
 | [net stack](docs/net-stack) — `tcp`/`net`/`serve`/`http`/`requests` | `aoughwl/{tcp,net,serve,http,requests}` | public |
-| [web / html / css](docs/web) — typed HTML5 + MDN CSS engine + DSL | `aoughwl/{web,html,css}` | public |
+| [web](docs/web) — HTML + validated CSS in one nimony block (DSL) | `aoughwl/web` | public |
+| [html](docs/html) — typed HTML5 registry + renderer | `aoughwl/html` | public |
+| [css](docs/css) — MDN-typed CSS engine (parse + validate) | `aoughwl/css` | public |
 | [nimony-ts](docs/nimony-ts) — idiomatic TypeScript backend | `aoughwl/nimony-ts` | early scaffold · private |
 | [nimony-py](docs/nimony-py) — idiomatic Python backend | `aoughwl/nimony-py` | early scaffold · private |
 | [nimony-hl](docs/nimony-hl) — shared High-Level IR | `aoughwl/nimony-hl` | early scaffold · private |

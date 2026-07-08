@@ -38,7 +38,7 @@ ledger of what our tree does that stock upstream nimony does not.
 | **[niflens](docs/niflens)** | A NIF lens for tooling — a thin CLI over the compiler's own NIF libraries, emitting compact JSON. |
 | **[nimony-lsp](docs/nimony-lsp)** | Language Server Protocol implementation for Nimony, plus a full VSCode extension. |
 | **[net stack](docs/net-stack)** | `tcp → net → serve` transport + transport-free `http` + a browser-impersonating `requests` client. |
-| **[web / html / css](docs/web)** | Typed HTML5, an MDN-typed CSS engine, and a declarative DSL that fuses them with validated inline styles. |
+| **[web](docs/web)** · **[html](docs/html)** · **[css](docs/css)** | A declarative HTML+CSS DSL, a typed HTML5 registry/renderer, and an MDN-typed CSS engine that validates against the real grammar. |
 | **[nimony-ts](docs/nimony-ts)** · **[nimony-py](docs/nimony-py)** · **[nimony-hl](docs/nimony-hl)** | Idiomatic TypeScript / Python backends and the shared High-Level IR that feeds them. |
 
 ## The private side

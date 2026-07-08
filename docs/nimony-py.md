@@ -1,7 +1,7 @@
 ---
 title: nimony-py
 parent: Projects
-nav_order: 8
+nav_order: 10
 ---
 
 # nimony-py — idiomatic Python backend
