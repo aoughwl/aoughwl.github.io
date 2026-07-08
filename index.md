@@ -37,7 +37,7 @@ ledger of what our tree does that stock upstream nimony does not.
 | **[nim-code](docs/nim-code)** | Claude Code plugin + MCP server that mediates agent access to the Nim/Nimony toolchains through compact, structured tools. |
 | **[niflens](docs/niflens)** | A NIF lens for tooling — a thin CLI over the compiler's own NIF libraries, emitting compact JSON. |
 | **[nimony-lsp](docs/nimony-lsp)** | Language Server Protocol implementation for Nimony, plus a full VSCode extension. |
-| **[net stack](docs/net-stack)** | `tcp → net → serve` transport + transport-free `http` + a browser-impersonating `requests` client. |
+| **[net stack](docs/net-stack)** | Eight one-concern repos: `tcp`·`net`·`tls`·`http`·`compress`·`serve`·`ws`·`requests` — TLS 1.3, dual-stack IPv6, HTTP/1.1 + HTTP/2 server, WebSocket, HTTP/3 client, and a browser-impersonating `requests`. |
 | **[web](docs/web)** · **[html](docs/html)** · **[css](docs/css)** | A declarative HTML+CSS DSL, a typed HTML5 registry/renderer, and an MDN-typed CSS engine that validates against the real grammar. |
 | **[nimony-ts](docs/nimony-ts)** · **[nimony-py](docs/nimony-py)** · **[nimony-hl](docs/nimony-hl)** | Idiomatic TypeScript / Python backends and the shared High-Level IR that feeds them. |
 
