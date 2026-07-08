@@ -1,5 +1,5 @@
 ---
-title: Issue #5 — Proc-pragma macros silently dropped the routine
+title: "Issue #5 — Proc-pragma macros silently dropped the routine"
 parent: Changelog
 nav_order: 5
 ---

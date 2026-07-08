@@ -1,5 +1,5 @@
 ---
-title: Feature — `delay <call>` inside generics
+title: "Feature — `delay <call>` inside generics"
 parent: Changelog
 nav_order: 102
 ---

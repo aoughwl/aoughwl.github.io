@@ -1,5 +1,5 @@
 ---
-title: Issue #6 — `suspend()` in a generic `.passive` proc was mis-typed
+title: "Issue #6 — `suspend()` in a generic `.passive` proc was mis-typed"
 parent: Changelog
 nav_order: 6
 ---

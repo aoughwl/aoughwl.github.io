@@ -1,5 +1,5 @@
 ---
-title: Issue #4 — `.passive` capturing a `.raises` result crashed hexer
+title: "Issue #4 — `.passive` capturing a `.raises` result crashed hexer"
 parent: Changelog
 nav_order: 4
 ---

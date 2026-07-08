@@ -1,5 +1,5 @@
 ---
-title: Feature — Proc-pragma macros (`{.async.}`)
+title: "Feature — Proc-pragma macros (`{.async.}`)"
 parent: Changelog
 nav_order: 104
 ---

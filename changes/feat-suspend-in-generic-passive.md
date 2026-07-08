@@ -1,5 +1,5 @@
 ---
-title: Feature — `suspend()` in a generic `.passive` proc
+title: "Feature — `suspend()` in a generic `.passive` proc"
 parent: Changelog
 nav_order: 103
 ---

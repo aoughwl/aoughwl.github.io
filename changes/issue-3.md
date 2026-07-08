@@ -1,5 +1,5 @@
 ---
-title: Issue #3 — Macro plugins failed to compile outside the repo
+title: "Issue #3 — Macro plugins failed to compile outside the repo"
 parent: Changelog
 nav_order: 3
 ---

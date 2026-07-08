@@ -1,5 +1,5 @@
 ---
-title: Issue #2 — `delay <call>` crashed inside a generic proc
+title: "Issue #2 — `delay <call>` crashed inside a generic proc"
 parent: Changelog
 nav_order: 2
 ---

@@ -1,5 +1,5 @@
 ---
-title: Issue #8 — Imported `{.async.}` macros: three cross-target failures
+title: "Issue #8 — Imported `{.async.}` macros: three cross-target failures"
 parent: Changelog
 nav_order: 8
 ---

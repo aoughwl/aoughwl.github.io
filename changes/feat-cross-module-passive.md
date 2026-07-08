@@ -1,5 +1,5 @@
 ---
-title: Feature — Cross-module `.passive`
+title: "Feature — Cross-module `.passive`"
 parent: Changelog
 nav_order: 101
 ---

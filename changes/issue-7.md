@@ -1,5 +1,5 @@
 ---
-title: Issue #7 — Generic `race[T]` spawned via `delay` failed to link
+title: "Issue #7 — Generic `race[T]` spawned via `delay` failed to link"
 parent: Changelog
 nav_order: 7
 ---

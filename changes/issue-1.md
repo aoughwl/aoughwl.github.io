@@ -1,5 +1,5 @@
 ---
-title: Issue #1 — `.passive` helpers didn't resolve across modules
+title: "Issue #1 — `.passive` helpers didn't resolve across modules"
 parent: Changelog
 nav_order: 1
 ---
