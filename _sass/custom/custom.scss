@@ -241,32 +241,11 @@ code, kbd, samp {
   .side-bar + .main { margin-left: 16.5rem; }
 }
 
-/* ------------------------------------------------ aux nav (top-right link) */
-/* the default renders a full-height bar that never fit; make it a tidy pill */
-.aux-nav .aux-nav-list { align-items: center; }
-.aux-nav .aux-nav-list-item { height: auto; }
-.aux-nav .aux-nav-list-item .site-button {
-  height: auto;
-  margin: 0 .25rem;
-  padding: .32rem .7rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  background: var(--bg-elev);
-  color: var(--text-dim);
-  font-family: $mono;
-  font-size: .72rem;
-  letter-spacing: .02em;
-  line-height: 1;
-  white-space: nowrap;
-}
-.aux-nav .aux-nav-list-item .site-button:hover {
-  background: var(--bg-elev-2);
-  color: var(--text);
-}
-
-/* JtD caps the search input at 33.5rem, leaving a dead gap before the aux
-   link. Let it fill the whole header row so GitHub sits at the bar's end. */
+/* ---------------------------------------------------------------- search */
+/* JtD caps the search input at 33.5rem (and re-fixes it to 33.5rem while you
+   type). Let it fill the whole header row in both the idle and active state. */
 .main-header .search-input-wrap { max-width: none; }
+.search-active .main-header .search-input-wrap { width: 100%; max-width: none; }
 
 /* -------------------------------------------------------- page gutters */
 /* the body is full-width now; give the rendered content real page margins
