@@ -78,6 +78,20 @@ body {
 .nav-list .nav-list-item .nav-list-expander:hover { background: var(--bg-elev-2); }
 .nav-category { color: var(--text-dim); border-bottom: 1px solid var(--border); }
 
+/* nav hierarchy — clearer indent + a vertical guide line per nested level, so
+   sub-items and sub-sub-items read as a tree instead of a barely-indented list.
+   (JtD only indents 0.75rem per level with no visual cue.) */
+.nav-list .nav-list-item > .nav-list {
+  margin-left: 1.1rem;
+  padding-left: 0;
+  border-left: 1px solid var(--border-strong);
+}
+.nav-list .nav-list-item > .nav-list > .nav-list-item > .nav-list-link {
+  padding-left: 1rem;
+}
+/* highlight the guide line of the branch you're hovering/inside */
+.nav-list .nav-list-item > .nav-list:hover { border-left-color: var(--text-dim); }
+
 /* --------------------------------------------------------------- typography */
 .main-content {
   color: var(--text);
