@@ -1,8 +1,7 @@
 ---
 title: Projects
-nav_order: 2
-has_children: true
 permalink: /projects
+nav_exclude: true
 ---
 
 # Projects

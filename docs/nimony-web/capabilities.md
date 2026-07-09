@@ -1,7 +1,7 @@
 ---
 title: Capabilities
 parent: nimony-web
-grand_parent: Projects
+grand_parent: Nimony Backends
 nav_order: 2
 ---
 

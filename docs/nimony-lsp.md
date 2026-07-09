@@ -1,7 +1,7 @@
 ---
 title: nimony-lsp
-parent: Projects
-nav_order: 4
+parent: Nimony Tools
+nav_order: 3
 ---
 
 # nimony-lsp — Language Server + VSCode extension

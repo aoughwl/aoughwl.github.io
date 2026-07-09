@@ -1,7 +1,7 @@
 ---
 title: nimony-ts
-parent: Projects
-nav_order: 9
+parent: Nimony Backends
+nav_order: 2
 ---
 
 # nimony-ts — idiomatic TypeScript backend

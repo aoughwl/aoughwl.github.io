@@ -1,6 +1,6 @@
 ---
 title: requests
-parent: Full READMEs
+parent: Single Page READMEs
 nav_order: 7
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: nim-code
-parent: Projects
-nav_order: 2
+parent: Nimony Tools
+nav_order: 1
 ---
 
 # nim-code — Nim/Nimony Claude Code plugin & MCP server

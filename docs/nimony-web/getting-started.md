@@ -1,7 +1,7 @@
 ---
 title: Getting started
 parent: nimony-web
-grand_parent: Projects
+grand_parent: Nimony Backends
 nav_order: 1
 ---
 

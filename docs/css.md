@@ -1,7 +1,7 @@
 ---
 title: css
-parent: Projects
-nav_order: 8
+parent: Nimony Libraries
+nav_order: 4
 ---
 
 # css — an MDN-typed CSS engine for nimony

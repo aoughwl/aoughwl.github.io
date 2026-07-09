@@ -1,7 +1,7 @@
 ---
 title: net stack
-parent: Projects
-nav_order: 5
+parent: Nimony Libraries
+nav_order: 1
 has_children: true
 ---
 

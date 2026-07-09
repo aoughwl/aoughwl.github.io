@@ -1,6 +1,6 @@
 ---
 title: nimony-web
-parent: Projects
+parent: Nimony Backends
 nav_order: 1
 has_children: true
 ---

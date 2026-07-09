@@ -1,11 +1,11 @@
 ---
-title: Full READMEs
-nav_order: 3
+title: Single Page READMEs
+nav_order: 5
 has_children: true
 permalink: /reference
 ---
 
-# Full READMEs
+# Single Page READMEs
 
 Full, verbatim documentation archived from each repo's original README — the
 complete API tables, design notes, limitations, and testing sections that the

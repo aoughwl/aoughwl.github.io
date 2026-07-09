@@ -1,7 +1,7 @@
 ---
 title: html
-parent: Projects
-nav_order: 7
+parent: Nimony Libraries
+nav_order: 3
 ---
 
 # html — typed HTML5 for nimony

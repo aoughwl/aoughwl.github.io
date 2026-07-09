@@ -1,7 +1,7 @@
 ---
 title: niflens
-parent: Projects
-nav_order: 3
+parent: Nimony Tools
+nav_order: 2
 ---
 
 # niflens — a NIF lens for tooling

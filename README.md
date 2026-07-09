@@ -7,8 +7,11 @@ GitHub Pages. Content:
 
 - `index.md` — home / overview
 - `nimony.md` — the headline: **Issues Fixed & Features Added** record for `aoughwl/nimony`
-- `projects.md` + `docs/*.md` — one page per project (nimony-web, nim-code, niflens,
-  nimony-lsp, the net stack, web/html/css, nimony-ts/py/hl)
+- `libraries.md` / `backends.md` / `tools.md` + `docs/*.md` — the three project
+  categories and one page per project (net stack, web/html/css → Libraries;
+  nimony-web, nimony-ts/py/hl → Backends; nim-code, niflens, nimony-lsp → Tools)
+- `projects.md` — hidden (`nav_exclude`) all-projects overview at `/projects`
 
 The per-repo READMEs are short stubs that point here; this is the canonical docs.
-To add a project page, drop a `docs/<name>.md` with `parent: Projects` front-matter.
+To add a project page, drop a `docs/<name>.md` with `parent: Nimony Libraries`
+(or `Nimony Backends` / `Nimony Tools`) front-matter.

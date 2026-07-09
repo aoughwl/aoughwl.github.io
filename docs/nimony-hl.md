@@ -1,7 +1,7 @@
 ---
 title: nimony-hl
-parent: Projects
-nav_order: 11
+parent: Nimony Backends
+nav_order: 4
 ---
 
 # nimony-hl — shared High-Level IR

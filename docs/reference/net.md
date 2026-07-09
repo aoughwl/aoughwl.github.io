@@ -1,6 +1,6 @@
 ---
 title: net
-parent: Full READMEs
+parent: Single Page READMEs
 nav_order: 4
 ---
 

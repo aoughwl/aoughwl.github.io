@@ -1,7 +1,7 @@
 ---
 title: web
-parent: Projects
-nav_order: 6
+parent: Nimony Libraries
+nav_order: 2
 ---
 
 # web — HTML + validated CSS in one nimony block
