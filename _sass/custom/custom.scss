@@ -264,6 +264,20 @@ code, kbd, samp {
   color: var(--text);
 }
 
+/* JtD caps the search input at 33.5rem, leaving a dead gap before the aux
+   link. Let it fill the whole header row so GitHub sits at the bar's end. */
+.main-header .search-input-wrap { max-width: none; }
+
+/* -------------------------------------------------------- page gutters */
+/* the body is full-width now; give the rendered content real page margins
+   (JtD's default 2rem reads as almost nothing edge-to-edge). */
+@media (min-width: 50rem) {
+  .main-content-wrap { padding-left: 3rem; padding-right: 3rem; }
+}
+@media (min-width: 66.5rem) {
+  .main-content-wrap { padding-left: 4rem; padding-right: 4rem; }
+}
+
 /* home hero */
 .main-content h1.fs-9 { font-family: $display; letter-spacing: -0.02em; }
 
