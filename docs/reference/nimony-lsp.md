@@ -1,6 +1,6 @@
 ---
 title: nimony-lsp
-parent: Reference
+parent: Full READMEs
 nav_order: 2
 ---
 

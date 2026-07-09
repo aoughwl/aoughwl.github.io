@@ -1,6 +1,6 @@
 ---
 title: nim-code
-parent: Reference
+parent: Full READMEs
 nav_order: 1
 ---
 

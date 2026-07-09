@@ -224,6 +224,46 @@ code, kbd, samp {
 #theme-toggle:hover { transform: rotate(-15deg); background: var(--bg-elev-2); }
 #theme-toggle:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 
+/* ------------------------------------------------------ full-width layout */
+/* just-the-docs centres the whole nav+content block on wide screens and caps
+   the body at 50rem. We want the sidebar flush to the left edge and the body
+   to fill the screen (regular gutters come from .main-content-wrap padding). */
+@media (min-width: 50rem) {
+  .side-bar { align-items: stretch; }   /* nav flush-left, full-width hovers */
+  .main { max-width: none; }            /* body fills the viewport */
+}
+@media (min-width: 66.5rem) {
+  .side-bar {
+    width: 16.5rem;
+    min-width: 16.5rem;
+    align-items: stretch;
+  }
+  .side-bar + .main { margin-left: 16.5rem; }
+}
+
+/* ------------------------------------------------ aux nav (top-right link) */
+/* the default renders a full-height bar that never fit; make it a tidy pill */
+.aux-nav .aux-nav-list { align-items: center; }
+.aux-nav .aux-nav-list-item { height: auto; }
+.aux-nav .aux-nav-list-item .site-button {
+  height: auto;
+  margin: 0 .25rem;
+  padding: .32rem .7rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-family: $mono;
+  font-size: .72rem;
+  letter-spacing: .02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.aux-nav .aux-nav-list-item .site-button:hover {
+  background: var(--bg-elev-2);
+  color: var(--text);
+}
+
 /* home hero */
 .main-content h1.fs-9 { font-family: $display; letter-spacing: -0.02em; }
 
