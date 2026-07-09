@@ -57,11 +57,11 @@ body {
 .site-header { border-bottom: 1px solid var(--border); }
 .site-title { color: var(--text) !important; font-family: $display; }
 
-/* logo swaps with the theme (beats JtD's own background-image) */
+/* logo swaps with the theme (beats JtD's own background-image); ~25% smaller */
 .site-logo {
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: contain;
+  background-size: auto 75%;
 }
 [data-theme="dark"]  .site-logo { background-image: url('/assets/aoughwl-logo-white.png') !important; }
 [data-theme="light"] .site-logo { background-image: url('/assets/aoughwl-logo-black.png') !important; }
@@ -128,6 +128,30 @@ code, kbd, samp {
   border-radius: 6px;
 }
 .main-content pre.highlight code { background: none; border: 0; padding: 0; }
+
+/* JtD ships only a GitHub-dark syntax palette (bright tokens for a dark code
+   block). Those tokens wash out on our light-theme code background, so give
+   light mode a proper dark-on-light palette. Dark mode keeps JtD's default. */
+[data-theme="light"] .highlight {
+  color: #1f2328;
+  pre, code { color: #1f2328; }
+  span { color: #1f2328; }                                   /* readable fallback */
+  .c, .c1, .cm, .cs, .cd, .cp, .cpf, .ch { color: #6e7781; font-style: italic; } /* comments */
+  .k, .kc, .kd, .kn, .kp, .kr, .kt, .kv { color: #cf222e; }  /* keywords */
+  .o, .ow { color: #0550ae; }                                /* operators */
+  .s, .s1, .s2, .sb, .sc, .sd, .se, .sh, .si, .sr, .sx, .sa, .ss, .dl { color: #0a3069; } /* strings */
+  .m, .mi, .mf, .mh, .mo, .mb, .il { color: #0550ae; }       /* numbers */
+  .nb, .bp { color: #0550ae; }                               /* builtins */
+  .nf, .fm { color: #6639ba; }                               /* functions */
+  .nc, .nn, .no, .nd, .ne { color: #953800; }                /* classes/namespaces */
+  .nt { color: #116329; }                                    /* html tags */
+  .na, .nl, .py, .nv, .vc, .vg, .vi { color: #0550ae; }      /* attrs/vars */
+  .n, .nx, .p, .pm, .w { color: #1f2328; }                   /* plain names/punct */
+  .err { color: #cf222e; }
+  .gi { color: #116329; }                                    /* diff insert */
+  .gd { color: #cf222e; }                                    /* diff delete */
+  .gh, .gu { color: #0550ae; }
+}
 
 /* ----------------------------------------------------- tables (Excel-like) */
 .main-content table {
@@ -202,6 +226,10 @@ code, kbd, samp {
 .search-results { background: var(--bg-elev); border: 1px solid var(--border); }
 .search-result-title { color: var(--text); }
 .search-result:hover, .search-result.active { background: var(--bg-elev-2); }
+/* JtD hardcodes these to near-white — unreadable on the light-theme dropdown */
+.search-result-rel-url { color: var(--text-dim); }
+.search-result-previews { color: var(--text-dim); border-left-color: var(--border); }
+.search-result-doc .search-result-icon { color: var(--text-dim); }
 
 /* ----------------------------------------------------------------- buttons */
 .btn {
