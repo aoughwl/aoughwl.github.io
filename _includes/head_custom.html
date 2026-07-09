@@ -24,7 +24,7 @@
     btn.setAttribute('aria-label', 'Toggle light and dark theme');
     function render() {
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      btn.textContent = dark ? '☀' : '☾';   // ☀ in dark (→light), ☾ in light (→dark)
+      btn.textContent = dark ? '☀' : '☾';   /* ☀ in dark (→light), ☾ in light (→dark) */
       btn.title = dark ? 'Switch to light' : 'Switch to dark';
     }
     btn.addEventListener('click', function () {
@@ -94,7 +94,7 @@
       el.remove();
     });
 
-    // Prepend to the just-the-docs content column; fall back to <body>.
+    /* Prepend to the just-the-docs content column; fall back to <body>. */
     var host = document.querySelector('.main-content-wrap') ||
                document.querySelector('#main-content') ||
                document.querySelector('.main-content') ||
