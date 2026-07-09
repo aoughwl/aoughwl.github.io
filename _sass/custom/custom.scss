@@ -248,13 +248,14 @@ code, kbd, samp {
 .search-active .main-header .search-input-wrap { width: 100%; max-width: none; }
 
 /* -------------------------------------------------------- page gutters */
-/* the body is full-width now; give the rendered content real page margins
-   (JtD's default 2rem reads as almost nothing edge-to-edge). */
+/* Fluid margins that grow with the viewport — small on a laptop, large on a
+   wide monitor. Applied only to the rendered content column, so the sidebar
+   and the top search bar keep their full width. */
 @media (min-width: 50rem) {
-  .main-content-wrap { padding-left: 3rem; padding-right: 3rem; }
-}
-@media (min-width: 66.5rem) {
-  .main-content-wrap { padding-left: 4rem; padding-right: 4rem; }
+  .main-content-wrap {
+    padding-left:  clamp(2rem, 9vw, 20rem);
+    padding-right: clamp(2rem, 9vw, 20rem);
+  }
 }
 
 /* home hero */
