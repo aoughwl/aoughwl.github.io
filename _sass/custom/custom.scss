@@ -56,12 +56,25 @@ body {
 }
 .site-header { border-bottom: 1px solid var(--border); }
 .site-title { color: var(--text) !important; font-family: $display; }
+/* "docs" wordmark after the logo, so it reads: [aoughwl] docs */
+.site-title::after {
+  content: "docs";
+  font-family: $display;
+  font-weight: 500;
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  margin-left: .5rem;
+  letter-spacing: -0.01em;
+}
 
 /* logo swaps with the theme (beats JtD's own background-image); ~25% smaller */
 .site-logo {
+  flex: 0 0 auto;
+  width: 7.6rem;              /* wordmark is 4.21:1; sized to the visible mark */
+  height: 1.8rem;
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: auto 75%;
+  background-size: contain;   /* fills the box exactly — no clip, no dead space */
 }
 [data-theme="dark"]  .site-logo { background-image: url('/assets/aoughwl-logo-white.png') !important; }
 [data-theme="light"] .site-logo { background-image: url('/assets/aoughwl-logo-black.png') !important; }
