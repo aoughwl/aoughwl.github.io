@@ -45,6 +45,45 @@ are remapped back onto the real document URI. It runs synchronously on the stdio
 loop (25ms doesn't lag typing) with no background daemon and no threads; `didOpen`
 warms the cache once so even the first edit is fast.
 
+{: .note }
+> The live temp file is a **non-dot** sibling (`nimlsp_live_*`), hidden from the
+> explorer via the extension's `files.exclude`. It must not start with a dot:
+> Nimony derives a module id from the filename and a leading-dot name yields an
+> empty id, crashing the checker (`nifreader: r.thisModule.len > 0`) — which had
+> silently broken live diagnostics on every unsaved buffer until it was fixed.
+
+---
+
+## Responsiveness: one warm cache, one-shot checks
+
+Navigation, hover, and references run as **one-shot `nimony check`** requests
+against a **warm nimcache** — no daemon, the same one-shot + incremental-cache
+shape as Araq's `nim track`. The whole model hinges on one thing: every request
+must hit the same warm cache entry.
+
+- **One shared warm cache.** Nimony keys its incremental cache by the file path
+  *exactly as passed*. Diagnostics were warming it with the **absolute** path
+  while hover/definition/references queried with the **relative** path, so the
+  two never shared an entry — every navigation recompiled the whole project
+  (~1.5s) on *every* request, forever. Funnelling every check through one
+  canonical path form fixed it: on a real multi-module project, `definition`
+  went **1481 ms → 62 ms** after a single ~1.47s warm on open.
+- **Live-buffer navigation.** Hover / definition / references reflect *unsaved*
+  edits (routed through the same live temp the diagnostics use), falling back to
+  the last-saved answer when the buffer is mid-edit so nav never blanks.
+- **Inlay hints only on real declarations.** The semchecked NIF carries
+  compiler-synthesized decls (loop temps, `result`, lowered statements) whose
+  line-info points at arbitrary tokens; hints are gated to sit exactly at an
+  identifier end on a `let`/`var`/`const` line, killing bogus `: int` hints in
+  comments and `import` words.
+- **No overlapping servers.** The client serializes stop→start so rapid
+  restarts/reloads can't spawn multiple servers that thrash one shared nimcache.
+
+The honest tradeoff: the *first* interaction after opening a project pays one
+full `nimony check` (~1.1–1.5s) to warm the cache; there's no daemon keeping it
+hot across sessions. Everything after the warm is in the tens of milliseconds.
+Making that first check cheap is a compiler-side problem (incremental `check`).
+
 ---
 
 ## Why
