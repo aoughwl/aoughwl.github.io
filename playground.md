@@ -46,8 +46,12 @@ It ships starter examples you can run and edit:
 
 - **Tier 1 (today)** — runs precompiled `.s.nif` client-side. Pick an example, it
   runs in the browser.
-- **Tier 2 (planned)** — port the parser + semcheck frontend to JS so edits
-  recompile live, instead of only running prebuilt artifacts.
+- **Tier 2 (in progress)** — port the parse + semcheck frontend to JS so edits
+  recompile live. Both halves are now de-risked: a from-scratch, browser-capable
+  parser — [nifparser](nifparser) — parses all five example programs
+  byte-identical to the native compiler, and semcheck (`nimsem`) translates to JS
+  with zero unsupported constructs. What remains is wiring the chain
+  `source → nifparser → nimsem → nifi` behind the browser stub.
 - **Tier 3 (planned)** — LSP diagnostics in a Web Worker.
 
 The seams for the later tiers are already stubbed: `NifiCore.compileAndRun` and
