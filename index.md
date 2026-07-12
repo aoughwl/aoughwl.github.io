@@ -33,6 +33,8 @@ ledger of what our tree does that stock upstream nimony does not.
 | Project | What it is |
 |---|---|
 | **[nimony](nimony)** | The fork itself: compiler fixes, `.passive`/async features, opinionated stdlib. |
+| **[nifi](nifi)** | Standalone two-engine interpreter for typed nimony — tree-walker + bytecode VM, differentially tested against native. |
+| **[nimony-playground](playground)** | Browser playground: nifi compiled to JS, runs nimony entirely client-side. |
 | **[nimony-web](docs/nimony-web)** | JavaScript **and** WebAssembly backends — one linear-memory model, compiled twice. Plus the cooperative async runtime. |
 | **[nim-code](docs/nim-code)** | Claude Code plugin + MCP server that mediates agent access to the Nim/Nimony toolchains through compact, structured tools. |
 | **[niflens](docs/niflens)** | A NIF lens for tooling — a thin CLI over the compiler's own NIF libraries, emitting compact JSON. |
