@@ -1,6 +1,6 @@
 ---
 title: nifi — Nimony Interpreter
-nav_order: 2
+nav_order: 7
 ---
 
 # nifi
