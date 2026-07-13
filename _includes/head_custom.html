@@ -109,7 +109,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var menuButton = document.getElementById('menu-button');
-    if (!menuButton) return;                       // desktop layouts may omit it
+    if (!menuButton) return;                       /* desktop layouts may omit it */
     var header = menuButton.closest('.site-header') ||
                  document.querySelector('.site-header');
 
@@ -124,10 +124,10 @@
     fab.addEventListener('click', function () { menuButton.click(); });
     document.body.appendChild(fab);
 
-    // Show the fab whenever the header has scrolled out of view and the nav is
-    // closed. An IntersectionObserver works no matter which element actually
-    // scrolls on mobile (window vs. an inner container); the CSS media query
-    // keeps it off the desktop layout entirely.
+    /* Show the fab whenever the header has scrolled out of view and the nav is
+       closed. An IntersectionObserver works no matter which element actually
+       scrolls on mobile (window vs. an inner container); the CSS media query
+       keeps it off the desktop layout entirely. */
     var headerVisible = true;
     function apply() {
       var navOpen = menuButton.classList.contains('nav-open');
@@ -139,7 +139,7 @@
         apply();
       }, { threshold: 0 }).observe(header);
     }
-    // keep in sync when the nav is opened/closed
+    /* keep in sync when the nav is opened/closed */
     menuButton.addEventListener('click', function () { setTimeout(apply, 30); });
     apply();
   });
