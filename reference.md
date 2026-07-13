@@ -1,5 +1,6 @@
 ---
 title: Single Page READMEs
+nav_exclude: true
 nav_order: 5
 has_children: true
 permalink: /reference

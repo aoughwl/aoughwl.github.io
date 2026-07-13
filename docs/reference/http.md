@@ -1,5 +1,6 @@
 ---
 title: http
+nav_exclude: true
 parent: Single Page READMEs
 nav_order: 5
 ---

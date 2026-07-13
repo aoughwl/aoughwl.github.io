@@ -1,5 +1,6 @@
 ---
 title: nimony-lsp
+nav_exclude: true
 parent: Single Page READMEs
 nav_order: 2
 ---

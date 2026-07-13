@@ -1,6 +1,8 @@
 ---
 title: Changelog
-nav_order: 6
+grand_parent: Nimony
+parent: Fork
+nav_order: 2
 has_children: true
 permalink: /changelog
 ---
