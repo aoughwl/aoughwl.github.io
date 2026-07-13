@@ -175,6 +175,16 @@
     footer{padding:8px 12px;font-size:11px}
     footer > span:not(.badge):not(#perf){display:none}
   }
+  /* below 450: keep the source-pane status on ONE line — drop the "nimony
+     source" caption so "live compile" + the type-check status sit together
+     instead of wrapping the label onto a second row. */
+  @media(max-width:450px){
+    .pane.src .label{flex-wrap:nowrap;overflow:hidden}
+    .pane.src .label .cap{display:none}
+    #srcStatus{margin-left:auto}
+    #srcStatus,#semStatus,#semStatus *{white-space:nowrap}
+    #semStatus{overflow:hidden;text-overflow:ellipsis;min-width:0}
+  }
   /* very narrow: keep the logo mark, drop the wordmark text */
   @media(max-width:430px){ .brand h1{display:none} }
 </style>
@@ -207,7 +217,7 @@
 
 <main id="main" data-layout="cols">
   <section class="pane src">
-    <div class="label">nimony source <span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
+    <div class="label"><span class="cap">nimony source</span> <span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
     <div id="editor"></div>
     <textarea id="fallback" spellcheck="false"></textarea>
     <button id="showOut" class="fab" data-tip="Show the output panel" style="display:none">
