@@ -93,6 +93,12 @@
     getValue(){ return usingFallback ? fallbackEl.value : (editor ? editor.getValue() : ""); },
     setTheme(t){ if(!usingFallback && monacoRef) monacoRef.editor.setTheme(t==="light"?"nimony-light":"nimony-dark"); },
     onReady(cb){ if(usingFallback || editor) cb(); else readyCbs.push(cb); },
+    // Accessors for the LSP glue (lsp.js): the monaco namespace, the editor
+    // instance, and its model. Null under the textarea fallback.
+    getMonaco(){ return monacoRef; },
+    getEditor(){ return editor; },
+    getModel(){ return editor ? editor.getModel() : null; },
+    languageId: "nimony",
     // Fires on every content change (debouncing is the caller's job).
     onChange(cb){
       if(usingFallback){ fallbackEl.addEventListener("input", cb); return; }

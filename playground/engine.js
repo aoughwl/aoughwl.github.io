@@ -92,7 +92,7 @@
   loadBundle().then(() => {
     engine.ready = true;
     if(window.__nifiEngineReady) window.__nifiEngineReady(true);
-    if(window.__nifiLspStatus) window.__nifiLspStatus("off");
+    // (the lsp: badge is owned by lsp.js once Monaco language services register)
   }).catch(e => {
     engine.ready = false;
     if(window.__nifiEngineReady) window.__nifiEngineReady(false, String(e && e.message || e));

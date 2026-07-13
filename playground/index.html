@@ -96,6 +96,7 @@
 <script src="parser.js"></script>
 <script src="sem.js"></script>
 <script src="editor.js"></script>
+<script src="lsp.js"></script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
@@ -152,6 +153,9 @@
     try{
       const { nif, diags } = window.NifiParser.parseFull(src, "in.nim");
       const ms=(performance.now()-t0).toFixed(1);
+      // feed the language-intelligence index (outline/hover/def/completion).
+      // Driven by the UNTYPED .p.nif on purpose, so it survives type errors.
+      if(window.NifiLsp) window.NifiLsp.update(src, nif);
       syntaxDiags = diags || [];
       if(syntaxDiags.length) semDiags = [];   // sem needs a clean parse
       refreshMarkers();
@@ -175,8 +179,11 @@
     try{
       const { nif } = window.NifiParser.parseFull(window.NifiEditor.getValue(), "in.nim");
       const t0=performance.now();
-      const { diags, cached } = window.NifiSem.compile(nif);
+      const { snif, diags, cached } = window.NifiSem.compile(nif);
       const ms=(performance.now()-t0).toFixed(0);
+      // optional garnish: fill inferred var types from the typed .s.nif (by
+      // basename; never depended on for navigation).
+      if(snif && window.NifiLsp) window.NifiLsp.enrich(snif);
       semDiags = diags || [];
       refreshMarkers();
       const nErr = semDiags.length;
