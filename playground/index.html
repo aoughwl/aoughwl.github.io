@@ -400,6 +400,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
 <script src="sem.js?v=6"></script>
 <script src="editor.js?v=6"></script>
 <script src="lsp.js?v=6"></script>
+<script src="curlyconvert.js?v=6"></script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
@@ -625,9 +626,29 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     const on=!!window.NifiOpts.curly;
     curlyBtn.classList.toggle("on", on);
     curlyBtn.setAttribute("data-tip",
-      (on?"Curly-brace mode ON":"Curly-brace mode off")+" — accept { … } block bodies (experimental)");
+      (on?"Curly-brace mode ON":"Curly-brace mode off")+
+      " — accept { … } blocks (experimental) · ⌃/⌘-click to convert the code");
   }
-  curlyBtn.addEventListener("click",()=>{
+  // Ctrl/⌘-click rewrites the WHOLE buffer between colon/indent and curly style.
+  // Direction is inferred: if there's colon-style control flow to brace, go to
+  // curly (and enable curly mode so it parses); otherwise unbrace back to colon.
+  function convertBuffer(){
+    if(!window.NifiCurly) return;
+    const src = window.NifiEditor.getValue();
+    let out, toCurly;
+    try{
+      const curlyVer = window.NifiCurly.toCurly(src);
+      if(curlyVer !== src){ out = curlyVer; toCurly = true; }
+      else { out = window.NifiCurly.toColon(src); toCurly = false; }
+    }catch(_){ return; }
+    if(out === src && toCurly === false) out = window.NifiCurly.toColon(src);
+    window.NifiEditor.setValue(out);
+    window.NifiOpts.curly = toCurly;
+    try{localStorage.setItem("np-curly", toCurly?"1":"0");}catch(_){}
+    paintCurly(); runParse(); runSemCheck();
+  }
+  curlyBtn.addEventListener("click",(e)=>{
+    if(e.ctrlKey || e.metaKey){ e.preventDefault(); convertBuffer(); return; }
     window.NifiOpts.curly=!window.NifiOpts.curly;
     try{localStorage.setItem("np-curly", window.NifiOpts.curly?"1":"0");}catch(_){}
     paintCurly(); runParse(); runSemCheck();
