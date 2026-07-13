@@ -306,6 +306,19 @@ a.site-footer-discord .discord-ico { flex: 0 0 auto; }
 /* never show on the desktop layout, whatever the scroll JS thinks */
 @media (min-width: 50rem) { #nav-fab { display: none !important; } }
 
+/* Mobile: when the nav is opened, present the whole sidebar as a fixed,
+   scrollable overlay — otherwise it just expands in-flow at the very top of the
+   page and stays off-screen when you're scrolled down. The .site-header (with
+   the close button) rides at the top of the overlay. */
+@media (max-width: 49.999rem) {
+  body:has(#site-nav.nav-open) { overflow: hidden; }   /* lock background scroll */
+  .side-bar:has(#site-nav.nav-open) {
+    position: fixed; inset: 0; z-index: 1200;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: var(--bg-elev);
+  }
+}
+
 /* ----------------------------------------------------------- theme toggle */
 #theme-toggle {
   position: fixed; bottom: 1.1rem; right: 1.1rem; z-index: 1000;
