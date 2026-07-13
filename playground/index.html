@@ -26,7 +26,9 @@
   .brand{display:flex;align-items:center;gap:11px;padding-left:15px;flex:none}
   /* the aoughwl wordmark, rendered as a currentColor mask so it themes itself
      (white glyph PNG -> alpha mask); sized a touch larger than the product name. */
-  .brand .logo{display:block;width:98px;height:23px;flex:none;background:currentColor;opacity:.95;
+  /* color is pinned to --fg so the currentColor mask never picks up the default
+     link colour (the logo IS a link now, to the docs). */
+  .brand .logo{display:block;width:98px;height:23px;flex:none;color:var(--fg);background:currentColor;opacity:.95;
     text-decoration:none;transition:opacity .15s;
     -webkit-mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat;
             mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat}
@@ -535,6 +537,15 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     showOut.addEventListener("click",()=>{ hidden=false; apply(); selectTab("out"); });
     // used by run(): guarantee the Output is on screen and selected
     ensureOutputVisible = ()=>{ if(hidden){ hidden=false; apply(); } selectTab("out"); };
+    // Escape hides the output — even from inside Monaco. Capture phase so it
+    // beats Monaco's own key handling; but yield to Monaco's popups (suggest /
+    // parameter hints / find / rename) so their Escape still dismisses them
+    // first, and only act while the panel is actually showing.
+    document.addEventListener("keydown", e=>{
+      if(e.key!=="Escape" || hidden) return;
+      if(document.querySelector(".monaco-editor .suggest-widget.visible, .monaco-editor .parameter-hints-widget.visible, .monaco-editor .find-widget.visible, .monaco-editor .monaco-editor.rename-box, .monaco-editor .rename-box")) return;
+      hidden=true; apply(); e.preventDefault(); e.stopPropagation();
+    }, true);
     let dragging=false;
     gutter.addEventListener("pointerdown",e=>{
       if(main.classList.contains("out-hidden")) return;
