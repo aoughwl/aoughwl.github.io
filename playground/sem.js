@@ -93,7 +93,18 @@
     globalThis.__ns_assets = stdlibBlob;
     globalThis.__ns_out    = "";
     globalThis.__ns_diag   = "";
-    (new Function(bundleText + "\nmain(0, []);"))();
+    try{
+      (new Function(bundleText + "\nmain(0, []);"))();
+    }catch(e){
+      // nimsem aborted mid-compile — e.g. it hit an internal quit() (surfacing
+      // as the process-shim's "process.exit") while trying to resolve a module
+      // that isn't in the bundled stdlib closure. Surface whatever diagnostics
+      // it captured; otherwise synthesize a clean one instead of leaking the
+      // raw JS error to the user.
+      const diags = parseDiags(globalThis.__ns_diag);
+      return { snif:"", diags: diags.length ? diags : [{ line:1, col:1, severity:"error",
+        message:"this program uses a module or feature not yet supported in the browser sandbox" }] };
+    }
     return { snif: globalThis.__ns_out || "", diags: parseDiags(globalThis.__ns_diag) };
   }
 

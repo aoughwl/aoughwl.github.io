@@ -71,6 +71,15 @@
   /* live problems list in the output pane */
   .prob{display:flex;gap:8px;padding:2px 0;cursor:pointer} .prob:hover{background:var(--panel2);border-radius:4px}
   .prob .loc{color:var(--muted);min-width:52px} .prob.warn .loc{color:var(--warn)}
+  /* themed scrollbars for the panels (so the Symbols/Output/NIF views match) */
+  #out,#nif,#symList,#editor{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  #out::-webkit-scrollbar,#nif::-webkit-scrollbar,#symList::-webkit-scrollbar{width:10px;height:10px}
+  #out::-webkit-scrollbar-track,#nif::-webkit-scrollbar-track,#symList::-webkit-scrollbar-track{background:transparent}
+  #out::-webkit-scrollbar-thumb,#nif::-webkit-scrollbar-thumb,#symList::-webkit-scrollbar-thumb{
+    background:var(--border);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+  #out::-webkit-scrollbar-thumb:hover,#nif::-webkit-scrollbar-thumb:hover,#symList::-webkit-scrollbar-thumb:hover{
+    background:var(--muted);background-clip:padding-box}
+  #out::-webkit-scrollbar-corner,#nif::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner{background:transparent}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
   kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 5px}
@@ -180,12 +189,14 @@
     };
 })();
 </script>
-<script src="examples.js"></script>
-<script src="engine.js"></script>
-<script src="parser.js"></script>
-<script src="sem.js"></script>
-<script src="editor.js"></script>
-<script src="lsp.js"></script>
+<!-- ?v= cache-busts the hand-written glue so fixes take effect without a hard
+     refresh (the big bundles are fetched separately and change rarely). -->
+<script src="examples.js?v=4"></script>
+<script src="engine.js?v=4"></script>
+<script src="parser.js?v=4"></script>
+<script src="sem.js?v=4"></script>
+<script src="editor.js?v=4"></script>
+<script src="lsp.js?v=4"></script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
