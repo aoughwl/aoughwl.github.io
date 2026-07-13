@@ -52,7 +52,11 @@
     });
     monaco.editor.defineTheme("nimony-dark",{ base:"vs-dark", inherit:true, rules:[], colors:{ "editor.background":"#0f1115" } });
     monaco.editor.defineTheme("nimony-light",{ base:"vs", inherit:true, rules:[], colors:{ "editor.background":"#ffffff" } });
+    // "true dark" — matches the aoughwl docs site's dark scheme (near-black).
+    monaco.editor.defineTheme("nimony-black",{ base:"vs-dark", inherit:true, rules:[], colors:{ "editor.background":"#0a0a0b" } });
   }
+  // map a data-theme value to the Monaco theme id
+  function monacoTheme(t){ return t==="light" ? "nimony-light" : t==="black" ? "nimony-black" : "nimony-dark"; }
 
   // subtle underline for builtin std-module refs in import lines (lsp feature 2).
   // injected here so index.html's <style> stays untouched.
@@ -114,10 +118,10 @@
         require(["vs/editor/editor.main"], (monaco) => {
           monacoRef = monaco;
           defineLanguage(monaco);
-          const dark = document.documentElement.getAttribute("data-theme") !== "light";
+          const initTheme = monacoTheme(document.documentElement.getAttribute("data-theme"));
           editor = monaco.editor.create(editorEl, {
             value:"", language:"nimony",
-            theme: dark ? "nimony-dark" : "nimony-light",
+            theme: initTheme,
             fontFamily:'"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace',
             fontSize:13, minimap:{enabled:false}, automaticLayout:true,
             scrollBeyondLastLine:false, tabSize:2, insertSpaces:true, renderWhitespace:"none",
@@ -137,7 +141,7 @@
   window.NifiEditor = {
     setValue(v){ if(usingFallback) fallbackEl.value=v; else if(editor) editor.setValue(v); },
     getValue(){ return usingFallback ? fallbackEl.value : (editor ? editor.getValue() : ""); },
-    setTheme(t){ if(!usingFallback && monacoRef) monacoRef.editor.setTheme(t==="light"?"nimony-light":"nimony-dark"); },
+    setTheme(t){ if(!usingFallback && monacoRef) monacoRef.editor.setTheme(monacoTheme(t)); },
     onReady(cb){ if(usingFallback || editor) cb(); else readyCbs.push(cb); },
     // Accessors for the LSP glue (lsp.js): the monaco namespace, the editor
     // instance, and its model. Null under the textarea fallback.

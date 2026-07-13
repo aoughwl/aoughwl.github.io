@@ -4,6 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>nimony playground — runs in your browser</title>
+<script>
+// Resolve the theme BEFORE first paint (no flash). Precedence:
+//   1. an explicit playground choice (np-theme: light | dark | black)
+//   2. otherwise mirror the aoughwl docs site — SAME ORIGIN, shared localStorage.
+//      The site stores aoughwl-theme ('dark'/'light', default dark); we map its
+//      'dark' onto our TRUE-DARK ('black') so navigating docs → playground doesn't
+//      jump to the blue "dark" theme. If no site pref is stored, we still match it
+//      when we arrived from the docs (referrer); a direct visit keeps our blue dark.
+(function(){
+  try{
+    var THEMES=["light","dark","black"];
+    var t=localStorage.getItem("np-theme");
+    if(THEMES.indexOf(t)<0){
+      var s=localStorage.getItem("aoughwl-theme");
+      if(s==="light") t="light";
+      else if(s==="dark") t="black";
+      else{
+        var ref=document.referrer||"";
+        var fromDocs = ref.indexOf(location.origin)===0 &&
+                       ref.indexOf(location.origin+"/playground")<0 && ref!==location.href;
+        t = fromDocs ? "black" : "dark";
+      }
+    }
+    document.documentElement.setAttribute("data-theme", t);
+  }catch(e){ document.documentElement.setAttribute("data-theme","dark"); }
+})();
+</script>
 <style>
   :root{
     --bg:#0f1115; --panel:#161922; --panel2:#1b1f2a; --border:#272c39;
@@ -17,6 +44,14 @@
     --fg:#1b1f2a; --muted:#5b6472; --accent:#2f6fed; --accent2:#12a06a; --err:#d63b3b;
     --brace:#8b5cf6; --brace-bg:rgba(139,92,246,.12);
   }
+  /* "true dark" — mirrors the aoughwl docs site's near-black dark scheme, so
+     arriving from the docs (same domain) doesn't jump to the blue dark theme. */
+  :root[data-theme="black"]{
+    --bg:#0a0a0b; --panel:#121214; --panel2:#17171b; --border:#232327;
+    --fg:#ededf0; --muted:#8b8b93; --accent:#5ea1fb; --accent2:#3ddc97;
+    --err:#ff6b6b; --warn:#ffcc66;
+    --brace:#c792ea; --brace-bg:rgba(199,146,234,.16);
+  }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
   body{background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
@@ -28,7 +63,7 @@
      (white glyph PNG -> alpha mask); sized a touch larger than the product name. */
   /* color is pinned to --fg so the currentColor mask never picks up the default
      link colour (the logo IS a link now, to the docs). */
-  .brand .logo{display:block;width:98px;height:23px;flex:none;color:var(--fg);background:currentColor;opacity:.95;
+  .brand .logo{display:block;width:92px;height:21px;flex:none;color:var(--fg);background:currentColor;opacity:.95;
     text-decoration:none;transition:opacity .15s;
     -webkit-mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat;
             mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat}
@@ -119,7 +154,16 @@
   /* small icon button living in a pane header (the layout toggle) */
   .paneBtn{background:transparent;border:0;padding:4px 6px;border-radius:6px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center}
   .paneBtn:hover{color:var(--fg);background:var(--panel2)}
+  .paneBtn.on{color:var(--accent);background:var(--panel2)}
   .paneBtn svg{width:15px;height:15px;display:block}
+  /* stdin input bar, pinned to the bottom of the Output view */
+  #stdinBar{display:none;flex:none;gap:9px;align-items:flex-start;padding:7px 12px;border-top:1px solid var(--border);background:var(--panel)}
+  #stdinBar.show{display:flex}
+  #stdinBar .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:7px;flex:none}
+  #stdinBox{flex:1;min-height:42px;max-height:150px;resize:vertical;background:var(--bg);color:var(--fg);
+    border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-family:var(--mono);font-size:12.5px;line-height:1.5;outline:none}
+  #stdinBox:focus{border-color:var(--accent)}
+  #stdinBox::placeholder{color:var(--muted);opacity:.7}
   /* floating "show output" button, bottom-right of the editor when collapsed */
   .fab{position:absolute;right:16px;bottom:16px;z-index:5;background:var(--panel2);color:var(--fg);
     border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;
@@ -279,12 +323,17 @@
         <button id="tabSym" data-view="sym">Symbols</button>
         <button id="tabNif" data-view="nif">NIF</button>
       </div>
+      <button id="stdinBtn" class="paneBtn" data-tip="stdin"></button>
       <button id="wrapBtn" class="paneBtn" data-tip="Word wrap"></button>
       <button id="orientBtn" class="paneBtn" data-tip="Layout"></button>
       <button id="hideBtn" class="paneBtn" data-tip="Hide output"></button>
     </div>
     <div class="view active" id="viewOut">
       <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
+      <div id="stdinBar">
+        <span class="lbl">stdin</span>
+        <textarea id="stdinBox" spellcheck="false" placeholder="Text here is fed to the program's stdin — readLine(stdin, s) / readAll(stdin). One line per readLine."></textarea>
+      </div>
     </div>
     <div class="view" id="viewSym">
       <div id="symList"><div id="symEmpty">Symbols in your code appear here as you type — click one to jump to it. Hover any name in the editor for its type; ⌃Space completes; F12 goes to definition.</div></div>
@@ -526,6 +575,8 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     // interpreter's blocking synchronous eval hogs the thread (otherwise the old
     // output lingers on screen until the run finishes).
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    // hand the stdin buffer to the interpreter (nifi reads globalThis.__nifi_in)
+    try{ globalThis.__nifi_in = currentStdin(); }catch(_){}
     const t0=performance.now();
     try{
       const res=await window.NifiEngine.run({ source: window.NifiEditor.getValue() });
@@ -541,12 +592,20 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   runBtn.addEventListener("click",run);
   document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();run();}});
 
+  // 3-way theme cycle: light → dark (blue) → black (true dark). The chosen theme
+  // is mirrored onto the docs site's key (light/dark axis) so going back matches.
+  const THEMES=["light","dark","black"], THEME_NAME={light:"light",dark:"dark blue",black:"true dark"};
+  function paintTheme(){ const t=document.documentElement.getAttribute("data-theme");
+    $("#themeBtn").setAttribute("data-tip","Theme: "+(THEME_NAME[t]||t)+" — click to change"); }
   $("#themeBtn").addEventListener("click",()=>{
-    const r=document.documentElement, t=r.getAttribute("data-theme")==="dark"?"light":"dark";
+    const r=document.documentElement;
+    let i=THEMES.indexOf(r.getAttribute("data-theme")); i=(i+1)%THEMES.length;
+    const t=THEMES[i];
     r.setAttribute("data-theme",t); window.NifiEditor.setTheme(t);
-    try{localStorage.setItem("np-theme",t);}catch(_){}
+    try{localStorage.setItem("np-theme",t); localStorage.setItem("aoughwl-theme", t==="light"?"light":"dark");}catch(_){}
+    paintTheme();
   });
-  try{const t=localStorage.getItem("np-theme"); if(t) document.documentElement.setAttribute("data-theme",t);}catch(_){}
+  paintTheme();
 
   // ---- curly-brace mode toggle (experimental nifparser feature) ----
   const curlyBtn=$("#curlyBtn");
@@ -584,6 +643,25 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     paintWrap();
   });
   paintWrap();
+
+  // ---- stdin: a togglable input box whose text is piped to the program on Run
+  //      (the run is synchronous, so input is supplied up front, not live). ----
+  const stdinBtn=$("#stdinBtn"), stdinBar=$("#stdinBar"), stdinBox=$("#stdinBox");
+  stdinBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v6"/><path d="M5.5 6L8 8.5 10.5 6"/><path d="M3 10.5v1.5a1 1 0 001 1h8a1 1 0 001-1v-1.5"/></svg>';
+  let stdinOn=false;
+  try{ stdinOn = localStorage.getItem("np-stdin-open")==="1"; }catch(_){}
+  function paintStdin(){
+    stdinBar.classList.toggle("show", stdinOn);
+    stdinBtn.classList.toggle("on", stdinOn);
+    stdinBtn.setAttribute("data-tip", stdinOn ? "Hide stdin input" : "stdin — pipe input to the program");
+  }
+  stdinBtn.addEventListener("click",()=>{
+    stdinOn=!stdinOn; try{localStorage.setItem("np-stdin-open", stdinOn?"1":"0");}catch(_){}
+    paintStdin(); if(stdinOn){ ensureOutputVisible(); stdinBox.focus(); }
+  });
+  paintStdin();
+  // exposed so run() can feed it without worrying about declaration order
+  function currentStdin(){ const b=document.getElementById("stdinBox"); return b ? b.value : ""; }
 
   // ---- ONE site-wide right-click context menu (incl. inside Monaco, whose
   //      built-in menu is disabled) so every menu looks identical ----
