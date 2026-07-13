@@ -314,9 +314,15 @@ a.site-footer-discord .discord-ico { flex: 0 0 auto; }
   body:has(#site-nav.nav-open) { overflow: hidden; }   /* lock background scroll */
   .side-bar:has(#site-nav.nav-open) {
     position: fixed; inset: 0; z-index: 1200;
+    /* JtD's mobile side-bar is flex-wrap:row; at full height its wrapped rows
+       (header + nav) stretch to fill, ballooning the header. Force a column,
+       no-wrap layout so the header keeps its natural height and the nav follows. */
+    flex-flow: column nowrap; align-content: flex-start;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     background: var(--bg-elev);
   }
+  .side-bar:has(#site-nav.nav-open) .site-header { flex: 0 0 auto; }
+  .side-bar:has(#site-nav.nav-open) #site-nav    { flex: 0 0 auto; width: 100%; }
 }
 
 /* ----------------------------------------------------------- theme toggle */
