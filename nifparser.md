@@ -45,9 +45,13 @@ harness compiles every corpus program with both tools and compares the `.p.nif`:
 - **Structural** — token trees identical after stripping line-info (the pass bar).
 - **Exact** — byte-identical `.p.nif`, including the relative line-info suffixes.
 
-Current status: **44 / 44 corpus programs pass, 43 byte-exact.** All five
-playground example programs — Hello, Fibonacci, FizzBuzz, Collatz, List sum —
-parse **byte-identical** to native nifler, so the real Tier-2 workload is covered.
+Current status: **47 / 47 corpus programs pass, 46 byte-exact**, and beyond the
+curated corpus a `stress.sh` harness runs the same differential comparison over
+arbitrary real `.nim` files: **12 of the 29 real `nimony/src/lib` modules now
+match byte-structurally end-to-end** (line-info stripped), with the rest close.
+All five playground example programs — Hello, Fibonacci, FizzBuzz, Collatz, List
+sum — parse **byte-identical** to native nifler, so the real Tier-2 workload is
+covered.
 
 ## Design
 
@@ -61,11 +65,36 @@ parse **byte-identical** to native nifler, so the real Tier-2 workload is covere
   (expressions, statements, type/routine defs) over a shared cursor spine, so the
   areas were implemented independently and integrated without conflicts.
 
-Covered today: the full lexer (numeric bases, suffixes, raw/triple/char strings,
-significant indentation), expressions (postfix chains, constructors, named args,
-`cast`, `if`-expressions), statements (`if`/`case`/`while`/`for`/`try`/`when`/
-`block`/`defer` and `var`/`let`/`const` sections), and type definitions (object,
-enum, tuple, `ref`/`ptr`, proc types, generics, pragmas).
+Covered today: the full lexer (numeric bases, typed-literal `(suf …)`,
+raw/triple/char strings, backtick-quoted idents → `(quoted …)`, `##` doc
+comments → `(comment …)`, significant indentation); expressions with Nim's real
+operator precedence (assignment operators, arrows, spacing-based prefix/infix
+disambiguation, `-N` literal folding, `ident"…"` call-string-literals, postfix
+chains, constructors, named args, `cast`/`addr`, `if`/`try`-expressions,
+anonymous `proc` expressions, StmtListExpr `( … ; … )`); command syntax in
+statement, expression **and** type position (prefix-op args like `add $v`,
+dotted callees like `result.add c`, `lent T`); statements (`if`/`case`/`while`/
+`for`/`try`/`when`/`block`/`static`/`defer`, in both multi-line and one-liner
+forms, plus `;`-separated statements and `from … import`); `var`/`let`/`const`
+sections (pragmas, tuple-unpack); and type definitions (object, enum with
+one-per-line fields, tuple, `ref`/`ptr`, proc types, generics, pragmas).
+
+## Experimental: curly-brace blocks
+
+Off by default so output stays nifler-compatible. Passing `--curly` lets a
+`{ … }` block body stand in **anywhere** a `:` body is accepted, and the two
+styles may be mixed freely:
+
+```nim
+if c { echo a } else: echo b       # brace + colon in one statement
+while x { dec x; use x }            # `;`-separated statements inside a brace
+```
+
+A block `{` is disambiguated from a set literal by context — it must follow an
+operand (`if c {`) or a bodiless-block keyword (`else {`, `try {`, `block {`,
+`finally {`, `defer {`) — so a set in the head (`if {1} == x { … }`) is not
+mistaken for the body. This is a nifparser extension; native nifler has no
+equivalent.
 
 ---
 
