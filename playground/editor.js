@@ -99,6 +99,14 @@
     getEditor(){ return editor; },
     getModel(){ return editor ? editor.getModel() : null; },
     languageId: "nimony",
+    // Move the cursor to (line, col) and scroll it into view — used by the
+    // Symbols/outline panel to jump to a definition.
+    revealPosition(line, col){
+      if(usingFallback || !editor) return;
+      editor.setPosition({ lineNumber:line||1, column:col||1 });
+      editor.revealLineInCenter(line||1);
+      editor.focus();
+    },
     // Fires on every content change (debouncing is the caller's job).
     onChange(cb){
       if(usingFallback){ fallbackEl.addEventListener("input", cb); return; }

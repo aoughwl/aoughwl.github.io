@@ -245,8 +245,40 @@
         byName.get(s.name).push(s);
       }
       lsp.index = { symbols, byName, source:String(source||"") };
+      if(window.__nifiIndexChanged){ try{ window.__nifiIndexChanged(symbols.length); }catch(_){} }
     }catch(_){ /* keep the previous index on a transient parse hiccup */ }
   };
+
+  // Outline as plain data (for the playground's own Symbols panel — base Monaco
+  // has no breadcrumb/outline chrome, so we render our own). Positions are
+  // computed against the live model, same as the providers.
+  function buildOutline(model){
+    const text = model.getValue();
+    const out = [];
+    const top = lsp.index.symbols.filter(s=>!s.container && s.kind!=="param" && s.kind!=="local");
+    for(const s of top){
+      const r = locate(s, text, 0);
+      if(!r) continue;
+      const from = model.getOffsetAt({lineNumber:r.startLineNumber, column:r.startColumn});
+      const kidKinds = new Set(["param","local","field","enumField"]);
+      const children = [];
+      for(const c of lsp.index.symbols){
+        if(c.container!==s.name || !kidKinds.has(c.kind)) continue;
+        const cr = locate(c, text, from);
+        if(cr) children.push({ sym:c, range:cr });
+      }
+      out.push({ sym:s, range:r, children });
+    }
+    return out;
+  }
+  lsp.outline = function(){
+    const m = window.NifiEditor.getModel();
+    if(!m) return [];
+    const flat = o => ({ name:o.sym.name, detail:o.sym.detail, kind:o.sym.kind,
+      line:o.range.startLineNumber, col:o.range.startColumn });
+    return buildOutline(m).map(o=>Object.assign(flat(o), { children:o.children.map(flat) }));
+  };
+  lsp.count = function(){ return lsp.index.symbols.length; };
 
   // Optional: enrich INFERRED locals with sem'd types, matched by basename only
   // (never by sem's unreliable line-info). Safe no-op if snif is absent.

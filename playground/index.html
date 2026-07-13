@@ -25,8 +25,13 @@
   header .tag.warn{color:var(--warn);border-color:var(--warn)}
   header .spacer{flex:1}
   select,button{font:inherit;color:var(--fg);background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer}
-  button.run{background:var(--accent);color:#08111f;border-color:transparent;font-weight:650}
+  button.run{background:var(--accent);color:#fff;border-color:transparent;font-weight:650;display:inline-flex;align-items:center;gap:7px}
+  button.run:hover{filter:brightness(1.07);border-color:transparent}
   button.run:disabled{opacity:.5;cursor:progress}
+  button.run .ico{font-size:10px;line-height:1;transform:translateY(.5px);font-variant-emoji:text}
+  /* the ⌃⏎ hint reads as a chip ON the button, not the panel-styled kbd */
+  button.run kbd{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.42);
+    border-bottom-width:2px;border-bottom-color:rgba(255,255,255,.6);color:#fff;padding:0 5px}
   button:hover{border-color:var(--accent)}
   main{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
   @media(max-width:820px){main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
@@ -44,9 +49,44 @@
   .tabs button.active{color:var(--fg);background:var(--panel2);border-color:var(--border)}
   .view{display:none;flex:1;min-height:0;flex-direction:column}
   .view.active{display:flex}
+  /* Symbols / outline panel */
+  #symList{flex:1;min-height:0;overflow:auto;padding:8px 6px;font-family:var(--mono);font-size:12.5px}
+  .sym{display:flex;align-items:baseline;gap:8px;padding:3px 8px;border-radius:6px;cursor:pointer;white-space:nowrap}
+  .sym:hover{background:var(--panel2)}
+  .sym.child{margin-left:16px;font-size:12px}
+  .sym .k{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);min-width:58px}
+  .sym.child .k{color:var(--muted)}
+  .sym .nm{color:var(--fg)} .sym .dt{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+  #symEmpty{color:var(--muted);padding:14px}
+  /* live problems list in the output pane */
+  .prob{display:flex;gap:8px;padding:2px 0;cursor:pointer} .prob:hover{background:var(--panel2);border-radius:4px}
+  .prob .loc{color:var(--muted);min-width:52px} .prob.warn .loc{color:var(--warn)}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
   kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 5px}
+  /* ---- responsive / mobile ---- */
+  /* tablet & stacked: give each pane a workable minimum so the editor never collapses */
+  @media(max-width:820px){
+    main{grid-template-rows:minmax(260px,1fr) minmax(220px,1fr)}
+  }
+  /* phone: let the header wrap, badges/blurb step aside, page scrolls vertically */
+  @media(max-width:600px){
+    body{height:auto;min-height:100%}
+    header{flex-wrap:wrap;gap:8px;padding:8px 12px}
+    header h1{font-size:14px}
+    /* status badges are informational — hide them to reclaim the row */
+    #engineTag,#diagTag,#lspTag{display:none!important}
+    #examples{flex:1 1 auto;min-width:0}
+    select,button{min-height:40px;padding:8px 12px}
+    button.run{padding:8px 14px}
+    /* switch to a flow layout with explicit pane heights so the body scrolls vertically */
+    main{flex:0 0 auto;grid-template-rows:minmax(300px,58vh) minmax(240px,46vh)}
+    .pane .label{flex-wrap:wrap;row-gap:4px}
+    .tabs button{padding:6px 11px}
+    footer{padding:8px 12px;font-size:11px}
+    /* drop the long explanatory sentence (keeps the badge + #perf) */
+    footer > span:not(.badge):not(#perf){display:none}
+  }
 </style>
 </head>
 <body>
@@ -57,7 +97,8 @@
   <span class="tag" id="lspTag" style="display:none">lsp: off</span>
   <div class="spacer"></div>
   <select id="examples" title="Load an example"></select>
-  <button class="run" id="runBtn" disabled>▶ Run <kbd>⌃⏎</kbd></button>
+  <button class="run" id="runBtn" disabled><span class="ico">▶</span> Run <kbd>⌃⏎</kbd></button>
+  <button id="shareBtn" title="Copy a shareable link to this code">🔗 Share</button>
   <button id="themeBtn" title="Toggle theme">◐</button>
 </header>
 
@@ -72,11 +113,15 @@
       <span id="paneTitle">output</span> <span class="status" id="outStatus"></span>
       <div class="tabs">
         <button id="tabOut" class="active" data-view="out">Output</button>
+        <button id="tabSym" data-view="sym">Symbols</button>
         <button id="tabNif" data-view="nif">NIF</button>
       </div>
     </div>
     <div class="view active" id="viewOut">
       <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
+    </div>
+    <div class="view" id="viewSym">
+      <div id="symList"><div id="symEmpty">Symbols in your code appear here as you type — click one to jump to it. Hover any name in the editor for its type; ⌃Space completes; F12 goes to definition.</div></div>
     </div>
     <div class="view" id="viewNif">
       <pre id="nif"><span class="sys">The NIF (parsed intermediate form) for your code appears here live as you type — produced by nifparser, compiled to JS and running in this tab.</span></pre>
@@ -91,6 +136,24 @@
   <span id="perf"></span>
 </footer>
 
+<script>
+// Node `process` shim. The nifi/nimsem JS bundles were produced for a Node-ish
+// host and reference process.stdout/stderr/exit on their fallback + error/quit
+// paths (the happy path uses the __nifi_/__ns_ capture globals). In a real
+// browser those refs throw a raw "process is not defined" — which surfaced when
+// running code that hits them (e.g. importing a module not in the bundled stdlib
+// closure). Route them to the same capture globals and make exit catchable, so
+// the outcome is a clean diagnostic instead of a ReferenceError.
+(function(){
+  if(typeof globalThis.process !== "undefined") return;
+  globalThis.process = {
+    platform:"browser", argv:[], env:{}, cwd:function(){ return "/"; },
+    stdout:{ write:function(s){ globalThis.__nifi_out=(globalThis.__nifi_out||"")+s; return true; } },
+    stderr:{ write:function(s){ globalThis.__nifi_err=(globalThis.__nifi_err||"")+s; return true; } },
+    exit:function(code){ var e=new Error("process.exit("+(code||0)+")"); e.__isExit=true; throw e; }
+  };
+})();
+</script>
 <script src="examples.js"></script>
 <script src="engine.js"></script>
 <script src="parser.js"></script>
@@ -108,28 +171,82 @@
 
   // ---- right-pane tabs (Output | NIF) ----
   function selectTab(view){
-    ["out","nif"].forEach(v=>{
+    ["out","sym","nif"].forEach(v=>{
       $("#tab"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
       $("#view"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
     });
-    $("#paneTitle").textContent = view==="nif" ? "parsed NIF" : "output";
+    $("#paneTitle").textContent = view==="nif" ? "parsed NIF" : view==="sym" ? "symbols" : "output";
   }
   document.querySelectorAll(".tabs button").forEach(b=>
     b.addEventListener("click",()=>selectTab(b.dataset.view)));
 
   // ---- live diagnostics: FAST syntax (nifparser, every keystroke) +
   //      DEBOUNCED semantic (nimsem, ~500 ms). Both feed one marker set. ----
-  let syntaxDiags = [], semDiags = [];
-  // Normalize to Monaco markers. nifparser cols are 0-based; nimsem cols 1-based.
+  let syntaxDiags = [], semDiags = [], outShowingProblems = false;
+  // Place a marker precisely. When a message names an identifier ("undeclared
+  // identifier: X") we snap onto X in the source line — nifler's proc
+  // return-type column is upstream-inaccurate, so the raw col can miss. Else we
+  // widen the marker to the whole word under the reported column.
+  function snapCol(msg, lineText, fallbackCol){
+    const m = /(?:undeclared identifier|identifier expected, but found|undeclared field):?\s*'?([A-Za-z_]\w*)'?/.exec(msg);
+    if(m && lineText){ const idx = lineText.indexOf(m[1]); if(idx>=0) return { col:idx+1, endCol:idx+1+m[1].length }; }
+    if(lineText){ const w = /^[A-Za-z_]\w*/.exec(lineText.slice(Math.max(0,fallbackCol-1))); if(w) return { col:fallbackCol, endCol:fallbackCol+w[0].length }; }
+    return { col:fallbackCol, endCol:fallbackCol+1 };
+  }
+  // nifparser cols are 0-based; nimsem cols 1-based. Feeds Monaco markers AND
+  // the live problems list in the output pane.
   function refreshMarkers(){
-    const marks = [];
-    for(const d of syntaxDiags)
-      marks.push({ line:d.line, col:(d.col|0)+1, endCol:(d.col|0)+2, message:d.message, severity:"error" });
-    for(const d of semDiags)
-      marks.push({ line:d.line, col:d.col, endCol:d.col+1, message:d.message, severity:d.severity||"error" });
+    const lines = window.NifiEditor.getValue().split("\n");
+    const marks = [], problems = [];
+    for(const d of syntaxDiags){
+      const c = (d.col|0)+1, s = snapCol(d.message, lines[d.line-1]||"", c);
+      marks.push({ line:d.line, col:s.col, endCol:s.endCol, message:d.message, severity:"error" });
+      problems.push({ line:d.line, col:s.col, message:d.message, severity:"error" });
+    }
+    for(const d of semDiags){
+      const s = snapCol(d.message, lines[d.line-1]||"", d.col);
+      marks.push({ line:d.line, col:s.col, endCol:s.endCol, message:d.message, severity:d.severity||"error" });
+      problems.push({ line:d.line, col:s.col, message:d.message, severity:d.severity||"error" });
+    }
     window.NifiEditor.setDiagnostics(marks);
     setDiagBadge(marks.length);
+    showProblems(problems);
   }
+  // Live errors in the OUTPUT pane, as you type (not just on Run). Never wipes
+  // a Run's stdout unless there's something to show / to clear.
+  function showProblems(problems){
+    if(problems.length){
+      outShowingProblems = true;
+      outEl.innerHTML = '<span class="err">● '+problems.length+' problem'+(problems.length>1?'s':'')+'</span>\n\n' +
+        problems.map(p=>'<span class="prob'+(p.severity==="warning"?" warn":"")+'" data-l="'+p.line+'" data-c="'+p.col+'">'+
+          '<span class="loc">'+p.line+':'+p.col+'</span>'+esc(p.message)+'</span>').join("\n");
+    } else if(outShowingProblems){
+      outShowingProblems = false;
+      outEl.innerHTML = '<span class="ok">● no errors</span>  <span class="sys">— press Run to execute.</span>';
+    }
+  }
+  // Symbols/outline panel — base Monaco has no outline chrome, so we render it.
+  const SYM_LABEL = { proc:"proc",func:"func",method:"method",iterator:"iter",template:"templ",
+    macro:"macro",converter:"conv",type:"type",const:"const",var:"var",let:"let",
+    param:"param",local:"local",field:"field",enumField:"enum" };
+  function renderOutline(){
+    const listEl = $("#symList"); if(!listEl) return;
+    const items = (window.NifiLsp && window.NifiLsp.outline) ? window.NifiLsp.outline() : [];
+    if(!items.length){ listEl.innerHTML = '<div id="symEmpty">No symbols yet — declare a <code>proc</code>, <code>type</code>, or <code>var</code> and it shows up here.</div>'; return; }
+    const row = (s,child)=>'<div class="sym'+(child?" child":"")+'" data-l="'+s.line+'" data-c="'+s.col+'">'+
+      '<span class="k">'+esc(SYM_LABEL[s.kind]||s.kind)+'</span><span class="nm">'+esc(s.name)+'</span>'+
+      (s.detail&&s.detail!==s.name?'<span class="dt">'+esc(s.detail)+'</span>':'')+'</div>';
+    let html=""; for(const s of items){ html+=row(s,false); for(const c of (s.children||[])) html+=row(c,true); }
+    listEl.innerHTML = html;
+  }
+  // click a problem or a symbol -> jump the editor there
+  function jumpFromEl(el){
+    const t = el.closest("[data-l]"); if(!t) return;
+    window.NifiEditor.revealPosition(+t.dataset.l, +t.dataset.c);
+  }
+  document.addEventListener("click", e=>{
+    if(e.target.closest("#symList .sym") || e.target.closest("#out .prob")) jumpFromEl(e.target);
+  });
   function setDiagBadge(n){
     const el=$("#diagTag");
     el.style.display="";
@@ -177,7 +294,13 @@
     if(syntaxDiags.length){ semStatus(""); return; }
     if(!window.NifiSem || !window.NifiSem.ready || !window.NifiParser || !window.NifiParser.ready) return;
     try{
-      const { nif } = window.NifiParser.parseFull(window.NifiEditor.getValue(), "in.nim");
+      const src = window.NifiEditor.getValue();
+      // unavailable imports -> clean diagnostic, and skip sem (it can't resolve
+      // them and would otherwise hit a Node-only path).
+      const badImports = (window.NifiCore && window.NifiCore.checkImports) ? window.NifiCore.checkImports(src) : [];
+      if(badImports.length){ semDiags = badImports; refreshMarkers();
+        semStatus('<span class="err">● unavailable import</span>'); return; }
+      const { nif } = window.NifiParser.parseFull(src, "in.nim");
       const t0=performance.now();
       const { snif, diags, cached } = window.NifiSem.compile(nif);
       const ms=(performance.now()-t0).toFixed(0);
@@ -234,16 +357,47 @@
 
   // engine + lsp readiness hooks (called by engine.js / worker glue)
   window.__nifiEngineReady=(ok,detail)=>{ engineTag.textContent="engine: "+(ok?"ready":"unavailable"); engineTag.className="tag"+(ok?" ok":""); runBtn.disabled=!ok; if(!ok&&detail) print('<span class="err">'+esc(detail)+'</span>'); };
-  window.__nifiLspStatus=(state)=>{ lspTag.style.display=""; lspTag.textContent="lsp: "+state; lspTag.className="tag"+(state==="live"?" ok":state==="off"?"":" warn"); };
+  let lspOn=false, lspCount=0;
+  function paintLspTag(){ lspTag.style.display=""; lspTag.className="tag"+(lspOn?" ok":"");
+    lspTag.textContent = lspOn ? ("lsp: live · "+lspCount+" sym"+(lspCount===1?"":"s")) : "lsp: off"; }
+  window.__nifiLspStatus=(state)=>{ lspOn=(state==="live"); paintLspTag(); };
+  // the LSP index rebuilt -> refresh the Symbols panel + the badge count
+  window.__nifiIndexChanged=(n)=>{ lspCount=n|0; if(lspOn) paintLspTag(); renderOutline(); };
   // parser readiness -> parse whatever is already in the editor
   window.__nifiParserReady=(ok)=>{ if(ok) runParse(); };
   // semantic-checker readiness -> run a full type-check once it's loaded
   window.__nifiSemReady=(ok)=>{ if(ok) runSemCheck(); };
 
-  // editor ready -> load first example, and parse live on every edit
+  // ---- shareable link: the code travels in the URL hash (GitHub Pages is
+  //      static — no backend to mint/resolve a UUID). base64url of UTF-8. ----
+  function encodeShare(src){
+    return btoa(unescape(encodeURIComponent(src))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+  function decodeShare(s){
+    try{ return decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))); }catch(_){ return null; }
+  }
+  const shareBtn=$("#shareBtn");
+  shareBtn.addEventListener("click",()=>{
+    const url=location.origin+location.pathname+"#c="+encodeShare(window.NifiEditor.getValue());
+    try{ history.replaceState(null,"",url); }catch(_){}
+    const done=()=>{ shareBtn.textContent="✓ Link copied"; setTimeout(()=>shareBtn.innerHTML="🔗 Share",1500); };
+    if(navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(()=>prompt("Share link:",url));
+    else prompt("Share link:",url);
+  });
+
+  // editor ready -> load a shared link if present, else the first example; parse live on every edit
   window.NifiEditor.onReady(()=>{
     window.NifiEditor.onChange(scheduleParse);
-    if(window.EXAMPLES&&window.EXAMPLES.length) loadExample(0);
+    const shared=(location.hash||"").match(/[#&]c=([^&]+)/);
+    const code=shared?decodeShare(shared[1]):null;
+    if(code!=null){
+      window.NifiEditor.setValue(code);
+      srcStatus.textContent="live compile · shared link";
+      print('<span class="sys">Loaded from a shared link — edit freely and press Run.</span>');
+      runParse(); runSemCheck();
+    } else if(window.EXAMPLES&&window.EXAMPLES.length){
+      loadExample(0);
+    }
   });
   if(window.NifiEngine&&window.NifiEngine.ready) window.__nifiEngineReady(true);
 })();

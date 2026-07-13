@@ -49,6 +49,12 @@
       if(!m) continue;
       const kind = m[3].toLowerCase();
       if(kind === "trace" || kind === "hint") continue;
+      // Drop CASCADE errors: once a symbol/type is unresolved, sem substitutes
+      // an internal `(err …)` node and every downstream mismatch mentions it.
+      // Those are noise — one typo shouldn't paint 3 squiggles. The message a
+      // user cares about (the root "undeclared identifier: X") never contains
+      // the `(err ` marker, so filtering on it keeps exactly the real errors.
+      if(/\(err\s/.test(m[4])) continue;
       const key = m[1]+":"+m[2]+":"+m[4];
       if(seen.has(key)) continue;
       seen.add(key);
