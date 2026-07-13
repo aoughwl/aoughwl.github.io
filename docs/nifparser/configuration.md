@@ -38,13 +38,29 @@ two styles may be mixed freely:
 ```nim
 if c { echo a } else: echo b       # brace + colon in one statement
 while x { dec x; use x }            # `;`-separated statements inside a brace
+
+proc add(a, b: int): int {          # routine bodies too — `{ … }` for `= …`
+  result = a + b
+}
+proc twice(x: int): int {.inline.} {  # a pragma AND a curly body
+  result = x * 2
+}
 ```
 
-A block `{` is disambiguated from a set literal by context — it must follow an
-operand (`if c {`) or a bodiless-block keyword (`else {`, `try {`, `block {`,
-`finally {`, `defer {`) — so a set in the head (`if {1} == x { … }`) is not
-mistaken for the body. This is a nifparser extension; native nifler has no
-equivalent, so output stays nifler-compatible only while it is off.
+A **control-flow** block `{` is disambiguated from a set literal by context — it
+must follow an operand (`if c {`) or a bodiless-block keyword (`else {`, `try {`,
+`block {`, `finally {`, `defer {`) — so a set in the head (`if {1} == x { … }`)
+is not mistaken for the body.
+
+A **routine** body (`proc`/`func`/`method`/`iterator`/`converter`/`template`/
+`macro`) may use `{ … }` in place of the `= …` body. Here the body `{` is a bare
+brace (not a `{.` pragma) with **no preceding `=`**, so a set-literal expression
+body — `proc empty(): set[int] = {}` — keeps its `=` and is never read as a
+block. A one-line `= body` is left untouched.
+
+Either way the curly form emits the **same NIF** as the `:`/`=` form. This is a
+nifparser extension; native nifler has no equivalent, so output stays
+nifler-compatible only while it is off.
 
 ## Indentation & whitespace
 
