@@ -1,6 +1,7 @@
 ---
 title: nimony-hl
-parent: Nimony Backends
+grand_parent: Nimony
+parent: Backends
 nav_order: 4
 ---
 

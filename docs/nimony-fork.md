@@ -1,6 +1,8 @@
 ---
-title: Nimony Fork
-nav_order: 20
+title: Divergences from upstream
+grand_parent: Nimony
+parent: Fork
+nav_order: 1
 ---
 
 # aoughwl's nimony fork

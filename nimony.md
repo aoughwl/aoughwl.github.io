@@ -1,5 +1,7 @@
 ---
-title: Nimony Fork
+title: Fork
+has_children: true
+parent: Nimony
 nav_order: 1
 ---
 

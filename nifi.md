@@ -1,6 +1,8 @@
 ---
-title: nifi — Nimony Interpreter
-nav_order: 7
+title: nifi
+grand_parent: Nimony
+parent: NIF Toolchain Alternatives
+nav_order: 2
 ---
 
 # nifi

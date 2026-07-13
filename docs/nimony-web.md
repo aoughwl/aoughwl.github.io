@@ -1,6 +1,7 @@
 ---
 title: nimony-web
-parent: Nimony Backends
+grand_parent: Nimony
+parent: Backends
 nav_order: 1
 has_children: true
 ---

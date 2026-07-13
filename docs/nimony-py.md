@@ -1,6 +1,7 @@
 ---
 title: nimony-py
-parent: Nimony Backends
+grand_parent: Nimony
+parent: Backends
 nav_order: 3
 ---
 

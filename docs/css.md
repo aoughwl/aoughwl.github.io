@@ -1,6 +1,7 @@
 ---
 title: css
-parent: Nimony Libraries
+grand_parent: Nimony
+parent: Libraries
 nav_order: 4
 ---
 

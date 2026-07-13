@@ -1,6 +1,7 @@
 ---
 title: nimony-ts
-parent: Nimony Backends
+grand_parent: Nimony
+parent: Backends
 nav_order: 2
 ---
 

@@ -1,5 +1,6 @@
 ---
-title: Nimony Backends
+title: Backends
+parent: Nimony
 nav_order: 3
 has_children: true
 permalink: /backends

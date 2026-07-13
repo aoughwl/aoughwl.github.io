@@ -1,6 +1,7 @@
 ---
 title: niflens
-parent: Nimony Tools
+grand_parent: Nimony
+parent: Tools
 nav_order: 2
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: compress
 parent: net stack
-grand_parent: Nimony Libraries
+grand_parent: Libraries
 nav_order: 5
 ---
 

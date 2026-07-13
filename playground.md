@@ -1,6 +1,7 @@
 ---
-title: Playground
-nav_order: 8
+title: Sandbox Playground
+parent: Nimony
+nav_order: 6
 ---
 
 # Playground
@@ -46,7 +47,7 @@ It ships starter examples you can run and edit:
 
 - **Tier 1** — runs precompiled `.s.nif` client-side.
 - **Tier 2 (live now)** — the whole compiler front-to-back runs in your browser.
-  Edit any program and it is **parsed** ([nifparser](nifparser) → `.p.nif`),
+  Edit any program and it is **parsed** ([nifparser](docs/nifparser) → `.p.nif`),
   **type-checked** (`nimsem` → typed `.s.nif`) and **executed** ([nifi](nifi))
   entirely in the tab. Syntax errors appear as you type; type errors appear on a
   short debounce; pressing Run compiles and runs whatever is in the editor. The

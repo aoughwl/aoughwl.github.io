@@ -1,7 +1,7 @@
 ---
 title: JavaScript FFI and DOM
 parent: nimony-web
-grand_parent: Nimony Backends
+grand_parent: Backends
 nav_order: 4
 ---
 

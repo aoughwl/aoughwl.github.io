@@ -1,5 +1,6 @@
 ---
-title: Nimony Libraries
+title: Libraries
+parent: Nimony
 nav_order: 2
 has_children: true
 permalink: /libraries

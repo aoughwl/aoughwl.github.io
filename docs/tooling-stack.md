@@ -1,6 +1,7 @@
 ---
 title: IC, nimony-lsp & niflens
-parent: Nimony Tools
+grand_parent: Nimony
+parent: Tools
 nav_order: 1
 ---
 
