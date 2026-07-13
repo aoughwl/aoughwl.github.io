@@ -63,7 +63,7 @@
 
 <main>
   <section class="pane">
-    <div class="label">nimony source <span class="status" id="srcStatus"></span></div>
+    <div class="label">nimony source <span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
     <div id="editor"></div>
     <textarea id="fallback" spellcheck="false"></textarea>
   </section>
@@ -167,16 +167,27 @@
     }
   }
   // Full semantic check (type errors) — only when syntax is clean and nimsem is up.
+  // Incremental: nimsem reuses the pre-semchecked stdlib every run, and the
+  // input-level cache skips the recompile entirely when the .p.nif is unchanged.
   function runSemCheck(){
-    if(syntaxDiags.length) return;
+    if(syntaxDiags.length){ semStatus(""); return; }
     if(!window.NifiSem || !window.NifiSem.ready || !window.NifiParser || !window.NifiParser.ready) return;
     try{
       const { nif } = window.NifiParser.parseFull(window.NifiEditor.getValue(), "in.nim");
-      const { diags } = window.NifiSem.compile(nif);
+      const t0=performance.now();
+      const { diags, cached } = window.NifiSem.compile(nif);
+      const ms=(performance.now()-t0).toFixed(0);
       semDiags = diags || [];
       refreshMarkers();
+      const nErr = semDiags.length;
+      semStatus(nErr
+        ? '<span class="err">● '+nErr+' type '+(nErr===1?'error':'errors')+'</span>'
+        : (cached
+            ? '<span class="ok">● type-checked · incremental (reused, 0 ms)</span>'
+            : '<span class="ok">● type-checked in '+ms+' ms</span>'));
     }catch(_){ /* keep last markers on transient failure */ }
   }
+  function semStatus(html){ const el=$("#semStatus"); if(el) el.innerHTML = html||""; }
 
   (window.EXAMPLES||[]).forEach((ex,i)=>{const o=document.createElement("option");o.value=i;o.textContent=ex.name;exSel.appendChild(o);});
   function loadExample(i){

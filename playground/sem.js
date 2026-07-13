@@ -58,9 +58,31 @@
     return out;
   }
 
-  // pnif: the `.p.nif` string (latin1). Returns { snif, diags }.
-  function compile(pnif){
-    if(!bundleText) throw new Error("nimsem not loaded yet");
+  // ---- incremental gate -------------------------------------------------
+  // nimsem already skips the stdlib every run (it is pre-semchecked into the
+  // closure and reused — module-level incremental compilation). This adds the
+  // INPUT-level gate: the compilation input is the `.p.nif`, so if it is
+  // byte-identical to the last compile — which happens constantly, since most
+  // keystrokes (whitespace, comments, edits that re-parse to the same tree)
+  // don't change it, and Run fires right after the live checker on the same
+  // buffer — we skip the (heavy) recompile entirely and return the cached
+  // result. A small LRU keeps the last few distinct inputs warm too.
+  const CACHE_MAX = 8;
+  const cache = new Map();            // pnif -> { snif, diags }
+  let lastHits = 0, lastMisses = 0;
+
+  function cacheGet(pnif){
+    if(!cache.has(pnif)) return null;
+    const v = cache.get(pnif);        // refresh LRU position
+    cache.delete(pnif); cache.set(pnif, v);
+    return v;
+  }
+  function cachePut(pnif, v){
+    cache.set(pnif, v);
+    while(cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);
+  }
+
+  function compileFresh(pnif){
     globalThis.__ns_main   = String(pnif);
     globalThis.__ns_assets = stdlibBlob;
     globalThis.__ns_out    = "";
@@ -68,6 +90,20 @@
     (new Function(bundleText + "\nmain(0, []);"))();
     return { snif: globalThis.__ns_out || "", diags: parseDiags(globalThis.__ns_diag) };
   }
+
+  // pnif: the `.p.nif` string (latin1). Returns { snif, diags, cached }.
+  function compile(pnif){
+    if(!bundleText) throw new Error("nimsem not loaded yet");
+    pnif = String(pnif);
+    const hit = cacheGet(pnif);
+    if(hit){ lastHits++; return { snif:hit.snif, diags:hit.diags, cached:true }; }
+    lastMisses++;
+    const res = compileFresh(pnif);
+    cachePut(pnif, { snif:res.snif, diags:res.diags });
+    return { snif:res.snif, diags:res.diags, cached:false };
+  }
+  // Expose cache stats for the UI (so the incremental behaviour is visible).
+  sem.stats = () => ({ hits:lastHits, misses:lastMisses, warm:cache.size });
 
   sem.compile = compile;
   window.NifiSem = sem;
