@@ -37,48 +37,99 @@ nimony-compilable — so it cannot go to the browser.
 `nifparser` closes that gap: a from-scratch parser written in nimony, emitting
 the identical `.p.nif` wire format, that compiles through the nimony JS backend.
 
+## What it produces
+
+`nifler` — and therefore `nifparser` — is a **purely syntactic** transducer. It
+does no semantic checking and no symbol resolution; every symbol comes out as a
+bare identifier. The output is the *parse dialect* of NIF: a faithful, fully
+line-info-annotated s-expression rendering of the Nim parse tree. `nifparser`
+reproduces it without linking any classic-Nim code.
+
 ## What makes it faithful
 
 The bar is **byte-for-byte identical output** to native `nifler`. A differential
-harness compiles every corpus program with both tools and compares the `.p.nif`:
+harness compiles every input with both tools and compares the `.p.nif`:
 
 - **Structural** — token trees identical after stripping line-info (the pass bar).
 - **Exact** — byte-identical `.p.nif`, including the relative line-info suffixes.
 
-Current status: **47 / 47 corpus programs pass, 46 byte-exact**, and beyond the
-curated corpus a `stress.sh` harness runs the same differential comparison over
-arbitrary real `.nim` files: **all 29 of the `nimony/src/lib` modules now match
-native nifler byte-structurally end-to-end** (line-info stripped) — the whole
-real standard library, zero mismatches, zero crashes.
-All five playground example programs — Hello, Fibonacci, FizzBuzz, Collatz, List
-sum — parse **byte-identical** to native nifler, so the real Tier-2 workload is
-covered.
+| test suite | files | result |
+|:--|:--|:--|
+| curated corpus | 47 | **47 pass**, 46 byte-exact |
+| nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, 0 crash |
+| whole nimony compiler tree (`nimony/src`) | 184 | **127 pass**, **0 crash / 0 hang** |
+
+The **entire real standard library** round-trips structurally identical to native
+nifler, line-info stripped — zero mismatches, zero crashes. All five playground
+example programs — Hello, Fibonacci, FizzBuzz, Collatz, List sum — parse
+**byte-identical**, so the real Tier-2 workload is fully covered.
+
+Across the far larger *compiler-internals* tree the parser never crashes and never
+hangs; the remaining structural mismatches are a small, catalogued set of
+grammar-completion edge cases (see [Known gaps](#known-gaps)) rather than spine
+defects.
 
 ## Design
 
 - **Fused parse + emit.** It writes NIF directly through `nifbuilder` as it
   recognises constructs — no intermediate `PNode` AST is built (object-variant
   reference trees trip nimony's field magics, so the whole tree stage is skipped).
+  Line-info is emitted relative to each node's parent, so the byte-exact
+  line-info suffixes fall out of the same left-to-right walk.
 - **Range-splitter expressions.** Operator precedence is resolved by finding the
-  lowest-precedence operator in a token span and recursing on the two sides,
-  which reproduces nifler's operator nesting for free.
-- **Parallel-friendly split.** The grammar lives in per-area include files
-  (expressions, statements, type/routine defs) over a shared cursor spine, so the
-  areas were implemented independently and integrated without conflicts.
+  lowest-precedence depth-0 operator in a token span and recursing on the two
+  sides, which reproduces nifler's operator nesting for free.
+- **Include-file grammar.** The grammar lives in per-area include files —
+  `parse_expr` (expressions), `parse_type` (type/routine defs), `parse_stmt`
+  (statements) — over a shared `parsecore` spine, spliced in a fixed order with
+  mutual recursion resolved through forward declarations.
 
-Covered today: the full lexer (numeric bases, typed-literal `(suf …)`,
-raw/triple/char strings, backtick-quoted idents → `(quoted …)`, `##` doc
-comments → `(comment …)`, significant indentation); expressions with Nim's real
-operator precedence (assignment operators, arrows, spacing-based prefix/infix
-disambiguation, `-N` literal folding, `ident"…"` call-string-literals, postfix
-chains, constructors, named args, `cast`/`addr`, `if`/`try`-expressions,
+### The oracle
+
+nifparser is specified operationally against the classic Nim compiler's lexer and
+parser (`compiler/lexer.nim`, `compiler/parser.nim`), which nifler mirrors
+exactly. The subtle rules reproduced verbatim include `accQuoted` identifier-piece
+splitting, `scanComment` run-merging, `getPrecedence` (assignment operators bind
+loosest at 1, arrow operators at 0), the `*:` two-token split, `##`-as-comment and
+`##[ ]##` doc blocks, spacing-based prefix-vs-infix disambiguation, and
+`postExprBlocks` (trailing `:` block arguments).
+
+## Covered grammar
+
+The full lexer (numeric bases, typed-literal `(suf …)`, raw/triple/char strings
+with escapes, backtick-quoted idents → `(quoted …)`, `#`/`#[ ]#`/`##`/`##[ ]##`
+comments, significant indentation); expressions with Nim's real operator
+precedence (assignment operators, arrows, spacing-based prefix/infix, `-N` and
+`-N'suf` literal folding, `ident"…"` call-string-literals, postfix chains,
+constructors, named args, `cast`/`addr`/`nil`, `if`/`when`/`try`-expressions,
 anonymous `proc` expressions, StmtListExpr `( … ; … )`); command syntax in
-statement, expression **and** type position (prefix-op args like `add $v`,
-dotted callees like `result.add c`, `lent T`); statements (`if`/`case`/`while`/
-`for`/`try`/`when`/`block`/`static`/`defer`, in both multi-line and one-liner
-forms, plus `;`-separated statements and `from … import`); `var`/`let`/`const`
-sections (pragmas, tuple-unpack); and type definitions (object, enum with
-one-per-line fields, tuple, `ref`/`ptr`, proc types, generics, pragmas).
+statement, expression **and** type position (prefix-op args like `add $v`, dotted
+callees like `result.add c`, `lent T`, `postExprBlocks`); statements
+(`if`/`case`/`while`/`for`/`try`/`when`/`block`/`static`/`defer`, in multi-line
+and one-liner forms, as statements **and** multi-line values, plus `;`-separated
+statements and `from … import`); `var`/`let`/`const` sections (pragmas,
+tuple-unpack); and type definitions (object with variant `case` and `when`
+conditional fields, enum, tuple, `ref`/`ptr`/`distinct`, `concept`, proc types,
+generics, pragmas).
+
+## Known gaps
+
+Over the whole `nimony/src` tree, 57 of 184 files still differ structurally. Every
+one produces well-formed NIF — none crash or hang — and they cluster into a few
+categories:
+
+- **Doc-comment placement** — standalone-vs-trailing `##` boundary cases where a
+  comment node attaches to a different sibling.
+- **Routine / proc-type pragma & empty-param shapes** — `(params)`-vs-`.` and
+  pragma-slot ordering on proc *types* and forward decls.
+- **`nil` in annotation position**, **generalised call-string-literals**
+  (`pkg.mod"…"` where the callee is not a bare ident), and a handful of
+  **`@`-prefix / quoted-ident** placements in dense expressions.
+- **Assorted control-flow-value wrapping** — `(stmts …)`-vs-bare and
+  `postExprBlock` orderings in the largest modules.
+
+These are grammar-completion items on top of a spine (range-splitter, line-info
+model, section/type machinery) that is correct wherever it fires.
 
 ## Experimental: curly-brace blocks
 
