@@ -216,7 +216,8 @@
         <button id="tabSym" data-view="sym">Symbols</button>
         <button id="tabNif" data-view="nif">NIF</button>
       </div>
-      <button id="layoutBtn" class="paneBtn" data-tip="Layout"></button>
+      <button id="orientBtn" class="paneBtn" data-tip="Layout"></button>
+      <button id="hideBtn" class="paneBtn" data-tip="Hide output"></button>
     </div>
     <div class="view active" id="viewOut">
       <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
@@ -493,36 +494,41 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   });
   paintCurly();
 
-  // ---- split layout: gutter + orientation/collapse toggle (in output header)
-  //      + a floating button that restores the output when collapsed ----
+  // ---- split layout: two explicit controls in the output header — orientation
+  //      (side-by-side <-> stacked) and hide — plus a floating button that
+  //      brings the output back once hidden. Orientation is remembered so the
+  //      un-hide restores the last one you used. ----
   let ensureOutputVisible = ()=>{};
   (function(){
-    const main=$("#main"), gutter=$("#gutter"), layoutBtn=$("#layoutBtn"), showOut=$("#showOut");
-    const LAYOUTS=["cols","rows","solo"];
-    const TIP={cols:"Side-by-side — click to stack",rows:"Stacked — click to collapse output",solo:"Editor only — click to restore split"};
-    // the shaded region is the OUTPUT pane, so each icon reads as its layout:
-    // output on the right (cols), output below (rows), no output (solo).
-    const ICON={
+    const main=$("#main"), gutter=$("#gutter"),
+          orientBtn=$("#orientBtn"), hideBtn=$("#hideBtn"), showOut=$("#showOut");
+    // the shaded region is the OUTPUT pane: on the right (cols) or below (rows).
+    const ORIENT_ICON={
       cols:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="8.4" y1="3" x2="8.4" y2="13"/><rect x="9" y="4.3" width="4" height="7.4" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>',
-      rows:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="2" y1="8.2" x2="14" y2="8.2"/><rect x="3.3" y="9.1" width="9.4" height="3" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>',
-      solo:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/></svg>'
+      rows:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="2" y1="8.2" x2="14" y2="8.2"/><rect x="3.3" y="9.1" width="9.4" height="3" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>'
     };
-    let li=0, split=50, prevNonSolo=0;
+    // hide: collapse the output toward the right edge
+    hideBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="10.5" y1="3.4" x2="10.5" y2="12.6"/><path d="M4.6 6.2 6.8 8 4.6 9.8"/></svg>';
+    let orient="cols", hidden=false, split=50;
     try{ const s=+localStorage.getItem("np-split"); if(s>=10&&s<=90) split=s; }catch(_){}
-    try{ const l=localStorage.getItem("np-layout"); if(LAYOUTS.indexOf(l)>=0) li=LAYOUTS.indexOf(l); }catch(_){}
+    try{ const o=localStorage.getItem("np-orient"); if(o==="cols"||o==="rows") orient=o; }catch(_){}
+    try{ hidden = localStorage.getItem("np-hidden")==="1"; }catch(_){}
+    // migrate the old single-key cycle state, if present
+    try{ const l=localStorage.getItem("np-layout"); if(l==="solo") hidden=true; else if(l==="rows"||l==="cols") orient=l; }catch(_){}
     const applySplit=()=>main.style.setProperty("--split", split+"%");
-    function applyLayout(){
-      const l=LAYOUTS[li]; main.setAttribute("data-layout", l);
-      layoutBtn.innerHTML=ICON[l]; layoutBtn.setAttribute("data-tip", TIP[l]);
-      showOut.style.display = (l==="solo") ? "" : "none";
-      if(l!=="solo") prevNonSolo=li;
-      try{ localStorage.setItem("np-layout", l); }catch(_){}
+    function apply(){
+      main.setAttribute("data-layout", hidden ? "solo" : orient);
+      orientBtn.innerHTML=ORIENT_ICON[orient];
+      orientBtn.setAttribute("data-tip", orient==="cols"
+        ? "Side-by-side — switch to stacked" : "Stacked — switch to side-by-side");
+      showOut.style.display = hidden ? "" : "none";
+      try{ localStorage.setItem("np-orient", orient); localStorage.setItem("np-hidden", hidden?"1":"0"); }catch(_){}
     }
-    if(LAYOUTS[li]!=="solo") prevNonSolo=li;
-    layoutBtn.addEventListener("click",()=>{ li=(li+1)%LAYOUTS.length; applyLayout(); });
-    showOut.addEventListener("click",()=>{ li=prevNonSolo; applyLayout(); selectTab("out"); });
+    orientBtn.addEventListener("click",()=>{ orient = orient==="cols"?"rows":"cols"; apply(); });
+    hideBtn.addEventListener("click",()=>{ hidden=true; apply(); });
+    showOut.addEventListener("click",()=>{ hidden=false; apply(); selectTab("out"); });
     // used by run(): guarantee the Output is on screen and selected
-    ensureOutputVisible = ()=>{ if(LAYOUTS[li]==="solo"){ li=prevNonSolo; applyLayout(); } selectTab("out"); };
+    ensureOutputVisible = ()=>{ if(hidden){ hidden=false; apply(); } selectTab("out"); };
     let dragging=false;
     gutter.addEventListener("pointerdown",e=>{
       if(main.getAttribute("data-layout")==="solo") return;
@@ -540,7 +546,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     gutter.addEventListener("pointerup", endDrag);
     gutter.addEventListener("pointercancel", endDrag);
     gutter.addEventListener("dblclick",()=>{ split=50; applySplit(); try{localStorage.setItem("np-split",50);}catch(_){} });
-    applySplit(); applyLayout();
+    applySplit(); apply();
   })();
 
   // ---- lightweight tooltips for [data-tip] chrome (nav buttons, tags, fab) ----
