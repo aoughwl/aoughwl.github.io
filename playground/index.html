@@ -172,6 +172,28 @@
   #ctxmenu .item:hover .kb{color:rgba(255,255,255,.75)}
   #ctxmenu .sep{height:1px;margin:4px 6px;background:var(--border)}
 
+  /* Monaco's F1 Command Palette (quick-input) lives in the light DOM — theme it
+     to match our panels: our input, accent-highlighted rows, kbd-style chips. */
+  .quick-input-widget{background:var(--panel2)!important;border:1px solid var(--border)!important;
+    border-radius:8px!important;box-shadow:0 10px 34px rgba(0,0,0,.5)!important;padding:6px!important}
+  .quick-input-widget .quick-input-header{padding-bottom:6px!important}
+  .quick-input-box .monaco-inputbox{background:var(--bg)!important;border:1px solid var(--border)!important;
+    border-radius:6px!important}
+  .quick-input-box .monaco-inputbox .input,.quick-input-box input{color:var(--fg)!important;
+    background:transparent!important;font-family:inherit!important;font-size:13px!important}
+  .quick-input-list .monaco-list-row{border-radius:5px!important;color:var(--fg)!important}
+  .quick-input-list .monaco-list-row:hover:not(.focused){background:var(--panel)!important}
+  .quick-input-list .monaco-list-row.focused{background:var(--accent)!important;color:#fff!important}
+  .quick-input-list .monaco-list-row.focused .label-name,
+  .quick-input-list .monaco-list-row.focused .monaco-highlighted-label,
+  .quick-input-list .monaco-list-row.focused .quick-input-list-entry-description{color:#fff!important}
+  .quick-input-list .monaco-highlighted-label .highlight,.quick-input-list .highlight{color:var(--accent2)!important;font-weight:600!important}
+  .quick-input-list .monaco-list-row.focused .highlight{color:#fff!important;text-decoration:underline}
+  .monaco-keybinding-key{background:var(--panel)!important;border:1px solid var(--border)!important;
+    border-bottom-width:2px!important;border-radius:4px!important;color:var(--muted)!important;box-shadow:none!important}
+  .quick-input-list .monaco-list-row.focused .monaco-keybinding-key{background:rgba(255,255,255,.16)!important;
+    border-color:rgba(255,255,255,.35)!important;color:#fff!important}
+
   /* ---- responsive / mobile ---- */
   /* narrow: stack the panes, drop the manual gutter — but keep the solo collapse
      working (don't let the forced flex re-expand a hidden output). */
