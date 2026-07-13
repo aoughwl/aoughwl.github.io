@@ -124,17 +124,23 @@
     fab.addEventListener('click', function () { menuButton.click(); });
     document.body.appendChild(fab);
 
-    function update() {
-      // Only on the mobile layout (the real menu button is visible), only once
-      // scrolled past the header, and never while the nav is already open.
-      var mobile = menuButton.offsetParent !== null;
-      var past = window.pageYOffset > (header ? header.offsetHeight : 48);
+    // Show the fab whenever the header has scrolled out of view and the nav is
+    // closed. An IntersectionObserver works no matter which element actually
+    // scrolls on mobile (window vs. an inner container); the CSS media query
+    // keeps it off the desktop layout entirely.
+    var headerVisible = true;
+    function apply() {
       var navOpen = menuButton.classList.contains('nav-open');
-      fab.classList.toggle('show', mobile && past && !navOpen);
+      fab.classList.toggle('show', !headerVisible && !navOpen);
     }
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    menuButton.addEventListener('click', function () { setTimeout(update, 0); });
-    update();
+    if (header && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        headerVisible = entries[0].isIntersecting;
+        apply();
+      }, { threshold: 0 }).observe(header);
+    }
+    // keep in sync when the nav is opened/closed
+    menuButton.addEventListener('click', function () { setTimeout(apply, 30); });
+    apply();
   });
 </script>

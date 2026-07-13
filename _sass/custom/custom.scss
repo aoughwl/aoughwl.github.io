@@ -56,8 +56,15 @@ body {
 }
 /* JtD pads the nav 3rem from the top, so it starts oddly far down */
 .site-nav { padding-top: 0.5rem; }
-.site-header { border-bottom: 1px solid var(--border); justify-content: center; }
-.site-title { color: var(--text) !important; font-family: $display; justify-content: center; }
+.site-header { border-bottom: 1px solid var(--border); }
+.site-title { color: var(--text) !important; font-family: $display; }
+/* logo + docs: left-aligned on the mobile top-bar, centered only once the
+   sidebar becomes a left column (tablet/desktop). */
+@media (min-width: 50rem) {
+  .site-header { justify-content: center; }
+  .site-title { justify-content: center; }
+  .site-logo { background-position: center; }
+}
 .site-title:hover { background-image: none; }   /* kill JtD's hover gradient on the logo */
 /* "docs" wordmark after the logo, so it reads: [aoughwl] docs */
 .site-title::after {
@@ -76,7 +83,7 @@ body {
   width: 7.6rem;              /* wordmark is 4.21:1; sized to the visible mark */
   height: 1.8rem;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: left center;   /* mobile default; centered on wide screens above */
   background-size: contain;   /* fills the box exactly — no clip, no dead space */
 }
 [data-theme="dark"]  .site-logo { background-image: url('/assets/aoughwl-logo-white.png') !important; }
