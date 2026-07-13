@@ -47,8 +47,9 @@ harness compiles every corpus program with both tools and compares the `.p.nif`:
 
 Current status: **47 / 47 corpus programs pass, 46 byte-exact**, and beyond the
 curated corpus a `stress.sh` harness runs the same differential comparison over
-arbitrary real `.nim` files: **12 of the 29 real `nimony/src/lib` modules now
-match byte-structurally end-to-end** (line-info stripped), with the rest close.
+arbitrary real `.nim` files: **all 29 of the `nimony/src/lib` modules now match
+native nifler byte-structurally end-to-end** (line-info stripped) — the whole
+real standard library, zero mismatches, zero crashes.
 All five playground example programs — Hello, Fibonacci, FizzBuzz, Collatz, List
 sum — parse **byte-identical** to native nifler, so the real Tier-2 workload is
 covered.
