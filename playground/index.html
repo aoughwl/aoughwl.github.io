@@ -87,7 +87,9 @@
   main.out-hidden>.pane.out{flex:0 0 0;opacity:0;pointer-events:none}
   main.out-hidden>#gutter{flex-basis:0;opacity:0;pointer-events:none}
   .pane{display:flex;flex-direction:column;min-width:0;min-height:0}
-  .pane.src{position:relative}
+  /* container-type lets the source label respond to the PANE's width (e.g. when
+     the split gutter shrinks the editor), not just the viewport — see @container. */
+  .pane.src{position:relative;container-type:inline-size;container-name:srcpane}
   #gutter{flex:0 0 6px;background:var(--border);position:relative;z-index:2;touch-action:none}
   main[data-layout="cols"]>#gutter{cursor:col-resize}
   main[data-layout="rows"]>#gutter{cursor:row-resize}
@@ -102,7 +104,15 @@
   #editor{flex:1;min-height:0}
   textarea#fallback{flex:1;resize:none;border:0;outline:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.6;padding:14px;tab-size:2;display:none}
   #out,#nif{flex:1;margin:0;overflow:auto;padding:14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;color:var(--fg)}
+  /* word-wrap toggle: `nowrap` on <main> switches the output/NIF panes from
+     wrapping ("collapse") to a single long line with horizontal scroll ("overflow"). */
+  main.nowrap #out,main.nowrap #nif{white-space:pre}
   #out .sys,#nif .sys{color:var(--muted)} #out .err,#nif .err{color:var(--err)} #out .ok{color:var(--accent2)}
+  /* selection policy: chrome is not selectable; the code output IS (so users can
+     copy results/NIF). Monaco manages its own selection and is left untouched. */
+  header,footer,.pane .label,.tabs,#symList,.fab,.actions,.statusline,.brand,#tooltip{
+    -webkit-user-select:none;user-select:none}
+  #out,#nif{-webkit-user-select:text;user-select:text}
   .tabs{display:flex;gap:2px;margin-left:auto}
   .tabs button{font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:6px;background:transparent;border:1px solid transparent;color:var(--muted);cursor:pointer;font-family:inherit}
   .tabs button.active{color:var(--fg);background:var(--panel2);border-color:var(--border)}
@@ -149,6 +159,19 @@
     transition:opacity .12s ease,transform .12s ease}
   #tooltip.show{opacity:1;transform:translateY(0)}
 
+  /* ---- custom right-click context menu (Monaco-flavoured, site-wide) ---- */
+  #ctxmenu{position:fixed;z-index:1100;min-width:180px;padding:4px;background:var(--panel2);
+    border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.45);
+    font-size:13px;-webkit-user-select:none;user-select:none;display:none}
+  #ctxmenu.show{display:block}
+  #ctxmenu .item{display:flex;align-items:center;gap:14px;padding:5px 10px;border-radius:5px;
+    color:var(--fg);cursor:pointer;white-space:nowrap}
+  #ctxmenu .item:hover{background:var(--accent);color:#fff}
+  #ctxmenu .item.disabled{color:var(--muted);cursor:default;pointer-events:none;opacity:.6}
+  #ctxmenu .item .kb{margin-left:auto;font-size:11px;color:var(--muted)}
+  #ctxmenu .item:hover .kb{color:rgba(255,255,255,.75)}
+  #ctxmenu .sep{height:1px;margin:4px 6px;background:var(--border)}
+
   /* ---- responsive / mobile ---- */
   /* narrow: stack the panes, drop the manual gutter — but keep the solo collapse
      working (don't let the forced flex re-expand a hidden output). */
@@ -175,10 +198,11 @@
     footer{padding:8px 12px;font-size:11px}
     footer > span:not(.badge):not(#perf){display:none}
   }
-  /* below 450: keep the source-pane status on ONE line — drop the "nimony
-     source" caption so "live compile" + the type-check status sit together
-     instead of wrapping the label onto a second row. */
-  @media(max-width:450px){
+  /* when the SOURCE PANE (not the viewport) is narrow — whether on a phone or
+     because the split gutter shrank the editor — keep its status on ONE line:
+     drop the "nimony source" caption so "live compile" + the type-check status
+     sit together instead of wrapping the label onto a second row. */
+  @container srcpane (max-width:460px){
     .pane.src .label{flex-wrap:nowrap;overflow:hidden}
     .pane.src .label .cap{display:none}
     #srcStatus{margin-left:auto}
@@ -233,6 +257,7 @@
         <button id="tabSym" data-view="sym">Symbols</button>
         <button id="tabNif" data-view="nif">NIF</button>
       </div>
+      <button id="wrapBtn" class="paneBtn" data-tip="Word wrap"></button>
       <button id="orientBtn" class="paneBtn" data-tip="Layout"></button>
       <button id="hideBtn" class="paneBtn" data-tip="Hide output"></button>
     </div>
@@ -418,11 +443,13 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       syntaxDiags = diags || [];
       if(syntaxDiags.length) semDiags = [];
       refreshMarkers();
+      // only surface a banner when there ARE syntax errors — a clean parse just
+      // shows the NIF (no "no syntax errors" noise).
       const banner = syntaxDiags.length
         ? '<span class="err">● '+syntaxDiags.length+' syntax '+
             (syntaxDiags.length===1?'error':'errors')+':\n'+
             syntaxDiags.map(d=>'  '+d.line+':'+((d.col|0)+1)+'  '+esc(d.message)).join('\n')+'</span>\n\n'
-        : '<span class="ok">● no syntax errors</span>\n\n';
+        : '';
       nifEl.innerHTML = banner + esc(nif) +
         '\n<span class="sys">— parsed in '+ms+' ms · '+nif.length+' bytes'+
         (window.NifiOpts&&window.NifiOpts.curly?' · curly mode':'')+'</span>';
@@ -481,7 +508,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       if(res.stdout) parts.push(esc(res.stdout));
       if(res.stderr) parts.push('<span class="err">'+esc(res.stderr)+'</span>');
       parts.push('<span class="ok">— exit '+(res.exitCode|0)+' · '+ms+' ms</span>');
-      print(parts.join('\n')); perf.textContent=ms+" ms";
+      print(parts.join('\n')); outEl.scrollTop=0; perf.textContent=ms+" ms";
     }catch(e){ print('<span class="err">'+esc(e&&e.message||e)+'</span>'); }
     finally{ runBtn.classList.remove("running"); outStatus.textContent=""; updateRunState(); }
   }
@@ -510,6 +537,79 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     paintCurly(); runParse(); runSemCheck();
   });
   paintCurly();
+
+  // ---- word-wrap toggle for the output / NIF panes ----
+  const wrapBtn=$("#wrapBtn"), mainEl=$("#main");
+  const WRAP_ICON={
+    wrap:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="2.5" y1="4" x2="13.5" y2="4"/><path d="M2.5 8h8.5a2 2 0 010 4H8.5"/><path d="M10 10l-2 2 2 2"/><line x1="2.5" y1="12" x2="5" y2="12"/></svg>',
+    nowrap:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="2.5" y1="4" x2="13.5" y2="4"/><line x1="2.5" y1="8" x2="13.5" y2="8"/><line x1="2.5" y1="12" x2="10" y2="12"/><path d="M11.5 10l2 2-2 2"/></svg>'
+  };
+  let noWrap=false;
+  try{ noWrap = localStorage.getItem("np-nowrap")==="1"; }catch(_){}
+  function paintWrap(){
+    mainEl.classList.toggle("nowrap", noWrap);
+    wrapBtn.innerHTML = noWrap ? WRAP_ICON.nowrap : WRAP_ICON.wrap;
+    wrapBtn.setAttribute("data-tip", noWrap
+      ? "Overflow (no wrap) — click to wrap long lines"
+      : "Word wrap on — click to overflow instead");
+  }
+  wrapBtn.addEventListener("click",()=>{
+    noWrap=!noWrap; try{localStorage.setItem("np-nowrap", noWrap?"1":"0");}catch(_){}
+    paintWrap();
+  });
+  paintWrap();
+
+  // ---- site-wide right-click context menu (Monaco-flavoured) ----
+  (function(){
+    const menu=document.createElement("div");
+    menu.id="ctxmenu"; menu.setAttribute("role","menu"); document.body.appendChild(menu);
+    const hide=()=>{ menu.classList.remove("show"); menu.innerHTML=""; };
+    const selText=()=>{ const s=window.getSelection&&window.getSelection(); return s?String(s).trim():""; };
+    function items(target){
+      const nifCtx = !!target.closest("#viewNif");
+      const inOut = nifCtx || !!target.closest("#viewOut");
+      const sel = selText();
+      const out=[];
+      out.push({ label:"Copy", kb:"⌘C", off:!sel, act:()=>{ if(sel&&navigator.clipboard) navigator.clipboard.writeText(sel); }});
+      if(inOut){
+        const pane = nifCtx ? nifEl : outEl;
+        out.push({ label:"Select all", kb:"⌘A", act:()=>{
+          const r=document.createRange(); r.selectNodeContents(pane);
+          const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }});
+        out.push({ sep:true });
+        out.push({ label: mainEl.classList.contains("nowrap")?"Enable word wrap":"Disable word wrap", act:()=>wrapBtn.click() });
+      }
+      out.push({ sep:true });
+      out.push({ label:"Run", kb:"⌃⏎", off:runBtn.disabled, act:()=>run() });
+      out.push({ label:"Copy share link", act:()=>shareBtn.click() });
+      return out;
+    }
+    function open(x,y,target){
+      menu.innerHTML="";
+      for(const it of items(target)){
+        if(it.sep){ const s=document.createElement("div"); s.className="sep"; menu.appendChild(s); continue; }
+        const d=document.createElement("div");
+        d.className="item"+(it.off?" disabled":"");
+        d.innerHTML='<span>'+it.label+'</span>'+(it.kb?'<span class="kb">'+it.kb+'</span>':'');
+        if(!it.off) d.addEventListener("mousedown",e=>{ e.preventDefault(); hide(); try{it.act&&it.act();}catch(_){} });
+        menu.appendChild(d);
+      }
+      menu.classList.add("show");
+      const mw=menu.offsetWidth, mh=menu.offsetHeight;
+      menu.style.left=Math.max(6, Math.min(x, innerWidth-mw-6))+"px";
+      menu.style.top =Math.max(6, Math.min(y, innerHeight-mh-6))+"px";
+    }
+    document.addEventListener("contextmenu",e=>{
+      if(e.target.closest(".monaco-editor")) return;   // Monaco keeps its own menu
+      e.preventDefault(); open(e.clientX, e.clientY, e.target);
+    });
+    // capture phase: Monaco stops propagation on its own mousedown, so a click
+    // INTO the editor would never bubble here — capture closes the menu anyway.
+    document.addEventListener("mousedown",e=>{ if(!e.target.closest("#ctxmenu")) hide(); }, true);
+    document.addEventListener("scroll",hide,true);
+    window.addEventListener("resize",hide);
+    document.addEventListener("keydown",e=>{ if(e.key==="Escape") hide(); });
+  })();
 
   // ---- split layout: two explicit controls in the output header — orientation
   //      (side-by-side <-> stacked) and hide — plus a floating button that
