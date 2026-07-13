@@ -44,19 +44,17 @@ It ships starter examples you can run and edit:
 
 ## Roadmap: Tier 1 / 2 / 3
 
-- **Tier 1 (today)** — runs precompiled `.s.nif` client-side. Pick an example, it
-  runs in the browser.
-- **Tier 2 (in progress)** — port the parse + semcheck frontend to JS so edits
-  recompile live. Both halves are now de-risked: a from-scratch, browser-capable
-  parser — [nifparser](nifparser) — parses all five example programs
-  byte-identical to the native compiler, and semcheck (`nimsem`) translates to JS
-  with zero unsupported constructs. What remains is wiring the chain
-  `source → nifparser → nimsem → nifi` behind the browser stub.
-- **Tier 3 (planned)** — LSP diagnostics in a Web Worker.
-
-The seams for the later tiers are already stubbed: `NifiCore.compileAndRun` and
-`setDiagnostics` exist and are wired in, waiting for the frontend and diagnostics
-to land behind them.
+- **Tier 1** — runs precompiled `.s.nif` client-side.
+- **Tier 2 (live now)** — the whole compiler front-to-back runs in your browser.
+  Edit any program and it is **parsed** ([nifparser](nifparser) → `.p.nif`),
+  **type-checked** (`nimsem` → typed `.s.nif`) and **executed** ([nifi](nifi))
+  entirely in the tab. Syntax errors appear as you type; type errors appear on a
+  short debounce; pressing Run compiles and runs whatever is in the editor. The
+  chain `source → nifparser → nimsem → nifi` is fully wired — no backend, no
+  stub. nimsem ships as an ~8.9 MB JS bundle plus a ~0.85 MB pre-semchecked
+  stdlib closure (system/syncio/formatfloat) served from an in-memory VFS.
+- **Tier 3 (planned)** — move the compile chain into a Web Worker and add
+  incremental recompilation so large edits stay instant.
 
 ---
 

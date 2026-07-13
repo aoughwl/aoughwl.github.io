@@ -46,8 +46,34 @@
       exitCode: globalThis.__nifi_exit | 0
     };
   }
+  // Tier 2: compile the editor buffer live and run it —
+  //   source → nifparser (.p.nif) → nimsem (.s.nif) → nifi (run)
+  // all client-side. Returns the same {stdout,stderr,exitCode} shape as runSnif.
+  function compileAndRun(source){
+    if(!(window.NifiParser && window.NifiParser.ready))
+      return { stdout:"", stderr:"parser still loading…", exitCode:1 };
+    if(!(window.NifiSem && window.NifiSem.ready))
+      return { stdout:"", stderr:"semantic checker still loading…", exitCode:1 };
+    // 1. parse → .p.nif (also yields syntax diagnostics, surfaced elsewhere)
+    const { nif, diags: synDiags } = window.NifiParser.parseFull(source, "in.nim");
+    if(synDiags && synDiags.length)
+      return { stdout:"", stderr:"syntax error: "+synDiags[0].message+
+        " (line "+synDiags[0].line+")", exitCode:1 };
+    // 2. semcheck → typed .s.nif (+ semantic diagnostics)
+    const { snif, diags } = window.NifiSem.compile(nif);
+    if(!snif){
+      const msg = (diags && diags.length)
+        ? diags.map(d=>"  "+d.line+":"+d.col+"  "+d.message).join("\n")
+        : "the program did not type-check.";
+      return { stdout:"", stderr:"semantic error:\n"+msg, exitCode:1, diags };
+    }
+    // 3. run the typed .s.nif
+    const res = runSnif(snif);
+    res.diags = diags;
+    return res;
+  }
   // Exposed so index.html / future glue can call the interpreter directly.
-  window.NifiCore = { runSnif };
+  window.NifiCore = { runSnif, compileAndRun };
 
   async function run(req){
     await loadBundle();

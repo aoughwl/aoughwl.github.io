@@ -93,6 +93,12 @@
     getValue(){ return usingFallback ? fallbackEl.value : (editor ? editor.getValue() : ""); },
     setTheme(t){ if(!usingFallback && monacoRef) monacoRef.editor.setTheme(t==="light"?"nimony-light":"nimony-dark"); },
     onReady(cb){ if(usingFallback || editor) cb(); else readyCbs.push(cb); },
+    // Fires on every content change (debouncing is the caller's job).
+    onChange(cb){
+      if(usingFallback){ fallbackEl.addEventListener("input", cb); return; }
+      const attach = () => { if(editor) editor.onDidChangeModelContent(cb); else readyCbs.push(attach); };
+      attach();
+    },
     // Called by the LSP-in-worker glue (Tier 3). markers: [{line,col,endLine,endCol,message,severity}]
     setDiagnostics(markers){
       if(usingFallback || !monacoRef || !editor) return;

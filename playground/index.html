@@ -37,8 +37,13 @@
   .pane .label .status{margin-left:auto;font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0}
   #editor{flex:1;min-height:0}
   textarea#fallback{flex:1;resize:none;border:0;outline:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.6;padding:14px;tab-size:2;display:none}
-  #out{flex:1;margin:0;overflow:auto;padding:14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;color:var(--fg)}
-  #out .sys{color:var(--muted)} #out .err{color:var(--err)} #out .ok{color:var(--accent2)}
+  #out,#nif{flex:1;margin:0;overflow:auto;padding:14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;color:var(--fg)}
+  #out .sys,#nif .sys{color:var(--muted)} #out .err,#nif .err{color:var(--err)} #out .ok{color:var(--accent2)}
+  .tabs{display:flex;gap:2px;margin-left:auto}
+  .tabs button{font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:6px;background:transparent;border:1px solid transparent;color:var(--muted)}
+  .tabs button.active{color:var(--fg);background:var(--panel2);border-color:var(--border)}
+  .view{display:none;flex:1;min-height:0;flex-direction:column}
+  .view.active{display:flex}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
   kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 5px}
@@ -48,6 +53,7 @@
 <header>
   <h1>nimony<span class="dot">·</span>playground</h1>
   <span class="tag" id="engineTag">engine: loading…</span>
+  <span class="tag" id="diagTag" style="display:none">● no errors</span>
   <span class="tag" id="lspTag" style="display:none">lsp: off</span>
   <div class="spacer"></div>
   <select id="examples" title="Load an example"></select>
@@ -62,36 +68,124 @@
     <textarea id="fallback" spellcheck="false"></textarea>
   </section>
   <section class="pane">
-    <div class="label">output <span class="status" id="outStatus"></span></div>
-    <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
+    <div class="label">
+      <span id="paneTitle">output</span> <span class="status" id="outStatus"></span>
+      <div class="tabs">
+        <button id="tabOut" class="active" data-view="out">Output</button>
+        <button id="tabNif" data-view="nif">NIF</button>
+      </div>
+    </div>
+    <div class="view active" id="viewOut">
+      <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
+    </div>
+    <div class="view" id="viewNif">
+      <pre id="nif"><span class="sys">The NIF (parsed intermediate form) for your code appears here live as you type — produced by nifparser, compiled to JS and running in this tab.</span></pre>
+    </div>
   </section>
 </main>
 
 <footer>
   <span class="badge">● 100% client-side</span>
-  <span>The nimony interpreter (<code>nifi</code>) is compiled to JavaScript and runs in this tab. No backend.</span>
+  <span>The parser (<code>nifparser</code>), semantic checker (<code>nimsem</code>) and interpreter (<code>nifi</code>) are compiled to JavaScript and run in this tab — your code is parsed, type-checked and executed with no backend.</span>
   <div style="flex:1"></div>
   <span id="perf"></span>
 </footer>
 
 <script src="examples.js"></script>
 <script src="engine.js"></script>
+<script src="parser.js"></script>
+<script src="sem.js"></script>
 <script src="editor.js"></script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
-  const outEl=$("#out"), runBtn=$("#runBtn"), exSel=$("#examples");
+  const outEl=$("#out"), nifEl=$("#nif"), runBtn=$("#runBtn"), exSel=$("#examples");
   const engineTag=$("#engineTag"), lspTag=$("#lspTag");
   const outStatus=$("#outStatus"), srcStatus=$("#srcStatus"), perf=$("#perf");
   const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const print = html => { outEl.innerHTML = html; };
 
+  // ---- right-pane tabs (Output | NIF) ----
+  function selectTab(view){
+    ["out","nif"].forEach(v=>{
+      $("#tab"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
+      $("#view"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
+    });
+    $("#paneTitle").textContent = view==="nif" ? "parsed NIF" : "output";
+  }
+  document.querySelectorAll(".tabs button").forEach(b=>
+    b.addEventListener("click",()=>selectTab(b.dataset.view)));
+
+  // ---- live diagnostics: FAST syntax (nifparser, every keystroke) +
+  //      DEBOUNCED semantic (nimsem, ~500 ms). Both feed one marker set. ----
+  let syntaxDiags = [], semDiags = [];
+  // Normalize to Monaco markers. nifparser cols are 0-based; nimsem cols 1-based.
+  function refreshMarkers(){
+    const marks = [];
+    for(const d of syntaxDiags)
+      marks.push({ line:d.line, col:(d.col|0)+1, endCol:(d.col|0)+2, message:d.message, severity:"error" });
+    for(const d of semDiags)
+      marks.push({ line:d.line, col:d.col, endCol:d.col+1, message:d.message, severity:d.severity||"error" });
+    window.NifiEditor.setDiagnostics(marks);
+    setDiagBadge(marks.length);
+  }
+  function setDiagBadge(n){
+    const el=$("#diagTag");
+    el.style.display="";
+    if(n>0){ el.textContent="● "+n+" error"+(n===1?"":"s"); el.className="tag warn"; }
+    else   { el.textContent="● no errors"; el.className="tag ok"; }
+  }
+
+  let parseTimer=null, semTimer=null;
+  function scheduleParse(){
+    if(parseTimer) clearTimeout(parseTimer);
+    parseTimer=setTimeout(runParse, 200);
+    if(semTimer) clearTimeout(semTimer);
+    semTimer=setTimeout(runSemCheck, 500);
+  }
+  function runParse(){
+    if(!window.NifiParser || !window.NifiParser.ready){
+      nifEl.innerHTML='<span class="sys">parser loading…</span>'; return;
+    }
+    const src = window.NifiEditor.getValue();
+    const t0=performance.now();
+    try{
+      const { nif, diags } = window.NifiParser.parseFull(src, "in.nim");
+      const ms=(performance.now()-t0).toFixed(1);
+      syntaxDiags = diags || [];
+      if(syntaxDiags.length) semDiags = [];   // sem needs a clean parse
+      refreshMarkers();
+      const banner = syntaxDiags.length
+        ? '<span class="err">● '+syntaxDiags.length+' syntax '+
+            (syntaxDiags.length===1?'error':'errors')+':\n'+
+            syntaxDiags.map(d=>'  '+d.line+':'+((d.col|0)+1)+'  '+esc(d.message)).join('\n')+'</span>\n\n'
+        : '<span class="ok">● no syntax errors</span>\n\n';
+      nifEl.innerHTML = banner + esc(nif) +
+        '\n<span class="sys">— parsed in '+ms+' ms · '+nif.length+' bytes</span>';
+    }catch(e){
+      nifEl.innerHTML='<span class="err">parse error: '+esc(e&&e.message||e)+'</span>';
+    }
+  }
+  // Full semantic check (type errors) — only when syntax is clean and nimsem is up.
+  function runSemCheck(){
+    if(syntaxDiags.length) return;
+    if(!window.NifiSem || !window.NifiSem.ready || !window.NifiParser || !window.NifiParser.ready) return;
+    try{
+      const { nif } = window.NifiParser.parseFull(window.NifiEditor.getValue(), "in.nim");
+      const { diags } = window.NifiSem.compile(nif);
+      semDiags = diags || [];
+      refreshMarkers();
+    }catch(_){ /* keep last markers on transient failure */ }
+  }
+
   (window.EXAMPLES||[]).forEach((ex,i)=>{const o=document.createElement("option");o.value=i;o.textContent=ex.name;exSel.appendChild(o);});
   function loadExample(i){
     const ex=window.EXAMPLES[i]; if(!ex) return;
     window.NifiEditor.setValue(ex.source);
-    srcStatus.textContent = ex.snif ? "runnable" : "compile on run";
-    print('<span class="sys">Ready — press Run.</span>');
+    srcStatus.textContent = "live compile";
+    print('<span class="sys">Ready — edit freely and press Run. Your code is compiled and run in this tab.</span>');
+    runParse();
+    runSemCheck();
   }
   exSel.addEventListener("change",()=>loadExample(+exSel.value));
 
@@ -123,9 +217,16 @@
   // engine + lsp readiness hooks (called by engine.js / worker glue)
   window.__nifiEngineReady=(ok,detail)=>{ engineTag.textContent="engine: "+(ok?"ready":"unavailable"); engineTag.className="tag"+(ok?" ok":""); runBtn.disabled=!ok; if(!ok&&detail) print('<span class="err">'+esc(detail)+'</span>'); };
   window.__nifiLspStatus=(state)=>{ lspTag.style.display=""; lspTag.textContent="lsp: "+state; lspTag.className="tag"+(state==="live"?" ok":state==="off"?"":" warn"); };
+  // parser readiness -> parse whatever is already in the editor
+  window.__nifiParserReady=(ok)=>{ if(ok) runParse(); };
+  // semantic-checker readiness -> run a full type-check once it's loaded
+  window.__nifiSemReady=(ok)=>{ if(ok) runSemCheck(); };
 
-  // editor ready -> load first example
-  window.NifiEditor.onReady(()=>{ if(window.EXAMPLES&&window.EXAMPLES.length) loadExample(0); });
+  // editor ready -> load first example, and parse live on every edit
+  window.NifiEditor.onReady(()=>{
+    window.NifiEditor.onChange(scheduleParse);
+    if(window.EXAMPLES&&window.EXAMPLES.length) loadExample(0);
+  });
   if(window.NifiEngine&&window.NifiEngine.ready) window.__nifiEngineReady(true);
 })();
 </script>
