@@ -391,6 +391,20 @@
     {label:"$",    detail:"proc `$`(x): string", doc:"stringify"},
     {label:"newSeq", detail:"proc newSeq[T](len = 0): seq[T]", doc:"a new seq"},
   ];
+  // every nimony std module (lib/std/*.nim, dirs + private dropped), sorted.
+  const STD_MODULES = ["algorithm","appdirs","assertions","atomics","base64","bitops",
+    "cmdline","complex","cpuinfo","deques","dirs","editdistance","encodings","envvars",
+    "fenv","formatfloat","hashes","heapqueue","intsets","ioring","json","lexbase","locks",
+    "macros","math","md5","memfiles","monotimes","nativesocket","nifply","opt","options",
+    "os","oserrors","osproc","parfor","parsejson","parseopt","parseutils","pathnorm","paths",
+    "random","rawthreads","result","rlocks","sequtils","sets","setutils","sha1","streams",
+    "strtabs","strutils","syncio","system","tables","terminal","threadpool","ticketlocks",
+    "times","unicode","varints","widestrs","wordwrap","writenif"];
+  // only these actually run in the browser sandbox (engine.js AVAILABLE); the
+  // rest still parse + type-check, they just can't be executed in-tab.
+  const SANDBOX = new Set(["syncio","system"]);
+  lsp.stdModules = STD_MODULES;                 // shared with editor.js decorations
+
   const KIND_LABEL = { proc:"proc", func:"func", method:"method", iterator:"iterator",
     template:"template", macro:"macro", converter:"converter", type:"type",
     param:"param", local:"local", let:"let", var:"var", const:"const",
@@ -419,6 +433,44 @@
       case "param": case "local": return K.Variable;
       default: return K.Variable;
     }
+  }
+
+  // Decide whether the text on the line up to the cursor is naming a module
+  // (import/from/include). Returns { partial, path, std } or null. `partial` is
+  // the trailing identifier fragment being typed (what completion replaces);
+  // `path` means we're after a "…/" segment; `std` means specifically "std/".
+  function importContext(lineToCursor){
+    if(!/^\s*(import|from|include)\b/.test(lineToCursor)) return null;
+    // in `from X import Y` the part past `import` names symbols, not modules.
+    const fm = /^\s*from\b([^]*)$/.exec(lineToCursor);
+    if(fm && /\bimport\b/.test(fm[1])) return null;
+    const partial = (/([A-Za-z0-9_]*)$/.exec(lineToCursor))[1];
+    const before = lineToCursor.slice(0, lineToCursor.length - partial.length);
+    return { partial, path: /\/$/.test(before), std: /std\/$/.test(before) };
+  }
+
+  // module completions for an import line (feature 1). After a literal "std/" we
+  // insert the bare module name (the prefix is already typed); anywhere else
+  // (fresh `import `, or a partial like `import std`) we offer the `std/` folder
+  // AND modules whose insertText carries the `std/` prefix, so accepting one
+  // always yields a VALID `import std/<mod>` (never a bare, unresolvable name).
+  function moduleSuggestions(monaco, ctx, range){
+    const K = monaco.languages.CompletionItemKind;
+    const bare = ctx.std;                       // cursor sits right after "std/"
+    const items = [];
+    if(!bare){                                  // offer the std/ folder, sorted first
+      items.push({ label:"std/", kind:K.Folder, detail:"std module namespace",
+        insertText:"std/", range, sortText:"0",
+        command:{ id:"editor.action.triggerSuggest", title:"" } });
+    }
+    for(const name of STD_MODULES){
+      const runs = SANDBOX.has(name);
+      items.push({ label:name, kind:K.Module,
+        insertText:(bare?name:"std/"+name), range,
+        detail:"std module · "+(runs?"runs in sandbox":"parse/checks only"),
+        sortText:(bare?"":"1")+(runs?"0":"1")+name });
+    }
+    return { suggestions: items };
   }
 
   function register(monaco){
@@ -452,6 +504,20 @@
     // --- hover ---
     monaco.languages.registerHoverProvider(LANG, {
       provideHover(model, position){
+        // builtin std module inside an import line: honest note, goto not wired
+        // (feature 2). Detect the import context first so this never collides
+        // with the identifier hover below — a module path isn't a real symbol.
+        const line = model.getLineContent(position.lineNumber);
+        if(/^\s*(import|from|include)\b/.test(line)){
+          const wm = model.getWordAtPosition(position);
+          if(wm && STD_MODULES.indexOf(wm.word)>=0){
+            const nm = wm.word, runs = SANDBOX.has(nm);
+            const r = new monaco.Range(position.lineNumber, wm.startColumn, position.lineNumber, wm.endColumn);
+            const note = "_builtin std module — “Go to definition” not implemented (browser sandbox) · "
+              + (runs?"runs in the sandbox":"parse/type-check only") + "_";
+            return { range:r, contents:[ {value:"```nimony\nimport std/"+nm+"\n```"}, {value:note} ] };
+          }
+        }
         const w = model.getWordAtPosition(position);
         if(!w) return null;
         const name = w.word;
@@ -488,8 +554,17 @@
 
     // --- completions ---
     monaco.languages.registerCompletionItemProvider(LANG, {
-      triggerCharacters: ["."],
+      triggerCharacters: [".", "/"],
       provideCompletionItems(model, position){
+        // import context → module names instead of the normal symbol soup (feat 1)
+        const lineToCursor = model.getValueInRange(
+          new monaco.Range(position.lineNumber, 1, position.lineNumber, position.column));
+        const ctx = importContext(lineToCursor);
+        if(ctx){
+          const mrange = new monaco.Range(position.lineNumber,
+            position.column - ctx.partial.length, position.lineNumber, position.column);
+          return moduleSuggestions(monaco, ctx, mrange);
+        }
         const w = model.getWordUntilPosition(position);
         const range = new monaco.Range(position.lineNumber, w.startColumn, position.lineNumber, w.endColumn);
         const seen = new Set(), items = [];
@@ -529,6 +604,8 @@
       return;
     }
     register(monaco);
+    // now that STD_MODULES is exposed, (re)paint the import underlines (feat 2)
+    if(window.NifiEditor.refreshImportDecorations) window.NifiEditor.refreshImportDecorations();
     lsp.ready = true;
     if(window.__nifiLspStatus) window.__nifiLspStatus("live");
   });

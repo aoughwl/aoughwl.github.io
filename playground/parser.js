@@ -9,6 +9,9 @@
 // Interface contract (a JS mirror of nifparser/src/webmain.nim):
 //   IN : globalThis.__np_src   = the Nim source text (a string)
 //        globalThis.__np_file  = relative path baked into NIF line-info suffixes
+//        globalThis.__np_curly = "1" to also accept `{ … }` block bodies
+//                                (experimental curly-brace mode), "" for classic
+//                                indent-only parsing
 //   RUN: (new Function(bundle + "main(0,[]);"))()   // fresh scope per parse
 //   OUT: globalThis.__np_out   = the produced `.p.nif` bytes (a string)
 //        globalThis.__np_diag  = JSON array of syntactic diagnostics:
@@ -19,6 +22,11 @@
 // in that init, so re-invoking a cached `main` would NOT re-parse. Re-evaluating
 // the bundle is ~8 ms, which is why parsing is debounced off keystrokes below.
 (function(){
+  // Global curly toggle: callers that pass no `opts` follow whatever this is set
+  // to (the UI flips window.NifiOpts.curly). Initialize defensively in case this
+  // file loads before whoever else owns the object.
+  window.NifiOpts = window.NifiOpts || { curly:false };
+
   const parser = { ready:false, parse:null };
   let bundleText = null, loadPromise = null;
 
@@ -32,10 +40,14 @@
   }
 
   // Synchronous once the bundle is loaded. Returns the `.p.nif` string, or throws.
-  function parseSync(source, file){
+  // `opts.curly` (optional) forces curly mode; omitting it follows window.NifiOpts.
+  function parseSync(source, file, opts){
     if(!bundleText) throw new Error("parser not loaded yet");
+    // __np_curly: "1" enables experimental `{ … }` block bodies, "" = indent-only.
+    const curly = opts && ("curly" in opts) ? !!opts.curly : !!(window.NifiOpts && window.NifiOpts.curly);
     globalThis.__np_src  = String(source);
     globalThis.__np_file = file || "in.nim";
+    globalThis.__np_curly = curly ? "1" : "";
     globalThis.__np_out  = "";
     (new Function(bundleText + "\nmain(0, []);"))();
     return globalThis.__np_out || "";
@@ -43,10 +55,14 @@
 
   // Full result: { nif, diags }. `diags` are the parser's own coordinates
   // (line 1-based, col 0-based); the caller shifts col to Monaco's 1-based.
-  function parseFull(source, file){
+  // `opts.curly` (optional) forces curly mode; omitting it follows window.NifiOpts.
+  function parseFull(source, file, opts){
     if(!bundleText) throw new Error("parser not loaded yet");
+    // __np_curly: "1" enables experimental `{ … }` block bodies, "" = indent-only.
+    const curly = opts && ("curly" in opts) ? !!opts.curly : !!(window.NifiOpts && window.NifiOpts.curly);
     globalThis.__np_src  = String(source);
     globalThis.__np_file = file || "in.nim";
+    globalThis.__np_curly = curly ? "1" : "";
     globalThis.__np_out  = "";
     globalThis.__np_diag = "[]";
     (new Function(bundleText + "\nmain(0, []);"))();

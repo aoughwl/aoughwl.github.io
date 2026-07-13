@@ -54,6 +54,47 @@
     monaco.editor.defineTheme("nimony-light",{ base:"vs", inherit:true, rules:[], colors:{ "editor.background":"#ffffff" } });
   }
 
+  // subtle underline for builtin std-module refs in import lines (lsp feature 2).
+  // injected here so index.html's <style> stays untouched.
+  (function injectCss(){
+    const st = document.createElement("style");
+    st.textContent = ".nifi-import-ref{ text-decoration: underline dotted;"
+      + " text-decoration-color: var(--muted,#9aa3b2); text-underline-offset:3px; cursor:help; }";
+    document.head.appendChild(st);
+  })();
+
+  // recompute the import-underline decorations from the current model. Only std
+  // modules are underlined: known bare names (via NifiLsp.stdModules) or any
+  // explicit `std/…` path. Cheap enough to run debounced on every change.
+  let importDecos = [];
+  function computeImportDecos(){
+    if(usingFallback || !editor || !monacoRef) return;
+    const model = editor.getModel(); if(!model) return;
+    const mods = (window.NifiLsp && window.NifiLsp.stdModules) || null;
+    const lines = model.getValue().split("\n"), decos = [];
+    for(let i=0;i<lines.length;i++){
+      const m = /^(\s*)(import|from|include)\b(.*)$/.exec(lines[i]);
+      if(!m) continue;
+      let rest = m[3].split("#")[0];             // drop trailing comment
+      // in `from X import Y` only the part before `import` names modules
+      if(m[2]==="from"){ const im = rest.search(/\bimport\b/); if(im>=0) rest = rest.slice(0, im); }
+      const base = m[1].length + m[2].length;    // 0-based col where `rest` begins
+      const re = /(std\/)?([A-Za-z][A-Za-z0-9_]*)/g;
+      let mm;
+      while((mm = re.exec(rest))){
+        const hasStd = !!mm[1];
+        if(!hasStd){ if(!mods || mods.indexOf(mm[2])<0) continue; } // bare non-std → skip
+        const startCol = base + mm.index + 1;    // 1-based
+        const endCol = startCol + mm[0].length;
+        decos.push({ range:new monacoRef.Range(i+1, startCol, i+1, endCol),
+          options:{ inlineClassName:"nifi-import-ref" } });
+      }
+    }
+    importDecos = editor.deltaDecorations(importDecos, decos);
+  }
+  let decoTimer = null;
+  function scheduleImportDecos(){ clearTimeout(decoTimer); decoTimer = setTimeout(computeImportDecos, 150); }
+
   function fireReady(){ readyCbs.splice(0).forEach(f=>{ try{f();}catch(_){}}); }
 
   function startFallback(){
@@ -81,6 +122,8 @@
             fontSize:13, minimap:{enabled:false}, automaticLayout:true,
             scrollBeyondLastLine:false, tabSize:2, insertSpaces:true, renderWhitespace:"none",
           });
+          editor.onDidChangeModelContent(scheduleImportDecos);   // keep import underlines fresh
+          computeImportDecos();
           fireReady();
         });
       }catch(_){ startFallback(); }
@@ -99,6 +142,9 @@
     getEditor(){ return editor; },
     getModel(){ return editor ? editor.getModel() : null; },
     languageId: "nimony",
+    // Repaint the std-module import underlines (lsp.js calls this once its
+    // STD_MODULES list is available). Safe no-op under the textarea fallback.
+    refreshImportDecorations(){ computeImportDecos(); },
     // Move the cursor to (line, col) and scroll it into view — used by the
     // Symbols/outline panel to jump to a definition.
     revealPosition(line, col){
