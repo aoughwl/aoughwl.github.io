@@ -9,9 +9,11 @@ nav_order: 4
 {: .no_toc }
 
 Every option below is **off / neutral by default**, so a plain
-`nifparser p in.nim` produces output byte-identical to native `nifler`. The flags
-exist for editors, linters, and non-Nim-standard sources; none of them can change
-the NIF a default run emits.
+`nifparser p in.nim out.p.nif` produces output byte-identical to native `nifler`.
+The flags exist for editors, linters, pipelines, and non-Nim-standard sources;
+apart from `--curly` (which only *adds* accepted syntax) and the opt-in
+`--doc-comments:off`, none of them can change the NIF a run emits — they gate
+input acceptance, add diagnostics, or move I/O.
 
 ```
 usage: nifparser [OPTIONS] p <in.nim> [out.p.nif]
@@ -26,7 +28,9 @@ usage: nifparser [OPTIONS] p <in.nim> [out.p.nif]
 
 ---
 
-## `--curly` — brace block bodies
+## Block bodies
+
+### `--curly`
 
 Lets a `{ … }` block body stand in **anywhere** a `:` body is accepted, and the
 two styles may be mixed freely:
@@ -42,40 +46,73 @@ operand (`if c {`) or a bodiless-block keyword (`else {`, `try {`, `block {`,
 mistaken for the body. This is a nifparser extension; native nifler has no
 equivalent, so output stays nifler-compatible only while it is off.
 
-## Indentation & whitespace policy
+## Indentation & whitespace
 
 Nim's layout is column-based, and classic Nim is **spaces-only** — its lexer
 hard-errors on a tab in indentation. nifparser keeps that as the default but can
-relax it for sources that use tabs, and can validate indentation for tooling.
+relax it for tab-using sources and validate indentation for tooling. None of these
+change the emitted NIF: the off-side rule is a *relative* column comparison, so a
+tab-indented file parses to the same tree as its space-indented equivalent.
 
-### `--tabs:MODE` — what may indent a line
+| flag | default | effect |
+|:--|:--|:--|
+| `--tabs:spaces\|tabs\|both` | `spaces` | What may indent a line. `spaces` = classic-Nim (a stray tab = one column). `tabs` = tabs allowed, each advancing `--tab-width` columns. `both` = either, and a line that *mixes* them in its leading whitespace is reported on stderr. |
+| `--tab-width:N` | `8` | Columns a `\t` advances when tabs are permitted. Scales the recorded `indent`/`col`; the parse structure is width-independent. Ignored under `--tabs:spaces`. |
+| `--tab-stops:hard\|round` | `hard` | `hard` = additive (`col += tab-width`). `round` = advance to the next multiple of `--tab-width` (true tab-stop behaviour). They agree at column 0, so indentation is identical; they differ only for a tab that follows mid-line content. |
+| `--indent-width:N` | `0` (off) | Advisory. When `N > 0`, warn on stderr for any line whose indentation column is not a multiple of `N`. |
+| `--indent-consistency` | off | Advisory. Derives the indent unit from the first line that indents deeper than its predecessor, then warns for any indentation that is not a whole multiple of that derived unit — a lexer-level approximation of "siblings disagree on the step". |
 
-| mode | meaning |
+## Source hygiene (advisory)
+
+Diagnostic-only checks for linting and CI. Each writes warnings to **stderr** and
+leaves both stdout and the emitted NIF untouched.
+
+| flag | default | effect |
+|:--|:--|:--|
+| `--final-newline:require` | off | Warn if the source does not end with a terminating `\n`. |
+| `--newline:lf\|crlf\|any` | `any` | Assert an end-of-line convention. `any` = accept anything (CR is normalised as before). `lf` / `crlf` warn per line ending that doesn't match. |
+| `--trailing-whitespace:warn` | off | Warn once per physical line that has a space or tab immediately before its newline. |
+| `--bom:strip\|reject` | *(legacy skip)* | Handle a leading UTF-8 BOM (`EF BB BF`). `strip` consumes it **without shifting line-1 columns**. `reject` warns (and counts an error, so `--bom:reject --strict` exits non-zero). The default leaves the BOM on the historical unknown-byte path. |
+
+### `--doc-comments:on\|off`
+
+Default **`on`** — a standalone (line-leading) `##` or `##[ … ]##` doc comment is
+emitted as a `(comment)` node, matching nifler. `off` **drops** standalone doc
+comments entirely (no comment node). This is the one advisory flag that changes
+output, so it is an explicit opt-in divergence for tools that don't want comment
+nodes. Trailing doc comments are dropped either way.
+
+## Behaviour & robustness
+
+### `--strict`
+
+Default off. Exit with a **non-zero status** if the lexer encountered any
+unknown / illegal byte (today those are silently skipped), or a rejected BOM.
+Turns nifparser into a CI lint gate: a clean file exits `0`, a file with a stray
+control byte exits `1`.
+
+### `--max-depth:N`
+
+Default **0 = unlimited**. A recursion-nesting guard on the parser. When `N > 0`,
+if parse nesting through the recursive entry points exceeds `N`, nifparser prints
+a message naming the line and exits non-zero — protecting the "never crashes /
+hangs" property against pathologically nested input. The counter tracks *true*
+nesting (not input width), so set it generously: ordinary code nests only a
+handful of levels deep, so a ceiling in the hundreds catches abuse without ever
+tripping on real source.
+
+## I/O
+
+By default nifparser reads a file and writes `<in>.p.nif` (or the given output
+path). For pipelines and the JS build it can use the standard streams instead:
+
+| flag | effect |
 |:--|:--|
-| `spaces` *(default)* | Spaces only, the classic-Nim stance. A stray `\t` advances a single column, exactly as before. |
-| `tabs` | Tabs are allowed for indentation; each `\t` advances `--tab-width` columns. |
-| `both` | Tabs **or** spaces are accepted; a line whose *leading* whitespace mixes the two is reported (non-fatal) on stderr, keeping Nim's "mixing is suspect" stance as a warning rather than a hard error. |
+| `--stdin` (or input arg `-`) | Read source from **stdin**. |
+| `--stdout` (or output arg `-`) | Write the NIF to **stdout**. Stdin with no output target defaults to stdout. |
+| `--filename:PATH` | The path recorded in line-info when reading stdin (default `stdin`). |
 
-### `--tab-width:N` — columns per tab
-
-How many columns a `\t` advances when tabs are permitted (default **8**, the
-classic editor/Nim tab stop). It scales the `indent`/`col` coordinates recorded on
-tab-indented lines. Because the off-side rule is a **relative** column comparison,
-the parse *structure* is identical regardless of the width — so a tab-indented
-file parsed with `--tabs:tabs --tab-width:8` yields the same structural NIF as its
-8-space-indented equivalent. The width only affects the absolute coordinates.
-Ignored under `--tabs:spaces`.
-
-### `--indent-width:N` — advisory indentation check
-
-Default **0** (disabled). When `N > 0`, a first-on-line token whose indentation
-column is not a multiple of `N` is reported on stderr. This is a **diagnostic
-only** — it never alters the recorded indent, so parsing is untouched (the
-off-side rule stays relative). It exists so a tooling front end can flag
-inconsistent indentation without a separate lint pass; it cannot, by design,
-change the emitted NIF.
-
-## Worked example
+## Worked examples
 
 ```sh
 # default — nifler-compatible, spaces only
@@ -84,19 +121,27 @@ nifparser p mod.nim mod.p.nif
 # accept a tab-indented file (8-column tabs), same tree as the space version
 nifparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.nif
 
-# accept either, and warn on lines that mix tabs and spaces
-nifparser --tabs:both p mixed.nim mixed.p.nif
+# lint a file: require a final newline, LF endings, no trailing spaces
+nifparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.nif
 
-# validate that every indent step is a multiple of 2 columns (diagnostic only)
-nifparser --indent-width:2 p mod.nim mod.p.nif
+# CI gate — fail on any illegal byte
+nifparser --strict p mod.nim mod.p.nif || echo "rejected"
+
+# a pipeline: stdin -> stdout, with a recorded filename for line-info
+cat mod.nim | nifparser --stdin --stdout --filename:mod.nim p > mod.p.nif
+
+# guard against pathological nesting
+nifparser --max-depth:400 p untrusted.nim out.p.nif
 
 # brace blocks plus tab indentation, mixed freely
-nifparser --curly --tabs:tabs p editor_dialect.nim out.p.nif
+nifparser --curly --tabs:both p editor_dialect.nim out.p.nif
 ```
 
-## Design note: nothing here touches the wire format
+## Design note: the default is always native `nifler`
 
-These options deliberately affect only **input acceptance** and **diagnostics**,
-never the emitted NIF (except `--curly`, which only *adds* accepted syntax that
-maps onto the exact same block nodes). That keeps nifparser's core contract intact:
-its default output is, and remains, byte-for-byte native `nifler`.
+Every option defaults to the historical behaviour, and all of them — except
+`--curly` (additive syntax) and `--doc-comments:off` (explicit opt-in) — affect
+only **input acceptance, diagnostics, or I/O**, never the emitted node tree. That
+keeps nifparser's core contract intact: its default output is, and remains,
+byte-for-byte native `nifler`, verified by the [differential harness](testing) on
+every commit.
