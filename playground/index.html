@@ -132,6 +132,12 @@
 
   .pane .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 10px 8px 14px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;gap:8px}
   .pane .label .status{margin-left:auto;font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0}
+  /* the combined status line rides the SOURCE label, absolutely centred between
+     "nimony source" and "live compile"; hidden when the pane is too narrow. */
+  .pane.src .label{position:relative}
+  .pane.src .label #statusLine{position:absolute;left:50%;transform:translateX(-50%);
+    padding-left:0;text-transform:none;letter-spacing:0}
+  @container srcpane (max-width:680px){ .pane.src .label #statusLine{display:none} }
   /* the three right-pane views are mutually exclusive; only the active one shows */
   .view{display:none;flex:1;min-height:0;flex-direction:column}
   .view.active{display:flex;animation:viewIn .18s ease}
@@ -148,7 +154,10 @@
   header,footer,.pane .label,.tabs,#symList,.fab,.actions,.statusline,.brand,#tooltip{
     -webkit-user-select:none;user-select:none}
   #out,#nif{-webkit-user-select:text;user-select:text}
-  .tabs{display:flex;gap:2px;margin-left:auto}
+  /* tabs sit on the LEFT of the output header; the icon buttons are pushed right */
+  .tabs{display:flex;gap:2px}
+  .pane.out .label #outStatus{margin-left:8px}
+  .pane.out .label #stdinBtn{margin-left:auto}
   .tabs button{font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:6px;background:transparent;border:1px solid transparent;color:var(--muted);cursor:pointer;font-family:inherit}
   .tabs button.active{color:var(--fg);background:var(--panel2);border-color:var(--border)}
   /* small icon button living in a pane header (the layout toggle) */
@@ -194,6 +203,10 @@
   #out::-webkit-scrollbar-corner,#nif::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner{background:transparent}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
+  footer .ftxt{color:var(--muted)}
+  footer a{color:var(--fg);text-decoration:none;border-bottom:1px dotted var(--border)}
+  footer a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  footer a code{font-family:var(--mono)}
   kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 5px}
 
   /* ---- custom tooltips (for nav buttons + non-Monaco chrome) ---- */
@@ -243,11 +256,13 @@
      working (don't let the forced flex re-expand a hidden output). */
   @media(max-width:700px){
     main{flex-direction:column!important}
-    main[data-layout="cols"]>.pane.src,main[data-layout="rows"]>.pane.src{flex:1 1 0!important;min-height:0}
-    main>.pane.out{flex:1 1 0!important;min-height:0}
+    /* editor fills; output sits at the bottom at ~30vh by default */
+    main>.pane.src{flex:1 1 auto!important;min-height:0}
+    main>.pane.out{flex:0 0 30vh!important;min-height:0}
     main.out-hidden>.pane.src{flex:1 1 auto!important}
     main.out-hidden>.pane.out{flex:0 0 0!important;opacity:0}
     main>#gutter{display:none}
+    #orientBtn{display:none}   /* stacked-only on mobile — side-by-side toggle is moot */
   }
   /* phone: keep the logo, shrink the whole bar to fit one row */
   @media(max-width:600px){
@@ -285,9 +300,6 @@
     <a class="logo" href="../" data-tip="aoughwl docs" aria-label="aoughwl documentation"></a>
     <h1><span class="np-nimony">nimony</span><span class="dot">·</span><span class="np-pg">playground</span></h1>
   </div>
-  <div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence">
-    <span class="sdot"></span><span id="statusText">engine loading…</span>
-  </div>
   <div class="spacer"></div>
   <div class="actions">
     <button id="curlyBtn" class="curly" data-tip="Curly-brace block mode (experimental)">
@@ -307,7 +319,7 @@
 
 <main id="main" data-layout="cols">
   <section class="pane src">
-    <div class="label"><span class="cap">nimony source</span> <span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
+    <div class="label"><span class="cap">nimony source</span><div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence"><span class="sdot"></span><span id="statusText">engine loading…</span></div><span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
     <div id="editor"></div>
     <textarea id="fallback" spellcheck="false"></textarea>
     <button id="showOut" class="fab" data-tip="Show the output panel" style="display:none">
@@ -317,12 +329,12 @@
   <div id="gutter" title="Drag to resize"></div>
   <section class="pane out">
     <div class="label">
-      <span id="paneTitle">output</span> <span class="status" id="outStatus"></span>
       <div class="tabs">
         <button id="tabOut" class="active" data-view="out">Output</button>
         <button id="tabSym" data-view="sym">Symbols</button>
         <button id="tabNif" data-view="nif">NIF</button>
       </div>
+      <span class="status" id="outStatus"></span>
       <button id="stdinBtn" class="paneBtn" data-tip="stdin"></button>
       <button id="wrapBtn" class="paneBtn" data-tip="Word wrap"></button>
       <button id="orientBtn" class="paneBtn" data-tip="Layout"></button>
@@ -346,7 +358,7 @@
 
 <footer>
   <span class="badge">● 100% client-side</span>
-  <span>The parser (<code>nifparser</code>), semantic checker (<code>nimsem</code>) and interpreter (<code>nifi</code>) are compiled to JavaScript and run in this tab — your code is parsed, type-checked and executed with no backend.</span>
+  <span class="ftxt"><a href="https://github.com/aoughwl/nifparser" target="_blank" rel="noopener"><code>nifparser</code></a> · <a href="https://github.com/nim-lang/nimony" target="_blank" rel="noopener"><code>nimsem</code></a> · <a href="https://github.com/aoughwl/nifi" target="_blank" rel="noopener"><code>nifi</code></a> → JS in this tab, no backend</span>
   <div style="flex:1"></div>
   <span id="perf"></span>
 </footer>
@@ -427,7 +439,6 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       $("#tab"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
       $("#view"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
     });
-    $("#paneTitle").textContent = view==="nif" ? "parsed NIF" : view==="sym" ? "symbols" : "output";
   }
   document.querySelectorAll(".tabs button").forEach(b=>
     b.addEventListener("click",()=>selectTab(b.dataset.view)));
