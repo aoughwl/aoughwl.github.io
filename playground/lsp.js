@@ -400,8 +400,14 @@
     "random","rawthreads","result","rlocks","sequtils","sets","setutils","sha1","streams",
     "strtabs","strutils","syncio","system","tables","terminal","threadpool","ticketlocks",
     "times","unicode","varints","widestrs","wordwrap","writenif"];
-  // only these actually run in the browser sandbox (engine.js AVAILABLE); the
-  // rest still parse + type-check, they just can't be executed in-tab.
+  // TYPECHECKS: the modules pre-semchecked into the browser stdlib closure
+  // (assets/nimsem-stdlib.bin). Importing any of these type-checks and yields
+  // completions/hover. Today that is the whole std library — every lib/std/*.nim
+  // that semchecks — so it mirrors STD_MODULES; kept as its own set so the label
+  // logic stays correct if the bundled closure is ever trimmed.
+  const TYPECHECKS = new Set(STD_MODULES);
+  // SANDBOX ⊂ TYPECHECKS: these also actually RUN in the nifi sandbox. The rest
+  // parse + type-check (completions/hover) but may fail at RUN time (OS/FFI/threads).
   const SANDBOX = new Set(["syncio","system"]);
   lsp.stdModules = STD_MODULES;                 // shared with editor.js decorations
 
@@ -465,9 +471,10 @@
     }
     for(const name of STD_MODULES){
       const runs = SANDBOX.has(name);
+      const typed = TYPECHECKS.has(name);
       items.push({ label:name, kind:K.Module,
         insertText:(bare?name:"std/"+name), range,
-        detail:"std module · "+(runs?"runs in sandbox":"parse/checks only"),
+        detail:"std module · "+(runs?"runs in sandbox":typed?"type-checks (bundled)":"parse only"),
         sortText:(bare?"":"1")+(runs?"0":"1")+name });
     }
     return { suggestions: items };
@@ -511,10 +518,10 @@
         if(/^\s*(import|from|include)\b/.test(line)){
           const wm = model.getWordAtPosition(position);
           if(wm && STD_MODULES.indexOf(wm.word)>=0){
-            const nm = wm.word, runs = SANDBOX.has(nm);
+            const nm = wm.word, runs = SANDBOX.has(nm), typed = TYPECHECKS.has(nm);
             const r = new monaco.Range(position.lineNumber, wm.startColumn, position.lineNumber, wm.endColumn);
             const note = "_builtin std module — “Go to definition” not implemented (browser sandbox) · "
-              + (runs?"runs in the sandbox":"parse/type-check only") + "_";
+              + (runs?"runs in the sandbox":typed?"type-checks (bundled)":"parse only") + "_";
             return { range:r, contents:[ {value:"```nimony\nimport std/"+nm+"\n```"}, {value:note} ] };
           }
         }

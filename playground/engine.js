@@ -49,24 +49,61 @@
   // Tier 2: compile the editor buffer live and run it —
   //   source → nifparser (.p.nif) → nimsem (.s.nif) → nifi (run)
   // all client-side. Returns the same {stdout,stderr,exitCode} shape as runSnif.
-  // The in-browser stdlib closure is small (system + syncio + formatfloat), so
-  // an `import std/options` (etc.) can't be resolved — and reaching for it used
-  // to hit a Node-only code path ("process is not defined"). Catch unavailable
-  // imports up front and report them cleanly, before sem ever runs.
-  const AVAILABLE = ["std/syncio","syncio","std/system","system"];
+  //
+  // The in-browser stdlib closure now holds the WHOLE nimony std library
+  // (assets/nimsem-stdlib.bin: every lib/std/*.nim that semchecks, plus their
+  // transitive deps — pre-semchecked). So `import std/<anything>` type-checks
+  // and gets completions/hover. This gate only blocks imports that are NOT in
+  // the closure (a typo, or a non-std module), so they get a clean diagnostic
+  // instead of letting nimsem hit a "cannot open module" quit mid-compile.
+  //
+  // NOTE: type-checkable ≠ runnable. Only `system`/`syncio` actually execute in
+  // the nifi sandbox; the rest still parse + type-check but may fail at RUN time
+  // if they reach for OS/FFI/threads. That distinction is surfaced by lsp.js.
+  const BUNDLED = new Set(["algorithm","appdirs","assertions","atomics","base64",
+    "bitops","cmdline","complex","cpuinfo","deques","dirs","editdistance","encodings",
+    "envvars","fenv","formatfloat","hashes","heapqueue","intsets","ioring","json",
+    "lexbase","locks","macros","math","md5","memfiles","monotimes","nativesocket",
+    "nifply","opt","options","os","oserrors","osproc","parfor","parsejson","parseopt",
+    "parseutils","pathnorm","paths","random","rawthreads","result","rlocks","sequtils",
+    "sets","setutils","sha1","streams","strtabs","strutils","syncio","system","tables",
+    "terminal","threadpool","ticketlocks","times","unicode","varints","widestrs",
+    "wordwrap","writenif"]);
+  // Everything the closure knows how to resolve reaches sem; anything else is
+  // reported here. A module is bundled iff its final path segment is in BUNDLED
+  // (so `std/math`, `math`, and `std / math` all resolve).
+  // Expand a `from`/`import` spec into the individual module paths it names,
+  // handling nimony's bracket sugar `pkg/[a, b, c]` (a shared `pkg/` prefix over
+  // a comma list) as well as a plain comma list `a, b, c`.
+  function importedModules(spec){
+    const mods = [];
+    const br = /^(.*?)\[([^\]]*)\]\s*$/.exec(spec);
+    if(br){
+      const prefix = br[1].trim().replace(/\s*\/\s*/g,"/");  // e.g. "std/"
+      for(const raw of br[2].split(",")){
+        const item = raw.trim().replace(/\s*\/\s*/g,"/");
+        if(item) mods.push(prefix + item);
+      }
+    } else {
+      for(const raw of spec.split(",")){
+        const mod = raw.trim().replace(/\s*\/\s*/g,"/");
+        if(mod) mods.push(mod);
+      }
+    }
+    return mods;
+  }
   function checkImports(source){
     const out = [], lines = String(source).split("\n");
     for(let i=0;i<lines.length;i++){
       const m = /^\s*(?:import|from)\s+(.+?)\s*$/.exec(lines[i]);
       if(!m) continue;
       const spec = m[1].split("#")[0].replace(/\bimport\b.*$/,"").replace(/\bexcept\b.*$/,"").replace(/\bas\b.*$/,"");
-      for(const raw of spec.split(",")){
-        const mod = raw.trim().replace(/\s*\/\s*/g,"/");
-        if(!mod) continue;
-        if(AVAILABLE.indexOf(mod) < 0){
-          const col = (lines[i].indexOf(mod.split("/").pop())+1) || 1;
+      for(const mod of importedModules(spec)){
+        const base = mod.split("/").pop();
+        if(!BUNDLED.has(base)){
+          const col = (lines[i].indexOf(base)+1) || 1;
           out.push({ line:i+1, col, severity:"error",
-            message:'module "'+mod+'" is not available in the browser sandbox yet (bundled: std/syncio)' });
+            message:'module "'+mod+'" is not in the browser stdlib closure yet (type-checkable: the nimony std library)' });
         }
       }
     }
