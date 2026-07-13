@@ -280,6 +280,25 @@ a.site-footer-discord:hover,
 a.site-footer-discord:focus-visible { color: #7983f5; text-decoration: underline; }
 a.site-footer-discord .discord-ico { flex: 0 0 auto; }
 
+/* ------------------------------------------------ mobile floating nav button */
+/* Hidden by default; JS adds `.show` once you scroll past the header on the
+   mobile layout. Proxies just-the-docs' #menu-button. */
+#nav-fab {
+  position: fixed; top: .7rem; right: .7rem; z-index: 1100;
+  width: 2.6rem; height: 2.6rem;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer;
+  background: var(--bg-elev); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: 12px;
+  box-shadow: var(--shadow);
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .16s ease, transform .16s ease;
+}
+#nav-fab.show { display: flex; opacity: 1; transform: none; }
+#nav-fab:active { transform: scale(.93); }
+/* never show on the desktop layout, whatever the scroll JS thinks */
+@media (min-width: 50rem) { #nav-fab { display: none !important; } }
+
 /* ----------------------------------------------------------- theme toggle */
 #theme-toggle {
   position: fixed; bottom: 1.1rem; right: 1.1rem; z-index: 1000;

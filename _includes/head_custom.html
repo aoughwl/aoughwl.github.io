@@ -102,3 +102,39 @@
     host.insertBefore(el, host.firstChild);
   });
 </script>
+
+<!-- mobile: a floating "open navigation" button that appears once you scroll
+     past the top header, so the menu (and Home) stays one tap away. It just
+     proxies just-the-docs' own #menu-button, so open/close state stays in sync. -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var menuButton = document.getElementById('menu-button');
+    if (!menuButton) return;                       // desktop layouts may omit it
+    var header = menuButton.closest('.site-header') ||
+                 document.querySelector('.site-header');
+
+    var fab = document.createElement('button');
+    fab.id = 'nav-fab';
+    fab.type = 'button';
+    fab.setAttribute('aria-label', 'Open navigation menu');
+    fab.innerHTML =
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+      'aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+    fab.addEventListener('click', function () { menuButton.click(); });
+    document.body.appendChild(fab);
+
+    function update() {
+      // Only on the mobile layout (the real menu button is visible), only once
+      // scrolled past the header, and never while the nav is already open.
+      var mobile = menuButton.offsetParent !== null;
+      var past = window.pageYOffset > (header ? header.offsetHeight : 48);
+      var navOpen = menuButton.classList.contains('nav-open');
+      fab.classList.toggle('show', mobile && past && !navOpen);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    menuButton.addEventListener('click', function () { setTimeout(update, 0); });
+    update();
+  });
+</script>
