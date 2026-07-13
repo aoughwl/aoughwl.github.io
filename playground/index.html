@@ -137,21 +137,31 @@
 </footer>
 
 <script>
-// Node `process` shim. The nifi/nimsem JS bundles were produced for a Node-ish
-// host and reference process.stdout/stderr/exit on their fallback + error/quit
-// paths (the happy path uses the __nifi_/__ns_ capture globals). In a real
-// browser those refs throw a raw "process is not defined" — which surfaced when
-// running code that hits them (e.g. importing a module not in the bundled stdlib
-// closure). Route them to the same capture globals and make exit catchable, so
-// the outcome is a clean diagnostic instead of a ReferenceError.
+// Node-globals shim. The nifi/nimsem JS bundles were produced for a Node-ish
+// host and reference `process` and `Buffer` on their raw-stdio / error / exit
+// paths — e.g. `fwrite` does `_stream(f).write(Buffer.from(bytes))`. The happy
+// path (echo) uses the intercepted __nifi_ capture natives, so examples never
+// hit these; but stdlib code that writes via libc stdio does, and in a real
+// browser those refs throw "process is not defined" / "Buffer is not defined".
+// Provide them: `Buffer.from` yields a byte array, the stream `write` turns
+// bytes (or a string) into the captured output, and `exit` throws catchably.
 (function(){
-  if(typeof globalThis.process !== "undefined") return;
-  globalThis.process = {
-    platform:"browser", argv:[], env:{}, cwd:function(){ return "/"; },
-    stdout:{ write:function(s){ globalThis.__nifi_out=(globalThis.__nifi_out||"")+s; return true; } },
-    stderr:{ write:function(s){ globalThis.__nifi_err=(globalThis.__nifi_err||"")+s; return true; } },
-    exit:function(code){ var e=new Error("process.exit("+(code||0)+")"); e.__isExit=true; throw e; }
-  };
+  var g = globalThis;
+  if(!g.global) g.global = g;                 // a few refs mention `global`
+  function toStr(s){
+    if(typeof s === "string") return s;
+    if(s && typeof s.length === "number"){ var r=""; for(var i=0;i<s.length;i++) r+=String.fromCharCode(s[i]&0xff); return r; }
+    return s==null ? "" : String(s);
+  }
+  if(typeof g.Buffer === "undefined")
+    g.Buffer = { from:function(x){ return (x instanceof Uint8Array) ? x : Uint8Array.from(x||[]); } };
+  if(typeof g.process === "undefined")
+    g.process = {
+      platform:"browser", argv:[], env:{}, cwd:function(){ return "/"; },
+      stdout:{ write:function(s){ g.__nifi_out=(g.__nifi_out||"")+toStr(s); return true; } },
+      stderr:{ write:function(s){ g.__nifi_err=(g.__nifi_err||"")+toStr(s); return true; } },
+      exit:function(code){ var e=new Error("process.exit("+(code||0)+")"); e.__isExit=true; throw e; }
+    };
 })();
 </script>
 <script src="examples.js"></script>
