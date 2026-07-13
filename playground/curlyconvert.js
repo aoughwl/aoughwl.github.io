@@ -19,11 +19,17 @@
 //               before `{`), so a bare except keeps its `:`/indent body.
 //   * `static:` — `static` is not a bodiless keyword, so `static {` yields an
 //               empty body; kept as `:`/indent.
-//   * routines/types: proc func method iterator converter template macro
-//               type object enum tuple concept import export include from
-//               var let const, and `{.pragmas.}` — bodies stay `=`/`:`+indent.
-// Routine/type bodies are left in indent form, but control-flow nested INSIDE
-// them is still converted.
+//   * types: type object enum tuple concept — bodies stay `:`/indent.
+//   * import export include from var let const, and `{.pragmas.}` — no braces.
+//
+// ROUTINES (proc func method iterator converter template macro) — nifparser's
+// `--curly` mode also accepts a `{ … }` block body in place of the `= …` body
+// (see parse_type.nim parseRoutine), so toCurly braces multi-line routine
+// bodies too: `proc f(): int =` → `proc f(): int {`. A one-liner
+// (`proc f() = x`) stays `=`, and a set-literal expression body
+// (`proc f(): set = {}`) is NEVER braced (the `=` guards it). Type bodies are
+// left in indent form, but control-flow nested INSIDE any body is still
+// converted.
 //
 // One-liners (`if c: a`) are left in colon form (they already parse in curly
 // mode, and leaving them untouched guarantees identical NIF). Only multi-line
@@ -40,6 +46,58 @@
     "if": 1, "elif": 1, "else": 1, "while": 1, "for": 1, "of": 1,
     "try": 1, "except": 1, "finally": 1, "block": 1, "when": 1, "defer": 1
   };
+
+  // Routine keywords whose `= …` body nifparser's `--curly` mode also accepts as
+  // `{ … }` (see parse_type.nim parseRoutine). The body `{` is a bare `{` (not a
+  // `{.` pragma) with NO preceding `=`, so a set-literal expression body
+  // (`proc f(): set = {}`) stays `=`-form and is never braced here.
+  var ROUTINE = {
+    "proc": 1, "func": 1, "method": 1, "iterator": 1,
+    "converter": 1, "template": 1, "macro": 1
+  };
+
+  var OPCHARS = "=<>!+-*/%@$~&|^?.:";
+  function isOpChar(c) { return c !== undefined && OPCHARS.indexOf(c) >= 0; }
+
+  // Net ()[]{} nesting over a masked string (all bracket families).
+  function allDelta(mask, upto) {
+    var end = (upto === undefined) ? mask.length : upto;
+    var d = 0;
+    for (var k = 0; k < end; k++) {
+      var c = mask[k];
+      if (c === "(" || c === "[" || c === "{") d++;
+      else if (c === ")" || c === "]" || c === "}") { if (d > 0) d--; }
+    }
+    return d;
+  }
+
+  // If `tm` (trimmed masked line) ends with a STANDALONE depth-0 `=` — the body
+  // introducer of a routine block (`proc f(): int =`) — return that `=`'s index,
+  // else -1. Guards against compound operators (`==`, `+=`) and against `=`
+  // nested in params/generics.
+  function endsWithBodyEq(tm) {
+    var pos = tm.length - 1;
+    if (pos < 0 || tm.charAt(pos) !== "=") return -1;
+    if (isOpChar(tm.charAt(pos - 1))) return -1;   // part of a 2-char operator
+    if (allDelta(tm, pos) !== 0) return -1;         // inside ( ) / [ ] / { }
+    return pos;
+  }
+
+  // Does `tm` contain a standalone depth-0 `=` with non-blank content after it
+  // (a routine ONE-LINER body, `proc f() = echo 1`)? Returns its index or -1.
+  function oneLinerBodyEq(tm) {
+    var d = 0;
+    for (var k = 0; k < tm.length; k++) {
+      var c = tm[k];
+      if (c === "(" || c === "[" || c === "{") d++;
+      else if (c === ")" || c === "]" || c === "}") { if (d > 0) d--; }
+      else if (c === "=" && d === 0 &&
+               !isOpChar(tm.charAt(k - 1)) && !isOpChar(tm.charAt(k + 1))) {
+        if (tm.slice(k + 1).replace(/\s+/g, "") !== "") return k;
+      }
+    }
+    return -1;
+  }
 
   // ---------------------------------------------------------------------------
   // Masking: produce a parallel string of identical length where every byte
@@ -183,6 +241,8 @@
     var lines = toLines(src);
     var out = [];
     var stack = []; // { indent } of open inserted braces, in nesting order
+    var inRoutineSig = false;   // inside a multi-line routine signature
+    var routineIndent = 0;      // indent of the routine keyword line
 
     function closeTo(indent) {
       while (stack.length && indent <= stack[stack.length - 1].indent) {
@@ -200,6 +260,29 @@
       closeTo(L.indent);
 
       var word = leadWord(L.mask);
+
+      // --- routine block body: `proc … =` → `proc … {` (+ a `}` at dedent) ---
+      if (ROUTINE[word] || inRoutineSig) {
+        if (ROUTINE[word]) routineIndent = L.indent;
+        var trimmedR = L.mask.replace(/\s+$/, "");
+        var eqPos = endsWithBodyEq(trimmedR);
+        if (eqPos >= 0) {
+          // block body opens here: swap the trailing `=` for `{`.
+          out.push(L.raw.slice(0, eqPos) + "{" + L.raw.slice(eqPos + 1));
+          stack.push({ indent: inRoutineSig ? routineIndent : L.indent });
+          inRoutineSig = false;
+          continue;
+        }
+        // one-liner (`proc f() = echo 1`) or forward decl: leave verbatim.
+        if (ROUTINE[word] && oneLinerBodyEq(trimmedR) >= 0) {
+          inRoutineSig = false; out.push(L.raw); continue;
+        }
+        // otherwise the signature continues iff a bracket is still open.
+        inRoutineSig = allDelta(trimmedR) > 0;
+        out.push(L.raw);
+        continue;
+      }
+
       var convertible = false;
       if (CONVERTIBLE[word]) {
         var colon = depth0Colon(L.mask);
@@ -243,7 +326,8 @@
     var lines = toLines(src);
     var out = [];
     var depth = 0;        // running brace nesting (masked braces)
-    var ctrl = [];        // stack of brace-levels opened by control headers
+    var ctrl = [];        // stack of brace-levels opened by control/routine headers
+    var inRoutineSig = false;   // inside a multi-line routine signature
 
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i];
@@ -256,13 +340,33 @@
         depth = closedLevel;
         if (ctrl.length && ctrl[ctrl.length - 1] === closedLevel) {
           ctrl.pop();
-          continue; // drop the control-close line entirely
+          continue; // drop the control/routine-close line entirely
         }
         out.push(L.raw); // a non-control brace on its own line: keep verbatim
         continue;
       }
 
       var word = leadWord(mask);
+
+      // --- routine block open: `proc … {` → `proc … =` (drop matching `}`) ---
+      if (ROUTINE[word] || inRoutineSig) {
+        if (trimmedMask.charAt(trimmedMask.length - 1) === "{") {
+          var rBracePos = L.raw.lastIndexOf("{");
+          var rLevel = depth + braceDelta(mask, rBracePos);
+          var rHead = L.raw.slice(0, rBracePos).replace(/\s+$/, "");
+          out.push(rHead + " =" + L.raw.slice(rBracePos + 1));
+          ctrl.push(rLevel);
+          depth += braceDelta(mask);
+          inRoutineSig = false;
+          continue;
+        }
+        // one-liner / forward decl / signature continuation: keep verbatim.
+        inRoutineSig = allDelta(trimmedMask) > 0;
+        out.push(L.raw);
+        depth += braceDelta(mask);
+        continue;
+      }
+
       // control-open line: a convertible keyword whose body-opening `{` is the
       // last significant char on the line.
       if (CONVERTIBLE[word] && trimmedMask.charAt(trimmedMask.length - 1) === "{") {
