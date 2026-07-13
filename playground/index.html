@@ -26,9 +26,11 @@
   .brand{display:flex;align-items:center;gap:11px;padding-left:15px;flex:none}
   /* the aoughwl wordmark, rendered as a currentColor mask so it themes itself
      (white glyph PNG -> alpha mask); sized a touch larger than the product name. */
-  .brand .logo{width:98px;height:23px;flex:none;background:currentColor;opacity:.95;
+  .brand .logo{display:block;width:98px;height:23px;flex:none;background:currentColor;opacity:.95;
+    text-decoration:none;transition:opacity .15s;
     -webkit-mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat;
             mask:url(../assets/aoughwl-logo-white.png) left center/contain no-repeat}
+  .brand a.logo:hover{opacity:1}
   .brand h1{font-size:15px;margin:0;letter-spacing:.2px;white-space:nowrap;font-weight:400}
   .brand h1 .np-nimony{font-weight:650}
   /* "playground" reads as the quieter half — lighter + faded */
@@ -76,9 +78,12 @@
      to fill while the output shrinks to nothing and goes inert. */
   .pane,#gutter{transition:flex-grow .26s ease,flex-basis .26s ease,opacity .2s ease}
   .pane.out{overflow:hidden}
-  main[data-layout="solo"]>.pane.src{flex:1 1 var(--split)}
-  main[data-layout="solo"]>.pane.out{flex:0 0 0;opacity:0;pointer-events:none}
-  main[data-layout="solo"]>#gutter{flex-basis:0;opacity:0;pointer-events:none}
+  /* hiding keeps the current data-layout (cols/rows) so flex-direction — and thus
+     the collapse AXIS — is preserved: horizontal shrink when side-by-side,
+     vertical when stacked. `out-hidden` just collapses the output pane. */
+  main.out-hidden>.pane.src{flex:1 1 var(--split)}
+  main.out-hidden>.pane.out{flex:0 0 0;opacity:0;pointer-events:none}
+  main.out-hidden>#gutter{flex-basis:0;opacity:0;pointer-events:none}
   .pane{display:flex;flex-direction:column;min-width:0;min-height:0}
   .pane.src{position:relative}
   #gutter{flex:0 0 6px;background:var(--border);position:relative;z-index:2;touch-action:none}
@@ -149,8 +154,8 @@
     main{flex-direction:column!important}
     main[data-layout="cols"]>.pane.src,main[data-layout="rows"]>.pane.src{flex:1 1 0!important;min-height:0}
     main>.pane.out{flex:1 1 0!important;min-height:0}
-    main[data-layout="solo"]>.pane.src{flex:1 1 auto!important}
-    main[data-layout="solo"]>.pane.out{flex:0 0 0!important;opacity:0}
+    main.out-hidden>.pane.src{flex:1 1 auto!important}
+    main.out-hidden>.pane.out{flex:0 0 0!important;opacity:0}
     main>#gutter{display:none}
   }
   /* phone: keep the logo, shrink the whole bar to fit one row */
@@ -175,7 +180,7 @@
 <body>
 <header>
   <div class="brand">
-    <span class="logo" aria-hidden="true"></span>
+    <a class="logo" href="../" data-tip="aoughwl docs" aria-label="aoughwl documentation"></a>
     <h1><span class="np-nimony">nimony</span><span class="dot">·</span><span class="np-pg">playground</span></h1>
   </div>
   <div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence">
@@ -517,7 +522,8 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     try{ const l=localStorage.getItem("np-layout"); if(l==="solo") hidden=true; else if(l==="rows"||l==="cols") orient=l; }catch(_){}
     const applySplit=()=>main.style.setProperty("--split", split+"%");
     function apply(){
-      main.setAttribute("data-layout", hidden ? "solo" : orient);
+      main.setAttribute("data-layout", orient);      // always cols/rows → keeps the axis
+      main.classList.toggle("out-hidden", hidden);
       orientBtn.innerHTML=ORIENT_ICON[orient];
       orientBtn.setAttribute("data-tip", orient==="cols"
         ? "Side-by-side — switch to stacked" : "Stacked — switch to side-by-side");
@@ -531,7 +537,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     ensureOutputVisible = ()=>{ if(hidden){ hidden=false; apply(); } selectTab("out"); };
     let dragging=false;
     gutter.addEventListener("pointerdown",e=>{
-      if(main.getAttribute("data-layout")==="solo") return;
+      if(main.classList.contains("out-hidden")) return;
       dragging=true; gutter.classList.add("drag"); gutter.setPointerCapture(e.pointerId); e.preventDefault();
     });
     gutter.addEventListener("pointermove",e=>{
