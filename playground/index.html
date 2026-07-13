@@ -500,6 +500,10 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     ensureOutputVisible();
     outShowingProblems=false;
     runBtn.classList.add("running"); runBtn.disabled=true; outStatus.textContent="running…"; print('<span class="sys">running…</span>');
+    // yield one frame so the cleared "running…" state actually PAINTS before the
+    // interpreter's blocking synchronous eval hogs the thread (otherwise the old
+    // output lingers on screen until the run finishes).
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const t0=performance.now();
     try{
       const res=await window.NifiEngine.run({ source: window.NifiEditor.getValue() });
@@ -559,13 +563,37 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   });
   paintWrap();
 
-  // ---- site-wide right-click context menu (Monaco-flavoured) ----
+  // ---- ONE site-wide right-click context menu (incl. inside Monaco, whose
+  //      built-in menu is disabled) so every menu looks identical ----
   (function(){
     const menu=document.createElement("div");
     menu.id="ctxmenu"; menu.setAttribute("role","menu"); document.body.appendChild(menu);
     const hide=()=>{ menu.classList.remove("show"); menu.innerHTML=""; };
     const selText=()=>{ const s=window.getSelection&&window.getSelection(); return s?String(s).trim():""; };
+    // menu contents for a right-click INSIDE the Monaco editor — drives Monaco's
+    // own actions, so we keep its power (goto/palette) with our look.
+    function editorItems(){
+      const ed=window.NifiEditor.getEditor(); if(!ed) return [];
+      const model=ed.getModel(), sel=ed.getSelection();
+      const hasSel = sel && !sel.isEmpty();
+      const selStr = hasSel ? model.getValueInRange(sel) : "";
+      const trigger=id=>{ const a=ed.getAction(id); if(a) a.run(); ed.focus(); };
+      return [
+        { label:"Cut", kb:"⌘X", off:!hasSel, act:()=>{ if(navigator.clipboard) navigator.clipboard.writeText(selStr);
+            ed.executeEdits("ctx",[{range:sel,text:"",forceMoveMarkers:true}]); ed.focus(); }},
+        { label:"Copy", kb:"⌘C", off:!hasSel, act:()=>{ if(navigator.clipboard) navigator.clipboard.writeText(selStr); ed.focus(); }},
+        { label:"Paste", kb:"⌘V", act:()=>{ if(navigator.clipboard&&navigator.clipboard.readText)
+            navigator.clipboard.readText().then(t=>{ ed.executeEdits("ctx",[{range:ed.getSelection(),text:t,forceMoveMarkers:true}]); ed.focus(); }).catch(()=>{}); }},
+        { sep:true },
+        { label:"Go to Definition", kb:"F12", act:()=>trigger("editor.action.revealDefinition") },
+        { label:"Select all", kb:"⌘A", act:()=>trigger("editor.action.selectAll") },
+        { sep:true },
+        { label:"Command Palette", kb:"F1", act:()=>trigger("editor.action.quickCommand") },
+        { label:"Run", kb:"⌃⏎", off:runBtn.disabled, act:()=>run() },
+      ];
+    }
     function items(target){
+      if(target.closest(".monaco-editor")) return editorItems();
       const nifCtx = !!target.closest("#viewNif");
       const inOut = nifCtx || !!target.closest("#viewOut");
       const sel = selText();
@@ -599,10 +627,9 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       menu.style.left=Math.max(6, Math.min(x, innerWidth-mw-6))+"px";
       menu.style.top =Math.max(6, Math.min(y, innerHeight-mh-6))+"px";
     }
-    document.addEventListener("contextmenu",e=>{
-      if(e.target.closest(".monaco-editor")) return;   // Monaco keeps its own menu
-      e.preventDefault(); open(e.clientX, e.clientY, e.target);
-    });
+    // capture phase: Monaco consumes contextmenu on its textarea even with its
+    // own menu disabled, so we must intercept before it.
+    document.addEventListener("contextmenu",e=>{ e.preventDefault(); e.stopPropagation(); open(e.clientX, e.clientY, e.target); }, true);
     // capture phase: Monaco stops propagation on its own mousedown, so a click
     // INTO the editor would never bubble here — capture closes the menu anyway.
     document.addEventListener("mousedown",e=>{ if(!e.target.closest("#ctxmenu")) hide(); }, true);

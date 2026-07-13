@@ -121,6 +121,9 @@
             fontFamily:'"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace',
             fontSize:13, minimap:{enabled:false}, automaticLayout:true,
             scrollBeyondLastLine:false, tabSize:2, insertSpaces:true, renderWhitespace:"none",
+            // the playground supplies its OWN unified context menu (see index.html)
+            // so the look matches the rest of the site — disable Monaco's built-in one.
+            contextmenu:false,
           });
           editor.onDidChangeModelContent(scheduleImportDecos);   // keep import underlines fresh
           computeImportDecos();
