@@ -1,65 +1,17 @@
-// engine.js — the client-side execution seam.
+// engine.js — the client-side execution seam (now a thin worker client).
 //
-// The nimony interpreter `nifi` is compiled to JavaScript by aoughwl/nimony-web
-// (bundle: nifi.js). We drive it exactly like the Node harness does, but in-tab:
-//
-//   IN : globalThis.__nifi_src  = the .s.nif bytes (byte-exact string)
-//   RUN: (new Function(bundle + "main(0,[]);"))()      // fresh scope per run
-//   OUT: globalThis.__nifi_out / __nifi_err / __nifi_exit
-//
-// A fresh `new Function` scope per run is deliberate: the bundle has top-level
-// declarations that can't be redeclared in one global scope, and a fresh scope
-// also gives each run clean interpreter state.
-//
-// Tier 1 (today): runs an example's PRE-COMPILED .s.nif — fully client-side,
-// no backend. Tier 2 (frontend ported to JS) will compile whatever is in the
-// editor; then window.NifiCore.compileAndRun takes over transparently.
+// Live compile+run: source → nifparser (.p.nif, main thread) → nimsem (.s.nif)
+// → nifi (run). The last two stages run in the Web Worker owned by pipeline.js,
+// so a long or infinite run never blocks the UI and can be stopped by killing
+// the worker. This file only orchestrates: it parses on the main thread (fast,
+// and it feeds the synchronous LSP index anyway), gates imports, and hands the
+// `.p.nif` to the worker.
 (function(){
-  const engine = { ready:false, tier:1, run:null };
-  let bundleText = null;
+  const engine = { tier:2, run:null };
 
-  async function loadBundle(){
-    if(bundleText) return bundleText;
-    const r = await fetch("nifi.js");
-    if(!r.ok) throw new Error("failed to load interpreter (nifi.js): HTTP " + r.status);
-    bundleText = await r.text();
-    return bundleText;
-  }
-
-  // Byte-exact fetch: .s.nif is a NIF byte stream; decode 1:1 (latin1), never UTF-8.
-  async function fetchSnifBytes(name){
-    const r = await fetch("assets/snif/" + name);
-    if(!r.ok) throw new Error("missing bytecode asset: " + name + " (HTTP " + r.status + ")");
-    const buf = new Uint8Array(await r.arrayBuffer());
-    let s = "";
-    for(let i = 0; i < buf.length; i++) s += String.fromCharCode(buf[i]);
-    return s;
-  }
-
-  function runSnif(bytes){
-    globalThis.__nifi_src = bytes;
-    globalThis.__nifi_out = ""; globalThis.__nifi_err = ""; globalThis.__nifi_exit = 0;
-    (new Function(bundleText + "\nmain(0, []);"))();
-    return {
-      stdout: globalThis.__nifi_out || "",
-      stderr: globalThis.__nifi_err || "",
-      exitCode: globalThis.__nifi_exit | 0
-    };
-  }
-  // Tier 2: compile the editor buffer live and run it —
-  //   source → nifparser (.p.nif) → nimsem (.s.nif) → nifi (run)
-  // all client-side. Returns the same {stdout,stderr,exitCode} shape as runSnif.
-  //
-  // The in-browser stdlib closure now holds the WHOLE nimony std library
-  // (assets/nimsem-stdlib.bin: every lib/std/*.nim that semchecks, plus their
-  // transitive deps — pre-semchecked). So `import std/<anything>` type-checks
-  // and gets completions/hover. This gate only blocks imports that are NOT in
-  // the closure (a typo, or a non-std module), so they get a clean diagnostic
-  // instead of letting nimsem hit a "cannot open module" quit mid-compile.
-  //
-  // NOTE: type-checkable ≠ runnable. Only `system`/`syncio` actually execute in
-  // the nifi sandbox; the rest still parse + type-check but may fail at RUN time
-  // if they reach for OS/FFI/threads. That distinction is surfaced by lsp.js.
+  // Modules pre-semchecked into the browser stdlib closure. Importing anything
+  // NOT here is reported up front (a clean diagnostic) instead of letting nimsem
+  // quit mid-compile trying to open a module it can't find.
   const BUNDLED = new Set(["algorithm","appdirs","assertions","atomics","base64",
     "bitops","cmdline","complex","cpuinfo","deques","dirs","editdistance","encodings",
     "envvars","fenv","formatfloat","hashes","heapqueue","intsets","ioring","json",
@@ -69,26 +21,17 @@
     "sets","setutils","sha1","streams","strtabs","strutils","syncio","system","tables",
     "terminal","threadpool","ticketlocks","times","unicode","varints","widestrs",
     "wordwrap","writenif"]);
-  // Everything the closure knows how to resolve reaches sem; anything else is
-  // reported here. A module is bundled iff its final path segment is in BUNDLED
-  // (so `std/math`, `math`, and `std / math` all resolve).
-  // Expand a `from`/`import` spec into the individual module paths it names,
-  // handling nimony's bracket sugar `pkg/[a, b, c]` (a shared `pkg/` prefix over
-  // a comma list) as well as a plain comma list `a, b, c`.
+
+  // Expand a `from`/`import` spec into module paths, handling nimony's bracket
+  // sugar `pkg/[a, b, c]` as well as a plain comma list `a, b, c`.
   function importedModules(spec){
     const mods = [];
     const br = /^(.*?)\[([^\]]*)\]\s*$/.exec(spec);
     if(br){
-      const prefix = br[1].trim().replace(/\s*\/\s*/g,"/");  // e.g. "std/"
-      for(const raw of br[2].split(",")){
-        const item = raw.trim().replace(/\s*\/\s*/g,"/");
-        if(item) mods.push(prefix + item);
-      }
+      const prefix = br[1].trim().replace(/\s*\/\s*/g,"/");
+      for(const raw of br[2].split(",")){ const item = raw.trim().replace(/\s*\/\s*/g,"/"); if(item) mods.push(prefix + item); }
     } else {
-      for(const raw of spec.split(",")){
-        const mod = raw.trim().replace(/\s*\/\s*/g,"/");
-        if(mod) mods.push(mod);
-      }
+      for(const raw of spec.split(",")){ const mod = raw.trim().replace(/\s*\/\s*/g,"/"); if(mod) mods.push(mod); }
     }
     return mods;
   }
@@ -110,56 +53,36 @@
     return out;
   }
 
-  function compileAndRun(source){
+  // Live compile the editor buffer and run it in the worker. Same
+  // {stdout,stderr,exitCode,diags} shape as before. Returns a Promise.
+  async function compileAndRun(source, stdin){
     if(!(window.NifiParser && window.NifiParser.ready))
       return { stdout:"", stderr:"parser still loading…", exitCode:1 };
-    if(!(window.NifiSem && window.NifiSem.ready))
+    if(!(window.NifiPipe && window.NifiPipe.ready))
       return { stdout:"", stderr:"semantic checker still loading…", exitCode:1 };
     const badImports = checkImports(source);
     if(badImports.length)
       return { stdout:"", stderr:"unavailable import:\n"+badImports.map(b=>"  "+b.line+":"+b.col+"  "+b.message).join("\n"),
                exitCode:1, diags:badImports };
-    // 1. parse → .p.nif (also yields syntax diagnostics, surfaced elsewhere)
+    // 1. parse → .p.nif on the main thread (syntax diagnostics surfaced elsewhere)
     const { nif, diags: synDiags } = window.NifiParser.parseFull(source, "in.nim");
     if(synDiags && synDiags.length)
-      return { stdout:"", stderr:"syntax error: "+synDiags[0].message+
-        " (line "+synDiags[0].line+")", exitCode:1 };
-    // 2. semcheck → typed .s.nif (+ semantic diagnostics)
-    const { snif, diags } = window.NifiSem.compile(nif);
-    if(!snif){
-      const msg = (diags && diags.length)
-        ? diags.map(d=>"  "+d.line+":"+d.col+"  "+d.message).join("\n")
+      return { stdout:"", stderr:"syntax error: "+synDiags[0].message+" (line "+synDiags[0].line+")", exitCode:1 };
+    // 2+3. semcheck (worker, cached) + run (worker)
+    const m = await window.NifiPipe.run(nif, stdin);
+    if(!m.snif && m.ranSem){
+      const msg = (m.diags && m.diags.length)
+        ? m.diags.map(d=>"  "+d.line+":"+d.col+"  "+d.message).join("\n")
         : "the program did not type-check.";
-      return { stdout:"", stderr:"semantic error:\n"+msg, exitCode:1, diags };
+      return { stdout:"", stderr:"semantic error:\n"+msg, exitCode:1, diags:m.diags||[] };
     }
-    // 3. run the typed .s.nif
-    const res = runSnif(snif);
-    res.diags = diags;
-    return res;
-  }
-  // Exposed so index.html / future glue can call the interpreter directly.
-  window.NifiCore = { runSnif, compileAndRun, checkImports };
-
-  async function run(req){
-    await loadBundle();
-    // Tier 2 hook: when the frontend is ported, compile the editor buffer live.
-    if(window.NifiCore && typeof window.NifiCore.compileAndRun === "function")
-      return window.NifiCore.compileAndRun(req.source);
-    const ex = req.example;
-    if(!ex || !ex.snif)
-      return { stdout:"", stderr:"This example has no pre-compiled bytecode yet.", exitCode:1 };
-    return runSnif(await fetchSnifBytes(ex.snif));
+    return { stdout:m.stdout||"", stderr:m.stderr||"", exitCode:m.exitCode|0, diags:m.diags||[] };
   }
 
-  engine.run = run;
+  window.NifiCore = { compileAndRun, checkImports };
+
+  // req: { source, stdin }. Returns Promise<{stdout,stderr,exitCode}>.
+  engine.run = (req) => compileAndRun(req.source, req.stdin);
+  Object.defineProperty(engine, "ready", { get: () => !!(window.NifiPipe && window.NifiPipe.ready) });
   window.NifiEngine = engine;
-
-  loadBundle().then(() => {
-    engine.ready = true;
-    if(window.__nifiEngineReady) window.__nifiEngineReady(true);
-    // (the lsp: badge is owned by lsp.js once Monaco language services register)
-  }).catch(e => {
-    engine.ready = false;
-    if(window.__nifiEngineReady) window.__nifiEngineReady(false, String(e && e.message || e));
-  });
 })();

@@ -16,7 +16,11 @@
 // still succeeds. (sem is consulted only as optional garnish for INFERRED var
 // types, matched by symbol basename — see NifiLsp.enrich.)
 (function(){
-  const lsp = { ready:false, index:{ symbols:[], byName:new Map() } };
+  // `providers` holds the Monaco language-feature providers once registered — a
+  // small introspection surface (the playground can drive a feature directly, and
+  // it makes each provider unit-testable without poking Monaco's private
+  // registries).
+  const lsp = { ready:false, index:{ symbols:[], byName:new Map() }, providers:{} };
 
   // ---------------------------------------------------------------------------
   // 1. a tiny NIF S-expression reader (tokens -> nested nodes)
@@ -168,7 +172,7 @@
             const ret = returnOf(k);
             symbols.push({ name, kind:k.tag, keyword:k.tag,
               detail: routineDetail(k.tag, name, params, ret),
-              container, params });
+              container, params, ret });
             for(const p of params)
               symbols.push({ name:p.name, kind:"param", keyword:null,
                 detail:(p.type?p.name+": "+p.type:p.name), container:name, params:null });
@@ -480,8 +484,73 @@
     return { suggestions: items };
   }
 
+  // Every whole-word occurrence of `name` in `text`, as position ranges. Used by
+  // find-references and document-highlight. Text-based (no scope analysis) —
+  // matches Monaco's built-in "highlight occurrences" feel.
+  function allOccurrences(text, name){
+    const out = [];
+    const re = new RegExp("\\b"+esc(name)+"\\b", "g");
+    let m;
+    while((m = re.exec(text))) out.push(posRange(text, m.index, name.length));
+    return out.filter(Boolean);
+  }
+
+  // Find the call that encloses `off` (a text offset): the identifier before the
+  // innermost unmatched `(`, plus the 0-based index of the argument the cursor is
+  // in (counting top-level commas). Scans backwards, skipping nested brackets and
+  // string/char literals. Returns { name, argIndex } or null.
+  function enclosingCall(text, off){
+    let depth = 0, i = off - 1, argIndex = 0;
+    while(i >= 0){
+      const c = text[i];
+      if(c === '"' || c === "'"){ i--; while(i >= 0 && text[i] !== c) i--; i--; continue; }
+      if(c === ')' || c === ']' || c === '}'){ depth++; i--; continue; }
+      if(c === '[' || c === '{'){ if(depth === 0) return null; depth--; i--; continue; }
+      if(c === '('){
+        if(depth === 0){
+          let j = i - 1; while(j >= 0 && /\s/.test(text[j])) j--;
+          const e = j + 1; while(j >= 0 && /[A-Za-z0-9_]/.test(text[j])) j--;
+          const name = text.slice(j + 1, e);
+          return name ? { name, argIndex } : null;
+        }
+        depth--; i--; continue;
+      }
+      if(c === ',' && depth === 0){ argIndex++; i--; continue; }
+      i--;
+    }
+    return null;
+  }
+
+  // Build a Monaco SignatureInformation from a routine symbol, with per-parameter
+  // label ranges so the active argument highlights correctly.
+  function signatureOf(s){
+    let label = s.kind + " " + s.name + "(";
+    const parameters = [];
+    (s.params || []).forEach((p, idx) => {
+      const seg = p.type ? p.name + ": " + p.type : p.name;
+      const start = label.length;
+      label += seg;
+      parameters.push({ label:[start, start + seg.length] });
+      if(idx < s.params.length - 1) label += ", ";
+    });
+    label += ")";
+    if(s.ret) label += ": " + s.ret;
+    return { label, parameters };
+  }
+
+  // Curated "symbol needs this module" map for the add-import quick fix. Small on
+  // purpose — only the everyday std symbols a beginner reaches for before they've
+  // imported anything. The diagnostic gives us the undeclared name; we map it to
+  // the import that resolves it.
+  const IMPORT_FIXES = {
+    echo:"std/syncio", write:"std/syncio", writeLine:"std/syncio",
+    readLine:"std/syncio", stdout:"std/syncio", stdin:"std/syncio", stderr:"std/syncio",
+  };
+
   function register(monaco){
     const LANG = "nimony";
+    // register a provider and keep a handle on lsp.providers for introspection.
+    const reg = (method, key, prov) => { lsp.providers[key] = prov; return monaco.languages[method](LANG, prov); };
 
     // --- outline / breadcrumbs ---
     monaco.languages.registerDocumentSymbolProvider(LANG, {
@@ -590,6 +659,70 @@
           items.push({ label:k, kind:monaco.languages.CompletionItemKind.Keyword,
             insertText:k, range });
         return { suggestions: items };
+      }
+    });
+
+    // --- signature help (parameter hints inside a call) ---
+    reg("registerSignatureHelpProvider", "signatureHelp", {
+      signatureHelpTriggerCharacters: ["(", ","],
+      signatureHelpRetriggerCharacters: [","],
+      provideSignatureHelp(model, position){
+        const text = model.getValue();
+        const off = model.getOffsetAt(position);
+        const call = enclosingCall(text, off);
+        if(!call) return null;
+        const hits = (lsp.index.byName.get(call.name) || []).filter(h=>ROUTINES.has(h.kind));
+        let sig;
+        if(hits.length){ sig = signatureOf(hits[0]); }
+        else {
+          const std = STDLIB.find(x=>x.label===call.name);
+          if(!std) return null;
+          sig = { label: std.detail, parameters: [] };
+        }
+        return { value:{ signatures:[sig], activeSignature:0,
+          activeParameter: Math.min(call.argIndex, Math.max(0,(sig.parameters.length||1)-1)) },
+          dispose(){} };
+      }
+    });
+
+    // --- find all references + highlight occurrences ---
+    reg("registerReferenceProvider", "references", {
+      provideReferences(model, position){
+        const w = model.getWordAtPosition(position); if(!w) return null;
+        if(KEYWORDS.indexOf(w.word) >= 0) return null;
+        return allOccurrences(model.getValue(), w.word).map(r => ({ uri:model.uri, range:r }));
+      }
+    });
+    reg("registerDocumentHighlightProvider", "documentHighlight", {
+      provideDocumentHighlights(model, position){
+        const w = model.getWordAtPosition(position); if(!w) return null;
+        if(KEYWORDS.indexOf(w.word) >= 0) return null;
+        const K = monaco.languages.DocumentHighlightKind;
+        return allOccurrences(model.getValue(), w.word).map(r => ({ range:r, kind:K.Text }));
+      }
+    });
+
+    // --- code action: add a missing std import ---
+    reg("registerCodeActionProvider", "codeAction", {
+      provideCodeActions(model, range, context){
+        const actions = [], added = new Set(), text = model.getValue();
+        for(const d of (context.markers || [])){
+          const m = /undeclared identifier:\s*'?([A-Za-z_]\w*)'?/.exec(d.message || "");
+          if(!m) continue;
+          const mod = IMPORT_FIXES[m[1]];
+          if(!mod || added.has(mod)) continue;
+          if(new RegExp("^\\s*import\\s+.*\\b"+esc(mod.split("/").pop())+"\\b", "m").test(text)) continue;
+          added.add(mod);
+          actions.push({
+            title: "Add `import " + mod + "`",
+            kind: "quickfix",
+            diagnostics: [d],
+            isPreferred: true,
+            edit: { edits: [ { resource: model.uri,
+              textEdit: { range: new monaco.Range(1,1,1,1), text: "import " + mod + "\n" } } ] },
+          });
+        }
+        return { actions, dispose(){} };
       }
     });
   }

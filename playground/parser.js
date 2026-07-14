@@ -29,46 +29,61 @@
 
   const parser = { ready:false, parse:null };
   let bundleText = null, loadPromise = null;
+  // Compile the bundle to a callable ONCE (see note above): re-parsing ~950 KB of
+  // JS on every keystroke-debounced parse is pure waste. `new Function(text)`
+  // parses+compiles the source; invoking the RESULT re-executes its top-level
+  // decls (fresh linear memory, fresh module-init) each call — so we still get
+  // the required clean scope per parse, but pay the 8 ms compile only once.
+  // Verified byte-identical to the per-call form.
+  let compiledMain = null;
 
   function loadBundle(){
     if(loadPromise) return loadPromise;
     loadPromise = fetch("nifparser.js").then(r=>{
       if(!r.ok) throw new Error("failed to load parser (nifparser.js): HTTP "+r.status);
       return r.text();
-    }).then(t=>{ bundleText = t; return t; });
+    }).then(t=>{ bundleText = t; compiledMain = new Function(t + "\nmain(0, []);"); return t; });
     return loadPromise;
+  }
+
+  // Memo of the last parse, keyed by (curly, file, source). The playground parses
+  // the SAME buffer up to three times per edit cycle — the live NIF view, the
+  // live semcheck, and Run — so a size-1 memo collapses that to a single actual
+  // parse. `diags` is cloned out so callers can't mutate the cached array.
+  let memo = { key:null, nif:"", diags:[] };
+  function runParse(source, file, curly){
+    const key = (curly?"1":"0") + "\0" + file + "\0" + source;
+    if(memo.key === key) return memo;
+    globalThis.__np_src  = source;
+    globalThis.__np_file = file;
+    globalThis.__np_curly = curly ? "1" : "";
+    globalThis.__np_out  = "";
+    globalThis.__np_diag = "[]";
+    compiledMain();
+    let diags = [];
+    try{ diags = JSON.parse(globalThis.__np_diag || "[]"); }catch(_){ diags = []; }
+    memo = { key, nif: globalThis.__np_out || "", diags };
+    return memo;
   }
 
   // Synchronous once the bundle is loaded. Returns the `.p.nif` string, or throws.
   // `opts.curly` (optional) forces curly mode; omitting it follows window.NifiOpts.
   function parseSync(source, file, opts){
-    if(!bundleText) throw new Error("parser not loaded yet");
+    if(!compiledMain) throw new Error("parser not loaded yet");
     // __np_curly: "1" enables experimental `{ … }` block bodies, "" = indent-only.
     const curly = opts && ("curly" in opts) ? !!opts.curly : !!(window.NifiOpts && window.NifiOpts.curly);
-    globalThis.__np_src  = String(source);
-    globalThis.__np_file = file || "in.nim";
-    globalThis.__np_curly = curly ? "1" : "";
-    globalThis.__np_out  = "";
-    (new Function(bundleText + "\nmain(0, []);"))();
-    return globalThis.__np_out || "";
+    return runParse(String(source), file || "in.nim", curly).nif;
   }
 
   // Full result: { nif, diags }. `diags` are the parser's own coordinates
   // (line 1-based, col 0-based); the caller shifts col to Monaco's 1-based.
   // `opts.curly` (optional) forces curly mode; omitting it follows window.NifiOpts.
   function parseFull(source, file, opts){
-    if(!bundleText) throw new Error("parser not loaded yet");
+    if(!compiledMain) throw new Error("parser not loaded yet");
     // __np_curly: "1" enables experimental `{ … }` block bodies, "" = indent-only.
     const curly = opts && ("curly" in opts) ? !!opts.curly : !!(window.NifiOpts && window.NifiOpts.curly);
-    globalThis.__np_src  = String(source);
-    globalThis.__np_file = file || "in.nim";
-    globalThis.__np_curly = curly ? "1" : "";
-    globalThis.__np_out  = "";
-    globalThis.__np_diag = "[]";
-    (new Function(bundleText + "\nmain(0, []);"))();
-    let diags = [];
-    try{ diags = JSON.parse(globalThis.__np_diag || "[]"); }catch(_){ diags = []; }
-    return { nif: globalThis.__np_out || "", diags };
+    const r = runParse(String(source), file || "in.nim", curly);
+    return { nif: r.nif, diags: r.diags.slice() };
   }
 
   parser.parse = parseSync;
