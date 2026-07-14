@@ -118,6 +118,11 @@
      output glides open/shut. Solo keeps the source pane's basis and just grows it
      to fill while the output shrinks to nothing and goes inert. */
   .pane,#gutter{transition:flex-grow .26s ease,flex-basis .26s ease,opacity .2s ease}
+  /* while dragging the gutter we rewrite --split every pointermove; the flex
+     transition above would then animate toward each frame's target, so the panes
+     visibly lag behind the cursor. Kill the transition for the duration of the drag
+     (and Monaco relayouts live) — snappy resize, animation only for open/close. */
+  main.resizing .pane,main.resizing #gutter{transition:none}
   .pane.out{overflow:hidden}
   /* hiding keeps the current data-layout (cols/rows) so flex-direction — and thus
      the collapse AXIS — is preserved: horizontal shrink when side-by-side,
@@ -136,28 +141,50 @@
 
   .pane .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 10px 8px 14px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;gap:8px}
   .pane .label .status{margin-left:auto;font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0}
-  /* the combined status line rides the SOURCE label, absolutely centred between
-     "nimony source" and "live compile"; hidden when the pane is too narrow. */
-  .pane.src .label{position:relative}
-  .pane.src .label #statusLine{position:absolute;left:50%;transform:translateX(-50%);
-    padding-left:0;text-transform:none;letter-spacing:0}
+  /* the SOURCE label now carries a tab bar (Source / Parsed / Typed / Run) on the
+     left, mirroring the output pane, with the combined status line + type-check
+     timing pushed to the right. */
+  .pane.src .label{position:relative;padding:6px 10px 6px 12px;gap:10px}
+  .pane.src .label #statusLine{margin-left:auto;padding-left:0;text-transform:none;letter-spacing:0}
+  .pane.src .label #semStatus{margin-left:0}
   @container srcpane (max-width:680px){ .pane.src .label #statusLine{display:none} }
-  /* the three right-pane views are mutually exclusive; only the active one shows */
-  .view{display:none;flex:1;min-height:0;flex-direction:column}
-  .view.active{display:flex;animation:viewIn .18s ease}
+  @container srcpane (max-width:520px){ .pane.src .label #semStatus{display:none} }
+  /* the right-pane views are mutually exclusive; only the active one shows.
+     The SOURCE pane uses the same idea (.sview) — its tabs flip between the live
+     editor and the three NIF rungs (parsed / typed / run). */
+  .view,.sview{display:none;flex:1;min-height:0;flex-direction:column}
+  .view.active,.sview.active{display:flex;animation:viewIn .18s ease}
   @keyframes viewIn{from{opacity:0}to{opacity:1}}
+  .srcbody{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
   #editor{flex:1;min-height:0}
   textarea#fallback{flex:1;resize:none;border:0;outline:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.6;padding:14px;tab-size:2;display:none}
-  #out,#nif{flex:1;margin:0;overflow:auto;padding:14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;color:var(--fg)}
+  #out,.nifview{flex:1;margin:0;overflow:auto;padding:14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;color:var(--fg)}
   /* word-wrap toggle: `nowrap` on <main> switches the output/NIF panes from
      wrapping ("collapse") to a single long line with horizontal scroll ("overflow"). */
-  main.nowrap #out,main.nowrap #nif{white-space:pre}
-  #out .sys,#nif .sys{color:var(--muted)} #out .err,#nif .err{color:var(--err)} #out .ok{color:var(--accent2)}
+  main.nowrap #out,main.nowrap .nifview{white-space:pre}
+  #out .sys,.nifview .sys{color:var(--muted)} #out .err,.nifview .err{color:var(--err)} #out .ok{color:var(--accent2)}
+  .nifview code{background:var(--panel2);border-radius:4px;padding:0 4px}
+  /* ---- NIF syntax presentation: structured, not a wall of text. Every token is
+     wrapped in a span so the form reads as a tree — but the container is still a
+     <pre> with user-select:text, so it copies as plain NIF. ---- */
+  .nifview .nt-tag{color:var(--accent);font-weight:600}          /* (tag …        */
+  .nifview .nt-dir{color:var(--brace);font-weight:600}           /* (.directive   */
+  .nifview .nt-par{color:var(--muted);opacity:.65}               /* ( )           */
+  .nifview .nt-sym{color:var(--fg)}                              /* a symbol name */
+  .nifview .nt-scope{color:var(--muted);opacity:.6}             /* .0.Ihash scope suffix */
+  .nifview .nt-num{color:var(--warn)}                            /* 42            */
+  .nifview .nt-str{color:var(--accent2)}                         /* "text"        */
+  .nifview .nt-info{color:var(--muted);opacity:.5;font-size:.9em} /* @col,line,file / ~rel site keys */
+  .nifview .nt-nil{color:var(--muted);opacity:.7}               /* a bare .       */
+  .nifview .nt-meta{color:var(--muted);display:block;margin-top:10px;opacity:.8}
+  /* subtle depth banding on the outermost parens keeps deep nesting readable */
+  .nifview .nt-d0{color:var(--accent)} .nifview .nt-d1{color:var(--brace)}
+  .nifview .nt-d2{color:var(--accent2)} .nifview .nt-d3{color:var(--warn)}
   /* selection policy: chrome is not selectable; the code output IS (so users can
      copy results/NIF). Monaco manages its own selection and is left untouched. */
   header,footer,.pane .label,.tabs,#symList,.fab,.actions,.statusline,.brand,#tooltip{
     -webkit-user-select:none;user-select:none}
-  #out,#nif{-webkit-user-select:text;user-select:text}
+  #out,.nifview{-webkit-user-select:text;user-select:text}
   /* tabs sit on the LEFT of the output header; the icon buttons are pushed right */
   .tabs{display:flex;gap:2px}
   .pane.out .label #outStatus{margin-left:8px}
@@ -186,7 +213,7 @@
     opacity:0;visibility:hidden;transition:none}
   .fab.show{opacity:1;visibility:visible;
     /* wait a beat, then fade in quick; ease-in (slow → quick). */
-    transition:opacity .2s cubic-bezier(.4,0,1,1) .16s}
+    transition:opacity .2s cubic-bezier(.4,0,1,1) .24s}
   .fab:hover{border-color:var(--accent);color:var(--accent)}
   .fab svg{width:17px;height:17px;display:block}
 
@@ -203,14 +230,14 @@
   .prob{display:flex;gap:8px;padding:2px 0;cursor:pointer} .prob:hover{background:var(--panel2);border-radius:4px}
   .prob .loc{color:var(--muted);min-width:52px} .prob.warn .loc{color:var(--warn)}
   /* themed scrollbars for the panels */
-  #out,#nif,#symList,#editor{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  #out::-webkit-scrollbar,#nif::-webkit-scrollbar,#symList::-webkit-scrollbar{width:10px;height:10px}
-  #out::-webkit-scrollbar-track,#nif::-webkit-scrollbar-track,#symList::-webkit-scrollbar-track{background:transparent}
-  #out::-webkit-scrollbar-thumb,#nif::-webkit-scrollbar-thumb,#symList::-webkit-scrollbar-thumb{
+  #out,.nifview,#symList,#editor{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  #out::-webkit-scrollbar,.nifview::-webkit-scrollbar,#symList::-webkit-scrollbar{width:10px;height:10px}
+  #out::-webkit-scrollbar-track,.nifview::-webkit-scrollbar-track,#symList::-webkit-scrollbar-track{background:transparent}
+  #out::-webkit-scrollbar-thumb,.nifview::-webkit-scrollbar-thumb,#symList::-webkit-scrollbar-thumb{
     background:var(--border);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
-  #out::-webkit-scrollbar-thumb:hover,#nif::-webkit-scrollbar-thumb:hover,#symList::-webkit-scrollbar-thumb:hover{
+  #out::-webkit-scrollbar-thumb:hover,.nifview::-webkit-scrollbar-thumb:hover,#symList::-webkit-scrollbar-thumb:hover{
     background:var(--muted);background-clip:padding-box}
-  #out::-webkit-scrollbar-corner,#nif::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner{background:transparent}
+  #out::-webkit-scrollbar-corner,.nifview::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner{background:transparent}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
   footer .ftxt{color:var(--muted)}
@@ -340,15 +367,11 @@
     footer > span:not(.badge):not(#perf){display:none}
   }
   /* when the SOURCE PANE (not the viewport) is narrow — whether on a phone or
-     because the split gutter shrank the editor — keep its status on ONE line:
-     drop the "nimony source" caption so "live compile" + the type-check status
-     sit together instead of wrapping the label onto a second row. */
+     because the split gutter shrank the editor — keep the tab bar on ONE line and
+     never let it wrap onto a second row. */
   @container srcpane (max-width:460px){
     .pane.src .label{flex-wrap:nowrap;overflow:hidden}
-    .pane.src .label .cap{display:none}
-    #srcStatus{margin-left:auto}
-    #srcStatus,#semStatus,#semStatus *{white-space:nowrap}
-    #semStatus{overflow:hidden;text-overflow:ellipsis;min-width:0}
+    #srcTabs{min-width:0}
   }
   /* very narrow: keep the logo mark, drop the wordmark text */
   @media(max-width:430px){ .brand h1{display:none} }
@@ -379,9 +402,25 @@
 
 <main id="main" data-layout="cols">
   <section class="pane src">
-    <div class="label"><span class="cap">nimony source</span><div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence"><span class="sdot"></span><span id="statusText">engine loading…</span></div><span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
-    <div id="editor"></div>
-    <textarea id="fallback" spellcheck="false"></textarea>
+    <div class="label">
+      <div class="tabs" id="srcTabs">
+        <button id="stabEdit" class="active" data-sview="edit" data-tip="Your nimony source">Source</button>
+        <button id="stabPnif" data-sview="pnif" data-tip="Parsed — the untyped .p.nif from nifparser">Parsed</button>
+        <button id="stabSnif" data-sview="snif" data-tip="Typed — the .s.nif from nimsem (types &amp; symbols resolved)">Typed</button>
+        <button id="stabRnif" data-sview="rnif" data-tip="Run rung — the execution serialized as NIF (from nifi)">Run</button>
+      </div>
+      <div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence"><span class="sdot"></span><span id="statusText">engine loading…</span></div>
+      <span class="status" id="semStatus"></span>
+    </div>
+    <div class="srcbody">
+      <div class="sview active" id="sviewEdit">
+        <div id="editor"></div>
+        <textarea id="fallback" spellcheck="false"></textarea>
+      </div>
+      <div class="sview" id="sviewPnif"><pre id="pnif" class="nifview"><span class="sys">The parsed NIF (<code>.p.nif</code>) appears here live as you type — nifparser turns your source into nimony's untyped intermediate form.</span></pre></div>
+      <div class="sview" id="sviewSnif"><pre id="snif" class="nifview"><span class="sys">The typed NIF (<code>.s.nif</code>) appears here after type-checking — nimsem resolves every symbol, overload and type on top of the parsed form.</span></pre></div>
+      <div class="sview" id="sviewRnif"><pre id="rnif" class="nifview"><span class="sys">Press Run to see the program's execution serialized as NIF — the <em>run rung</em>: source → parsed → typed → <strong>run</strong>, the bottom of nifi's content-addressed compilation tower.</span></pre></div>
+    </div>
     <button id="showOut" class="fab" data-tip="Show the output panel">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.6"/><path d="M4.6 6.4L6.6 8l-2 1.6"/><line x1="8" y1="10" x2="11" y2="10"/></svg>
     </button>
@@ -392,7 +431,6 @@
       <div class="tabs">
         <button id="tabOut" class="active" data-view="out">Output</button>
         <button id="tabSym" data-view="sym">Symbols</button>
-        <button id="tabNif" data-view="nif">NIF</button>
       </div>
       <span class="status" id="outStatus"></span>
       <button id="stdinBtn" class="paneBtn" data-tip="stdin"></button>
@@ -409,9 +447,6 @@
     </div>
     <div class="view" id="viewSym">
       <div id="symList"><div id="symEmpty">Symbols in your code appear here as you type — click one to jump to it. Hover any name in the editor for its type; ⌃Space completes; F12 goes to definition.</div></div>
-    </div>
-    <div class="view" id="viewNif">
-      <pre id="nif"><span class="sys">The NIF (parsed intermediate form) for your code appears here live as you type — produced by nifparser, compiled to JS and running in this tab.</span></pre>
     </div>
   </section>
 </main>
@@ -455,21 +490,68 @@ window.NifiOpts = window.NifiOpts || { curly:false };
 <!-- ?v= cache-busts the hand-written glue so fixes take effect without a hard
      refresh (the big bundles are fetched separately and change rarely). -->
 <script src="examples.js?v=6"></script>
-<script src="pipeline.js?v=9"></script>
+<script src="pipeline.js?v=10"></script>
 <script src="engine.js?v=8"></script>
 <script src="parser.js?v=8"></script>
 <script src="sem.js?v=8"></script>
-<script src="editor.js?v=6"></script>
+<script src="editor.js?v=7"></script>
 <script src="lsp.js?v=7"></script>
 <script src="curlyconvert.js?v=7"></script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
-  const outEl=$("#out"), nifEl=$("#nif"), runBtn=$("#runBtn");
+  const outEl=$("#out"), runBtn=$("#runBtn");
+  // the three NIF rungs now live in the SOURCE pane's tabs (Parsed/Typed/Run).
+  const pnifEl=$("#pnif"), snifEl=$("#snif"), rnifEl=$("#rnif");
   const statusLine=$("#statusLine"), statusText=$("#statusText");
-  const outStatus=$("#outStatus"), srcStatus=$("#srcStatus"), perf=$("#perf");
+  const outStatus=$("#outStatus"), perf=$("#perf");
   const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const print = html => { outEl.innerHTML = html; };
+
+  // ---- NIF presenter: tokenize a NIF stream into colored spans so it reads as a
+  //      tree, not a wall of text. It's a lexer, not a parser — it never fails on
+  //      malformed input, and because the host stays a <pre> with user-select:text
+  //      the rendered form still copies out as verbatim NIF. Recognizes:
+  //        (          depth-banded parens        .directive   nimony pragmas/header
+  //        tag        the head atom of a node     "string"     literals
+  //        123        numbers                     sym.0.Ihash  name + dimmed scope
+  //        @c,l,file  / ~rel  line-info site keys (dimmed, they're provenance noise)
+  //        .          a bare nil node
+  const NUM_RE=/^[+-]?(?:0x[0-9a-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)$/;
+  function nifWord(word, isTag){
+    let out="";
+    const span=(cls,t)=>{ out+='<span class="'+cls+'">'+esc(t)+'</span>'; };
+    // split off any line-info tail (introduced by @ or ~)
+    let k=-1; for(let x=0;x<word.length;x++){ const ch=word[x]; if(ch==='@'||ch==='~'){ k=x; break; } }
+    const name = k<0 ? word : word.slice(0,k);
+    const info = k<0 ? ""   : word.slice(k);
+    if(name.length){
+      if(name===".") span("nt-nil",name);
+      else if(name[0]===".") span("nt-dir",name);
+      else if(isTag) span("nt-tag",name);
+      else if(NUM_RE.test(name)) span("nt-num",name);
+      else { const d=name.indexOf(".");
+        if(d>0){ span("nt-sym",name.slice(0,d)); span("nt-scope",name.slice(d)); }
+        else span("nt-sym",name); }
+    }
+    if(info) span("nt-info",info);
+    return out;
+  }
+  function renderNif(src){
+    src=String(src); let html="", i=0, depth=0, expectTag=false; const n=src.length;
+    while(i<n){
+      const c=src[i];
+      if(c===" "||c==="\t"||c==="\n"||c==="\r"){ let j=i+1; while(j<n && /\s/.test(src[j])) j++; html+=esc(src.slice(i,j)); i=j; continue; }
+      if(c==="("){ html+='<span class="nt-par nt-d'+(depth%4)+'">(</span>'; depth++; expectTag=true; i++; continue; }
+      if(c===")"){ depth=Math.max(0,depth-1); html+='<span class="nt-par nt-d'+(depth%4)+'">)</span>'; expectTag=false; i++; continue; }
+      if(c==='"'){ let j=i+1; while(j<n){ if(src[j]==="\\"){ j+=2; continue; } if(src[j]==='"'){ j++; break; } j++; }
+        html+='<span class="nt-str">'+esc(src.slice(i,j))+'</span>'; i=j; expectTag=false; continue; }
+      let j=i; while(j<n && " \t\n\r()\"".indexOf(src[j])<0) j++;
+      html+=nifWord(src.slice(i,j), expectTag); i=j; expectTag=false;
+    }
+    return html;
+  }
+  const nifMeta = txt => '<span class="nt-meta sys">— '+esc(txt)+'</span>';
   // Sticky-bottom output, terminal style. The re-run "jump to the top" the user
   // saw came from blanking the pane to "running…" between runs: that collapses
   // its height and resets scrollTop to 0, so the next output animated down from
@@ -482,8 +564,12 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   outEl.addEventListener("scroll", () => {
     nearBottom = (outEl.scrollHeight - outEl.scrollTop - outEl.clientHeight) < 40;
   });
-  function scrollOutToBottom(){
-    if(!nearBottom) return;                 // user scrolled up — leave them there
+  function scrollOutToBottom(force){
+    // `force` is set by an explicit Run: a Run always jumps to the freshest output,
+    // even if you'd scrolled up (or were parked at the very top) beforehand. The
+    // nearBottom gate only governs passive/incremental updates so we never yank a
+    // reader down mid-scroll.
+    if(!force && !nearBottom) return;
     const top = outEl.scrollHeight;
     try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
     catch(_){ outEl.scrollTop = top; }
@@ -513,15 +599,33 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       : ready ? "Compile & run — Ctrl/Cmd + Enter" : "Engine still loading…");
   }
 
-  // ---- right-pane tabs (Output | Symbols | NIF) ----
+  // ---- right-pane tabs (Output | Symbols) ----
   function selectTab(view){
-    ["out","sym","nif"].forEach(v=>{
+    ["out","sym"].forEach(v=>{
       $("#tab"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
       $("#view"+v[0].toUpperCase()+v.slice(1)).classList.toggle("active", v===view);
     });
   }
-  document.querySelectorAll(".tabs button").forEach(b=>
+  document.querySelectorAll(".pane.out .tabs button").forEach(b=>
     b.addEventListener("click",()=>selectTab(b.dataset.view)));
+
+  // ---- source-pane tabs (Source | Parsed .p.nif | Typed .s.nif | Run rung) ----
+  // The editor and the three NIF rungs share the pane; switching just flips which
+  // .sview is active. Monaco must be told to relayout when its container reappears
+  // (it renders 0-height while display:none), and the Run rung is fetched lazily
+  // the first time you land on it.
+  let curSrcView = "edit";
+  function selectSrcView(v){
+    curSrcView = v;
+    ["edit","pnif","snif","rnif"].forEach(k=>{
+      $("#stab"+k[0].toUpperCase()+k.slice(1)).classList.toggle("active", k===v);
+      $("#sview"+k[0].toUpperCase()+k.slice(1)).classList.toggle("active", k===v);
+    });
+    if(v==="edit" && window.NifiEditor.relayout) window.NifiEditor.relayout();
+    if(v==="rnif") ensureRunRung();
+  }
+  document.querySelectorAll("#srcTabs button").forEach(b=>
+    b.addEventListener("click",()=>selectSrcView(b.dataset.sview)));
 
   // ---- live diagnostics: FAST syntax (nifparser) + DEBOUNCED semantic (nimsem) ----
   let syntaxDiags = [], semDiags = [], outShowingProblems = false;
@@ -598,7 +702,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   }
   function runParse(){
     if(!window.NifiParser || !window.NifiParser.ready){
-      nifEl.innerHTML='<span class="sys">parser loading…</span>'; return;
+      pnifEl.innerHTML='<span class="sys">parser loading…</span>'; return;
     }
     const src = window.NifiEditor.getValue();
     const t0=performance.now();
@@ -616,11 +720,11 @@ window.NifiOpts = window.NifiOpts || { curly:false };
             (syntaxDiags.length===1?'error':'errors')+':\n'+
             syntaxDiags.map(d=>'  '+d.line+':'+((d.col|0)+1)+'  '+esc(d.message)).join('\n')+'</span>\n\n'
         : '';
-      nifEl.innerHTML = banner + esc(nif) +
-        '\n<span class="sys">— parsed in '+ms+' ms · '+nif.length+' bytes'+
-        (window.NifiOpts&&window.NifiOpts.curly?' · curly mode':'')+'</span>';
+      pnifEl.innerHTML = banner + renderNif(nif) + "\n" +
+        nifMeta('parsed in '+ms+' ms · '+nif.length+' bytes'+
+          (window.NifiOpts&&window.NifiOpts.curly?' · curly mode':''));
     }catch(e){
-      nifEl.innerHTML='<span class="err">parse error: '+esc(e&&e.message||e)+'</span>';
+      pnifEl.innerHTML='<span class="err">parse error: '+esc(e&&e.message||e)+'</span>';
     }
   }
   async function runSemCheck(){
@@ -644,6 +748,13 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       semDiags = diags || [];
       refreshMarkers();
       const nErr = semDiags.length;
+      // fill the Typed tab with the .s.nif (or the type errors, if it didn't check)
+      if(snif) snifEl.innerHTML = renderNif(snif) + "\n" +
+        nifMeta('typed .s.nif · '+snif.length+' bytes'+(cached?' · reused':' · '+ms+' ms'));
+      else snifEl.innerHTML = nErr
+        ? '<span class="err">● '+nErr+' type '+(nErr===1?'error':'errors')+' — fix them to see the typed NIF:</span>\n'+
+            semDiags.map(d=>'  '+(d.line>0?d.line+':'+d.col:'⚠')+'  '+esc(d.message)).join('\n')
+        : '<span class="sys">no typed NIF (the program did not type-check).</span>';
       semStatus(nErr
         ? '<span class="err">● '+nErr+' type '+(nErr===1?'error':'errors')+'</span>'
         : (cached
@@ -655,7 +766,6 @@ window.NifiOpts = window.NifiOpts || { curly:false };
 
   function loadDemo(){
     window.NifiEditor.setValue(window.PLAYGROUND_DEMO || "");
-    srcStatus.textContent = "live compile";
     print('<span class="sys">Ready — edit freely and press Run. Your code is compiled and run in this tab.</span>');
     runParse();
     runSemCheck();
@@ -701,7 +811,9 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       const eng = res.engine==="vm" ? ' · <span class="sys">VM</span>'
                 : res.engine==="tree" ? ' · <span class="sys">tree-walker</span>' : '';
       parts.push('<span class="'+(res.oom?'err':'ok')+'">— exit '+(res.exitCode|0)+' · '+ms+' ms'+eng+'</span>');
-      print(parts.join('\n')); perf.textContent=ms+" ms"; scrollOutToBottom();
+      print(parts.join('\n')); perf.textContent=ms+" ms"; scrollOutToBottom(true);
+      // keep the Run rung in sync with what just executed, if it's on screen
+      if(curSrcView==="rnif") ensureRunRung(true);
     }catch(e){
       if(e && e.stopped) print('<span class="err">■ stopped — the program was terminated.</span>');
       else print('<span class="err">'+esc(e&&e.message||e)+'</span>');
@@ -709,6 +821,37 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     finally{ setRunning(false); outStatus.textContent=""; }
   }
   runBtn.addEventListener("click",run);
+
+  // ---- Run rung: the program's execution serialized as NIF (nifi_run.js — the
+  //      tree-walker with the run emitter on). Computed ON DEMAND (opening the Run
+  //      tab, or a Run while it's active), never on live edit since it executes the
+  //      program. Cached by source+stdin so re-opening the tab is free. ----
+  let runRungKey=null, runRungBusy=false;
+  async function ensureRunRung(force){
+    if(!(window.NifiPipe && window.NifiPipe.ready)){ rnifEl.innerHTML='<span class="sys">engine still loading…</span>'; return; }
+    if(syntaxDiags.length){ rnifEl.innerHTML='<span class="err">fix the syntax errors first — the run rung needs a program that parses.</span>'; return; }
+    const src=window.NifiEditor.getValue(), stdin=currentStdin(), key=src+" "+stdin;
+    if(!force && key===runRungKey && rnifEl.dataset.ok==="1") return;   // cached, unchanged
+    if(runRungBusy) return;
+    runRungBusy=true; rnifEl.dataset.ok=""; rnifEl.innerHTML='<span class="sys">● tracing the run…</span>';
+    try{
+      const { nif, diags:syn } = window.NifiParser.parseFull(src, "in.nim");
+      if(syn && syn.length){ rnifEl.innerHTML='<span class="err">syntax error — cannot trace the run.</span>'; return; }
+      const m = await window.NifiPipe.runrung(nif, stdin);
+      if(window.NifiEditor.getValue()!==src) return;   // buffer moved on; a later open refetches
+      if(m.runnif){
+        runRungKey=key; rnifEl.dataset.ok="1";
+        rnifEl.innerHTML = renderNif(m.runnif) + "\n" +
+          nifMeta('run rung · '+m.runnif.length+' bytes · exit '+(m.exitCode|0)+' · tree-walker + run emitter');
+      } else if(m.ranSem && !m.snif){
+        rnifEl.innerHTML='<span class="err">the program did not type-check — no run rung.</span>';
+      } else {
+        rnifEl.innerHTML='<span class="sys">no run rung was produced'+(m.stderr?': '+esc(m.stderr):'.')+'</span>';
+      }
+    }catch(e){
+      rnifEl.innerHTML='<span class="err">run rung unavailable: '+esc(e&&e.message||e)+'</span>';
+    }finally{ runRungBusy=false; }
+  }
   document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();run();}});
 
   // 3-way theme cycle: light → dark (blue) → black (true dark). The chosen theme
@@ -834,13 +977,13 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     }
     function items(target){
       if(target.closest(".monaco-editor")) return editorItems();
-      const nifCtx = !!target.closest("#viewNif");
-      const inOut = nifCtx || !!target.closest("#viewOut");
+      const nifPane = target.closest(".nifview");         // any of the source-pane NIF rungs
+      const inOut = !!nifPane || !!target.closest("#viewOut");
       const sel = selText();
       const out=[];
       out.push({ label:"Copy", kb:"⌘C", off:!sel, act:()=>{ if(sel&&navigator.clipboard) navigator.clipboard.writeText(sel); }});
       if(inOut){
-        const pane = nifCtx ? nifEl : outEl;
+        const pane = nifPane || outEl;
         out.push({ label:"Select all", kb:"⌘A", act:()=>{
           const r=document.createRange(); r.selectNodeContents(pane);
           const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }});
@@ -929,7 +1072,8 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     let dragging=false;
     gutter.addEventListener("pointerdown",e=>{
       if(main.classList.contains("out-hidden")) return;
-      dragging=true; gutter.classList.add("drag"); gutter.setPointerCapture(e.pointerId); e.preventDefault();
+      dragging=true; gutter.classList.add("drag"); main.classList.add("resizing");
+      gutter.setPointerCapture(e.pointerId); e.preventDefault();
     });
     gutter.addEventListener("pointermove",e=>{
       if(!dragging) return;
@@ -939,6 +1083,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       split=Math.max(12, Math.min(88, pct)); applySplit();
     });
     const endDrag=()=>{ if(!dragging) return; dragging=false; gutter.classList.remove("drag");
+      main.classList.remove("resizing");
       try{ localStorage.setItem("np-split", Math.round(split)); }catch(_){} };
     gutter.addEventListener("pointerup", endDrag);
     gutter.addEventListener("pointercancel", endDrag);
@@ -1004,7 +1149,6 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     const code=shared?decodeShare(shared[1]):null;
     if(code!=null){
       window.NifiEditor.setValue(code);
-      srcStatus.textContent="live compile · shared link";
       print('<span class="sys">Loaded from a shared link — edit freely and press Run.</span>');
       runParse(); runSemCheck();
     } else {

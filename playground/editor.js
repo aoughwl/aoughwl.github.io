@@ -142,6 +142,10 @@
     setValue(v){ if(usingFallback) fallbackEl.value=v; else if(editor) editor.setValue(v); },
     getValue(){ return usingFallback ? fallbackEl.value : (editor ? editor.getValue() : ""); },
     setTheme(t){ if(!usingFallback && monacoRef) monacoRef.editor.setTheme(monacoTheme(t)); },
+    // Monaco renders 0-height while its container is display:none (the source pane
+    // now hides the editor behind NIF tabs); call this when the Source tab is shown
+    // again so it re-measures and repaints at the correct size.
+    relayout(){ if(!usingFallback && editor){ try{ editor.layout(); editor.render&&editor.render(true); }catch(_){} } },
     onReady(cb){ if(usingFallback || editor) cb(); else readyCbs.push(cb); },
     // Accessors for the LSP glue (lsp.js): the monaco namespace, the editor
     // instance, and its model. Null under the textarea fallback.

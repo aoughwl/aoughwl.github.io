@@ -17,7 +17,7 @@
 
   function spawn(){
     pipe.ready = false; pipe.alive = false;
-    worker = new Worker("worker.js?v=13");
+    worker = new Worker("worker.js?v=14");
     worker.onmessage = (ev) => {
       const m = ev.data || {};
       if(m.type === "ready"){
@@ -61,6 +61,9 @@
 
   pipe.sem = (pnif) => request("sem", { pnif:String(pnif) });
   pipe.run = (pnif, stdin) => request("run", { pnif:String(pnif), stdin:String(stdin||"") });
+  // run rung: execute on the tree-walker with the run emitter on, returning the
+  // serialized execution NIF (see worker.js handleRunRung). Lazy-loads nifi_run.js.
+  pipe.runrung = (pnif, stdin) => request("runrung", { pnif:String(pnif), stdin:String(stdin||"") });
 
   // Kill the in-flight run (if any) and hand back a fresh worker. Any pending
   // request is rejected with a `stopped` flag so callers can distinguish a user

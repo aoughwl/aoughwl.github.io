@@ -50,6 +50,19 @@
 //   So the VM is the FAST PATH and the tree-walker is the always-correct
 //   fallback (see runSnif).
 let semMain = null, nifiMain = null, nifiVmMain = null, stdlibBlob = null, nsCheckFn = null, semJsText = null;
+// The run-rung bundle (webmain_run.nim): the tree-walker with the run emitter ON,
+// which also parks the serialized execution on globalThis.__nifi_runnif. It's an
+// EXTRA ~1.7 MB, only needed when the user opens the "Run" NIF tab, so we fetch and
+// compile it lazily on first use rather than at boot.
+let nifiRunMain = null, nifiRunPromise = null;
+function ensureRunBundle(){
+  if(nifiRunMain) return Promise.resolve();
+  if(!nifiRunPromise)
+    nifiRunPromise = fetch("nifi_run.js")
+      .then(r=>{ if(!r.ok) throw new Error("nifi_run.js HTTP "+r.status); return r.text(); })
+      .then(txt=>{ nifiRunMain = new Function(txt + "\nmain(0, []);"); });
+  return nifiRunPromise;
+}
 
 function bytesToLatin1(buf){
   const u = new Uint8Array(buf); let s = "";
@@ -175,6 +188,7 @@ function resetNifiGlobals(snif, stdin){
   globalThis.__nifi_in  = stdin || "";
   globalThis.__nifi_src = snif;
   globalThis.__nifi_out = ""; globalThis.__nifi_err = ""; globalThis.__nifi_exit = 0;
+  globalThis.__nifi_runnif = "";   // the run-rung bundle parks the serialized run here
 }
 function collectNifi(engine){
   return { stdout: globalThis.__nifi_out || "", stderr: globalThis.__nifi_err || "",
@@ -211,11 +225,34 @@ function runSnif(snif, stdin){
   }
 }
 
+// --- run rung: semcheck (cached) + run the TREE-WALKER with the emitter on, and
+//     hand back the serialized execution NIF. Kept separate from the fast run path
+//     so normal runs stay on the VM; this only fires when the "Run" NIF tab is open.
+async function handleRunRung(msg, id){
+  try{
+    const { snif, diags } = semCompile(msg.pnif);
+    if(!snif){ self.postMessage({ id, ok:true, ranSem:true, snif:"", runnif:"", diags }); return; }
+    await ensureRunBundle();
+    resetNifiGlobals(snif, msg.stdin);
+    let exitCode = 0, err = "";
+    try{ nifiRunMain(); exitCode = globalThis.__nifi_exit | 0; }
+    catch(e){
+      if(e && e.__isExit) exitCode = parseInt(String(e.message).replace(/\D/g,""),10) || 0;
+      else err = "runtime error: " + (e && e.message || e);
+    }
+    self.postMessage({ id, ok:true, snif, runnif: globalThis.__nifi_runnif || "",
+                       exitCode, stderr: (globalThis.__nifi_err||"") + err, diags });
+  }catch(e){
+    self.postMessage({ id, ok:false, message: String(e && e.message || e) });
+  }
+}
+
 // --- message loop ------------------------------------------------------------
 self.onmessage = (ev) => {
   const msg = ev.data || {};
   const id = msg.id;
   try{
+    if(msg.type === "runrung"){ handleRunRung(msg, id); return; }
     if(msg.type === "sem"){
       const { snif, diags, cached } = semCompile(msg.pnif);
       self.postMessage({ id, ok:true, snif, diags, cached });
