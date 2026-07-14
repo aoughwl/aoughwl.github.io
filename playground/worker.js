@@ -42,7 +42,7 @@
 })();
 
 // --- load + compile-once the two bundles -------------------------------------
-let semMain = null, nifiMain = null, stdlibBlob = null;
+let semMain = null, nifiMain = null, stdlibBlob = null, nsCheckFn = null;
 
 function bytesToLatin1(buf){
   const u = new Uint8Array(buf); let s = "";
@@ -57,12 +57,23 @@ async function boot(){
     fetch("assets/nimsem-stdlib.bin").then(r=>{ if(!r.ok) throw new Error("stdlib asset HTTP "+r.status); return r.arrayBuffer(); })
   ]);
   stdlibBlob = bytesToLatin1(asset);
-  // Compile each bundle ONCE. Invoking the result re-runs its top-level init in
-  // a fresh scope (fresh 64 MiB linear memory, fresh module state) per call, so
-  // each semcheck / run still starts clean — we just don't re-parse megabytes of
-  // JS every time.
-  semMain  = new Function(semJs  + "\nmain(0, []);");
+  // nifi: compile once; each run gets a fresh scope (fresh linear memory) — cheap
+  // (~5 ms of init), and a clean interpreter state per run is what we want.
   nifiMain = new Function(nifiJs + "\nmain(0, []);");
+  // nimsem: a WARM instance. Boot the 8.9 MB bundle ONCE — its module init
+  // installs memvfs and loads the whole stdlib closure — and capture the exported
+  // `nsCheck`, which closes over that warm scope. Every compile then just calls
+  // nsCheck() to swap in a new main module and re-run the semcheck, REUSING the
+  // already-loaded `system`/`syncio` module graph (nimony keeps them in
+  // `prog.mods` across calls). Result: the first check pays ~750 ms to load
+  // `system`, and every check after it is ~15-25 ms instead of ~750 ms. If the
+  // bundle predates nsCheck, fall back to a fresh scope per compile.
+  globalThis.__ns_assets = stdlibBlob;
+  try{
+    (new Function(semJs + "\n; globalThis.__nsCheckFn = nsCheck; main(0, []);"))();
+    if(typeof globalThis.__nsCheckFn === "function") nsCheckFn = globalThis.__nsCheckFn;
+  }catch(e){ /* boot threw — fall through to the fresh-scope path */ }
+  if(!nsCheckFn) semMain = new Function(semJs + "\nmain(0, []);");
 }
 
 // --- nimsem: .p.nif -> .s.nif + diagnostics ----------------------------------
@@ -96,7 +107,8 @@ function semFresh(pnif){
   globalThis.__ns_out    = "";
   globalThis.__ns_diag   = "";
   try{
-    semMain();
+    if(nsCheckFn) nsCheckFn();   // warm instance: reuse the loaded stdlib closure
+    else semMain();              // fallback: fresh scope per compile
   }catch(e){
     const diags = parseDiags(globalThis.__ns_diag);
     return { snif:"", diags: diags.length ? diags : [{ line:1, col:1, severity:"error",
