@@ -180,7 +180,12 @@
   /* floating "show output" button, bottom-right of the editor when collapsed */
   .fab{position:absolute;right:26px;bottom:13px;z-index:5;background:var(--panel2);color:var(--fg);
     border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;
-    display:inline-flex;align-items:center;box-shadow:0 3px 14px rgba(0,0,0,.32)}
+    display:inline-flex;align-items:center;box-shadow:0 3px 14px rgba(0,0,0,.32);
+    /* fade in when the output collapses — ease-in (slow, then quick). visibility is
+       delayed on the way out so it's non-interactive only after the fade. */
+    opacity:0;visibility:hidden;
+    transition:opacity .34s cubic-bezier(.4,0,1,1), visibility 0s linear .34s}
+  .fab.show{opacity:1;visibility:visible;transition:opacity .34s cubic-bezier(.4,0,1,1), visibility 0s}
   .fab:hover{border-color:var(--accent);color:var(--accent)}
   .fab svg{width:17px;height:17px;display:block}
 
@@ -376,7 +381,7 @@
     <div class="label"><span class="cap">nimony source</span><div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence"><span class="sdot"></span><span id="statusText">engine loading…</span></div><span class="status" id="srcStatus"></span><span class="status" id="semStatus" style="margin-left:8px"></span></div>
     <div id="editor"></div>
     <textarea id="fallback" spellcheck="false"></textarea>
-    <button id="showOut" class="fab" data-tip="Show the output panel" style="display:none">
+    <button id="showOut" class="fab" data-tip="Show the output panel">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.6"/><path d="M4.6 6.4L6.6 8l-2 1.6"/><line x1="8" y1="10" x2="11" y2="10"/></svg>
     </button>
   </section>
@@ -392,7 +397,7 @@
       <button id="stdinBtn" class="paneBtn" data-tip="stdin"></button>
       <button id="wrapBtn" class="paneBtn" data-tip="Word wrap"></button>
       <button id="orientBtn" class="paneBtn" data-tip="Layout"></button>
-      <button id="hideBtn" class="paneBtn" data-tip="Hide output"></button>
+      <button id="hideBtn" class="paneBtn" data-tip="Close output"></button>
     </div>
     <div class="view active" id="viewOut">
       <pre id="out"><span class="sys">Pick an example and press Run. The interpreter runs entirely in your browser — no server ever sees or executes your code.</span></pre>
@@ -780,7 +785,8 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   // ---- stdin: a togglable input box whose text is piped to the program on Run
   //      (the run is synchronous, so input is supplied up front, not live). ----
   const stdinBtn=$("#stdinBtn"), stdinBar=$("#stdinBar"), stdinBox=$("#stdinBox");
-  stdinBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v6"/><path d="M5.5 6L8 8.5 10.5 6"/><path d="M3 10.5v1.5a1 1 0 001 1h8a1 1 0 001-1v-1.5"/></svg>';
+  // keyboard — clearer "type your program's input here" than the old download-tray glyph
+  stdinBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.3" width="13" height="7.4" rx="1.3"/><path d="M4 6.9h0M6.5 6.9h0M9 6.9h0M11.5 6.9h0M4 9.1h0M11.5 9.1h0"/><line x1="6" y1="9.1" x2="10" y2="9.1"/></svg>';
   let stdinOn=false;
   try{ stdinOn = localStorage.getItem("np-stdin-open")==="1"; }catch(_){}
   function paintStdin(){
@@ -880,12 +886,15 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     const main=$("#main"), gutter=$("#gutter"),
           orientBtn=$("#orientBtn"), hideBtn=$("#hideBtn"), showOut=$("#showOut");
     // the shaded region is the OUTPUT pane: on the right (cols) or below (rows).
+    // The button shows the layout you'll switch TO (the action), so the icons are
+    // paired with the opposite orientation: in cols mode show the stacked icon,
+    // in rows mode show the side-by-side icon.
     const ORIENT_ICON={
-      cols:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="8.4" y1="3" x2="8.4" y2="13"/><rect x="9" y="4.3" width="4" height="7.4" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>',
-      rows:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="2" y1="8.2" x2="14" y2="8.2"/><rect x="3.3" y="9.1" width="9.4" height="3" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>'
+      cols:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="2" y1="8.2" x2="14" y2="8.2"/><rect x="3.3" y="9.1" width="9.4" height="3" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>',
+      rows:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="8.4" y1="3" x2="8.4" y2="13"/><rect x="9" y="4.3" width="4" height="7.4" rx=".5" fill="currentColor" stroke="none" opacity=".32"/></svg>'
     };
-    // hide: collapse the output toward the right edge
-    hideBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.6"/><line x1="10.5" y1="3.4" x2="10.5" y2="12.6"/><path d="M4.6 6.2 6.8 8 4.6 9.8"/></svg>';
+    // close (X) — reads better than the old "collapse toward the edge" glyph
+    hideBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="4.5" y1="4.5" x2="11.5" y2="11.5"/><line x1="11.5" y1="4.5" x2="4.5" y2="11.5"/></svg>';
     let orient="cols", hidden=false, split=50;
     try{ const s=+localStorage.getItem("np-split"); if(s>=10&&s<=90) split=s; }catch(_){}
     try{ const o=localStorage.getItem("np-orient"); if(o==="cols"||o==="rows") orient=o; }catch(_){}
@@ -899,7 +908,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       orientBtn.innerHTML=ORIENT_ICON[orient];
       orientBtn.setAttribute("data-tip", orient==="cols"
         ? "Side-by-side — switch to stacked" : "Stacked — switch to side-by-side");
-      showOut.style.display = hidden ? "" : "none";
+      showOut.classList.toggle("show", hidden);   // fade in/out (see .fab CSS)
       try{ localStorage.setItem("np-orient", orient); localStorage.setItem("np-hidden", hidden?"1":"0"); }catch(_){}
     }
     orientBtn.addEventListener("click",()=>{ orient = orient==="cols"?"rows":"cols"; apply(); });
