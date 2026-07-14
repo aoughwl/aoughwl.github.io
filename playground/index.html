@@ -178,7 +178,7 @@
   #stdinBox:focus{border-color:var(--accent)}
   #stdinBox::placeholder{color:var(--muted);opacity:.7}
   /* floating "show output" button, bottom-right of the editor when collapsed */
-  .fab{position:absolute;right:16px;bottom:16px;z-index:5;background:var(--panel2);color:var(--fg);
+  .fab{position:absolute;right:26px;bottom:13px;z-index:5;background:var(--panel2);color:var(--fg);
     border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;
     display:inline-flex;align-items:center;box-shadow:0 3px 14px rgba(0,0,0,.32)}
   .fab:hover{border-color:var(--accent);color:var(--accent)}
@@ -240,9 +240,14 @@
      scoped to .quick-input-widget so it can't leak into the editor itself. */
   .quick-input-widget{background:var(--panel2)!important;border:1px solid var(--border)!important;
     border-radius:10px!important;box-shadow:0 16px 48px rgba(0,0,0,.55)!important;padding:8px!important;
+    margin-top:10px!important;   /* float off the very top edge of the editor */
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important}
   .quick-input-widget .quick-input-header{padding-bottom:8px!important}
-  /* the search input — kill Monaco's inset chrome, use our field + placeholder */
+  /* the search input — ONLY .monaco-inputbox is the field. Flatten Monaco's
+     wrapper boxes (.quick-input-box / -filter / -and-message) so the input isn't
+     framed twice (a box-in-a-box). */
+  .quick-input-box,.quick-input-filter,.quick-input-and-message{
+    background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
   .quick-input-box .monaco-inputbox{background:var(--bg)!important;border:1px solid var(--border)!important;
     border-radius:8px!important;box-shadow:none!important}
   .quick-input-box .monaco-inputbox.idle{border-color:var(--border)!important}
@@ -256,10 +261,14 @@
   .quick-input-box input::placeholder{color:var(--muted)!important;opacity:1!important}
   .quick-input-titlebar,.quick-input-widget .quick-input-title{color:var(--fg)!important;font-weight:600!important}
   .quick-input-message{color:var(--muted)!important;font-size:12px!important}
-  /* the list. Rows are absolutely positioned at Monaco's fixed row height, so the
-     breathing room comes from internal padding + our own font metrics rather than
-     margins between rows. */
-  .quick-input-list{margin-top:4px!important}
+  /* the list. Rows are transparent, so the "nasty gray on unselected rows" in the
+     dark themes was actually the LIST CONTAINERS showing Monaco's theme gray
+     through them. Transparent every container so unselected rows reveal OUR panel,
+     and pad the list itself (the rows' parent) so the block isn't flush to the
+     widget edge — the row padding alone couldn't do that. */
+  .quick-input-list,.quick-input-list .monaco-list,.quick-input-list .monaco-list-rows,
+  .quick-input-list .monaco-scrollable-element{background:transparent!important}
+  .quick-input-list{margin-top:4px!important;padding:2px!important}
   .quick-input-list .monaco-list-row{border-radius:6px!important;color:var(--fg)!important;
     padding:2px 8px!important;font-size:13.5px!important;background:transparent!important}
   .quick-input-list .quick-input-list-entry{padding:2px 0!important}
