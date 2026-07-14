@@ -453,20 +453,23 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   const outStatus=$("#outStatus"), srcStatus=$("#srcStatus"), perf=$("#perf");
   const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const print = html => { outEl.innerHTML = html; };
-  // After a run, scroll the output pane to the newest content (the exit/timing
-  // line sits at the very bottom). Smooth when it fits reasonably; a very long
-  // output jumps (a smooth scroll across thousands of lines just feels laggy).
-  // Debounced ~250 ms: a re-run clears the pane and immediately refills it, so
-  // without the delay we'd animate all the way down to the same spot on every
-  // Run. Coalescing to the final settled state avoids that pointless scroll.
-  let scrollTimer = null;
+  // Sticky-bottom output, terminal style. The re-run "jump to the top" the user
+  // saw came from blanking the pane to "running…" between runs: that collapses
+  // its height and resets scrollTop to 0, so the next output animated down from
+  // the top. Fix is two parts: (1) run() no longer blanks the pane — the prior
+  // output stays put (scroll intact) until the new output replaces it in one
+  // step, so a same-length re-run doesn't move at all; (2) we only auto-scroll
+  // to the bottom when the user was ALREADY near the bottom (following along),
+  // and never yank them down if they'd scrolled up to read.
+  let nearBottom = true;
+  outEl.addEventListener("scroll", () => {
+    nearBottom = (outEl.scrollHeight - outEl.scrollTop - outEl.clientHeight) < 40;
+  });
   function scrollOutToBottom(){
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-      const top = outEl.scrollHeight;
-      try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
-      catch(_){ outEl.scrollTop = top; }
-    }, 250);
+    if(!nearBottom) return;                 // user scrolled up — leave them there
+    const top = outEl.scrollHeight;
+    try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
+    catch(_){ outEl.scrollTop = top; }
   }
 
   // ---- one combined status line: engine · diagnostics · intellisense ----
@@ -661,7 +664,10 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     // the Output tab, so a Run is never silently dropped behind Symbols/NIF.
     ensureOutputVisible();
     outShowingProblems=false;
-    setRunning(true); outStatus.textContent="running… (click Stop to cancel)"; print('<span class="sys">running…</span>');
+    // Deliberately do NOT blank the pane here — keeping the prior output (and its
+    // scroll position) visible until the new output replaces it is what stops the
+    // re-run "jump back to the top". The Stop button + this status convey "running".
+    setRunning(true); outStatus.textContent="running… (click Stop to cancel)";
     const t0=performance.now();
     try{
       const res=await window.NifiEngine.run({ source: window.NifiEditor.getValue(), stdin: currentStdin() });
