@@ -606,8 +606,6 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     ensureOutputVisible();
     outShowingProblems=false;
     setRunning(true); outStatus.textContent="running… (click Stop to cancel)"; print('<span class="sys">running…</span>');
-    // yield a frame so the "running…" state paints before we block on the result.
-    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const t0=performance.now();
     try{
       const res=await window.NifiEngine.run({ source: window.NifiEditor.getValue(), stdin: currentStdin() });
