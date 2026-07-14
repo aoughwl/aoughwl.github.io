@@ -181,11 +181,12 @@
   .fab{position:absolute;right:26px;bottom:13px;z-index:5;background:var(--panel2);color:var(--fg);
     border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;
     display:inline-flex;align-items:center;box-shadow:0 3px 14px rgba(0,0,0,.32);
-    /* fade in when the output collapses — ease-in (slow, then quick). visibility is
-       delayed on the way out so it's non-interactive only after the fade. */
-    opacity:0;visibility:hidden;
-    transition:opacity .34s cubic-bezier(.4,0,1,1), visibility 0s linear .34s}
-  .fab.show{opacity:1;visibility:visible;transition:opacity .34s cubic-bezier(.4,0,1,1), visibility 0s}
+    /* hidden state is INSTANT (no fade-out) — transition:none here; the fade-in
+       lives on .show below so it only animates on the way in. */
+    opacity:0;visibility:hidden;transition:none}
+  .fab.show{opacity:1;visibility:visible;
+    /* wait a beat, then fade in quick; ease-in (slow → quick). */
+    transition:opacity .2s cubic-bezier(.4,0,1,1) .16s}
   .fab:hover{border-color:var(--accent);color:var(--accent)}
   .fab svg{width:17px;height:17px;display:block}
 
