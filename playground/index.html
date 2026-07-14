@@ -231,27 +231,68 @@
   #ctxmenu .item:hover .kb{color:rgba(255,255,255,.75)}
   #ctxmenu .sep{height:1px;margin:4px 6px;background:var(--border)}
 
-  /* Monaco's F1 Command Palette (quick-input) lives in the light DOM — theme it
-     to match our panels: our input, accent-highlighted rows, kbd-style chips. */
+  /* Monaco's F1 Command Palette (quick-input) lives in the light DOM — it ships
+     with the stock vs-dark look (gray rows, gray "inactive selection", Monaco's
+     own input chrome). Re-skin the whole widget to our panels: our sans UI font,
+     our surfaces, an accent-filled active row, and kbd-style chips. Everything is
+     scoped to .quick-input-widget so it can't leak into the editor itself. */
   .quick-input-widget{background:var(--panel2)!important;border:1px solid var(--border)!important;
-    border-radius:8px!important;box-shadow:0 10px 34px rgba(0,0,0,.5)!important;padding:6px!important}
-  .quick-input-widget .quick-input-header{padding-bottom:6px!important}
+    border-radius:10px!important;box-shadow:0 16px 48px rgba(0,0,0,.55)!important;padding:8px!important;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important}
+  .quick-input-widget .quick-input-header{padding-bottom:8px!important}
+  /* the search input — kill Monaco's inset chrome, use our field + placeholder */
   .quick-input-box .monaco-inputbox{background:var(--bg)!important;border:1px solid var(--border)!important;
-    border-radius:6px!important}
+    border-radius:8px!important;box-shadow:none!important}
+  .quick-input-box .monaco-inputbox.idle{border-color:var(--border)!important}
+  .quick-input-box .monaco-inputbox:focus-within{border-color:var(--accent)!important;
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)!important}
+  .quick-input-box .monaco-inputbox>.ibwrapper>.input,
   .quick-input-box .monaco-inputbox .input,.quick-input-box input{color:var(--fg)!important;
-    background:transparent!important;font-family:inherit!important;font-size:13px!important}
-  .quick-input-list .monaco-list-row{border-radius:5px!important;color:var(--fg)!important}
-  .quick-input-list .monaco-list-row:hover:not(.focused){background:var(--panel)!important}
-  .quick-input-list .monaco-list-row.focused{background:var(--accent)!important;color:#fff!important}
+    background:transparent!important;font-family:inherit!important;font-size:13.5px!important;
+    line-height:22px!important;padding:5px 4px!important}
+  .quick-input-box .monaco-inputbox .input::placeholder,
+  .quick-input-box input::placeholder{color:var(--muted)!important;opacity:1!important}
+  .quick-input-titlebar,.quick-input-widget .quick-input-title{color:var(--fg)!important;font-weight:600!important}
+  .quick-input-message{color:var(--muted)!important;font-size:12px!important}
+  /* the list. Rows are absolutely positioned at Monaco's fixed row height, so the
+     breathing room comes from internal padding + our own font metrics rather than
+     margins between rows. */
+  .quick-input-list{margin-top:4px!important}
+  .quick-input-list .monaco-list-row{border-radius:6px!important;color:var(--fg)!important;
+    padding:2px 8px!important;font-size:13.5px!important;background:transparent!important}
+  .quick-input-list .quick-input-list-entry{padding:2px 0!important}
+  .quick-input-list .monaco-list-row .label-name,
+  .quick-input-list .monaco-list-row .monaco-icon-label{color:var(--fg)!important}
+  .quick-input-list .quick-input-list-entry-description,
+  .quick-input-list .monaco-list-row .label-description{color:var(--muted)!important;font-size:12px!important;opacity:.9!important}
+  /* Monaco paints a gray background for hover AND for the "focused but list not
+     DOM-focused" row (the palette keeps focus in the input, so its highlighted row
+     always renders as that inactive gray). Force our surfaces for every such
+     state — the single accent-filled row is the real selection cue. */
+  .quick-input-list .monaco-list-row:hover:not(.focused):not(.selected){background:var(--panel)!important}
+  .quick-input-list:not(.focused) .monaco-list-row.focused,
+  .quick-input-list .monaco-list-row.focused,
+  .quick-input-list .monaco-list-row.selected{background:var(--accent)!important;color:#fff!important}
   .quick-input-list .monaco-list-row.focused .label-name,
+  .quick-input-list .monaco-list-row.selected .label-name,
+  .quick-input-list .monaco-list-row.focused .monaco-icon-label,
   .quick-input-list .monaco-list-row.focused .monaco-highlighted-label,
-  .quick-input-list .monaco-list-row.focused .quick-input-list-entry-description{color:#fff!important}
+  .quick-input-list .monaco-list-row.focused .quick-input-list-entry-description,
+  .quick-input-list .monaco-list-row.focused .label-description{color:#fff!important;opacity:1!important}
+  /* the fuzzy-match highlight: accent-green normally, underlined on the active row */
   .quick-input-list .monaco-highlighted-label .highlight,.quick-input-list .highlight{color:var(--accent2)!important;font-weight:600!important}
-  .quick-input-list .monaco-list-row.focused .highlight{color:#fff!important;text-decoration:underline}
+  .quick-input-list .monaco-list-row.focused .highlight,
+  .quick-input-list .monaco-list-row.selected .highlight{color:#fff!important;text-decoration:underline}
+  /* keybinding chips */
   .monaco-keybinding-key{background:var(--panel)!important;border:1px solid var(--border)!important;
-    border-bottom-width:2px!important;border-radius:4px!important;color:var(--muted)!important;box-shadow:none!important}
-  .quick-input-list .monaco-list-row.focused .monaco-keybinding-key{background:rgba(255,255,255,.16)!important;
+    border-bottom-width:2px!important;border-radius:4px!important;color:var(--muted)!important;
+    box-shadow:none!important;font-family:var(--mono)!important;font-size:11px!important}
+  .quick-input-list .monaco-list-row.focused .monaco-keybinding-key,
+  .quick-input-list .monaco-list-row.selected .monaco-keybinding-key{background:rgba(255,255,255,.16)!important;
     border-color:rgba(255,255,255,.35)!important;color:#fff!important}
+  /* the little scrollbar inside the list */
+  .quick-input-widget .monaco-scrollable-element>.scrollbar>.slider{background:var(--border)!important;border-radius:6px!important}
+  .quick-input-widget .monaco-scrollable-element>.scrollbar>.slider:hover{background:var(--muted)!important}
 
   /* ---- responsive / mobile ---- */
   /* narrow: stack the panes, drop the manual gutter — but keep the solo collapse

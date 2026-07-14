@@ -42,12 +42,36 @@
 })();
 
 // --- load + compile-once the two bundles -------------------------------------
-let semMain = null, nifiMain = null, stdlibBlob = null, nsCheckFn = null;
+let semMain = null, nifiMain = null, stdlibBlob = null, nsCheckFn = null, semJsText = null;
 
 function bytesToLatin1(buf){
   const u = new Uint8Array(buf); let s = "";
   for(let i = 0; i < u.length; i++) s += String.fromCharCode(u[i]);
   return s;
+}
+
+// (Re)build the WARM nimsem instance from the already-fetched bundle text. Boot
+// the 8.9 MB bundle — its module init installs memvfs and loads the whole stdlib
+// closure — and capture the exported `nsCheck`, which closes over that warm
+// scope. Every compile then just calls nsCheck() to swap in a new main module and
+// re-run the semcheck, REUSING the already-loaded `system`/`syncio` module graph
+// (nimony keeps them in `prog.mods` across calls): the first check pays ~750 ms to
+// load `system`, every check after is ~15-25 ms. If the bundle predates nsCheck,
+// fall back to a fresh scope per compile.
+//
+// We also call this to RECOVER from a poisoned instance: a compile that throws
+// mid-check can leave that shared `prog.mods` graph half-mutated, which would make
+// every subsequent nsCheck() throw too — the "it says unsupported and then never
+// finds errors again until I refresh" lockout. Rebuilding hands back a clean warm
+// scope (~750 ms once, off the UI thread) instead of a permanent dead worker.
+function buildWarmSem(){
+  nsCheckFn = null;
+  globalThis.__ns_assets = stdlibBlob;
+  try{
+    (new Function(semJsText + "\n; globalThis.__nsCheckFn = nsCheck; main(0, []);"))();
+    if(typeof globalThis.__nsCheckFn === "function") nsCheckFn = globalThis.__nsCheckFn;
+  }catch(e){ /* boot threw — fall through to the fresh-scope path */ }
+  if(!nsCheckFn && !semMain) semMain = new Function(semJsText + "\nmain(0, []);");
 }
 
 async function boot(){
@@ -57,23 +81,11 @@ async function boot(){
     fetch("assets/nimsem-stdlib.bin").then(r=>{ if(!r.ok) throw new Error("stdlib asset HTTP "+r.status); return r.arrayBuffer(); })
   ]);
   stdlibBlob = bytesToLatin1(asset);
+  semJsText = semJs;
   // nifi: compile once; each run gets a fresh scope (fresh linear memory) — cheap
   // (~5 ms of init), and a clean interpreter state per run is what we want.
   nifiMain = new Function(nifiJs + "\nmain(0, []);");
-  // nimsem: a WARM instance. Boot the 8.9 MB bundle ONCE — its module init
-  // installs memvfs and loads the whole stdlib closure — and capture the exported
-  // `nsCheck`, which closes over that warm scope. Every compile then just calls
-  // nsCheck() to swap in a new main module and re-run the semcheck, REUSING the
-  // already-loaded `system`/`syncio` module graph (nimony keeps them in
-  // `prog.mods` across calls). Result: the first check pays ~750 ms to load
-  // `system`, and every check after it is ~15-25 ms instead of ~750 ms. If the
-  // bundle predates nsCheck, fall back to a fresh scope per compile.
-  globalThis.__ns_assets = stdlibBlob;
-  try{
-    (new Function(semJs + "\n; globalThis.__nsCheckFn = nsCheck; main(0, []);"))();
-    if(typeof globalThis.__nsCheckFn === "function") nsCheckFn = globalThis.__nsCheckFn;
-  }catch(e){ /* boot threw — fall through to the fresh-scope path */ }
-  if(!nsCheckFn) semMain = new Function(semJs + "\nmain(0, []);");
+  buildWarmSem();
 }
 
 // --- nimsem: .p.nif -> .s.nif + diagnostics ----------------------------------
@@ -101,7 +113,7 @@ const cache = new Map();
 function cacheGet(k){ if(!cache.has(k)) return null; const v=cache.get(k); cache.delete(k); cache.set(k,v); return v; }
 function cachePut(k,v){ cache.set(k,v); while(cache.size>CACHE_MAX) cache.delete(cache.keys().next().value); }
 
-function semFresh(pnif){
+function semFresh(pnif, allowRetry){
   globalThis.__ns_main   = String(pnif);
   globalThis.__ns_assets = stdlibBlob;
   globalThis.__ns_out    = "";
@@ -111,6 +123,15 @@ function semFresh(pnif){
     else semMain();              // fallback: fresh scope per compile
   }catch(e){
     const diags = parseDiags(globalThis.__ns_diag);
+    // A throw from the WARM instance can leave its shared `prog.mods` graph
+    // corrupted, poisoning every later check. Rebuild a clean instance so the
+    // NEXT edit isn't locked out — and, if this throw produced no diagnostics,
+    // retry the check ONCE on the clean instance so this edit still gets real
+    // errors instead of the generic "not supported" fallback.
+    if(nsCheckFn){
+      buildWarmSem();
+      if(!diags.length && allowRetry !== false) return semFresh(pnif, false);
+    }
     return { snif:"", diags: diags.length ? diags : [{ line:1, col:1, severity:"error",
       message:"this program uses a module or feature not yet supported in the browser sandbox" }] };
   }

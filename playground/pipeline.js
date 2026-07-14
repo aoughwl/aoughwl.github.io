@@ -17,7 +17,7 @@
 
   function spawn(){
     pipe.ready = false; pipe.alive = false;
-    worker = new Worker("worker.js?v=9");
+    worker = new Worker("worker.js?v=10");
     worker.onmessage = (ev) => {
       const m = ev.data || {};
       if(m.type === "ready"){
