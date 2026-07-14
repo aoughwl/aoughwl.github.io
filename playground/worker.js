@@ -127,6 +127,7 @@ function semFresh(pnif, allowRetry){
   globalThis.__ns_assets = stdlibBlob;
   globalThis.__ns_out    = "";
   globalThis.__ns_diag   = "";
+  globalThis.__nifi_out  = "";   // nimsem's own stdout (assert/crash text) lands here via the process shim
   try{
     if(nsCheckFn) nsCheckFn();   // warm instance: reuse the loaded stdlib closure
     else semMain();              // fallback: fresh scope per compile
@@ -136,13 +137,24 @@ function semFresh(pnif, allowRetry){
     // corrupted, poisoning every later check. Rebuild a clean instance so the
     // NEXT edit isn't locked out — and, if this throw produced no diagnostics,
     // retry the check ONCE on the clean instance so this edit still gets real
-    // errors instead of the generic "not supported" fallback.
+    // errors instead of the generic fallback.
     if(nsCheckFn){
       buildWarmSem();
       if(!diags.length && allowRetry !== false) return semFresh(pnif, false);
     }
-    return { snif:"", diags: diags.length ? diags : [{ line:1, col:1, severity:"error",
-      message:"this program uses a module or feature not yet supported in the browser sandbox" }] };
+    if(diags.length) return { snif:"", diags };
+    // No located diagnostic. Either nimsem crashed internally (an assertion —
+    // usually a malformed edit the parser let through, e.g. a `proc` header
+    // missing its trailing `=`) or the program hits a genuinely unsupported
+    // feature. Tell them apart from whatever nimsem printed, and use line:0 so we
+    // do NOT pin a red marker to line 1 (the import) — we don't know the real
+    // line (refreshMarkers lists line:0 in Problems without an editor squiggle).
+    const crash = String(globalThis.__nifi_out || "").trim();
+    const internal = /assert|fatal|unreachable|internal|illformed|segfault|sigsegv/i.test(crash);
+    const message = internal
+      ? "the checker couldn't process this program — this is usually a mistake in your most recent edit (for example a proc/if/for/type header missing its ':' or '='). Undo that edit and your errors come back."
+      : "this program uses a module or feature not yet supported in the browser sandbox";
+    return { snif:"", diags:[{ line:0, col:0, severity:"error", message }] };
   }
   return { snif: globalThis.__ns_out || "", diags: parseDiags(globalThis.__ns_diag) };
 }

@@ -523,12 +523,16 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       problems.push({ line:d.line, col:s.col, message:d.message, severity:"error" });
     }
     for(const d of semDiags){
+      if(d.line < 1){                     // unknown location (internal checker error):
+        problems.push({ line:0, col:0, message:d.message, severity:d.severity||"error" });
+        continue;                         // list it in Problems, but NO editor squiggle
+      }
       const s = snapCol(d.message, lines[d.line-1]||"", d.col);
       marks.push({ line:d.line, col:s.col, endCol:s.endCol, message:d.message, severity:d.severity||"error" });
       problems.push({ line:d.line, col:s.col, message:d.message, severity:d.severity||"error" });
     }
     window.NifiEditor.setDiagnostics(marks);
-    setDiagBadge(marks);
+    setDiagBadge(problems);               // count from problems so a line:0 error still blocks Run
     showProblems(problems);
   }
   function showProblems(problems){
@@ -536,7 +540,7 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       outShowingProblems = true;
       outEl.innerHTML = '<span class="err">● '+problems.length+' problem'+(problems.length>1?'s':'')+'</span>\n' +
         problems.map(p=>'<span class="prob'+(p.severity==="warning"?" warn":"")+'" data-l="'+p.line+'" data-c="'+p.col+'">'+
-          '<span class="loc">'+p.line+':'+p.col+'</span>'+esc(p.message)+'</span>').join("\n");
+          '<span class="loc">'+(p.line>0 ? p.line+':'+p.col : '⚠')+'</span>'+esc(p.message)+'</span>').join("\n");
     } else if(outShowingProblems){
       outShowingProblems = false;
       outEl.innerHTML = '<span class="ok">● no errors</span>  <span class="sys">— press Run to execute.</span>';
@@ -666,8 +670,9 @@ window.NifiOpts = window.NifiOpts || { curly:false };
     outShowingProblems=false;
     // Deliberately do NOT blank the pane here — keeping the prior output (and its
     // scroll position) visible until the new output replaces it is what stops the
-    // re-run "jump back to the top". The Stop button + this status convey "running".
-    setRunning(true); outStatus.textContent="running… (click Stop to cancel)";
+    // re-run "jump back to the top". The Run→Stop button already conveys "running",
+    // so we don't add a status line in the tab bar.
+    setRunning(true);
     const t0=performance.now();
     try{
       const res=await window.NifiEngine.run({ source: window.NifiEditor.getValue(), stdin: currentStdin() });
