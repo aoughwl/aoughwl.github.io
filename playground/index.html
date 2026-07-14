@@ -453,6 +453,14 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   const outStatus=$("#outStatus"), srcStatus=$("#srcStatus"), perf=$("#perf");
   const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const print = html => { outEl.innerHTML = html; };
+  // After a run, scroll the output pane to the newest content (the exit/timing
+  // line sits at the very bottom). Smooth when it fits reasonably; a very long
+  // output jumps (a smooth scroll across thousands of lines just feels laggy).
+  function scrollOutToBottom(){
+    const top = outEl.scrollHeight;
+    try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
+    catch(_){ outEl.scrollTop = top; }
+  }
 
   // ---- one combined status line: engine · diagnostics · intellisense ----
   // A single element replaces the three chips. Any error blocks Run.
@@ -654,8 +662,11 @@ window.NifiOpts = window.NifiOpts || { curly:false };
       const parts=[];
       if(res.stdout) parts.push(esc(res.stdout));
       if(res.stderr) parts.push('<span class="err">'+esc(res.stderr)+'</span>');
-      parts.push('<span class="ok">— exit '+(res.exitCode|0)+' · '+ms+' ms</span>');
-      print(parts.join('\n')); outEl.scrollTop=0; perf.textContent=ms+" ms";
+      // which engine ran: the bytecode VM (fast path) or the tree-walker fallback.
+      const eng = res.engine==="vm" ? ' · <span class="sys">VM</span>'
+                : res.engine==="tree" ? ' · <span class="sys">tree-walker</span>' : '';
+      parts.push('<span class="'+(res.oom?'err':'ok')+'">— exit '+(res.exitCode|0)+' · '+ms+' ms'+eng+'</span>');
+      print(parts.join('\n')); perf.textContent=ms+" ms"; scrollOutToBottom();
     }catch(e){
       if(e && e.stopped) print('<span class="err">■ stopped — the program was terminated.</span>');
       else print('<span class="err">'+esc(e&&e.message||e)+'</span>');

@@ -4,7 +4,7 @@
 // compiled to JS through lengjs like any other module; the runtime provides only
 // `mmap`/`munmap` as the page primitives it sits on (Araq's boundary), so `alloc`/
 // `dealloc`/`realloc` and their free-list reuse all run as real Nim code.
-const _ab = new ArrayBuffer(1 << 26);           // 64 MiB linear memory
+const _ab = new ArrayBuffer(1 << 28);           // 256 MiB linear memory (PATCHED post-generation from 1<<26; mirror in nimony-web tests/jsbackend/runtime.js)
 const _dv = new DataView(_ab);
 const _u8 = new Uint8Array(_ab);
 let _brk = 8;                                   // offset 0 reserved as nil

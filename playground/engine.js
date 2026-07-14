@@ -76,7 +76,7 @@
         : "the program did not type-check.";
       return { stdout:"", stderr:"semantic error:\n"+msg, exitCode:1, diags:m.diags||[] };
     }
-    return { stdout:m.stdout||"", stderr:m.stderr||"", exitCode:m.exitCode|0, diags:m.diags||[] };
+    return { stdout:m.stdout||"", stderr:m.stderr||"", exitCode:m.exitCode|0, diags:m.diags||[], engine:m.engine, oom:!!m.oom };
   }
 
   window.NifiCore = { compileAndRun, checkImports };

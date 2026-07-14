@@ -168,6 +168,15 @@ function collectNifi(engine){
   return { stdout: globalThis.__nifi_out || "", stderr: globalThis.__nifi_err || "",
            exitCode: globalThis.__nifi_exit | 0, engine };
 }
+// Out-of-memory: the nifi runtime is a bump allocator over a FIXED linear-memory
+// ArrayBuffer with no GC, so a program that allocates too much in total (big
+// loops building strings/collections, huge output) overruns it and the DataView
+// accessors throw a RangeError. Both engines share this memory model, so a retry
+// on the other engine just OOMs again — detect it and DON'T fall back.
+function isMemoryError(e){
+  return !!e && (e.name === "RangeError" ||
+    /bounds of the DataView|out of bounds|Array buffer allocation/i.test(String(e.message || e)));
+}
 function runSnif(snif, stdin){
   // FAST PATH: the bytecode VM. If it can't run this program in the browser host
   // (on-demand symbol load -> vfs open throws, or a quit surfaces via the exit
@@ -178,7 +187,12 @@ function runSnif(snif, stdin){
     nifiVmMain();
     return collectNifi("vm");
   }catch(e){
-    // the VM may have written partial output before throwing — reset and re-run.
+    // Out of memory is a genuine runtime limit, not a "the VM can't compile this"
+    // signal — the tree-walker shares the same fixed heap and would just OOM too
+    // (and double the wait). Surface it directly instead of falling back.
+    if(isMemoryError(e)){ e.__oom = true; throw e; }
+    // otherwise the VM couldn't run it — reset (it may have written partial
+    // output before throwing) and re-run on the tree-walker.
     resetNifiGlobals(snif, stdin);
     nifiMain();
     return collectNifi("tree");
@@ -202,12 +216,24 @@ self.onmessage = (ev) => {
       try{
         res = runSnif(snif, msg.stdin);
       }catch(e){
-        // an exit() thrown mid-run, or a bundle-level crash (e.g. a missing FFI
-        // shim). Surface it as stderr with whatever was printed so far, rather
-        // than letting the worker die.
-        const emsg = (e && e.__isExit) ? "" : ("runtime error: " + (e && e.message || e));
-        res = { stdout: globalThis.__nifi_out || "", stderr: (globalThis.__nifi_err || "") + emsg,
-                exitCode: (e && e.__isExit) ? (parseInt(String(e.message).replace(/\D/g,""),10)||0) : 1 };
+        // an exit() thrown mid-run, an out-of-memory, or a bundle-level crash
+        // (e.g. a missing FFI shim). Surface it as stderr with whatever was
+        // printed so far, rather than letting the worker die.
+        const base = globalThis.__nifi_err || "";
+        if(e && e.__isExit){
+          res = { stdout: globalThis.__nifi_out || "", stderr: base,
+                  exitCode: parseInt(String(e.message).replace(/\D/g,""),10) || 0 };
+        }else if(e && (e.__oom || isMemoryError(e))){
+          res = { stdout: globalThis.__nifi_out || "", oom: true, exitCode: 137,
+                  stderr: base + "out of memory: this program allocated more than the "
+                    + "in-browser interpreter's fixed heap. It runs with a bump allocator "
+                    + "and no garbage collector, so large loops that build strings or "
+                    + "collections (or that print a lot) exhaust it even if little is live "
+                    + "at once. Try fewer iterations or less output." };
+        }else{
+          res = { stdout: globalThis.__nifi_out || "", exitCode: 1,
+                  stderr: base + "runtime error: " + (e && e.message || e) };
+        }
       }
       res.diags = diags;
       self.postMessage(Object.assign({ id, ok:true }, res));
