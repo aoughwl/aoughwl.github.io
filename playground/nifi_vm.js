@@ -4,9 +4,9 @@
 // compiled to JS through lengjs like any other module; the runtime provides only
 // `mmap`/`munmap` as the page primitives it sits on (Araq's boundary), so `alloc`/
 // `dealloc`/`realloc` and their free-list reuse all run as real Nim code.
-const _ab = new ArrayBuffer(1 << 28);           // 256 MiB linear memory (raised from 1<<26: the bump allocator has no GC, so large allocating loops / big output exhausted 64 MiB and threw "Offset is outside the bounds of the DataView")
-const _dv = new DataView(_ab);
-const _u8 = new Uint8Array(_ab);
+const _ab = (globalThis.__leng_ab || (globalThis.__leng_ab = new ArrayBuffer(1 << 28)));           // 256 MiB linear memory (raised from 1<<26: the bump allocator has no GC, so large allocating loops / big output exhausted 64 MiB and threw "Offset is outside the bounds of the DataView")
+const _dv = (globalThis.__leng_dv || (globalThis.__leng_dv = new DataView(_ab)));
+const _u8 = (globalThis.__leng_u8 || (globalThis.__leng_u8 = new Uint8Array(_ab)));
 let _brk = 8;                                   // offset 0 reserved as nil
 
 // `allocFixed(n)` is the codegen's own storage for value aggregates (a C-stack
