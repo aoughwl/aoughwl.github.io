@@ -518,6 +518,13 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   //        @c,l,file  / ~rel  line-info site keys (dimmed, they're provenance noise)
   //        .          a bare nil node
   const NUM_RE=/^[+-]?(?:0x[0-9a-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)$/;
+  // Build paths leak into NIF — module files in `(kv … "…/system.nim")` and the
+  // `@col,line,FILE` line-info site keys carry absolute/relative host paths
+  // (/home/…, ../.claude/jobs/…). Collapse any .nim/.nif path to ~basename. The
+  // pattern requires a slash AND a .nim/.nif suffix, so ordinary program strings
+  // (even ones with slashes, like "/etc/hosts") are left alone.
+  const PATH_RE=/[^\s"(),@~]*\/[^\s"(),@~]*\.(?:nim|nif)\b/g;
+  const shortenPaths = s => String(s).replace(PATH_RE, m => "~"+m.slice(m.lastIndexOf("/")+1));
   function nifWord(word, isTag){
     let out="";
     const span=(cls,t)=>{ out+='<span class="'+cls+'">'+esc(t)+'</span>'; };
@@ -534,18 +541,24 @@ window.NifiOpts = window.NifiOpts || { curly:false };
         if(d>0){ span("nt-sym",name.slice(0,d)); span("nt-scope",name.slice(d)); }
         else span("nt-sym",name); }
     }
-    if(info) span("nt-info",info);
+    if(info) span("nt-info",shortenPaths(info));
     return out;
   }
   function renderNif(src){
     src=String(src); let html="", i=0, depth=0, expectTag=false; const n=src.length;
     while(i<n){
       const c=src[i];
-      if(c===" "||c==="\t"||c==="\n"||c==="\r"){ let j=i+1; while(j<n && /\s/.test(src[j])) j++; html+=esc(src.slice(i,j)); i=j; continue; }
+      if(c===" "||c==="\t"||c==="\n"||c==="\r"){ let j=i+1; while(j<n && /\s/.test(src[j])) j++;
+        const ws=src.slice(i,j);
+        // Preserve any run that spans a newline verbatim — that's real indentation.
+        // A pure inline run (e.g. the reserved padding after `.indexat 7363`) is
+        // just inter-token filler in NIF, so collapse it to one space instead of
+        // rendering a long weird gap before the next token.
+        html += ws.indexOf("\n")>=0 ? esc(ws) : " "; i=j; continue; }
       if(c==="("){ html+='<span class="nt-par nt-d'+(depth%4)+'">(</span>'; depth++; expectTag=true; i++; continue; }
       if(c===")"){ depth=Math.max(0,depth-1); html+='<span class="nt-par nt-d'+(depth%4)+'">)</span>'; expectTag=false; i++; continue; }
       if(c==='"'){ let j=i+1; while(j<n){ if(src[j]==="\\"){ j+=2; continue; } if(src[j]==='"'){ j++; break; } j++; }
-        html+='<span class="nt-str">'+esc(src.slice(i,j))+'</span>'; i=j; expectTag=false; continue; }
+        html+='<span class="nt-str">'+esc(shortenPaths(src.slice(i,j)))+'</span>'; i=j; expectTag=false; continue; }
       let j=i; while(j<n && " \t\n\r()\"".indexOf(src[j])<0) j++;
       html+=nifWord(src.slice(i,j), expectTag); i=j; expectTag=false;
     }
