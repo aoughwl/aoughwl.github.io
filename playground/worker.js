@@ -41,8 +41,15 @@
     };
 })();
 
-// --- load + compile-once the two bundles -------------------------------------
-let semMain = null, nifiMain = null, stdlibBlob = null, nsCheckFn = null, semJsText = null;
+// --- load + compile-once the bundles -----------------------------------------
+// nifiMain  = tree-walker (interp.nim): lazy, runs any self-contained .s.nif.
+// nifiVmMain= bytecode VM (compiler.nim + vm.nim): 1.7-2.9x faster on compute,
+//   but its compiler resolves some symbols eagerly (firstParamContainer ->
+//   tryLoadSym), which forces an on-demand module load the self-contained
+//   browser host can't satisfy (seq/Table container ops -> vfs open fails).
+//   So the VM is the FAST PATH and the tree-walker is the always-correct
+//   fallback (see runSnif).
+let semMain = null, nifiMain = null, nifiVmMain = null, stdlibBlob = null, nsCheckFn = null, semJsText = null;
 
 function bytesToLatin1(buf){
   const u = new Uint8Array(buf); let s = "";
@@ -75,16 +82,18 @@ function buildWarmSem(){
 }
 
 async function boot(){
-  const [semJs, nifiJs, asset] = await Promise.all([
+  const [semJs, nifiJs, nifiVmJs, asset] = await Promise.all([
     fetch("nimsem.js").then(r=>{ if(!r.ok) throw new Error("nimsem.js HTTP "+r.status); return r.text(); }),
     fetch("nifi.js").then(r=>{ if(!r.ok) throw new Error("nifi.js HTTP "+r.status); return r.text(); }),
+    fetch("nifi_vm.js").then(r=>{ if(!r.ok) throw new Error("nifi_vm.js HTTP "+r.status); return r.text(); }),
     fetch("assets/nimsem-stdlib.bin").then(r=>{ if(!r.ok) throw new Error("stdlib asset HTTP "+r.status); return r.arrayBuffer(); })
   ]);
   stdlibBlob = bytesToLatin1(asset);
   semJsText = semJs;
   // nifi: compile once; each run gets a fresh scope (fresh linear memory) — cheap
   // (~5 ms of init), and a clean interpreter state per run is what we want.
-  nifiMain = new Function(nifiJs + "\nmain(0, []);");
+  nifiMain   = new Function(nifiJs   + "\nmain(0, []);");
+  nifiVmMain = new Function(nifiVmJs + "\nmain(0, []);");
   buildWarmSem();
 }
 
@@ -148,13 +157,32 @@ function semCompile(pnif){
 }
 
 // --- nifi: run a typed .s.nif ------------------------------------------------
-function runSnif(snif, stdin){
+// Both engines read the same __nifi_* input globals and park their result on the
+// same output globals; a run is a fresh scope, so state never carries over.
+function resetNifiGlobals(snif, stdin){
   globalThis.__nifi_in  = stdin || "";
   globalThis.__nifi_src = snif;
   globalThis.__nifi_out = ""; globalThis.__nifi_err = ""; globalThis.__nifi_exit = 0;
-  nifiMain();
+}
+function collectNifi(engine){
   return { stdout: globalThis.__nifi_out || "", stderr: globalThis.__nifi_err || "",
-           exitCode: globalThis.__nifi_exit | 0 };
+           exitCode: globalThis.__nifi_exit | 0, engine };
+}
+function runSnif(snif, stdin){
+  // FAST PATH: the bytecode VM. If it can't run this program in the browser host
+  // (on-demand symbol load -> vfs open throws, or a quit surfaces via the exit
+  // shim), we catch it and re-run on the always-correct tree-walker. Where the VM
+  // succeeds its output is identical to the tree-walker's (verified on the demos).
+  resetNifiGlobals(snif, stdin);
+  try{
+    nifiVmMain();
+    return collectNifi("vm");
+  }catch(e){
+    // the VM may have written partial output before throwing — reset and re-run.
+    resetNifiGlobals(snif, stdin);
+    nifiMain();
+    return collectNifi("tree");
+  }
 }
 
 // --- message loop ------------------------------------------------------------
