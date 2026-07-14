@@ -456,10 +456,17 @@ window.NifiOpts = window.NifiOpts || { curly:false };
   // After a run, scroll the output pane to the newest content (the exit/timing
   // line sits at the very bottom). Smooth when it fits reasonably; a very long
   // output jumps (a smooth scroll across thousands of lines just feels laggy).
+  // Debounced ~250 ms: a re-run clears the pane and immediately refills it, so
+  // without the delay we'd animate all the way down to the same spot on every
+  // Run. Coalescing to the final settled state avoids that pointless scroll.
+  let scrollTimer = null;
   function scrollOutToBottom(){
-    const top = outEl.scrollHeight;
-    try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
-    catch(_){ outEl.scrollTop = top; }
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const top = outEl.scrollHeight;
+      try{ outEl.scrollTo({ top, behavior: (top - outEl.clientHeight) > 4000 ? 'auto' : 'smooth' }); }
+      catch(_){ outEl.scrollTop = top; }
+    }, 250);
   }
 
   // ---- one combined status line: engine · diagnostics · intellisense ----
