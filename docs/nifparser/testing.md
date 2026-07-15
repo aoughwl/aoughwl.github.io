@@ -67,7 +67,7 @@ stress: total=184  pass=127  mismatch=57  our-crash=0  oracle-skip=0
 
 | suite | command | result |
 |:--|:--|:--|
-| curated corpus | `tests/diff.sh` | **47 / 47** pass, 46 byte-exact |
+| curated corpus | `tests/diff.sh` | **47 / 47** pass, 46 byte-exact (apart from the `(.vendor)` header) |
 | standard library | `tests/stress.sh` | **29 / 29** structural, 0 crash |
 | whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **127 / 184**, **0 crash, 0 hang** |
 
@@ -80,7 +80,10 @@ mismatches are catalogued on [Known gaps](known-gaps).
 
 A parser that emits a compiler wire-format has an unusually crisp correctness
 oracle: the wire-format is only useful if a *second, independent* implementation
-agrees with it byte-for-byte. That makes the reference (`nifler`) both the spec
+agrees with it byte-for-byte — save for one line nifparser owns on purpose, its
+`(.vendor "nifparser")` header, which both `diff.sh` (byte) and `canon.py`
+(structural) neutralize before comparing so the rest stays strict. That makes the
+reference (`nifler`) both the spec
 and the test suite, and it makes regressions impossible to miss — any construct
 where nifparser drifts shows up as a concrete NIF diff against the tool the rest
 of the pipeline already trusts.

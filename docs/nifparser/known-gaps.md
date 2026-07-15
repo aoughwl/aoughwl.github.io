@@ -54,7 +54,8 @@ roughly by frequency:
 
 The load-bearing machinery is correct everywhere it fires: the range-splitter
 resolves precedence, the relative line-info model is byte-exact (46/47 corpus
-files match to the byte), and the section/type/pragma emitters are right across
+files match to the byte, apart from the `(.vendor)` header nifparser stamps as its
+own), and the section/type/pragma emitters are right across
 the entire standard library. Each remaining category is a *specific construct*
 whose exact NIF shape has not yet been matched — the kind of thing a targeted
 corpus file plus a small emitter tweak closes, the same way the whole standard

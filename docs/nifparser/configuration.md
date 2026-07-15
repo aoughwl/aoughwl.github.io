@@ -9,7 +9,9 @@ nav_order: 4
 {: .no_toc }
 
 Every option below is **off / neutral by default**, so a plain
-`nifparser p in.nim out.p.nif` produces output byte-identical to native `nifler`.
+`nifparser p in.nim out.p.nif` produces output byte-identical to native `nifler`
+(bar the one-line `(.vendor "nifparser")` header, which nifparser always stamps
+as its own).
 The flags exist for editors, linters, pipelines, and non-Nim-standard sources;
 apart from `--curly` (which only *adds* accepted syntax) and the opt-in
 `--doc-comments:off`, none of them can change the NIF a run emits — they gate
@@ -159,5 +161,5 @@ Every option defaults to the historical behaviour, and all of them — except
 `--curly` (additive syntax) and `--doc-comments:off` (explicit opt-in) — affect
 only **input acceptance, diagnostics, or I/O**, never the emitted node tree. That
 keeps nifparser's core contract intact: its default output is, and remains,
-byte-for-byte native `nifler`, verified by the [differential harness](testing) on
-every commit.
+byte-for-byte native `nifler` — apart from the `(.vendor)` header identity —
+verified by the [differential harness](testing) on every commit.

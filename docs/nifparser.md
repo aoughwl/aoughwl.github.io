@@ -53,21 +53,26 @@ happens in later phases that read this file.
 
 ## Status
 
-The bar is **byte-for-byte-identical output** to native `nifler`, checked by a
-[differential harness](nifparser/testing). Two levels: **structural** (token trees
-equal after line-info is stripped — the pass criterion) and **exact**
-(byte-identical `.p.nif`, line-info included).
+The bar is output **identical to native `nifler` down to the byte** — with one
+deliberate exception: nifparser stamps its own `(.vendor "nifparser")` header
+instead of impersonating `nifler`, so every file differs on exactly that line.
+The [differential harness](nifparser/testing) neutralizes that single directive
+and holds everything else strict. Two levels: **structural** (token trees equal
+after line-info is stripped — the pass criterion) and **exact** (byte-identical
+`.p.nif`, line-info included, apart from the `(.vendor)` line).
 
 | test suite | files | result |
 |:--|:--|:--|
-| curated corpus | 47 | **47 pass**, 46 byte-exact |
+| curated corpus | 47 | **47 pass**, 46 byte-exact\* |
 | nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, 0 crash |
 | whole nimony compiler tree (`nimony/src`) | 184 | **127 pass**, **0 crash / 0 hang** |
 
+<small>\* byte-exact apart from the one-line `(.vendor)` header identity.</small>
+
 The **entire real standard library** round-trips structurally identical to native
-nifler, line-info stripped — zero mismatches. All five playground example
-programs — Hello, Fibonacci, FizzBuzz, Collatz, List sum — parse **byte-identical**,
-so the real Tier-2 workload is fully covered. Across the far larger
+nifler, line-info stripped — zero mismatches. Five example programs — Hello,
+Fibonacci, FizzBuzz, Collatz, List sum — parse **byte-identical** (modulo the
+vendor line), covering the real client-side workload. Across the far larger
 compiler-internals tree the parser never crashes or hangs; the remaining
 structural mismatches are a small, catalogued set (see [Known gaps](nifparser/known-gaps)).
 
@@ -77,6 +82,8 @@ structural mismatches are a small, catalogued set (see [Known gaps](nifparser/kn
 |:--|:--|
 | [Architecture](nifparser/architecture) | Fused parse + emit, the range-splitter, the include-file module map, the line-info model, and the classic-compiler oracle. |
 | [Grammar coverage](nifparser/grammar) | Exactly which lexer, expression, statement, section, and type constructs are reproduced. |
+| [The .p.nif format](nifparser/output-format) | The emitted wire form itself: header directives, the base62 line-info suffix grammar, operator escaping, and the tag vocabulary — enough to read a `.p.nif` by eye. |
+| [Browser & JavaScript](nifparser/browser) | Running nifparser client-side: the `globalThis.__np_*` contract, the `nifparser.js` build recipe, and the `webdiag` editor-diagnostics layer. |
 | [Differential testing](nifparser/testing) | The oracle harness, `canon.py`, structural-vs-exact comparison, and how to run it. |
 | [Configuration](nifparser/configuration) | The optional, off-by-default flags: `--curly` block bodies and the indentation/whitespace policy switches. |
 | [Known gaps](nifparser/known-gaps) | The catalogued edge cases that still differ on the broader compiler corpus. |
