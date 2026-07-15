@@ -91,11 +91,13 @@ faithful [nifi](nifi) engines — so **correctness is never worse than a normal
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
-Supported today: procs and recursion; `int`/`float` arithmetic and comparisons;
-`if`/`elif`/`else` and `case` (statement **and** expression, including ranges);
-`while`; `for` over integer ranges **and** over collections; `inc`/`dec`;
-`seq`/array literals (`@[…]`), `len`, indexing, `add`; `string` concatenation and
-`$`; `echo`; `bool`. That's enough for the whole FizzBuzz / primes / Collatz /
+Supported today: procs and recursion; `int` **and** `float` arithmetic (float
+`/` is kept distinct from integer `div`) and comparisons; logical `and`/`or`/`not`
+**and** bitwise `and`/`or`/`xor`/`not`/`shl`/`shr`; `if`/`elif`/`else` and `case`
+(statement **and** expression, including ranges); `while` with `break`/`continue`;
+`for` over integer ranges **and** over collections; `inc`/`dec`; `seq`/array
+literals (`@[…]`), `len`, indexing, `add`; `string` concatenation and `$`; `echo`
+(float-aware); `bool`. That's enough for the whole FizzBuzz / primes / Collatz /
 seq-building class of program. Growing next: `Table`/`HashSet`, objects / tuples
 / variants, exceptions, closures, and monomorphized generics — each step widens
 what runs native-fast before falling back.
@@ -105,9 +107,13 @@ what runs native-fast before falling back.
 Native values buy speed and readability by giving up **low-level fidelity**:
 
 - `int64` wraparound and unsigned overflow — JS numbers are exact only to 2⁵³.
+- bitwise/shift ops run in JS's **32-bit** space, so a mask or shift past 2³¹
+  diverges (fine for the usual small-flag bit-twiddling).
 - pointer arithmetic, `ptr` / `addr`, object *identity* vs value.
 - precise ARC / destructor timing.
 - C FFI (`importc`) — there is no C to call.
+- a float printed straight from a *bare variable* may drop its `.0` (float
+  literals and float *expressions* keep it).
 
 For the overwhelming majority of Nim that is invisible; for code that leans on
 exact machine-integer overflow or pointer identity it diverges. That is exactly
