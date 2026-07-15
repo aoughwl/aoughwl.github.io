@@ -89,12 +89,14 @@ back to the faithful nifi engines — so **correctness is never worse than a nor
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
-Supported today: procs, `int`/`float` arithmetic and comparisons, `if` / `while`
-/ `for` over integer ranges, `inc`/`dec`, calls and recursion, `echo`, string
-concatenation, `bool`. Growing next: `seq` / `string` operations and
-`for x in collection`, then `Table` / `HashSet`, objects / tuples / variants,
-`case`, exceptions, closures, and monomorphized generics — each step widens what
-runs native-fast before falling back.
+Supported today: procs and recursion; `int`/`float` arithmetic and comparisons;
+`if`/`elif`/`else` and `case` (statement **and** expression, including ranges);
+`while`; `for` over integer ranges **and** over collections; `inc`/`dec`;
+`seq`/array literals (`@[…]`), `len`, indexing, `add`; `string` concatenation and
+`$`; `echo`; `bool`. That's enough for the whole FizzBuzz / primes / Collatz /
+seq-building class of program. Growing next: `Table`/`HashSet`, objects / tuples
+/ variants, exceptions, closures, and monomorphized generics — each step widens
+what runs native-fast before falling back.
 
 ## The fidelity trade-off
 
@@ -114,5 +116,10 @@ why nimony keeps hexer and the faithful backend — so the two emitters are
   runs anything, and preserves exact semantics.
 - **nifjs (native)** is the fast, readable path for user programs, with the
   interpreter as its safety net.
+
+> **Want the *true faithful* version?** The exact, semantics-preserving compile —
+> `int64`, pointers, ARC, the works — is **done end-to-end for both JavaScript
+> *and* WebAssembly**. If you want access, DM me on Discord: **timbuktu_guy**.
+{: .note }
 
 See the [playground](/playground/) to switch engines and compare.
