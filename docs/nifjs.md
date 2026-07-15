@@ -103,12 +103,29 @@ indexing (get/set), `add`/`pop`; **objects** (construct / field read+write) and
 class of program runs entirely on it. Growing next: `Table`/`HashSet`, object
 variants, exceptions, closures, and monomorphized generics.
 
-**Robustness.** nifjs never emits a reference to a routine it didn't build. A
-call to a proc/func it can't transpile — a complex stdlib routine, an unsupported
-node — makes the whole program fall back to the interpreter rather than crash on
-an undefined function. Emitting each routine is best-effort and isolated, so one
-un-transpilable routine only forces a fall back for programs that actually reach
-it.
+Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
+**shim registry**.
+
+### Shims — the FFI / `importc` path
+
+When a called routine isn't one nifjs built itself, and a *shim* exists, nifjs
+emits the native-JS equivalent directly — no body to transpile, no marshaling.
+The registry maps stdlib / `importc` proc names to JS: `math.*` → `Math.*`,
+`strutils.*` → `String`/`Array` methods (`toUpperAscii`, `strip`, `split`,
+`repeat`, `contains`, …), `parseInt`/`parseFloat`, `abs`/`min`/`max`. A user proc
+of the same name always wins. This is how nifjs "allows `importc`": an `importc`
+proc has no transpilable body, so it resolves through the shim table (or, with a
+registered shim, a `console.log`-style call to a provided JS function).
+
+### Robustness & safety
+
+nifjs never emits a reference to a routine it didn't build. A call to a proc/func
+it can't transpile makes the program fall back to the interpreter rather than
+crash on an undefined function. And a `var`/`out` parameter — whose mutation
+can't round-trip through JS's pass-by-value — drops the routine so its callers
+fall back too, rather than run silently wrong. Emitting each routine is
+best-effort and isolated, so one un-transpilable routine only forces a fall back
+for programs that actually reach it.
 
 ## The fidelity trade-off
 
