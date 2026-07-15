@@ -53,7 +53,7 @@ your source
   bundle plus a pre-semchecked `system`/`syncio`/… closure from an in-memory VFS).
 - The typed `.s.nif` is executed by an engine you pick from the toolbar
   (persisted across visits):
-  - **[Native JS](docs/nimony-web/native-js)** — `nifjs` transpiles the typed
+  - **[Native JS](docs/nifjs)** — `nifjs` transpiles the typed
     NIF to **real JavaScript** (mapping nimony values onto native JS values) and
     lets the browser JIT it: **near-native speed**, and no fixed heap. A program
     using something nifjs doesn't cover yet falls back automatically.
@@ -80,7 +80,7 @@ The same tight arithmetic loop, per iteration:
 nifjs is **~18,000–28,000× faster** than the interpreter, runs **10 million
 iterations in ~21 ms** with no out-of-memory (it has no fixed bump heap), and its
 output is byte-identical to the interpreter on supported programs. See
-**[Native JS backend](docs/nimony-web/native-js)** for how and why.
+**[Native JS backend](docs/nifjs)** for how and why.
 
 The heavy stages run **off the main thread in a Web Worker**. That is what makes
 **Stop** work: a runaway loop can't be interrupted cooperatively, but the worker

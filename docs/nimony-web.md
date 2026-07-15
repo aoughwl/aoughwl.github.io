@@ -35,9 +35,9 @@ heap-plus-stack, and read/write it through typed-array views (`HEAP32[p >> 2]`).
 This faithfulness — simulated linear memory — is what makes the output *exact*
 (int64, pointers, ARC, C FFI all behave), but also what makes it slow and
 mangled. For a **fast, readable** path that maps nimony values onto native JS
-values instead, see the complementary **[Native JS backend](nimony-web/native-js)**
-(`nifjs`) — it trades that low-level fidelity for near-native speed and legible
-output, and powers the playground's Native JS engine.
+values instead, see the complementary **[nifjs backend](nifjs)** — it trades that
+low-level fidelity for near-native speed and legible output, and powers the
+playground's Native JS engine.
 {: .note }
 
 The two targets are the **same machine described twice**. The memory model is

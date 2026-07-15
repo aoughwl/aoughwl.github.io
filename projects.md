@@ -13,6 +13,7 @@ repo READMEs are short stubs that point here.
 | Project | Repo | Status |
 |---|---|---|
 | [nifi](nifi) — standalone two-engine interpreter for typed nimony | `aoughwl/nifi` | private |
+| [nifjs](docs/nifjs) — `.s.nif` → native-JavaScript backend (near-native speed) | `aoughwl/nifjs` | public |
 | [nimony-playground](playground) — browser playground, nifi compiled to JS | `aoughwl/nimony-playground` | public |
 | [nimony-web](docs/nimony-web) — JS + WASM backends & async runtime | `aoughwl/nimony-web` | private repo · public docs |
 | [nim-code](docs/nim-code) — Claude Code plugin + MCP server | `aoughwl/nim-code` | public |
