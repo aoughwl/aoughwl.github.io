@@ -54,7 +54,7 @@ sweeps those. Crucially it also reports what the parser could **not** do
 gracefully:
 
 ```
-stress: total=184  pass=127  mismatch=57  our-crash=0  oracle-skip=0
+stress: total=184  pass=162  mismatch=22  our-crash=0  oracle-skip=0
 ```
 
 - `our-crash` — nifparser produced no output (a crash or hang). **This is the
@@ -67,13 +67,13 @@ stress: total=184  pass=127  mismatch=57  our-crash=0  oracle-skip=0
 
 | suite | command | result |
 |:--|:--|:--|
-| curated corpus | `tests/diff.sh` | **47 / 47** pass, 46 byte-exact (apart from the `(.vendor)` header) |
+| curated corpus | `tests/diff.sh` | **52 / 52** pass, 50 byte-exact (apart from the `(.vendor)` header) |
 | standard library | `tests/stress.sh` | **29 / 29** structural, 0 crash |
-| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **127 / 184**, **0 crash, 0 hang** |
+| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **162 / 184**, **0 crash, 0 hang** |
 
 The standard library passing in full is the headline: the entire real
 `nimony/src/lib` round-trips structurally identical to native nifler. On the much
-larger compiler-internals tree the parser never crashes; the 57 structural
+larger compiler-internals tree the parser never crashes; the 22 structural
 mismatches are catalogued on [Known gaps](known-gaps).
 
 ## Why a differential harness

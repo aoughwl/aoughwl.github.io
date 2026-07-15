@@ -24,31 +24,44 @@ spine.
 ## The headline number
 
 Over the whole `nimony/src` compiler tree — 184 files, far beyond the standard
-library — nifparser matches native nifler on **127** and differs structurally on
-**57**, with **zero crashes and zero hangs**. Every one of the 57 produces
+library — nifparser matches native nifler on **162** and differs structurally on
+**22**, with **zero crashes and zero hangs**. Every one of the 22 produces
 well-formed NIF; they are wrong-tree diffs, not failures to parse.
 
 The standard library itself (`nimony/src/lib`, 29 modules) passes **in full**, and
-the curated corpus passes 47/47. So the gaps live specifically in the denser,
+the curated corpus passes 52/52. So the gaps live specifically in the denser,
 more exotic corners of the compiler's own source.
 
 ## The categories
 
-The 57 mismatches cluster into a small number of well-defined edge cases, ordered
-roughly by frequency:
+The remaining 22 mismatches cluster into a small number of well-defined edge
+cases, ordered roughly by frequency:
 
-1. **Doc-comment placement** — a few standalone-vs-trailing `##` boundary cases
-   where a `(comment)` node attaches to a different sibling than nifler chooses.
-2. **Routine / proc-type pragma & empty-param shapes** — some `(params)`-vs-`.`
-   and pragma-slot orderings on proc **types** and forward declarations.
-3. **`nil` in annotation position** — e.g. `(nil)` inside certain pragma or type
-   contexts.
-4. **Generalised call-string-literals** — `expr"…"` where the callee is not a bare
-   identifier (`pkg.mod"…"`, `(expr)"…"`).
-5. **`@`-prefix and quoted-ident corners** — a handful of `(prefix @ …)` and
-   `(quoted …)` placements inside dense expressions.
-6. **Assorted control-flow-value wrapping** — a few `(stmts …)`-vs-bare and
-   `(call … (stmts …))` postExprBlock orderings in the largest modules.
+1. **Doc-comment placement** — the standalone-vs-trailing `##` boundary: whether
+   a `(comment)` node stands alone or attaches to an adjacent declaration. This
+   is now the dominant remaining category (~7 files) and needs nifler's full
+   leading/trailing doc-attachment rule, not a blanket emit-or-drop.
+2. **`do` / postExprBlock orderings** — `(call … (stmts …))` and `do`-notation
+   shapes in the largest modules (dagon, nifmake, sempragmas).
+3. **Command line-info on a dotted callee** — `x.add ".s"` distributes the
+   relative line-info across the `cmd`/`dot`/arg nodes differently than nifler
+   (structurally identical, a byte-level position difference; visible on dce2,
+   pnak).
+4. **Assorted structural corners** — tuple-unpack (`unpacktup`) shapes,
+   `importexcept`, and a few dense expression orderings in individual modules.
+
+## Recently closed
+
+A large batch of former gaps was closed by matching nifler construct-by-construct:
+control-flow values in parentheses (`when`/`case` bare branches, plus `case` as a
+value expression), per-piece line-info on quoted accent-idents in **every**
+declaration and dot-field position, empty `(params)` on paramless routines,
+prefix-operator return values (`return -1` / `@[]` / `$x`), set literals inside an
+`if`-value (no longer mis-scanned as a pragma), generalised call-string-literals
+with dotted callees, `mixin`/`bind` statements, type-modifier keywords in generic
+arguments (`seq[ref T]`, `sink seq[string]`), call/range bounds and quoted operands
+in type-argument position, multi-constraint generic params (`[T: A, L: B]`), and
+`nil`/`discard` object-variant bodies.
 
 ## Why these are not spine defects
 
