@@ -104,10 +104,11 @@ nodes. Trailing doc comments are dropped either way.
 
 ### `--strict`
 
-Default off. Exit with a **non-zero status** if the lexer encountered any
-unknown / illegal byte (today those are silently skipped), or a rejected BOM.
-Turns nifparser into a CI lint gate: a clean file exits `0`, a file with a stray
-control byte exits `1`.
+Default off. Exit with a **non-zero status** if any **error-level diagnostic** was
+raised — an unknown/illegal byte, an unterminated string, a rejected BOM, or a
+structural bracket problem. Turns a normal `p` parse into a CI lint gate: a clean
+file exits `0`, a malformed one exits `1` (while still emitting best-effort NIF).
+For lint-only output with no NIF, use the [`check`](#check--lint-mode) command.
 
 ### `--max-depth:N`
 
@@ -118,6 +119,47 @@ hangs" property against pathologically nested input. The counter tracks *true*
 nesting (not input width), so set it generously: ordinary code nests only a
 handful of levels deep, so a ceiling in the hundreds catches abuse without ever
 tripping on real source.
+
+## Diagnostics
+
+Unlike native `nifler` — which inherits the classic compiler's abort-on-first-error
+behaviour — nifparser is **recoverable**: it records every problem with a source
+span, keeps parsing, and still emits best-effort NIF. Diagnostics carry a
+`severity` (error/warning/hint), a stable `code` slug, a message, and a
+`line:col`–`endCol` span. Errors detected today: unknown/illegal bytes,
+unterminated string literals, rejected BOM, and structural bracket problems
+(`unmatched-close` / `mismatched-bracket` / `unclosed-bracket`); the whitespace and
+indentation checks below surface as warnings/hints.
+
+### `check` — lint mode
+
+```
+nifparser check <in.nim>            # diagnostics to stdout, no NIF; exit 1 on any error
+nifparser check --diagnostics:json in.nim
+```
+
+`check` runs the lexer and the structural validator and prints diagnostics **to
+stdout**, emitting no NIF. It exits `1` if any error-level diagnostic was found,
+`0` otherwise — a drop-in lint gate that reports *every* problem in one pass, not
+just the first.
+
+### `--diagnostics:text\|json\|off`
+
+Selects how diagnostics are rendered (default `text`). During a normal `p` parse
+they go to **stderr** and never block the NIF on stdout; `check` sends them to
+stdout.
+
+- `text` — compiler-style `file:line:col: severity[code]: message` lines.
+- `json` — a single JSON array of `{severity, code, message, line, col, endCol}`
+  objects, ready for an editor's diagnostics channel or the browser playground.
+- `off` — suppress them entirely.
+
+### `--portable-paths:on\|off`
+
+Default **on**, matching native `nifler`'s default. The source path recorded in
+line-info is made relative to the current working directory with `/` separators,
+so the output is byte-identical regardless of whether the input was passed as a
+relative or absolute path. `off` records the path exactly as given.
 
 ## I/O
 

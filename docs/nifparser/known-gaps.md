@@ -69,8 +69,33 @@ Each gap was closed the same way:
 4. Adjust the relevant emitter, add the repro to the corpus, and re-run both
    harnesses (the standard library and corpus must stay green).
 
-That loop took the whole compiler tree from 127 → 184 passing. With structural
-parity reached, the remaining frontier is pure byte-exactness: a handful of
-constructs match structurally but distribute relative line-info across
-`cmd`/`dot`/argument nodes slightly differently than nifler — visible only at the
-byte level, never in the token tree.
+That loop took the whole compiler tree from 127 → 184 passing structurally.
+
+## Byte-exactness
+
+With structure settled, the next frontier was **byte-exactness** — reproducing
+nifler's *relative line-info* on every node, not just the token tree. This came
+down to reverse-engineering nifler's anchoring model (`relLineInfo(n, parent)`,
+which stamps each node with `n.info − parent.info`) and matching, per construct,
+exactly which source token nifler anchors a node at. The high-leverage findings:
+
+- **Two command rules.** A statement command (`parseExprStmt`) anchors at the
+  callee's info — the `.` for a dotted callee; an expression command (`commandExpr`)
+  anchors at the *first argument*, giving the callee a negative delta.
+- **The module `stmts` node** anchors at the first real token (a leading `##` doc
+  is that token; a plain `#` is not), removing a delta cascade through every file.
+- **Name-node wrapping.** An exported `Name*` is `nkPostfix` (anchor = the `*`); a
+  pragma'd `Name {.p.}` is `nkPragmaExpr` (anchor = the `{.`); this applies to
+  const/let/var members *and* object fields.
+- **`postExprBlock` calls, tuple fields, anonymous lambdas** (info on the empty-name
+  placeholder, taken from the token after `proc`), and **bare StmtListExpr-result
+  bodies** (a command there is still a statement) each have their own anchor rule.
+- **Portable paths.** nifler relativises the recorded source path to the cwd by
+  default; nifparser now mirrors that (`--portable-paths`).
+
+Each fix was locked in with a byte-exact corpus regression test and measured
+against the whole tree (`tests/stress.sh` reports `byte-exact=N`). The result:
+**181 of 184 files byte-identical**, up from 0. The last three differ only in the
+line-info distribution of a couple of deeply-nested constructs (a lambda `do`
+parameter list, a command buried several StmtListExpr levels deep) — structurally
+identical, never a wrong tree.

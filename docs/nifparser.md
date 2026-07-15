@@ -63,18 +63,30 @@ after line-info is stripped — the pass criterion) and **exact** (byte-identica
 
 | test suite | files | result |
 |:--|:--|:--|
-| curated corpus | 64 | **64 pass**, 55 byte-exact\* |
+| curated corpus | 76 | **76 pass**, 75 byte-exact\* |
 | nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, 0 crash |
-| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **0 crash / 0 hang** |
+| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **181 byte-exact**, 0 crash / 0 hang |
 
 <small>\* byte-exact apart from the one-line `(.vendor)` header identity.</small>
 
 The **entire nimony compiler tree** — the standard library and the compiler's own
 dense internals — round-trips structurally identical to native nifler, line-info
-stripped: all 184 files, zero mismatches, zero crashes. Five example programs —
-Hello, Fibonacci, FizzBuzz, Collatz, List sum — parse **byte-identical** (modulo
-the vendor line), covering the real client-side workload. See
-[Coverage](nifparser/known-gaps) for how full parity was reached.
+stripped: all 184 files, zero mismatches, zero crashes. Beyond that, **181 of the
+184 files are byte-identical** (line-info included, modulo the vendor line) — not
+just the token tree but the exact relative line-info of every node. The three
+stragglers differ only in the line-info distribution of a couple of deeply-nested
+constructs, never in structure. See [Coverage](nifparser/known-gaps) for how the
+line-info model was reverse-engineered node by node.
+
+## Better errors than the reference
+
+`nifler` inherits the classic compiler's **abort-on-first-error** behaviour;
+`nifparser` does strictly better. It is fully recoverable — it records *every*
+problem with a source span, keeps going, and still emits best-effort NIF — which
+is what an in-browser editor needs (squiggles for all errors at once). A
+`nifparser check <file>` lint mode emits diagnostics as compiler-style text or, with
+`--diagnostics:json`, a machine-readable array for editors; a normal parse streams
+them to stderr and never blocks. See [Configuration](nifparser/configuration).
 
 ## The documentation set
 
