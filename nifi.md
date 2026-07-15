@@ -64,6 +64,33 @@ A `--trace` / `--trace-full` mode renders the whole call tree, with arguments an
 return values at each node — a structural debugger for typed-NIF execution. You
 see the program's evaluation as a tree, not a scroll of `echo` output.
 
+## The run rung — a run is a NIF
+
+nifi can serialize an *execution* back into NIF. With `--emit-run` (env
+`NIFI_EMIT_RUN=PATH`), the interpreter emits a **run rung**: a NIF token stream
+that records what the program actually did — every binding, loop iteration, and
+value it produced — as structured, linked NIF.
+
+That turns a run into the bottom of a **content-addressed compilation tower**:
+
+```
+source NIF (.p.nif) → typed NIF (.s.nif) → the run (run rung)
+```
+
+each rung linked to the one above it. A run atom carries an `(at …)` back-pointer
+to the exact typed-`.s.nif` node it evaluated, so provenance is free.
+
+The non-obvious part is the **value walker**: it walks each runtime value straight
+off its cell/object structure rather than stringifying it, so aggregates keep
+their real fields (nimony's `$` renders every object as the dead string
+`"(object)"`) and ref/ptr identity is deduped, making sharing explicit and cycles
+terminating. Emission is gated behind an off-by-default flag, so a normal run's
+stdout stays byte-identical.
+
+The browser [playground](../playground) surfaces this directly: its **Run** tab
+shows the run rung for whatever you just executed, alongside the Parsed (`.p.nif`)
+and Typed (`.s.nif`) rungs — the whole tower, live in the tab.
+
 ## Status
 
 nifi proved itself by running a real pure-nimony program end-to-end: the MDN CSS

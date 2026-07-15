@@ -18,7 +18,7 @@ breadth of the passing test suites.
 
 | Backend | Coverage | Distance to 100% is mostly… |
 |---|---|---|
-| JavaScript | **~85%** | threads + async (runtime subsystems, likely frontend-gated) + stdlib breadth |
+| JavaScript | **~90%** | threads (frontend-gated) + stdlib breadth — async now shipped |
 | WebAssembly | **~30%** | heap allocator → indirect calls → exceptions → `case` |
 
 ## JavaScript backend — ~85%
@@ -27,27 +27,31 @@ breadth of the passing test suites.
 overflow-checked arithmetic (`Ovf`/`Keepovf`), full control flow including
 `case`, calls, `oconstr`/`aconstr`, RTTI vtables / method tables (`pat` +
 flexarray), exceptions (hexer's goto / error-code ABI via `jmp`/`lab`), `emit`,
-the GC, and FFI. The 31-test suite spans `Table`/`HashSet`, variant objects,
-closures, the GC, and a live DOM. The core language is done.
+the GC, and FFI. The 46-test suite spans `Table`/`HashSet`, variant objects,
+closures, the GC, a live DOM, and the async runtime. The core language is done.
+
+**Done since this roadmap was first written**
+
+- **`async`/`await`** — shipped as a JS-side runtime: `Future`/`await`, a
+  dispatcher/event loop, generic combinators (`gather`/`all`, `race`/`any`), and
+  `{.async.}` sugar, all green (46/46). See [async](async).
 
 **Big tasks left**
 
 1. **Threads / `spawn`** — needs Web Workers plus a shared-linear-memory story.
    Not started. Large, and partly gated on nimony's own threading model.
-2. **`async`/`await`** — needs event-loop integration on the JS side. Not
-   started. Large, and also gated on nimony settling its async story.
-3. **`addr`-of-location edge cases** — a few address-taking forms still hit the
+2. **`addr`-of-location edge cases** — a few address-taking forms still hit the
    `todo` placeholder (`src/jscodegen.nim:798`). Small; close the remaining paths.
-4. **Stdlib breadth + hardening** — many modules work (`Table`/`HashSet`/
+3. **Stdlib breadth + hardening** — many modules work (`Table`/`HashSet`/
    `strutils`/etc.), but breadth isn't exhaustive. Some modules fail in the
    nimony **frontend** (not this backend) — e.g. `json`, `times`, `envvars` — and
    never reach codegen; more real-world programs are needed to shake out bugs.
    Medium, ongoing.
 
-The gap to 100% is mostly two runtime subsystems (threads, async) that are
-arguably nimony-frontend-gated, plus breadth — not core codegen. Scoped to
-*synchronous* Nim, the JS backend is ~95%+ and the only real hole is the stray
-`addr`-of forms.
+The gap to 100% is now mostly threads (arguably nimony-frontend-gated) plus
+stdlib breadth — not core codegen. Scoped to *synchronous* Nim, the JS backend
+is ~95%+ and the only real hole is the stray `addr`-of forms; async is covered by
+the runtime above.
 
 **Known rough edges** (not roadmap items so much as honest caveats — see
 [capabilities.md](capabilities.md) for detail):

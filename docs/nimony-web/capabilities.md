@@ -25,7 +25,7 @@ Both test suites compile with **zero** such placeholders. A non-zero count means
 you've stepped outside the supported surface below — the program may still emit,
 but that path is a stub.
 
-## JavaScript backend — `tests/jsbackend`, 31/31
+## JavaScript backend — `tests/jsbackend`, 46/46
 
 Mature for its scope. Verified end-to-end under Node:
 
@@ -42,10 +42,10 @@ Mature for its scope. Verified end-to-end under Node:
 | Garbage collector | ✅ (`tgc`) |
 | `cstring` and FFI (both directions) | ✅ |
 | DOM (`document`, events, `classList`) | ✅ (`tdom` drives real jsdom) |
+| `async`/`await` | ✅ (runtime: `Future`/`await`/dispatcher/combinators + `{.async.}` sugar — see [async](async)) |
 
 **Not supported yet:**
 
-- **`async`/`await`** — no codegen path.
 - **Threads / `spawn`** — no codegen path.
 - **A few `addr`-of forms** — `addr-of-location` falls to a placeholder
   (`jscodegen.nim:798`).
