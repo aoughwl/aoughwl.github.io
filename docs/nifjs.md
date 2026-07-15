@@ -91,16 +91,24 @@ faithful [nifi](nifi) engines — so **correctness is never worse than a normal
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
-Supported today: procs and recursion; `int` **and** `float` arithmetic (float
-`/` is kept distinct from integer `div`) and comparisons; logical `and`/`or`/`not`
-**and** bitwise `and`/`or`/`xor`/`not`/`shl`/`shr`; `if`/`elif`/`else` and `case`
-(statement **and** expression, including ranges); `while` with `break`/`continue`;
-`for` over integer ranges **and** over collections; `inc`/`dec`; `seq`/array
-literals (`@[…]`), `len`, indexing, `add`; `string` concatenation and `$`; `echo`
-(float-aware); `bool`. That's enough for the whole FizzBuzz / primes / Collatz /
-seq-building class of program. Growing next: `Table`/`HashSet`, objects / tuples
-/ variants, exceptions, closures, and monomorphized generics — each step widens
-what runs native-fast before falling back.
+Supported today: procs and recursion (incl. mutual); `int` **and** `float`
+arithmetic (float `/` is kept distinct from integer `div`) and comparisons;
+logical `and`/`or`/`not` **and** bitwise `and`/`or`/`xor`/`not`/`shl`/`shr`;
+`if`/`elif`/`else` **and if-expressions**; `case` (statement **and** expression,
+including ranges); `while` with `break`/`continue`; `for` over integer ranges
+**and** over collections; `inc`/`dec`; `seq`/array literals (`@[…]`), `len`,
+indexing (get/set), `add`/`pop`; **objects** (construct / field read+write) and
+**tuples**; `string` concat, `$`, `len`, indexing, `ord`/`chr`; `abs`/`min`/`max`;
+`echo` (float-aware); `bool` — the FizzBuzz / primes / Collatz / records-in-a-seq
+class of program runs entirely on it. Growing next: `Table`/`HashSet`, object
+variants, exceptions, closures, and monomorphized generics.
+
+**Robustness.** nifjs never emits a reference to a routine it didn't build. A
+call to a proc/func it can't transpile — a complex stdlib routine, an unsupported
+node — makes the whole program fall back to the interpreter rather than crash on
+an undefined function. Emitting each routine is best-effort and isolated, so one
+un-transpilable routine only forces a fall back for programs that actually reach
+it.
 
 ## The fidelity trade-off
 
