@@ -19,6 +19,43 @@ Each entry records a bug fixed or feature added, and why.
 
 ## Fixes
 
+### Init-check diagnostic names `result`, not the mangled `result.0`
+
+*Commit `9f15ac4d`.*
+
+**Symptom.** A proc that can leave `result` (or an `out` parameter)
+uninitialized reports, e.g.:
+
+```
+cannot prove that result.0 has been initialized [pass --verbose for the NJ IR]
+```
+
+The trailing `.0` reads exactly like a **tuple field index** — so on a
+tuple-typed `result` (`proc f(): tuple[a, b: int]`), users reasonably conclude
+the compiler is pointing at field 0, and go hunting for a per-field
+initialization problem that isn't there.
+
+**Root cause.** The definite-initialization checker
+(`src/nimony/contracts_fir.nim`) built its message from `pool.syms[symId]` —
+the raw *mangled* local symbol name. A local's mangled form is
+`name.<disambiguator>` (the same scheme that names a proc `g.0.<modulehash>`),
+so a plain `result` serializes as `result.0`. The `.0` is a name-mangling
+artifact, never a field index — the `tupat` field stores in the NJ IR are a
+separate thing entirely.
+
+**Fix.** Add `userSymName`, which strips the disambiguator via
+`splitLocalSymName` (`result.0` → `result`, `x.14` → `x`), and route the three
+`cannot prove that … has been initialized` messages through it. Purely a
+diagnostic-text change — no analysis behaviour is affected.
+
+**Verified.** Rebuilt `nimsem`; the message now reads `cannot prove that
+result has been initialized` for both tuple and scalar results and for
+used-before-init locals, and a valid program still compiles and runs. (Note: a
+separate, deeper limitation remains — the checker does not track *per-field*
+initialization, so `result.a = 1; result.b = 2` is still rejected in favour of a
+whole `result = (…)`; that is analysis behaviour, not message text, and is left
+for a future change.)
+
 ### Control-flow no longer descends into stored macro bodies
 
 *Commit `6b80fc99`.*
