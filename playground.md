@@ -38,9 +38,10 @@ your source
    │  nimsem     (nimony's checker)        Web Worker, warm-cached
    ▼
  .s.nif  (typed NIF)
-   │  nifi       (aoughwl/nifi)            Web Worker
-   ▼            VM (fast path) ┐
- output          tree-walker   ┘ fallback
+   │  run engine (you pick)                Web Worker
+   ▼   ┌─ Native JS  (nifjs → real JS, JIT-compiled)   near-native speed
+ output ├─ Bytecode VM  (nifi)                          faithful, fast
+        └─ Tree-walk   (nifi)                           faithful, reference
 ```
 
 - **[nifparser](docs/nifparser)** parses your source to the untyped `.p.nif` on
@@ -50,14 +51,41 @@ your source
   overload, and type. It runs in a Web Worker and reuses a warm, pre-loaded
   stdlib closure, so every check after the first is milliseconds (an ~8.9 MB JS
   bundle plus a pre-semchecked `system`/`syncio`/… closure from an in-memory VFS).
-- **[nifi](nifi)** runs the typed `.s.nif`. It tries a **bytecode VM** first and
-  falls back to an always-correct **tree-walker** for programs the VM can't yet
-  run self-contained — so runs are fast when they can be and correct always.
+- The typed `.s.nif` is executed by an engine you pick from the toolbar
+  (persisted across visits):
+  - **[Native JS](docs/nimony-web/native-js)** — `nifjs` transpiles the typed
+    NIF to **real JavaScript** (mapping nimony values onto native JS values) and
+    lets the browser JIT it: **near-native speed**, and no fixed heap. A program
+    using something nifjs doesn't cover yet falls back automatically.
+  - **Bytecode VM** — [nifi](nifi) compiles the NIF to bytecode and runs a tight
+    dispatch loop. Faithful (exact nimony semantics), fast.
+  - **Tree-walk** — [nifi](nifi)'s reference interpreter; walks the typed NIF
+    node by node. Slowest, most faithful.
 
-The two heavy stages run **off the main thread in a Web Worker**. That is what
-makes **Stop** work: a runaway loop can't be interrupted cooperatively, but the
-worker can be terminated and a fresh one spun up from the HTTP cache. It also
-keeps the editor responsive during a live type-check.
+The VM and tree-walk are the **faithful** engines (default: VM); Native JS is the
+**fast** one, with the interpreter as its safety net — the run footer names the
+engine that actually ran, and says so (and why) if Native JS fell back.
+
+### Engine speed
+
+The same tight arithmetic loop, per iteration:
+
+| engine | per iteration | vs. a hand-written JS loop |
+|---|---:|---:|
+| native JS (hand-written) | ~2.9 ns | 1× |
+| **Native JS (nifjs)** | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
+| Bytecode VM (nifi) | ~39 µs | ~15,000× slower |
+| Tree-walk (nifi) | ~61 µs | ~24,000× slower |
+
+nifjs is **~18,000–28,000× faster** than the interpreter, runs **10 million
+iterations in ~21 ms** with no out-of-memory (it has no fixed bump heap), and its
+output is byte-identical to the interpreter on supported programs. See
+**[Native JS backend](docs/nimony-web/native-js)** for how and why.
+
+The heavy stages run **off the main thread in a Web Worker**. That is what makes
+**Stop** work: a runaway loop can't be interrupted cooperatively, but the worker
+can be terminated and a fresh one spun up. It also keeps the editor responsive
+during a live type-check.
 
 ## Editor intelligence
 
@@ -66,6 +94,10 @@ server running in a Web Worker**:
 
 - **Live diagnostics** — syntax errors (nifparser) as you type, type errors
   (nimsem) on a short debounce, shown as squiggles and in a problems list.
+  nifparser emits **structured, recoverable** diagnostics: unlike classic
+  `nifler` (which aborts at the first error), it records *every* problem with a
+  precise span, severity, and stable code and keeps parsing — so you see all the
+  squiggles at once.
 - **Hover** types, `⌃Space` **completion**, `F12` **go-to-definition**, and a
   **Symbols** outline panel.
 
@@ -85,8 +117,14 @@ is verbatim NIF.
 ## Also
 
 **stdin** input, a colon ⇄ **curly-brace** block-mode toggle, three themes, a
-resizable / re-orientable split, word-wrap, and **shareable links** (the code
-travels in the URL hash — static host, no server).
+resizable / re-orientable split, word-wrap, editor **zoom** (Ctrl+scroll /
+Ctrl±), and **shareable links** (the code travels in the URL hash — static host,
+no server).
+
+There's also an **offline copy** button: it bundles the whole playground —
+every script, the compiled engines, the stdlib, and images — into a single
+self-contained `.html` you can save and open from a local `file://` with no
+server and no network.
 
 ---
 
