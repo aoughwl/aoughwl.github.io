@@ -24,13 +24,13 @@ across the entire nimony compiler tree.
 
 Over the whole `nimony/src` compiler tree — 184 files, far beyond the standard
 library — nifparser matches native nifler on **all 184**, with **zero crashes and
-zero hangs**. The standard library (`nimony/src/lib`, 29 modules) passes in full,
-and the curated corpus passes 64/64 (55 byte-exact apart from the intentional
-`(.vendor)` header).
+zero hangs**, and every one of the 184 is **byte-identical** (apart from the
+intentional `(.vendor)` header). The standard library (`nimony/src/lib`, 29 modules)
+passes in full and byte-exact, and the curated corpus passes 76/76, all byte-exact.
 
-This is complete structural parity: every construct the nimony compiler's own
-source exercises round-trips through nifparser to the same NIF token tree native
-nifler emits.
+This is complete structural *and* byte-level parity: every construct the nimony
+compiler's own source exercises round-trips through nifparser to the same NIF —
+same token tree, same relative line-info — that native nifler emits.
 
 ## How the last gaps were closed
 
@@ -90,12 +90,16 @@ exactly which source token nifler anchors a node at. The high-leverage findings:
 - **`postExprBlock` calls, tuple fields, anonymous lambdas** (info on the empty-name
   placeholder, taken from the token after `proc`), and **bare StmtListExpr-result
   bodies** (a command there is still a statement) each have their own anchor rule.
+- **`do`-notation** (`expr do (params) -> ret: body`) was the very last file. Its
+  call node anchors at the callee's `.` (so the callee child is delta 0), and — the
+  non-obvious part — the `do` node itself anchors at the **body's first token**, not
+  the `do` keyword, so `(params)` carries its delta back up to the `(` and the body
+  `(stmts)` is delta 0 against the do.
 - **Portable paths.** nifler relativises the recorded source path to the cwd by
   default; nifparser now mirrors that (`--portable-paths`).
 
 Each fix was locked in with a byte-exact corpus regression test and measured
 against the whole tree (`tests/stress.sh` reports `byte-exact=N`). The result:
-**181 of 184 files byte-identical**, up from 0. The last three differ only in the
-line-info distribution of a couple of deeply-nested constructs (a lambda `do`
-parameter list, a command buried several StmtListExpr levels deep) — structurally
-identical, never a wrong tree.
+**all 184 files byte-identical**, up from 0. There are no stragglers left — not
+just the same token tree as native nifler, but the exact relative line-info of
+every node, across the entire nimony compiler source.

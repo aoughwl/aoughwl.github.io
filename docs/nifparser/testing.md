@@ -31,10 +31,10 @@ then compares the resulting `.p.nif`:
   trees must then be identical. String-literal contents are preserved: NIF escapes
   every marker byte inside strings, so a `@` inside `"a@b"` can never be mistaken
   for a line-info suffix.
-- **Exact** — a bonus. The `.p.nif` bytes are identical, line-info included.
-  nifparser reaches this on almost every supported construct (55 of the 64 corpus
-  files), which is the real proof that its relative line-info model is correct and
-  not merely structurally plausible.
+- **Exact** — no longer a bonus. The `.p.nif` bytes are identical, line-info
+  included. nifparser now reaches this on **every** corpus file and every file in
+  the whole compiler tree, which is the real proof that its relative line-info
+  model is correct and not merely structurally plausible.
 
 ## The two harnesses
 
@@ -67,15 +67,15 @@ stress: total=184  pass=184  mismatch=0  our-crash=0  oracle-skip=0
 
 | suite | command | result |
 |:--|:--|:--|
-| curated corpus | `tests/diff.sh` | **76 / 76** pass, 75 byte-exact (apart from the `(.vendor)` header) |
-| standard library | `tests/stress.sh` | **29 / 29** structural, 0 crash |
-| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **184 / 184** structural, **181 byte-exact**, 0 crash / 0 hang |
+| curated corpus | `tests/diff.sh` | **76 / 76** pass, 76 byte-exact (apart from the `(.vendor)` header) |
+| standard library | `tests/stress.sh` | **29 / 29** structural, **29 byte-exact**, 0 crash |
+| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **184 / 184** structural, **184 byte-exact**, 0 crash / 0 hang |
 | diagnostics | `tests/diag.sh` | `check` mode: multi-error, spans, JSON, clean-file cases |
 
 The whole compiler tree passing in full is the headline: every one of the 184
 files under `nimony/src` — the standard library and the compiler's own dense
 internals — round-trips structurally identical to native nifler, with zero
-crashes, and **181 of them are byte-identical** (relative line-info included).
+crashes, and **all 184 are byte-identical** (relative line-info included).
 `tests/stress.sh` now reports that byte-exact count (`byte-exact=N`) alongside the
 structural pass count, so the line-info frontier is a tracked, regression-protected
 number. See [Coverage](known-gaps) for how the line-info model was closed.

@@ -63,20 +63,20 @@ after line-info is stripped — the pass criterion) and **exact** (byte-identica
 
 | test suite | files | result |
 |:--|:--|:--|
-| curated corpus | 76 | **76 pass**, 75 byte-exact\* |
-| nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, 0 crash |
-| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **181 byte-exact**, 0 crash / 0 hang |
+| curated corpus | 76 | **76 pass**, 76 byte-exact\* |
+| nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, **29 byte-exact**, 0 crash |
+| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **184 byte-exact**, 0 crash / 0 hang |
 
 <small>\* byte-exact apart from the one-line `(.vendor)` header identity.</small>
 
 The **entire nimony compiler tree** — the standard library and the compiler's own
 dense internals — round-trips structurally identical to native nifler, line-info
-stripped: all 184 files, zero mismatches, zero crashes. Beyond that, **181 of the
-184 files are byte-identical** (line-info included, modulo the vendor line) — not
-just the token tree but the exact relative line-info of every node. The three
-stragglers differ only in the line-info distribution of a couple of deeply-nested
-constructs, never in structure. See [Coverage](nifparser/known-gaps) for how the
-line-info model was reverse-engineered node by node.
+stripped: all 184 files, zero mismatches, zero crashes. Beyond that, **every one of
+the 184 files is byte-identical** (line-info included, modulo the vendor line) — not
+just the token tree but the exact relative line-info of every node. There are no
+stragglers left: full byte-for-byte parity across the whole tree. See
+[Coverage](nifparser/known-gaps) for how the line-info model was reverse-engineered
+node by node.
 
 ## Better errors than the reference
 
