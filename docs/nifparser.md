@@ -63,18 +63,18 @@ after line-info is stripped — the pass criterion) and **exact** (byte-identica
 
 | test suite | files | result |
 |:--|:--|:--|
-| curated corpus | 47 | **47 pass**, 46 byte-exact\* |
+| curated corpus | 64 | **64 pass**, 55 byte-exact\* |
 | nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, 0 crash |
-| whole nimony compiler tree (`nimony/src`) | 184 | **127 pass**, **0 crash / 0 hang** |
+| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **0 crash / 0 hang** |
 
 <small>\* byte-exact apart from the one-line `(.vendor)` header identity.</small>
 
-The **entire real standard library** round-trips structurally identical to native
-nifler, line-info stripped — zero mismatches. Five example programs — Hello,
-Fibonacci, FizzBuzz, Collatz, List sum — parse **byte-identical** (modulo the
-vendor line), covering the real client-side workload. Across the far larger
-compiler-internals tree the parser never crashes or hangs; the remaining
-structural mismatches are a small, catalogued set (see [Known gaps](nifparser/known-gaps)).
+The **entire nimony compiler tree** — the standard library and the compiler's own
+dense internals — round-trips structurally identical to native nifler, line-info
+stripped: all 184 files, zero mismatches, zero crashes. Five example programs —
+Hello, Fibonacci, FizzBuzz, Collatz, List sum — parse **byte-identical** (modulo
+the vendor line), covering the real client-side workload. See
+[Coverage](nifparser/known-gaps) for how full parity was reached.
 
 ## The documentation set
 

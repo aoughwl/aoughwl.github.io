@@ -32,7 +32,7 @@ then compares the resulting `.p.nif`:
   every marker byte inside strings, so a `@` inside `"a@b"` can never be mistaken
   for a line-info suffix.
 - **Exact** — a bonus. The `.p.nif` bytes are identical, line-info included.
-  nifparser reaches this on almost every supported construct (46 of the 47 corpus
+  nifparser reaches this on almost every supported construct (55 of the 64 corpus
   files), which is the real proof that its relative line-info model is correct and
   not merely structurally plausible.
 
@@ -54,7 +54,7 @@ sweeps those. Crucially it also reports what the parser could **not** do
 gracefully:
 
 ```
-stress: total=184  pass=162  mismatch=22  our-crash=0  oracle-skip=0
+stress: total=184  pass=184  mismatch=0  our-crash=0  oracle-skip=0
 ```
 
 - `our-crash` — nifparser produced no output (a crash or hang). **This is the
@@ -67,14 +67,14 @@ stress: total=184  pass=162  mismatch=22  our-crash=0  oracle-skip=0
 
 | suite | command | result |
 |:--|:--|:--|
-| curated corpus | `tests/diff.sh` | **52 / 52** pass, 50 byte-exact (apart from the `(.vendor)` header) |
+| curated corpus | `tests/diff.sh` | **64 / 64** pass, 55 byte-exact (apart from the `(.vendor)` header) |
 | standard library | `tests/stress.sh` | **29 / 29** structural, 0 crash |
-| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **162 / 184**, **0 crash, 0 hang** |
+| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **184 / 184**, **0 crash, 0 hang** |
 
-The standard library passing in full is the headline: the entire real
-`nimony/src/lib` round-trips structurally identical to native nifler. On the much
-larger compiler-internals tree the parser never crashes; the 22 structural
-mismatches are catalogued on [Known gaps](known-gaps).
+The whole compiler tree passing in full is the headline: every one of the 184
+files under `nimony/src` — the standard library and the compiler's own dense
+internals — round-trips structurally identical to native nifler, with zero
+crashes. See [Coverage](known-gaps) for how the last gaps were closed.
 
 ## Why a differential harness
 
