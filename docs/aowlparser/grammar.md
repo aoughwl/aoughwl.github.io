@@ -1,6 +1,6 @@
 ---
 title: Grammar coverage
-parent: aowlparse
+parent: aowlparser
 grand_parent: Compiler Pipeline
 nav_order: 2
 ---
@@ -8,7 +8,7 @@ nav_order: 2
 # Grammar coverage
 {: .no_toc }
 
-What `aowlparse` reproduces today, by area. Everything here is verified
+What `aowlparser` reproduces today, by area. Everything here is verified
 byte-structurally against native `nifler` (see [Differential testing](testing));
 the honest exceptions are on [Known gaps](known-gaps).
 

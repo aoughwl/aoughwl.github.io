@@ -1,6 +1,6 @@
 ---
 title: Coverage
-parent: aowlparse
+parent: aowlparser
 grand_parent: Compiler Pipeline
 nav_order: 5
 ---
@@ -8,7 +8,7 @@ nav_order: 5
 # Coverage
 {: .no_toc }
 
-Where `aowlparse` stands against native `nifler` — now at full structural parity
+Where `aowlparser` stands against native `nifler` — now at full structural parity
 across the entire nimony compiler tree.
 
 <details open markdown="block">
@@ -23,13 +23,13 @@ across the entire nimony compiler tree.
 ## The headline number
 
 Over the whole `nimony/src` compiler tree — 184 files, far beyond the standard
-library — aowlparse matches native nifler on **all 184**, with **zero crashes and
+library — aowlparser matches native nifler on **all 184**, with **zero crashes and
 zero hangs**, and every one of the 184 is **byte-identical** (apart from the
 intentional `(.vendor)` header). The standard library (`nimony/src/lib`, 29 modules)
 passes in full and byte-exact, and the curated corpus passes 76/76, all byte-exact.
 
 This is complete structural *and* byte-level parity: every construct the nimony
-compiler's own source exercises round-trips through aowlparse to the same NIF —
+compiler's own source exercises round-trips through aowlparser to the same NIF —
 same token tree, same relative line-info — that native nifler emits.
 
 ## How the last gaps were closed
@@ -40,7 +40,7 @@ nifler construct-by-construct and locked in with a corpus regression test:
 1. **Doc-comment attachment** — the standalone-vs-trailing `##` rule. nifler's
    `indAndComment` attaches a comment indented *deeper* than its statement to
    that declaration and, without `--docs`, never emits it; a comment at the
-   statement-list indent is a standalone `(comment)`. aowlparse now drops
+   statement-list indent is a standalone `(comment)`. aowlparser now drops
    trailing docs (module loop, routine bodies, `emitBody`) and emits section-member
    comments as sibling `(comment)` nodes. This one rule closed six files.
 2. **Command precedence** — a command call binds looser than binary operators
@@ -96,7 +96,7 @@ exactly which source token nifler anchors a node at. The high-leverage findings:
   the `do` keyword, so `(params)` carries its delta back up to the `(` and the body
   `(stmts)` is delta 0 against the do.
 - **Portable paths.** nifler relativises the recorded source path to the cwd by
-  default; aowlparse now mirrors that (`--portable-paths`).
+  default; aowlparser now mirrors that (`--portable-paths`).
 
 Each fix was locked in with a byte-exact corpus regression test and measured
 against the whole tree (`tests/stress.sh` reports `byte-exact=N`). The result:

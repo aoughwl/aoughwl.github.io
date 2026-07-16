@@ -1,6 +1,6 @@
 ---
 title: Architecture
-parent: aowlparse
+parent: aowlparser
 grand_parent: Compiler Pipeline
 nav_order: 1
 ---
@@ -19,7 +19,7 @@ nav_order: 1
 
 ## The one idea: fused parse + emit
 
-`aowlparse` does **not** build a Nim `PNode` AST. It is a recursive-descent
+`aowlparser` does **not** build a Nim `PNode` AST. It is a recursive-descent
 parser that writes NIF **directly** through `nifbuilder` as it recognises each
 construct. There is no tree stage in between.
 
@@ -69,7 +69,7 @@ resolves through forward declarations in `parsecore.nim`.
 | `parse_type.nim` | Type defs, routine/proc defs, params, generics, pragmas. |
 | `parse_stmt.nim` | Statements, control flow, `var`/`let`/`const` sections. |
 | `parser.nim` | Thin aggregator + the module loop `parseModule`. |
-| `aowlparse.nim` | The CLI driver (thin, file-I/O only — JS-build friendly). |
+| `aowlparser.nim` | The CLI driver (thin, file-I/O only — JS-build friendly). |
 
 Splice order: `parsecore → parse_expr → parse_type → parse_stmt`. Because the
 files are `include`d into one module rather than imported, a proc in one area can
@@ -88,7 +88,7 @@ spaces and tabs is [configurable](configuration).
 
 ## The oracle
 
-aowlparse is specified **operationally** against the classic Nim compiler's lexer
+aowlparser is specified **operationally** against the classic Nim compiler's lexer
 and parser (`compiler/lexer.nim`, `compiler/parser.nim`), which `nifler` mirrors
 exactly. The subtle rules reproduced verbatim include:
 

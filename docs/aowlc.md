@@ -147,4 +147,4 @@ external call so the unit still links on its own.
 
 The cleanest self-owned native compiler reuses the one component that's genuinely
 hard to rebuild — hexer's lowering — and owns everything else:
-[aowlparse](aowlparse) + `nifsem` → `hexer` → **aowlc** → `gcc`.
+[aowlparser](aowlparser) + `nifsem` → `hexer` → **aowlc** → `gcc`.

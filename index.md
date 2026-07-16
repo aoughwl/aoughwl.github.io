@@ -49,7 +49,7 @@ Full details on the format and the drop-in seams: **[AIF ≡ NIF →](docs/aif)*
 ## The stack
 
 ```
- .nim / .aowl ──► aowlparse ──► aowlsem ──► aowlhexer ──┬─ aowlc  → C / native
+ .nim / .aowl ──► aowlparser ──► aowlsem ──► aowlhexer ──┬─ aowlc  → C / native
     source          parse       semcheck    lower     ├─ aowljs → JavaScript
                                                        └─ aowli  → interpret / VM
 ```
@@ -60,7 +60,7 @@ power the browser **[playground](playground)**.
 
 | Stage | Repo | What it is |
 |---|---|---|
-| parse | **[aowlparse](docs/aowlparse)** | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
+| parse | **[aowlparser](docs/aowlparser)** | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
 | semcheck | **aowlsem** *(private)* | clean-room `nimsem`: `.p.aif` → typed `.s.aif`. |
 | lower | **[aowlhexer](docs/aowlhexer)** *(private)* | ARC / closures / exceptions / monomorphisation → `.c.aif`. |
 | native | **[aowlc](docs/aowlc)** | post-hexer `.c.aif` → C, linked with `gcc` (GC-free — ARC baked in). |

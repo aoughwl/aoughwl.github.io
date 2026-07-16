@@ -1,6 +1,6 @@
 ---
 title: Differential testing
-parent: aowlparse
+parent: aowlparser
 grand_parent: Compiler Pipeline
 nav_order: 3
 ---
@@ -8,7 +8,7 @@ nav_order: 3
 # Differential testing
 {: .no_toc }
 
-aowlparse has one job — emit the same NIF as native `nifler` — so it is tested by
+aowlparser has one job — emit the same NIF as native `nifler` — so it is tested by
 running both tools on the same input and comparing their output. There is no
 hand-written expected-output; the classic compiler's `nifler` **is** the oracle.
 
@@ -23,7 +23,7 @@ hand-written expected-output; the classic compiler's `nifler` **is** the oracle.
 
 ## Two levels of match
 
-For every input file the harness runs the native `nifler` oracle and `aowlparse`,
+For every input file the harness runs the native `nifler` oracle and `aowlparser`,
 then compares the resulting `.p.nif`:
 
 - **Structural** — the pass criterion. `tests/canon.py` strips line-info
@@ -32,7 +32,7 @@ then compares the resulting `.p.nif`:
   every marker byte inside strings, so a `@` inside `"a@b"` can never be mistaken
   for a line-info suffix.
 - **Exact** — no longer a bonus. The `.p.nif` bytes are identical, line-info
-  included. aowlparse now reaches this on **every** corpus file and every file in
+  included. aowlparser now reaches this on **every** corpus file and every file in
   the whole compiler tree, which is the real proof that its relative line-info
   model is correct and not merely structurally plausible.
 
@@ -57,7 +57,7 @@ gracefully:
 stress: total=184  pass=184  mismatch=0  our-crash=0  oracle-skip=0
 ```
 
-- `our-crash` — aowlparse produced no output (a crash or hang). **This is the
+- `our-crash` — aowlparser produced no output (a crash or hang). **This is the
   number that must stay zero**; a structural mismatch is a wrong tree, but a crash
   is a broken tool.
 - `oracle-skip` — the *native* nifler itself failed on the file, so it is excluded
@@ -84,10 +84,10 @@ number. See [Coverage](known-gaps) for how the line-info model was closed.
 
 A parser that emits a compiler wire-format has an unusually crisp correctness
 oracle: the wire-format is only useful if a *second, independent* implementation
-agrees with it byte-for-byte — save for one line aowlparse owns on purpose, its
-`(.vendor "aowlparse")` header, which both `diff.sh` (byte) and `canon.py`
+agrees with it byte-for-byte — save for one line aowlparser owns on purpose, its
+`(.vendor "aowlparser")` header, which both `diff.sh` (byte) and `canon.py`
 (structural) neutralize before comparing so the rest stays strict. That makes the
 reference (`nifler`) both the spec
 and the test suite, and it makes regressions impossible to miss — any construct
-where aowlparse drifts shows up as a concrete NIF diff against the tool the rest
+where aowlparser drifts shows up as a concrete NIF diff against the tool the rest
 of the pipeline already trusts.

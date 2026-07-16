@@ -38,12 +38,12 @@ counterpart:
 
 | nimony stage | aoughwl stage | seam |
 |---|---|---|
-| `nifler` (parse) | **aowlparse** | `source → .p.aif` |
+| `nifler` (parse) | **aowlparser** | `source → .p.aif` |
 | `nimsem` (semcheck) | **aowlsem** | `.p.aif → .s.aif` |
 | `hexer` (lower) | **aowlhexer** | `.s.aif → .c.aif` |
 
 You can run an all-aoughwl pipeline, an all-nimony pipeline, or **any mix** —
-`nifler → aowlsem → hexer`, `aowlparse → nimsem → aowlhexer`, and so on. The seams
+`nifler → aowlsem → hexer`, `aowlparser → nimsem → aowlhexer`, and so on. The seams
 don't care which side produced the artifact.
 
 ## What "behaves identically" means
@@ -52,9 +52,9 @@ The contract is **observable-behaviour equivalence**: a program compiled and run
 through aoughwl produces the same result as the same program through stock
 nimony. We hold ourselves to it two ways:
 
-- **Byte-exactness where it's testable.** `aowlparse`'s output is byte-for-byte
+- **Byte-exactness where it's testable.** `aowlparser`'s output is byte-for-byte
   `nifler`'s across the whole nimony standard library and corpus (bar one header
-  line it stamps with its own `(.vendor "aowlparse")` identity, which the
+  line it stamps with its own `(.vendor "aowlparser")` identity, which the
   differential harness neutralizes). The parse artifact you feed the rest of the
   pipeline is *the same file* nimony would have produced.
 - **Differential execution.** `aowli` (the interpreter/VM) and the native/JS
@@ -80,7 +80,7 @@ self-hosts over a format it owns, it also gives you what stock nimony can't:
 
 ## Status & privacy
 
-The parse front-end ([aowlparse](aowlparse)), the interpreter ([aowli](../aowli)),
+The parse front-end ([aowlparser](aowlparser)), the interpreter ([aowli](../aowli)),
 and the native/JS backends ([aowlc](aowlc), [aowljs](aowljs)) are public. The
 **semantic checker (aowlsem)** and the **lowering (aowlhexer)** are
 **intentionally kept private for now** — their docs live on this site, and

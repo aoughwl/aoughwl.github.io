@@ -31,7 +31,7 @@ Editing a program drives the full nimony pipeline, all in the browser:
 
 ```
 your source
-   │  aowlparse  (aoughwl/aowlparse)      main thread, ~4 ms
+   │  aowlparser  (aoughwl/aowlparser)      main thread, ~4 ms
    ▼
  .p.nif  (untyped NIF)
    │  nimsem     (nimony's checker)        Web Worker, warm-cached
@@ -43,7 +43,7 @@ your source
         └─ Tree-walk   (aowli)                           faithful, reference
 ```
 
-- **[aowlparse](docs/aowlparse)** parses your source to the untyped `.p.nif` on
+- **[aowlparser](docs/aowlparser)** parses your source to the untyped `.p.nif` on
   the main thread — it's the browser-capable replacement for classic Nim's
   native-only `nifler`, and it also feeds the live editor intelligence.
 - **nimsem** turns the `.p.nif` into a typed `.s.nif`, resolving every symbol,
@@ -91,9 +91,9 @@ during a live type-check.
 The playground is a Monaco editor with a nimony grammar and a real **language
 server running in a Web Worker**:
 
-- **Live diagnostics** — syntax errors (aowlparse) as you type, type errors
+- **Live diagnostics** — syntax errors (aowlparser) as you type, type errors
   (nimsem) on a short debounce, shown as squiggles and in a problems list.
-  aowlparse emits **structured, recoverable** diagnostics: unlike classic
+  aowlparser emits **structured, recoverable** diagnostics: unlike classic
   `nifler` (which aborts at the first error), it records *every* problem with a
   precise span, severity, and stable code and keeps parsing — so you see all the
   squiggles at once.
@@ -105,7 +105,7 @@ server running in a Web Worker**:
 The source pane tabs between your **Source** and the compilation tower it becomes,
 so you can watch nimony's intermediate forms directly:
 
-- **Parsed** — the untyped `.p.nif` from aowlparse.
+- **Parsed** — the untyped `.p.nif` from aowlparser.
 - **Typed** — the `.s.nif` from nimsem, with types and symbols resolved.
 - **Run** — the **run rung**: the program's *execution* serialized as NIF (from
   aowli's run emitter), the bottom of aowli's content-addressed compilation tower.

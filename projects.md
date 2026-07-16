@@ -11,7 +11,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 
 | Project | Repo | Status |
 |---|---|---|
-| [aowlparse](docs/aowlparse) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparse` | public |
+| [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
 | aowlsem — clean-room semcheck: `.p.aif` → typed `.s.aif` | `aoughwl/aowlsem` | private |
 | [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aowli` | private |
 | [aowljs](docs/aowljs) — `.s.aif` → native-JavaScript backend | `aoughwl/aowljs` | public |

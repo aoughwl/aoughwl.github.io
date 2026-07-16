@@ -47,7 +47,7 @@ intra-tree `../hexer` references resolve to our copies.
 Built from Araq's passes, aowlhexer produces the same `.c.aif` as nimony's
 `hexer`, and it is the **default lowering stage** in [aowlmony](aowlmony): the
 driver injects `bin/aowlhexer` in place of `hexer`, so a real build runs
-`.nim → aowlparse → sem → aowlhexer → aowlc → gcc`, yielding correct native
+`.nim → aowlparser → sem → aowlhexer → aowlc → gcc`, yielding correct native
 binaries (`fib(20)=6765`, `ack(3,4)=125`, `fib(25)=75025`).
 
 ## Roadmap

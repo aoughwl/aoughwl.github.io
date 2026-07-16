@@ -26,7 +26,7 @@ Repo: **`aoughwl/aowlmony`** (public).
 ## The pipeline
 
 ```
-   .nim ──► aowlparse (ours) ──► nimony sem (reused) ──► aowlhexer (ours) ──► .s.aif / .c.aif
+   .nim ──► aowlparser (ours) ──► nimony sem (reused) ──► aowlhexer (ours) ──► .s.aif / .c.aif
                                                                                │        │
                                         aowli (ours) ◄── interpret ────────────┘        └──► aowlc (ours) ──► C ──► gcc ──► native
 ```
@@ -35,8 +35,8 @@ Repo: **`aoughwl/aowlmony`** (public).
 
 | stage | tool | owned? |
 |---|---|---|
-| parse `.nim` → `.p.aif` (user modules) | [aowlparse](aowlparse) | ✅ ours |
-| parse stdlib → `.p.aif` | `nifler` | reused — aowlparse has `concept`/typed-nil gaps |
+| parse `.nim` → `.p.aif` (user modules) | [aowlparser](aowlparser) | ✅ ours |
+| parse stdlib → `.p.aif` | `nifler` | reused — aowlparser has `concept`/typed-nil gaps |
 | sem `.p.aif` → `.s.aif` | nimony `nimsem` | reused — **[aowlsem](nifsem) not finished yet** |
 | **lower** `.s.aif` → `.c.aif` (ARC, closures, exceptions, mono) | **[aowlhexer](aowlhexer)** | ✅ **ours** (seeded from Araq's hexer) |
 | **native** `.c.aif` → binary | [aowlc](aowlc) → gcc | ✅ ours |
@@ -48,9 +48,9 @@ only semantic analysis is still reused from nimony (until [aowlsem](nifsem)
 lands). Lowering moved into our column with [aowlhexer](aowlhexer): the aowlmony
 driver injects `bin/aowlhexer` in place of nimony's `hexer` (via nimony's
 `findTool("hexer")` lookup), so a full build reads
-`.nim → aowlparse → sem → aowlhexer → aowlc → gcc`.
+`.nim → aowlparser → sem → aowlhexer → aowlc → gcc`.
 
-Provenance is verifiable: aowlparse stamps `(.vendor "aowlparse")` into the
+Provenance is verifiable: aowlparser stamps `(.vendor "aowlparser")` into the
 `.p.aif` it produces, and `aowlmony nif prog.nim -v` reports *which* parser and
 *which* hexer ran.
 
@@ -82,7 +82,7 @@ $ aowlmony exec demo.nim --entry fact    --arg 10
 ```
 
 `npm test` asserts 9/9: native ([aowlc](aowlc)) and interpreter ([aowli](../aowli))
-produce consistent results, the module is confirmed parsed by aowlparse, and the
+produce consistent results, the module is confirmed parsed by aowlparser, and the
 native path lowers through [aowlhexer](aowlhexer).
 
 Native vs interpret today: [aowlc](aowlc) covers the arithmetic/control-flow core
@@ -98,14 +98,14 @@ aowlmony build  prog.nim -o prog                # native: emit a binary
 aowlmony exec   prog.nim --entry fib --arg 20   # native: call one proc, print result
 aowlmony interp prog.nim                        # interpret via aowli
 aowlmony vm     prog.nim                        # interpret via aowli's bytecode VM
-aowlmony parse  prog.nim                        # show OUR aowlparse .p.aif
+aowlmony parse  prog.nim                        # show OUR aowlparser .p.aif
 aowlmony nif    prog.nim  -v                    # paths + which parser/hexer ran
 ```
 
 ## The AIF family
 
 Per the directive to standardise on **AIF (aowl intermediate format)**, the
-self-owned components carry the `aif-` prefix: [aowlparse](aowlparse),
+self-owned components carry the `aif-` prefix: [aowlparser](aowlparser),
 [aowlsem](nifsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aowllib](aowllib),
 [aowljs](aowljs), and this driver, aowlmony. [aowli](../aowli) is the interpreter over
 `.s.aif`. What remains to finish the rewrite:
@@ -115,5 +115,5 @@ self-owned components carry the `aif-` prefix: [aowlparse](aowlparse),
   `echo`/strings/seqs link without nimony's `system.c.aif`. The biggest unlock.
 - **[aowlhexer](aowlhexer)** — progressively rewrite the vendored passes onto an
   aowl-owned core, dropping the `$NIMONY_SRC` dependency.
-- **[aowlparse](aowlparse)** — finish `concept`/typed-nil so it parses the
+- **[aowlparser](aowlparser)** — finish `concept`/typed-nil so it parses the
   stdlib too, not only user modules.
