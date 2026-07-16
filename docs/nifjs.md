@@ -38,7 +38,7 @@ and readable-or-mangled:
 | result | **slow** (`_dv.getInt32(p)` per access) **and mangled** (`sysvq0asl`, raw offsets) | **fast** (V8 JITs it) **and readable** (`function fib(n){ … }`) |
 | fidelity | exact — int64 wraparound, `ptr`/`addr`, ARC timing, C FFI | native-value approximation (see [trade-off](#the-fidelity-trade-off)) |
 
-The key insight: **speed and readability are the same decision**. The faithful
+**Speed and readability are the same decision.** The faithful
 backend is slow *and* mangled for one reason (it simulates C memory from the
 lowered IR); nifjs is fast *and* readable for the mirror reason (it emits native
 values from the high-level IR). You get both or neither — they are not separate

@@ -1,13 +1,13 @@
 ---
-title: nim-code
+title: aowl-code
 nav_exclude: true
 parent: Single Page READMEs
 nav_order: 1
 ---
 
-> Verbatim archive of the original `aoughwl/nim-code` README. Curated summary: [nim-code project page](../nim-code).
+> Verbatim archive of the `aoughwl/aowl-code` README (repo formerly `nim-code`). Curated summary: [aowl-code project page](../aowl-code).
 
-# nim-code
+# aowl-code
 
 A Claude Code plugin that mediates agent access to the **Nim** and **Nimony**
 toolchains through structured tools, so an agent works from compact diagnostics,
@@ -66,7 +66,7 @@ claude --plugin-dir /home/savant/nimony-code
 From the GitHub marketplace (the repo is its own marketplace):
 
 ```text
-/plugin marketplace add aoughwl/nim-code
+/plugin marketplace add aoughwl/aowl-code
 /plugin install nim-code@nim-code
 ```
 

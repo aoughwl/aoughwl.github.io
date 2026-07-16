@@ -53,7 +53,7 @@ stdlib breadth — not core codegen. Scoped to *synchronous* Nim, the JS backend
 is ~95%+ and the only real hole is the stray `addr`-of forms; async is covered by
 the runtime above.
 
-**Known rough edges** (not roadmap items so much as honest caveats — see
+**Known rough edges** (caveats, not roadmap items — see
 [capabilities.md](capabilities.md) for detail):
 
 - **No runtime checks are emitted** — overflow/bounds/nil checks are intentionally

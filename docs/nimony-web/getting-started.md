@@ -13,8 +13,8 @@ nimony-web gives Nim two web targets: **JavaScript** (`nim-js`) and **WebAssembl
 lowered *Leng* IR nimony emits just before its C backend (`<module>.c.nif`) and
 produce a `.js` or `.wasm` instead of C.
 
-This guide takes you from an empty directory to `echo "hello world"` running
-under Node on both backends.
+Below: an empty directory to `echo "hello world"` running under Node on both
+backends.
 
 ## Prerequisites
 

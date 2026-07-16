@@ -8,11 +8,10 @@ nav_order: 7
 # Browser & JavaScript
 {: .no_toc }
 
-nifparser is written in nimony precisely so it can be compiled to JavaScript and
-run client-side — it's what makes the [playground](../../playground) parse your
-code in the tab, with no backend. This page is the machine contract: the globals
-the JS bundle reads and writes, how the bundle is built, and the editor
-diagnostics layer.
+nifparser compiles to JavaScript and runs client-side, which is what lets the
+[playground](../../playground) parse code in the browser tab with no backend. The
+machine contract: the globals the JS bundle reads and writes, how the bundle is
+built, and the editor diagnostics layer.
 {: .fs-6 .fw-300 }
 
 <details open markdown="block">

@@ -7,10 +7,9 @@ nav_order: 5
 
 # Async on the JS backend
 
-nimony-web ships a working cooperative-async runtime for the JavaScript target,
-built on nimony's `{.passive.}` CPS coroutines and driven by the host event loop
-(`setTimeout` / `queueMicrotask`). This document is the honest map of what works
-today, how to use it, and the compiler-gated limits.
+nimony-web ships a cooperative-async runtime for the JavaScript target, built on
+nimony's `{.passive.}` CPS coroutines and driven by the host event loop
+(`setTimeout` / `queueMicrotask`).
 
 ## What works
 
@@ -106,7 +105,7 @@ suites plus the 44-test JS backend suite with no regressions.
   `--bits`, build the plugin in an isolated host-bits nifcache). `{.async.}` now
   expands on the JS backend (see `tasyncsugar`).
 
-## Remaining limits (honest map)
+## Remaining limits
 
 1. **`await` cannot re-raise (errors ride on `Future.err`).** A `.passive` proc
    that captures the result of a `.raises` non-void call no longer *crashes*

@@ -7,10 +7,9 @@ nav_order: 3
 
 # Architecture
 
-The top-level [README](../README.md) states the one idea: a WebAssembly module
-and a fast JavaScript runtime are the *same machine described twice* — a single
-byte-addressable linear memory where a pointer is an integer offset. This page is
-how that idea is factored into modules.
+A WebAssembly module and a fast JavaScript runtime are the *same machine described
+twice* — a single byte-addressable linear memory where a pointer is an integer
+offset. How that model is factored into modules:
 
 ## One layout engine, two instruction selectors
 

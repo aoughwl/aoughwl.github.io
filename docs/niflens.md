@@ -16,7 +16,7 @@ with the **real parser** and emits compact JSON for a host tool to consume.
 
 ## Why
 
-Tools that inspect NIF — an LSP, the [nim-code](nim-code) plugin, a formatter —
+Tools that inspect NIF — an LSP, the [aowl-code](aowl-code) plugin, a formatter —
 otherwise re-implement a NIF reader (usually a regex/hand-rolled scanner) and
 inherit a class of bugs: approximate line-info decoding, mishandled escapes, a
 stale tag vocabulary, no real index reading. Because niflens *links the compiler's
@@ -31,7 +31,7 @@ with the compiler's own line info.
 ## Design
 
 niflens is the CLI/daemon frontend of a shared NIF core intended to back **both**
-the nim-code plugin and a Nimony LSP. The host shells out to niflens (the same
+the aowl-code plugin and a Nimony LSP. The host shells out to niflens (the same
 subprocess pattern it uses for `nimony` / `nimsem`) and falls back to its own
 reader if the binary is absent. Subprocess (not FFI) keeps crash isolation, avoids
 an ABI/GC boundary, and needs no per-platform shared library.

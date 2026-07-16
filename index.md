@@ -73,7 +73,7 @@ power the browser **[playground](playground)**.
 
 | Project | What it is |
 |---|---|
-| **[nim-code](docs/nim-code)** | Claude Code plugin + MCP server: compact, structured agent access to the Nim/Nimony toolchains. |
+| **[aowl-code](docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the Nim/Nimony toolchains. |
 | **[nimony-lsp](docs/nimony-lsp)** | Language Server + full VSCode extension; live as-you-type diagnostics. |
 | **[net stack](docs/net-stack)** | Eight one-concern repos — `tcp`·`net`·`tls`·`http`·`compress`·`serve`·`ws`·`requests` — TLS 1.3, dual-stack IPv6, HTTP/1.1 + HTTP/2 server, WebSocket, HTTP/3 client, browser-impersonating `requests`. |
 | **[web](docs/web)** · **[html](docs/html)** · **[css](docs/css)** | A declarative HTML+CSS DSL, a typed HTML5 registry/renderer, and an MDN-typed CSS engine that validates against the real grammar. |

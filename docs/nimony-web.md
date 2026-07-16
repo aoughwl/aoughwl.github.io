@@ -12,7 +12,7 @@ has_children: true
 Two backends that take Nim to the web: one emits JavaScript, the other emits
 WebAssembly. Both are plugins for [nimony](../nimony) — they read the lowered IR
 nimony hands its C backend and produce a `.js` or `.wasm` file instead of C. They
-share almost all of their code, and that is the interesting part.
+share almost all of their code.
 
 > **Private repo, public docs.** The code lives at `aoughwl/nimony-web` and is
 > private. Want access? Discord **timbuktu_guy**.
@@ -24,13 +24,13 @@ share almost all of their code, and that is the interesting part.
 
 ---
 
-## The one idea
+## The memory model
 
 A WebAssembly module has a single linear memory: one flat, byte-addressable
-`ArrayBuffer` that grows a page at a time. A pointer is just an integer offset. So
-is a fast, faithful compile of a systems language to JavaScript — you don't map
-Nim objects onto JS objects, you allocate one big `ArrayBuffer`, treat it as
-heap-plus-stack, and read/write it through typed-array views (`HEAP32[p >> 2]`).
+`ArrayBuffer` that grows a page at a time. A pointer is an integer offset. A fast,
+faithful compile of a systems language to JavaScript works the same way — instead
+of mapping Nim objects onto JS objects, it allocates one `ArrayBuffer`, treats it
+as heap-plus-stack, and reads/writes it through typed-array views (`HEAP32[p >> 2]`).
 
 This faithfulness — simulated linear memory — is what makes the output *exact*
 (int64, pointers, ARC, C FFI all behave), but also what makes it slow and
@@ -75,7 +75,7 @@ and integer wrapping, control flow, objects and variant objects,
 GC, `cstring` and FFI both directions, and a **live DOM** (`tdom.nim` drives a real
 jsdom document — `createElement`, event listeners, `classList` — from compiled Nim).
 
-One bug worth calling out: `Table` hashes use 32-bit multiply-add, and JS does all
+One bug: `Table` hashes use 32-bit multiply-add, and JS does all
 arithmetic in float64, so `hash * prime` silently loses the top bits and
 string-keyed tables corrupt. The fix wraps every sub-64-bit `*`/`+` through
 `Math.imul` / `| 0` / `>>> 0` — see `binTyped` in `src/jscodegen.nim`.

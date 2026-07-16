@@ -73,8 +73,8 @@ The **entire nimony compiler tree** — the standard library and the compiler's 
 dense internals — round-trips structurally identical to native nifler, line-info
 stripped: all 184 files, zero mismatches, zero crashes. Beyond that, **every one of
 the 184 files is byte-identical** (line-info included, modulo the vendor line) — not
-just the token tree but the exact relative line-info of every node. There are no
-stragglers left: full byte-for-byte parity across the whole tree. See
+just the token tree but the exact relative line-info of every node: full
+byte-for-byte parity across the whole tree. See
 [Coverage](nifparser/known-gaps) for how the line-info model was reverse-engineered
 node by node.
 

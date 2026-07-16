@@ -6,25 +6,25 @@ nav_exclude: true
 
 # Projects
 
-Everything in the aoughwl orbit around **[nimony](nimony)** — tooling, standard
-library, and backends. Each page below is the canonical docs for its repo; the
-repo READMEs are short stubs that point here.
+Every repo in the aoughwl toolchain and its libraries. Each page below is the
+canonical docs for its repo; the repo READMEs are short stubs that point here.
 
 | Project | Repo | Status |
 |---|---|---|
-| [nifi](nifi) — standalone two-engine interpreter for typed nimony | `aoughwl/nifi` | private |
-| [nifjs](docs/nifjs) — nimony-native `.s.nif` → native-JavaScript backend | `aoughwl/nifjs` | public |
-| [nifjs-js](docs/nifjs) — the hand-written JS implementation (bootstrap seed & oracle) | `aoughwl/nifjs-js` | public |
-| [nifc](docs/nifc) — `.c.nif` → C native backend (faithful; ARC baked in) | `aoughwl/nifc` | public |
-| [aifmony](docs/aifmony) — the rewrite driver: `.nim` → {native \| interpret \| web} over the self-owned stack | `aoughwl/aifmony` | public |
-| [aifhexer](docs/aifhexer) — the aowl lowering pass (ARC/closures/exceptions/mono), seeded from Araq's hexer | `aoughwl/aifhexer` | public |
+| [aifparser](docs/nifparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aifparser` | public |
+| aifsem — clean-room semcheck: `.p.aif` → typed `.s.aif` | `aoughwl/aifsem` | private |
+| [aifi](nifi) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aifi` | private |
+| [aifjs](docs/nifjs) — `.s.aif` → native-JavaScript backend | `aoughwl/aifjs` | public |
+| [aifjs-js](docs/nifjs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aifjs-js` | public |
+| [aifc](docs/nifc) — `.c.aif` → C native backend (ARC baked in, GC-free) | `aoughwl/aifc` | public |
+| [aifhexer](docs/aifhexer) — the lowering pass (ARC/closures/exceptions/mono) | `aoughwl/aifhexer` | private |
+| [aifmony](docs/aifmony) — the driver: `.nim` → {native \| interpret \| web} over the whole stack | `aoughwl/aifmony` | public |
 | [aiflib](docs/aiflib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aiflib` | public · scaffolding |
-| [nimony-playground](playground) — browser playground, nifi compiled to JS | `aoughwl/nimony-playground` | public |
+| [nimony-playground](playground) — browser playground, `aifi` compiled to JS | `aoughwl/nimony-playground` | public |
 | [nimony-web](docs/nimony-web) — JS + WASM backends & async runtime | `aoughwl/nimony-web` | private repo · public docs |
-| [nim-code](docs/nim-code) — Claude Code plugin + MCP server | `aoughwl/nim-code` | public |
-| [niflens](docs/niflens) — NIF lens CLI for tooling | `aoughwl/niflens` | public |
+| [aowl-code](docs/aowl-code) — Claude Code plugin + MCP server | `aoughwl/aowl-code` | public |
 | [nimony-lsp](docs/nimony-lsp) — Language Server + VSCode extension | `aoughwl/nimony-lsp` | public |
-| [net stack](docs/net-stack) — `tcp`/`net`/`serve`/`http`/`requests` | `aoughwl/{tcp,net,serve,http,requests}` | public |
+| [net stack](docs/net-stack) — `tcp`/`net`/`tls`/`http`/`compress`/`serve`/`ws`/`requests` | `aoughwl/{tcp,net,tls,http,compress,serve,ws,requests}` | public |
 | [web](docs/web) — HTML + validated CSS in one nimony block (DSL) | `aoughwl/web` | public |
 | [html](docs/html) — typed HTML5 registry + renderer | `aoughwl/html` | public |
 | [css](docs/css) — MDN-typed CSS engine (parse + validate) | `aoughwl/css` | public |

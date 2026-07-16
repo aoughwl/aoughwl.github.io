@@ -33,7 +33,7 @@ Two reasons:
    decidable from a bounded window of tokens, so there is nothing an intermediate
    tree would buy.
 
-The consequence worth internalising: **line-info is not a post-pass.** Each node's
+The consequence: **line-info is not a post-pass.** Each node's
 `@line,col` suffix is emitted *as the node is written*, relative to its parent
 node's position. That is why byte-exact output falls out of the same walk that
 produces the structure — there is no separate step that could drift.

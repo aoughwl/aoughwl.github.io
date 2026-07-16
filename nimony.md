@@ -8,17 +8,16 @@ nav_order: 1
 # aoughwl/nimony
 {: .no_toc }
 
-An opinionated fork of [Nimony](https://github.com/nim-lang/nimony) — the
-NIF-based reimplementation of the Nim compiler — that tracks upstream `master`
-**daily** and ships a standard library built to *our* taste. Same compiler core;
-fewer opinions imposed on you, more of ours baked in.
+The NIF-based compiler at the heart of the aoughwl toolchain, shipping a standard
+library built to *our* taste. Same Nim language, fewer opinions imposed on you,
+more of ours baked in.
 
 [Repo → github.com/aoughwl/nimony](https://github.com/aoughwl/nimony){: .btn .btn-primary }
 
-This page is the **canonical record of what our tree fixes and adds over stock
-upstream `nim-lang/nimony`**. Our `master` is the branch we use internally and
-share: it stays current with upstream and carries our own fixes and features on
-top.
+This page is the **record of the compiler engineering behind the stack** — the
+fixes and the `.passive`/async features that make the async story and the live
+tooling actually work. Every row below is a real change, with the test that
+proves it.
 {: .fs-5 .fw-300 }
 
 <details open markdown="block">
@@ -30,17 +29,16 @@ top.
 
 ---
 
-## What's different
+## What we ship
 
-- **Fewer bugs, more frontline features.** All Nimony work ships here first, and
-  we aggressively push lagging features.
-- **Stays current.** We pull from `nim-lang/nimony` master ~daily — upstream's
-  compiler progress with none of the lag. A fork that keeps up, not one that drifts.
-- **A fuller, opinionated stdlib.** 60+ modules and counting — batteries the
-  official tree doesn't ship yet, or ships grudgingly: `terminal` (fluent,
-  npm-`colors`-style string styling), `base64`, `md5`, `sha1`, `bitops`,
-  `complex`, `deques`, `heapqueue`, `editdistance`, `sequtils`, `options`,
-  `random`, `wordwrap`, and more. Ergonomics first.
+- **Fewer bugs, more frontline features.** We push hard on the machinery the
+  async story needs, and when we hit a compiler bug we fix it rather than route
+  around it.
+- **A fuller, opinionated stdlib.** 60+ modules and counting — the batteries
+  you'd otherwise write yourself: `terminal` (fluent, npm-`colors`-style string
+  styling), `base64`, `md5`, `sha1`, `bitops`, `complex`, `deques`, `heapqueue`,
+  `editdistance`, `sequtils`, `options`, `random`, `wordwrap`, and more.
+  Ergonomics first.
 
 > **The convention:** every time we fix an issue or add a feature, it gets a row
 > below (and in `doc/CHANGES.md` in the repo). This is the ledger — kept current.
@@ -81,7 +79,7 @@ event loop — **46/46** under Node. Each row is documented on the
 ## Incremental compilation & the tooling backend
 
 Nimony's design already leans on cached, typed NIF artifacts per module — which
-makes it a natural fit for *fast re-checks*. This tree pushes that further so
+makes it a natural fit for *fast re-checks*. We push that further so
 that interactive tooling (the **[nimony-lsp](docs/nimony-lsp)** language server's
 live as-you-type diagnostics, in particular) has a compile path that stays warm
 and cheap. These are the concrete wins, most user-visible first.
@@ -106,8 +104,8 @@ huge trees) needs to be warm too; it's wired into nimony-lsp as an opt-in path.
 
 ## Issues Fixed
 
-Eight compiler fixes over stock upstream. Each row opens its own writeup —
-symptom, root cause, the fix, files, and the verifying test.
+Eight compiler fixes that went into the toolchain. Each row opens its own
+writeup — symptom, root cause, the fix, files, and the verifying test.
 
 | # | Issue | Verified by |
 |---|---|---|
@@ -137,10 +135,11 @@ symptom, root cause, the fix, files, and the verifying test.
 
 ---
 
-## Relationship to upstream
+## Portability
 
-This mirrors and stays in sync with `nim-lang/nimony`. Compiler fixes are meant
-to be portable both ways; the standard-library direction is ours to steer. Pull
+The compiler fixes here are written against the Nim language, not against
+anything private — every one is portable to `nim-lang/nimony`, and we send them
+that way where they fit. The standard-library direction is ours to steer. Pull
 requests are welcome — no BDFL, just taste. See
 [`AGENTS.md`](https://github.com/aoughwl/nimony/blob/master/AGENTS.md) in the repo
 for the full toolchain, phase pipeline, and test workflow.

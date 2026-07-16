@@ -33,8 +33,8 @@ VSCode extension is a thin `vscode-languageclient` wrapper.
 
 ## Live as-you-type diagnostics
 
-The headline feature: **errors and warnings update on every keystroke**, against
-the *unsaved* buffer — no save required.
+**Errors and warnings update on every keystroke**, against the *unsaved* buffer —
+no save required.
 
 This is possible because [our Nimony tree](../nimony#incremental-compilation--the-tooling-backend)
 makes `nimony check` genuinely incremental: ~1.1s cold, but **~10–25ms** on a
@@ -80,10 +80,10 @@ must hit the same warm cache entry.
 - **No overlapping servers.** The client serializes stop→start so rapid
   restarts/reloads can't spawn multiple servers that thrash one shared nimcache.
 
-The honest tradeoff: the *first* interaction after opening a project pays one
-full `nimony check` (~1.1–1.5s) to warm the cache; there's no daemon keeping it
-hot across sessions. Everything after the warm is in the tens of milliseconds.
-Making that first check cheap is a compiler-side problem (incremental `check`).
+The tradeoff: the *first* interaction after opening a project pays one full
+`nimony check` (~1.1–1.5s) to warm the cache; there's no daemon keeping it hot
+across sessions. Everything after the warm is in the tens of milliseconds. Making
+that first check cheap is a compiler-side problem (incremental `check`).
 
 ---
 
@@ -179,7 +179,7 @@ if you install it elsewhere.
 
 ## Coordinate conventions
 
-The one thing every LSP backend gets wrong. Single source of truth:
+Single source of truth for line/column bases and units:
 
 | Surface | line base | col base | col unit |
 |---|---|---|---|

@@ -10,9 +10,7 @@ nav_order: 1
 
 How editor tooling for [Nimony](../nimony) actually works, end to end — the
 **incremental compiler** at the bottom, the **[nimony-lsp](nimony-lsp)** server
-that rides it, and the **[niflens](niflens)** NIF-reading core they share. This
-page is the one place that explains the whole picture and the hard-won lessons
-that make it fast.
+that rides it, and the **[niflens](niflens)** NIF-reading core they share.
 
 <details open markdown="block">
   <summary>Contents</summary>
@@ -45,9 +43,8 @@ sources on disk, nothing changed — is **~0.00s**. That gap is the entire reaso
 one-shot tooling is viable: after the first check, every hover/definition/
 keystroke-check is effectively free.
 
-But warmth is fragile, and two non-obvious failure modes cost us dearly (both
-now fixed in nimony-lsp — see below). They're worth understanding because they
-are properties of *IC itself*, not the LSP:
+Warmth is fragile. Two non-obvious failure modes broke it (both now fixed in
+nimony-lsp — see below); they are properties of *IC itself*, not the LSP:
 
 ### 1. The cache is keyed by the path string as given
 
@@ -59,7 +56,7 @@ funnel every invocation of a given file through one canonical path form.
 ### 2. `--isMain` vs. dependency artifacts thrash a shared cache
 
 {: .note }
-> This is the subtle one. nimony writes **different artifacts** for a module
+> nimony writes **different artifacts** for a module
 > compiled as the main module (`--isMain`) versus as a dependency of some other
 > main module. If two different main modules share **one** `nimcache`, checking
 > the second **overwrites** the shared-module artifacts the first needs — and
@@ -93,7 +90,7 @@ warm cache:
   hierarchies** — read the `.s.nif` artifact directly (this is the niflens
   layer, below).
 
-### What made it "suck," and what fixed it
+### Symptoms, root causes, fixes
 
 | Symptom | Root cause | Fix |
 |---|---|---|
@@ -116,7 +113,7 @@ document symbols, hover signatures, member/UFCS completion, semantic tokens,
 inlay types — comes from **reading the `.s.nif` artifact**. That reading is
 exactly what [niflens](niflens) does: a thin library over Nimony's own NIF
 libraries that emits structured facts (the flat symbol table, outlines, types),
-and which also backs the `nim-code` MCP plugin via its CLI.
+and which also backs the `aowl-code` MCP plugin via its CLI.
 
 Today nimony-lsp's `nifindex.nim` carries its own copy of that NIF-walk. The
 **convergence plan**: extract niflens's core as a linkable library, have the LSP
@@ -133,8 +130,8 @@ On the **daemon question**, both agree with Araq: navigation rides the one-shot
 
 ## Roadmap: what would make IC a great tooling backend
 
-These are **compiler-side** primitives (our `aoughwl/nimony` fork), not things
-the LSP or niflens should reimplement:
+These are **compiler-side** primitives, not things the LSP or niflens should
+reimplement:
 
 1. **Structured/JSON diagnostics from `nimony check`** — kill the fragile
    text-scraping; emit `{file, range, severity, code, message, related[]}`.

@@ -100,6 +100,6 @@ exactly which source token nifler anchors a node at. The high-leverage findings:
 
 Each fix was locked in with a byte-exact corpus regression test and measured
 against the whole tree (`tests/stress.sh` reports `byte-exact=N`). The result:
-**all 184 files byte-identical**, up from 0. There are no stragglers left — not
-just the same token tree as native nifler, but the exact relative line-info of
-every node, across the entire nimony compiler source.
+**all 184 files byte-identical**, up from 0 — not just the same token tree as
+native nifler, but the exact relative line-info of every node, across the entire
+nimony compiler source.

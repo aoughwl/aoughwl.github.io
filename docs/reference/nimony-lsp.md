@@ -194,7 +194,7 @@ any LSP-capable editor the wiring is the same three facts: launch
 Note that Nim and Nimony share the `.nim` extension. A workspace is one language
 or the other; run this server for Nimony projects and a Nim language server for
 Nim projects, not both over the same files. The companion
-[`nim-code`](https://github.com/aoughwl/nim-code) plugin documents the
+[`aowl-code`](https://github.com/aoughwl/aowl-code) plugin documents the
 per-project opt-in for wiring this server into Claude Code alongside its Nim
 counterpart.
 

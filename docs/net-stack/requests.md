@@ -5,7 +5,7 @@ grand_parent: Libraries
 nav_order: 8
 ---
 
-# requests — undetectable HTTP client
+# requests — browser-identical HTTP client
 {: .no_toc }
 
 [Repo → aoughwl/requests](https://github.com/aoughwl/requests){: .btn }

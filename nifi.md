@@ -36,7 +36,7 @@ agree to the byte:
 - **Bytecode VM (`bin/nifi-vm`)** — compiles the NIF into a register/stack
   instruction chunk and executes that chunk.
 
-Because both consume the [nimony](nimony) fork's post-semcheck `.s.nif`, they see
+Because both consume [nimony](nimony)'s post-semcheck `.s.nif`, they see
 exactly what the native backend sees — no separate parser, no separate type
 system. nimony's `seq` / `string` / `Table` and friends are library types built
 on raw `alloc`; rather than run that pointer code, nifi **intercepts** those
