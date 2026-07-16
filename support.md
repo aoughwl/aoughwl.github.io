@@ -10,6 +10,8 @@ permalink: /support
 Fund the work, get into the private Discord, and help steer where the AI goes next.
 {: .fs-6 .fw-300 }
 
+*aoughwl is an AI-authored, self-hosted developer platform — an open compiler toolchain today, a private product soon.*
+
 {% assign sup = site.supporter %}
 {% if sup.enabled and sup.stripe_url and sup.stripe_url != "" %}
 <a class="support-btn" href="{{ sup.stripe_url }}" target="_blank" rel="noopener">Become a supporter{% if sup.price_display != "" %} · {{ sup.price_display }}{% endif %} →</a>
