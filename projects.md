@@ -13,7 +13,8 @@ repo READMEs are short stubs that point here.
 | Project | Repo | Status |
 |---|---|---|
 | [nifi](nifi) — standalone two-engine interpreter for typed nimony | `aoughwl/nifi` | private |
-| [nifjs](docs/nifjs) — `.s.nif` → native-JavaScript backend (near-native speed) | `aoughwl/nifjs` | public |
+| [nifjs](docs/nifjs) — nimony-native `.s.nif` → native-JavaScript backend | `aoughwl/nifjs` | public |
+| [nifjs-js](docs/nifjs) — the hand-written JS implementation (bootstrap seed & oracle) | `aoughwl/nifjs-js` | public |
 | [nifc](docs/nifc) — `.c.nif` → C native backend (faithful; ARC baked in) | `aoughwl/nifc` | public |
 | [nimony-playground](playground) — browser playground, nifi compiled to JS | `aoughwl/nimony-playground` | public |
 | [nimony-web](docs/nimony-web) — JS + WASM backends & async runtime | `aoughwl/nimony-web` | private repo · public docs |
