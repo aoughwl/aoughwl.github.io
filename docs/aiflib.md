@@ -14,32 +14,59 @@ strings, seqs, `echo`, ref objects with ARC — compile through the self-owned
 stack **without** nimony's `system.c.aif`.
 {: .fs-6 .fw-300 }
 
-Repo: **`aoughwl/aiflib`** (public). Status: **scaffolding** — the biggest
-remaining unlock in the [aifmony](aifmony) rewrite.
+Repo: **`aoughwl/aiflib`** (public). Status: **working** — `echo "hello"` and
+14 other programs (strings, string concat/build, `$`, seqs with bounds checks,
+`ref` objects with ARC) compile to native binaries through [aifc](nifc) +
+aiflib and pass an ASan/UBSan-clean, leak-free acceptance suite. This was the
+biggest remaining unlock in the [aifmony](aifmony) rewrite.
 
 ## Why it's needed
 
 By the time [aifhexer](aifhexer) has lowered a program, ARC calls and runtime
 operations are *injected* into the `.c.aif` — they reference runtime symbols
-that must exist at link time. Today those come from nimony's `system` compiled
-to `.c.aif`. aiflib provides them as an aowl-owned layer, and is what lets
-`echo "hello"` compile **natively** (today `echo`/strings/seqs run under the
-interpreter [nifi](../nifi)).
+that must exist at link time. Nimony gets them from its `system` compiled to
+`.c.aif`; aiflib provides them as an aowl-owned C layer, and is what lets
+`echo "hello"` compile **natively** instead of running under the interpreter
+[nifi](../nifi).
 
-## The concrete surface
+## How linking works
 
-A minimal `echo "hello"` lowers to `.c.aif` referencing a `LongString` payload
-(`fullLen`/`rc`/`capImpl`/`data`), a small-string-optimised `string` header,
-`write(File, string)`, `nimFlushStdStreams`, and the `cmdCount`/`cmdLine` argv
-bridge. Ref/seq programs additionally need the ARC hooks (`=destroy`, `=copy`,
-`=sink`, `=trace`), an allocator or GC, the `NimSeqV2` layout, and the `$`/`echo`
-numeric formatters.
+Runtime symbols are **content-addressed**: `write.0.syn1lfpjv` is `write` from
+the module hashed `syn1lfpjv`. aiflib is written once with hash-independent names
+(`aiflib_write_string`, …); the linker `aiflib-cc` reads the *actual* symbols a
+given `.c.nif` uses (undefined externs are exactly the referenced atoms carrying
+a non-empty module hash), resolves each overload from the IR's types, and
+injects a per-program shim that aliases the hashed names onto aiflib before
+`gcc`-linking `runtime/aiflib.c`:
 
-## Plan
+```
+.c.nif ──aifc printer──▶ C ──inject shim──▶ gcc + aiflib.c ──▶ native binary
+```
 
-1. **C runtime core** (`runtime/aiflib.h` + `.c`) — string/seq structs, ARC
-   helpers, allocator, IO shims: hand-written C, the seed & oracle, unblocking
-   native `echo`/string programs through [aifc](nifc).
+Any runtime symbol aiflib doesn't cover is reported as an explicit coverage
+gap — the runtime is never silently stubbed.
+
+## What shipped
+
+- **C runtime** (`runtime/aiflib.{h,c}`): SSO strings (short/medium/long/static
+  tiers per `stringimpl.nim`), `seq`, single-threaded ARC (`rc = refcount-1`),
+  libc-backed allocator (`alloc`/`allocFixed`/`allocatedSize`), raw-fd IO
+  (`write` string/char/int/uint/bool/float, `nimFlushStdStreams`), `$`
+  formatters, and panics (`panic`/`nimIcheckB`/`oomHandler`). `LongString.data`
+  is a **pointer** — one allocation per string, and exactly what aifc emits for
+  a literal const (a flexible-array compound literal would reserve no storage).
+- **`aiflib-cc`** (`bin/`): the `.c.nif → native` linker with IR-driven overload
+  resolution and shim generation.
+- **Acceptance suite** (`test/`): 15 programs asserting native output; runs from
+  committed `.c.nif` (node + gcc) or `--regen` from `.nim` (nimony). 15/15.
+
+Building it also completed three [aifc](nifc) printer points: forward
+declarations for object/union structs, prototypes for inline procs, and the
+`(ovf)` overflow-flag read.
+
+## Next
+
+1. String indexing (`s[i]`), float `$`, exceptions beyond `panic`.
 2. **`system` module** in aowl source, compiled through the stack, replacing the
-   reused nimony `system`.
+   hand-written C (which is its seed & oracle).
 3. **stdlib** (`std/*`) on top as needed.
