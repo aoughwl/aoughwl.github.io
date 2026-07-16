@@ -91,17 +91,19 @@ faithful [nifi](nifi) engines — so **correctness is never worse than a normal
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
-Supported today: procs and recursion (incl. mutual); `int` **and** `float`
-arithmetic (float `/` is kept distinct from integer `div`) and comparisons;
-logical `and`/`or`/`not` **and** bitwise `and`/`or`/`xor`/`not`/`shl`/`shr`;
-`if`/`elif`/`else` **and if-expressions**; `case` (statement **and** expression,
-including ranges); `while` with `break`/`continue`; `for` over integer ranges
-**and** over collections; `inc`/`dec`; `seq`/array literals (`@[…]`), `len`,
-indexing (get/set), `add`/`pop`; **objects** (construct / field read+write) and
-**tuples**; `string` concat, `$`, `len`, indexing, `ord`/`chr`; `abs`/`min`/`max`;
-`echo` (float-aware); `bool` — the FizzBuzz / primes / Collatz / records-in-a-seq
-class of program runs entirely on it. Growing next: `Table`/`HashSet`, object
-variants, exceptions, closures, and monomorphized generics.
+Coverage is broad — nifjs runs essentially all of the language nimony can
+currently express: procs and recursion (mutual **and nested / closures**);
+**generic** instances (monomorphised); `int` **and** `float` arithmetic (float
+`/` kept distinct from `div`) and comparisons; logical **and** bitwise
+`and`/`or`/`xor`/`not`/`shl`/`shr`; `if`/`elif`/`else` **and if-expressions**;
+`case` (statement **and** expression, ranges, string selectors); `while` with
+`break`/`continue`; `for` over ranges, collections, `countdown`, and `for i, x in`
+pairs; `inc`/`dec`; `const`, **enums** (→ ordinals), `when`, `discard`;
+`seq`/array literals, `len`, indexing (get/set), `add`/`pop`; **objects**
+(construct / field read+write, incl. through a seq), object **variants**, and
+**tuples** (construct / access / unpack); `string` concat, `add`, `$`, `len`,
+indexing, `ord`/`chr`; `echo` (float-aware); `bool`. (Beyond nifjs's reach —
+`Table`/`HashSet`, `try`/`except` — don't yet compile in nimony either.)
 
 Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
 **shim registry**.
