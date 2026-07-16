@@ -19,8 +19,9 @@ Your contribution funds aoughwl's continued development. Here is your access.
 
 - **Join the Discord** using the link above — access to development builds, the
   roadmap, and decisions.
-- **Your name on the board.** The [supporters list](support) shows only those who
-  opt in. Let us know in the Discord whether to list your name or keep it anonymous.
+- **Your name on the board.** The name on the [supporters list](support) is taken
+  from your Stripe checkout automatically — if you left it off or used an alias,
+  that is what appears (or you are simply counted anonymously).
 - **Managing your contribution.** Stripe has emailed you a receipt; you can update
   or cancel at any time from there.
 

@@ -72,8 +72,10 @@ We publish what the program brings in each month, and who is behind it.
 
 ## Privacy
 
-When you join, you choose whether your name appears here. Public or anonymous is
-entirely your decision, and only the most recent supporters are ever listed.
+The name shown on the board is taken automatically from what you enter at Stripe
+checkout. If you'd rather stay anonymous, simply don't enter your name there —
+leave it off or use an alias, and that is what we'll use. Only the most recent
+supporters are listed.
 
 ## Terms
 
