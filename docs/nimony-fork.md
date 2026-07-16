@@ -1,7 +1,7 @@
 ---
-title: Compiler fixes
+title: Safety & diagnostics fixes
 grand_parent: Engineering Notes
-parent: Compiler work
+parent: Changes
 nav_order: 1
 ---
 
@@ -52,7 +52,7 @@ so `otherUsage = pc` afterwards recorded the position *after* the matched subtre
 Diagnostic-position only — move decisions are unchanged; `tests/nimony/lastuse`
 (the mover's own suite) stays green.
 
-**Status of the remaining hexer markers.** We audited and *attempted* all nine of
+**Status of the remaining hexer markers (all read, some coded + test-gated).** We audited and *attempted* all nine of
 Araq's in-code recommendations (reading each implementation). Three sites are
 implemented above (the var/out capture check + both mover Fixmes). The remaining
 five are invasive changes to correctness-critical codegen where the current
@@ -66,7 +66,19 @@ faster than the C compile it feeds). These are Araq's deliberate deferred
 optimizations; landing them would require ARC-hook expertise *and* a reliable
 regression gate — which the shared test harness cannot currently provide (a
 concurrent `nimcache_static/static.o` clobber that `hastur.nim` itself documents,
-plus pre-existing `install.nim` breakage on `combined-prs`).
+plus pre-existing `install.nim` breakage on `combined-prs`). Sharper findings after building an isolated toolchain (the fork's own
+`nimcache_static`, immune to the parallel-session clobber) and *coding* the
+attempts: **`duplifier` `=copy`** — implemented and run through the ARC gate; it
+produced a gcc type-mismatch and a runtime `[Assertion Failure] moved?!`, so the
+naive `=copy` substitution is genuinely wrong (it also perturbs nested hook
+generation) — reverted. **`desugar` set-offset** — *not* a TODO to implement:
+`expreval.bitsetSizeInBytes` documents "*we don't use an offset != 0 anymore for
+set construction*", so offsetting was **deliberately removed**; implementing it
+would reverse that decision. **`lifter`/`lengcgen` case-object** — these are
+sophisticated *working* implementations (variant→union plus a `(variant
+(ranges…))` debug pragma, issue #2068); the "counts each field separately" note
+is a vague refinement on correct code, not a missing feature. So beyond the three
+sites landed above, the markers are not implementable recommendations.
 
 ### Init-check diagnostic names `result`, not the mangled `result.0`
 
