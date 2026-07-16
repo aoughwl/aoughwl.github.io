@@ -15,9 +15,13 @@ stack **without** nimony's `system.c.aif`.
 {: .fs-6 .fw-300 }
 
 Repo: **`aoughwl/aiflib`** (public). Status: **working** — `echo "hello"` and
-14 other programs (strings, string concat/build, `$`, seqs with bounds checks,
-`ref` objects with ARC) compile to native binaries through [aowlc](aowlc) +
-aiflib and pass an ASan/UBSan-clean, leak-free acceptance suite. This was the
+39 other programs compile to native binaries through [aowlc](aowlc) + aiflib and
+pass a **40/40, ASan/UBSan/LSan-clean, leak-free** acceptance suite. Covered:
+strings (concat/build, `$`, char index, `==`/`<`/`<=`/`cmp`, `case`-on-string,
+`for c in s` iteration, `s[a..b]` slicing, `s[i] = c` mutation with copy-on-write,
+`newString`), seqs (growth, nesting, `[]=`, return-by-value, equality, bounds
+checks), value / `ref` / **case (variant)** objects, non-zero-based arrays with
+bounds panics, fixed arrays, `INT64_MIN` and SSO tier boundaries. This was the
 biggest remaining unlock in the [aowlmony](aowlmony) rewrite.
 
 ## Why it's needed
@@ -49,24 +53,34 @@ gap — the runtime is never silently stubbed.
 ## What shipped
 
 - **C runtime** (`runtime/aiflib.{h,c}`): SSO strings (short/medium/long/static
-  tiers per `stringimpl.nim`), `seq`, single-threaded ARC (`rc = refcount-1`),
-  libc-backed allocator (`alloc`/`allocFixed`/`allocatedSize`), raw-fd IO
-  (`write` string/char/int/uint/bool/float, `nimFlushStdStreams`), `$`
-  formatters, and panics (`panic`/`nimIcheckB`/`oomHandler`). `LongString.data`
-  is a **pointer** — one allocation per string, and exactly what aowlc emits for
-  a literal const (a flexible-array compound literal would reserve no storage).
+  tiers per `stringimpl.nim`) with index/slice/mutate (copy-on-write) and
+  `==`/`<`/`<=`/`cmp`; `seq` with `recalcCap` growth; single-threaded ARC
+  (`rc = refcount-1`); libc-backed allocator; raw-fd IO
+  (`write` string/char/int/uint/bool/float, `nimFlushStdStreams`); `$`
+  formatters; and all four bounds checks (`nimIcheckB`/`nimIcheckAB`/
+  `nimUcheckB`/`nimUcheckAB`) plus `panic`/`oomHandler`. `LongString.data` is a
+  **pointer** — one allocation per string, and exactly what aowlc emits for a
+  literal const (a flexible-array compound literal would reserve no storage).
 - **`aiflib-cc`** (`bin/`): the `.c.nif → native` linker with IR-driven overload
-  resolution and shim generation.
-- **Acceptance suite** (`test/`): 15 programs asserting native output; runs from
-  committed `.c.nif` (node + gcc) or `--regen` from `.nim` (nimony). 15/15.
+  resolution and shim generation. For ops whose type is program-local — string
+  `for c in s` (`toOpenArray`) and `s[a..b]` (`[]`(HSlice)) — it emits a real
+  wrapper *after* the type section instead of a `#define`. It compiles with
+  `-Werror=implicit-function-declaration` so a missing runtime prototype (which
+  would silently truncate a 64-bit pointer return) is a hard error.
+- **Acceptance suite** (`test/`): 40 programs asserting native output; runs from
+  committed `.c.nif` (node + gcc) or `--regen` from `.nim` (nimony). 40/40,
+  ASan/UBSan/LSan-clean.
 
-Building it also completed three [aowlc](aowlc) printer points: forward
-declarations for object/union structs, prototypes for inline procs, and the
-`(ovf)` overflow-flag read.
+Building it also completed five [aowlc](aowlc) printer points: forward
+declarations for object/union structs, prototypes for inline procs, the `(ovf)`
+overflow-flag read, **value-dependency ordering of type declarations** (a struct
+with a by-value field of another struct is emitted after it), and **case-object
+variant records** as anonymous C11 unions.
 
 ## Next
 
-1. String indexing (`s[i]`), float `$`, exceptions beyond `panic`.
+1. `object of RootObj` inheritance / method dispatch (the `RootObj`/`Rtti`
+   type-info subsystem + vtables); float `$`; exceptions beyond `panic`.
 2. **`system` module** in aowl source, compiled through the stack, replacing the
    hand-written C (which is its seed & oracle).
 3. **stdlib** (`std/*`) on top as needed.
