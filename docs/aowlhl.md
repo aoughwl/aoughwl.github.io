@@ -12,8 +12,28 @@ nimony's sem'd IR into a small, target-neutral **High-Level IR (HL-IR)** that th
 thin language emitters — [aowlts](aowlts) and [aowlpy](aowlpy) —
 render into TypeScript and Python.
 
-> **Status: early scaffold** · private repo. No lowering code has landed yet.
+> **Status: reader layer landed** · private repo. The shared HL-IR *reading*
+> layer is live and consumed by two backends ([aowli](aowli) interpreter/VM and
+> [aowljs](aowljs) emitter); the richer TS/Py *lowering* is the next stage.
 > Access via Discord **timbuktu_guy**.
+
+## What has landed: the shared HL-IR reader
+
+Before the lowering below, aowlhl factors out the parts of *reading* the sem'd
+NIF that every HL backend duplicates. Three modules are live and shared by the
+`aowli` interpreter/VM and the `aowljs` JavaScript emitter:
+
+| Module | What it shares |
+|---|---|
+| `aowlhl/hlload` | the user-module import graph + `moduleInitOrder` (dependency-first module init) |
+| `aowlhl/hlclassify` | routine-pragma classification — `hasImportc` / `importcName` / `hasClosure` |
+| `aowlhl/hlwalk` | grammar shape decoders — `decodeLocal` / `decodeParam(s)` / `decodeProc` / `decodeIf` / `decodeCase` |
+
+Each `decode*` turns a node into a shape of captured sub-cursors (which stay
+walkable because cursors index an immutable buffer), so no backend hardcodes the
+positional grammar. The backend supplies only the *action*: `aowli` evaluates,
+`aowljs` prints JavaScript — `aowljs`'s output stayed byte-identical through the
+switch. These modules are the concrete foundation the lowering below builds on.
 
 ## Why this repo exists
 
