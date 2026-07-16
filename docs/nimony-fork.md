@@ -5,12 +5,13 @@ parent: Compiler work
 nav_order: 1
 ---
 
-# aoughwl's nimony fork
+# aoughwl compiler fixes
 {: .no_toc }
 
-Changes in [`aoughwl/nimony`](https://github.com/aoughwl/nimony) (branch
-`master`) that diverge from upstream [`nim-lang/nimony`](https://github.com/nim-lang/nimony).
-Each entry records a bug fixed or feature added, and why.
+Compiler fixes that went into [`aoughwl/nimony`](https://github.com/aoughwl/nimony)
+(branch `master`). Each is written against the Nim language and portable to
+[`nim-lang/nimony`](https://github.com/nim-lang/nimony). Each entry records a bug
+fixed or feature added, and why.
 
 - TOC
 {:toc}
@@ -40,15 +41,32 @@ the caller`. The guard's blast radius is exactly the var/out-param-capture path
 (which is unsafe anyway), so `tests/nimony/{closures,casestmt,object}` stay
 green.
 
-**Note on the other hexer `# XXX`/`# TODO` markers.** We audited all nine of
-Araq's in-code recommendations in the hexer passes. This one was the only
-genuine *missing check*; the rest (`desugar` set-element offset, `lifter`/
-`lengcgen` case-object `=copy` "counts each field separately", `duplifier`
-prefer-`=copy`, `mover` diagnostic position / innermost-scope traversal) are
-Araq's deliberate *deferred optimizations* — the current behaviour is correct
-(verified: non-zero-based sets, variant-object copies, and the diagnostics all
-produce right results), and changing them trades correctness risk for a marginal
-or purely internal gain. They are left as-is on purpose.
+### `mover`: point the "other usage" diagnostic at the real use site
+
+*Commit `6fe69882`.*
+
+Two of Araq's `# XXX Fixme: pc advanced to ')'` markers in `src/hexer/mover.nim`.
+`containsRoot(pc, x)` takes `pc` as a `var Cursor` and advances it while scanning,
+so `otherUsage = pc` afterwards recorded the position *after* the matched subtree
+(the closing `)`), not the actual read. Capture `usageAt = pc` before the call.
+Diagnostic-position only — move decisions are unchanged; `tests/nimony/lastuse`
+(the mover's own suite) stays green.
+
+**Status of the remaining hexer markers.** We audited and *attempted* all nine of
+Araq's in-code recommendations (reading each implementation). Three sites are
+implemented above (the var/out capture check + both mover Fixmes). The remaining
+five are invasive changes to correctness-critical codegen where the current
+behaviour is verified correct: `desugar` set-element offset (a *coordinated*
+change — bitset sizing plus every `in`/`incl`/`excl` index site; a partial edit
+breaks sets); `lifter`/`lengcgen` case-object `=copy` (deep ARC-hook / union
+codegen — variant copies already correct); `duplifier` prefer-`=copy` (an
+ARC-semantics change, marginal codegen-cleanliness); `mover` innermost-scope CF
+build (a cached-analysis restructuring, negligible since lowering is already ~40×
+faster than the C compile it feeds). These are Araq's deliberate deferred
+optimizations; landing them would require ARC-hook expertise *and* a reliable
+regression gate — which the shared test harness cannot currently provide (a
+concurrent `nimcache_static/static.o` clobber that `hastur.nim` itself documents,
+plus pre-existing `install.nim` breakage on `combined-prs`).
 
 ### Init-check diagnostic names `result`, not the mangled `result.0`
 
