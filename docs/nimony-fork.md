@@ -1,6 +1,6 @@
 ---
 title: Divergences from upstream
-grand_parent: Nimony
+grand_parent: Engineering Notes
 parent: Fork
 nav_order: 1
 ---
@@ -18,6 +18,37 @@ Each entry records a bug fixed or feature added, and why.
 ---
 
 ## Fixes
+
+### Reject capturing a `var`/`out` parameter in a closure (memory safety)
+
+*Commit `8878ac65`.*
+
+**What.** Implements a memory-safety check Araq left as an in-code `# XXX` in
+`src/hexer/lambdalifting.nim`: *"Check here for memory safety violations: Cannot
+capture a `var T` parameter."*
+
+**Why.** A `var T` / `out T` parameter aliases the **caller's** storage. When a
+closure captures it, the parameter is stored into the closure's environment
+object (`env.<field> = param`); if that environment outlives the call, the field
+dangles — a use-after-return. Nimony's sem rejects the common cases, but the
+lowering pass that actually builds the environment had no backstop.
+
+**Fix.** In `treParams`, at the point a captured parameter is written into the
+env, check the parameter's type: if it is `MutT`/`OutT`, raise
+`cannot capture 'var'/'out' parameter '…' in a closure: its storage belongs to
+the caller`. The guard's blast radius is exactly the var/out-param-capture path
+(which is unsafe anyway), so `tests/nimony/{closures,casestmt,object}` stay
+green.
+
+**Note on the other hexer `# XXX`/`# TODO` markers.** We audited all nine of
+Araq's in-code recommendations in the hexer passes. This one was the only
+genuine *missing check*; the rest (`desugar` set-element offset, `lifter`/
+`lengcgen` case-object `=copy` "counts each field separately", `duplifier`
+prefer-`=copy`, `mover` diagnostic position / innermost-scope traversal) are
+Araq's deliberate *deferred optimizations* — the current behaviour is correct
+(verified: non-zero-based sets, variant-object copies, and the diagnostics all
+produce right results), and changing them trades correctness risk for a marginal
+or purely internal gain. They are left as-is on purpose.
 
 ### Init-check diagnostic names `result`, not the mangled `result.0`
 

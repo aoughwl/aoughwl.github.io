@@ -62,6 +62,17 @@
     background: rgba(125, 150, 255, 0.14);
   }
   .aoughwl-notice strong { font-weight: 600; }
+  /* red variant — the always-on AI-generated disclosure, stacked above the blue notice */
+  .aoughwl-notice--ai {
+    border-color: rgba(255, 96, 96, 0.6);
+    border-left-color: #ff6060;
+    background: rgba(255, 96, 96, 0.20);
+    box-shadow: 0 1px 10px rgba(255, 96, 96, 0.12);
+    padding-right: 1.1rem;
+  }
+  html[data-theme="light"] .aoughwl-notice--ai {
+    background: rgba(255, 96, 96, 0.12);
+  }
   .aoughwl-notice .aoughwl-notice-x {
     position: absolute;
     top: 0.5rem;
@@ -100,6 +111,28 @@
     });
 
     /* Prepend to the just-the-docs content column; fall back to <body>. */
+    var host = document.querySelector('.main-content-wrap') ||
+               document.querySelector('#main-content') ||
+               document.querySelector('.main-content') ||
+               document.body;
+    host.insertBefore(el, host.firstChild);
+  });
+</script>
+
+<!-- always-on AI-generated disclosure (red), rendered ABOVE the blue stale notice.
+     Runs after the blue script so it inserts last and lands on top. Not
+     dismissable — the disclosure should always be visible. -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var el = document.createElement('div');
+    el.className = 'aoughwl-notice aoughwl-notice--ai';
+    el.setAttribute('role', 'note');
+    el.innerHTML =
+      '<strong>Everything on this site is AI-generated.</strong> ' +
+      'It is also continuously <strong>tested against the real code</strong> — ' +
+      'so you can both trust it and check it: read the prose here, and the tests ' +
+      'it’s verified against in the repos. Where they ever disagree, the code wins.';
+
     var host = document.querySelector('.main-content-wrap') ||
                document.querySelector('#main-content') ||
                document.querySelector('.main-content') ||

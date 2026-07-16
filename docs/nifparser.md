@@ -1,7 +1,7 @@
 ---
 title: nifparser
-grand_parent: Nimony
-parent: NIF Toolchain Alternatives
+grand_parent: Documentation
+parent: Toolchain
 nav_order: 1
 has_children: true
 ---

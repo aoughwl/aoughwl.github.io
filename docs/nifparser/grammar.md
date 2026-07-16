@@ -1,7 +1,7 @@
 ---
 title: Grammar coverage
 parent: nifparser
-grand_parent: NIF Toolchain Alternatives
+grand_parent: Toolchain
 nav_order: 2
 ---
 

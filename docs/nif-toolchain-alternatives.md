@@ -1,6 +1,6 @@
 ---
-title: NIF Toolchain Alternatives
-parent: Nimony
+title: Toolchain
+parent: Documentation
 nav_order: 5
 has_children: true
 ---

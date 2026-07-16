@@ -43,8 +43,6 @@ benefits stock nimony doesn't give you:
 - runs **client-side in the browser** (parse → semcheck → run), through the
   self-hosted toolchain
 - **near-instant incremental re-checks** for live editor tooling
-- a **content-addressed substrate** underneath, where code and ideas share one
-  store
 - a **fuller, opinionated stdlib** and a complete networking stack
 - **alternate backends** — native C, native JavaScript, an interpreter/VM
 
@@ -53,9 +51,9 @@ Full details on the format and the drop-in seams: **[AIF ≡ NIF →](docs/aif)*
 ## The stack
 
 ```
- .nim / .aowl ──► aifparser ──► aifsem ──► aifhexer (+aifopt) ──┬─ aifc  → C / native
-    source          parse       semcheck       lower           ├─ aifjs → JavaScript
-                                                                └─ aifi  → interpret / VM
+ .nim / .aowl ──► aifparser ──► aifsem ──► aifhexer ──┬─ aifc  → C / native
+    source          parse       semcheck    lower     ├─ aifjs → JavaScript
+                                                       └─ aifi  → interpret / VM
 ```
 
 Every seam is **AIF (≡ NIF)**, so any stage can be swapped in beside nimony's own
@@ -66,7 +64,7 @@ power the browser **[playground](playground)**.
 |---|---|---|
 | parse | **[aifparser](docs/nifparser)** | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
 | semcheck | **aifsem** *(private)* | clean-room `nimsem`: `.p.aif` → typed `.s.aif`. |
-| lower | **[aifhexer](docs/aifhexer)** + aifopt *(private)* | ARC / closures / exceptions / monomorphisation → `.c.aif`, plus the optimizer stock hexer lacks. |
+| lower | **[aifhexer](docs/aifhexer)** *(private)* | ARC / closures / exceptions / monomorphisation → `.c.aif`. |
 | native | **[aifc](docs/nifc)** | post-hexer `.c.aif` → C, linked with `gcc` (GC-free — ARC baked in). |
 | web | **[aifjs](docs/nifjs)** + [aifjs-js](docs/nifjs) | typed `.s.aif` → native JavaScript; near-native speed, readable output. |
 | run | **[aifi](nifi)** | two-engine interpreter (tree-walker + bytecode VM), differentially tested against native. |
@@ -87,8 +85,8 @@ power the browser **[playground](playground)**.
 ## The private side
 
 Some of the stack is **intentionally kept private for now** — notably the
-semantic checker (**aifsem**) and the lowering/optimizer (**aifhexer + aifopt**),
-along with the JavaScript / TypeScript / WASM / Python backend repos. Their
+semantic checker (**aifsem**) and the lowering (**aifhexer**), along with the
+JavaScript / TypeScript / WASM / Python backend repos. Their
 **docs live here**, and access is granted on request — just ask and you'll be
 added. The **[playground](playground)** will shortly switch over to run entirely
 on the new sem + hexing.

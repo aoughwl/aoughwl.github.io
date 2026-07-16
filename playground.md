@@ -1,6 +1,6 @@
 ---
 title: Sandbox Playground
-parent: Nimony
+parent: Documentation
 nav_order: 6
 ---
 

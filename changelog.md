@@ -1,6 +1,6 @@
 ---
 title: Changelog
-grand_parent: Nimony
+grand_parent: Engineering Notes
 parent: Fork
 nav_order: 2
 has_children: true

@@ -1,6 +1,6 @@
 ---
 title: nimony-lsp
-grand_parent: Nimony
+grand_parent: Documentation
 parent: Tools
 nav_order: 3
 ---

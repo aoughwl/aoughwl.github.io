@@ -1,7 +1,7 @@
 ---
 title: Architecture
 parent: nifparser
-grand_parent: NIF Toolchain Alternatives
+grand_parent: Toolchain
 nav_order: 1
 ---
 

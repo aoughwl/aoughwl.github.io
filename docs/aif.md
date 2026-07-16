@@ -1,6 +1,6 @@
 ---
 title: AIF ≡ NIF (interop)
-parent: Nimony
+parent: Documentation
 nav_order: 0
 permalink: /docs/aif
 ---
@@ -41,7 +41,7 @@ counterpart:
 |---|---|---|
 | `nifler` (parse) | **aifparser** | `source → .p.aif` |
 | `nimsem` (semcheck) | **aifsem** | `.p.aif → .s.aif` |
-| `hexer` (lower) | **aifhexer** (+ aifopt) | `.s.aif → .c.aif` |
+| `hexer` (lower) | **aifhexer** | `.s.aif → .c.aif` |
 
 You can run an all-aoughwl pipeline, an all-nimony pipeline, or **any mix** —
 `nifler → aifsem → hexer`, `aifparser → nimsem → aifhexer`, and so on. The seams
@@ -77,10 +77,6 @@ self-hosts over a format it owns, it also gives you what stock nimony can't:
 - **Native and web backends.** [`aifc`](nifc) emits C (GC-free — ARC is baked
   into the lowered `.c.aif`); [`aifjs`](nifjs) emits readable, near-native
   JavaScript.
-- **A content-addressed substrate.** NIF atoms are hash-consed
-  ([`aifcas`](https://github.com/aoughwl/aifcas)), so code and ideas dedup into
-  one store where identity *is* content — the ground the wider aoughwl system
-  stands on.
 - **Fast incremental re-checks** for live editor tooling, and a fuller,
   opinionated stdlib and networking stack.
 
@@ -88,7 +84,7 @@ self-hosts over a format it owns, it also gives you what stock nimony can't:
 
 The parse front-end ([aifparser](nifparser)), the interpreter ([aifi](../nifi)),
 and the native/JS backends ([aifc](nifc), [aifjs](nifjs)) are public. The
-**semantic checker (aifsem)** and the **lowering/optimizer (aifhexer + aifopt)**
-are **intentionally kept private for now** — their docs live on this site, and
+**semantic checker (aifsem)** and the **lowering (aifhexer)** are
+**intentionally kept private for now** — their docs live on this site, and
 access is granted on request (ask on Discord, **timbuktu_guy**, and you'll be
 added). The [playground](../playground) moves onto the new sem + hexing shortly.
