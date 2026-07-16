@@ -67,7 +67,7 @@ power the browser **[playground](playground)**.
 | web | **[aowljs](docs/aowljs)** + [aowljs-js](docs/aowljs) | typed `.s.aif` → native JavaScript; near-native speed, readable output. |
 | run | **[aowli](aowli)** | two-engine interpreter (tree-walker + bytecode VM), differentially tested against native. |
 | driver | **[aowlmony](docs/aowlmony)** | one command: `.nim` → { native \| interpret \| web } over the whole self-owned stack. |
-| runtime | **[aiflib](docs/aiflib)** | the aowl system module + runtime (strings / seqs / ARC / GC) the backends link against. |
+| runtime | **[aowllib](docs/aowllib)** | the aowl system module + runtime (strings / seqs / ARC / GC) the backends link against. |
 
 ## Around the stack
 

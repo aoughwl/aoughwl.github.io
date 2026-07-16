@@ -88,7 +88,7 @@ native path lowers through [aowlhexer](aowlhexer).
 
 Native vs interpret today: [aowlc](aowlc) covers the arithmetic/control-flow core
 but does not yet link the system runtime, so `echo`/strings/seqs run under
-`interp` while pure computation also runs natively. [aiflib](aiflib) — the
+`interp` while pure computation also runs natively. [aowllib](aowllib) — the
 self-owned runtime — is what will close that gap.
 
 ## Usage
@@ -107,12 +107,12 @@ aowlmony nif    prog.nim  -v                    # paths + which parser/hexer ran
 
 Per the directive to standardise on **AIF (aowl intermediate format)**, the
 self-owned components carry the `aif-` prefix: [aowlparse](aowlparse),
-[aowlsem](nifsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aiflib](aiflib),
+[aowlsem](nifsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aowllib](aowllib),
 [aowljs](aowljs), and this driver, aowlmony. [aowli](../aowli) is the interpreter over
 `.s.aif`. What remains to finish the rewrite:
 
 - **[aowlsem](nifsem)** — finish it → drop the reused nimony `nimsem`.
-- **[aiflib](aiflib)** — the self-owned system module + runtime, so native
+- **[aowllib](aowllib)** — the self-owned system module + runtime, so native
   `echo`/strings/seqs link without nimony's `system.c.aif`. The biggest unlock.
 - **[aowlhexer](aowlhexer)** — progressively rewrite the vendored passes onto an
   aowl-owned core, dropping the `$NIMONY_SRC` dependency.

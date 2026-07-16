@@ -19,7 +19,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlc](docs/aowlc) — `.c.aif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |
 | [aowlhexer](docs/aowlhexer) — the lowering pass (ARC/closures/exceptions/mono) | `aoughwl/aowlhexer` | private |
 | [aowlmony](docs/aowlmony) — the driver: `.nim` → {native \| interpret \| web} over the whole stack | `aoughwl/aowlmony` | public |
-| [aiflib](docs/aiflib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aiflib` | public · scaffolding |
+| [aowllib](docs/aowllib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aowllib` | public · scaffolding |
 | [nimony-playground](playground) — browser playground, `aowli` compiled to JS | `aoughwl/nimony-playground` | public |
 | [aowl-web](docs/aowl-web) — JS + WASM backends & async runtime | `aoughwl/aowl-web` | private repo · public docs |
 | [aowl-code](docs/aowl-code) — Claude Code plugin + MCP server | `aoughwl/aowl-code` | public |

@@ -25,7 +25,7 @@ Python — is the [Backends](../backends) section.
 | aowlsem *(private)* | `nimsem` | Semantic-checks `.p.aif` → typed `.s.aif`: resolves symbols, picks overloads, instantiates generics. |
 | [aowlhexer](aowlhexer) | `hexer` | Lowers `.s.aif` → `.c.aif`: injects ARC, lifts closures, inlines iterators, lowers exceptions, monomorphises. Seeded from Araq's hexer. |
 | [aowlmony](aowlmony) | the `nimony` driver | Ties it together: `.nim` → `aowlparse` → sem → `aowlhexer` → a backend. One command, native or interpreted. |
-| [aiflib](aiflib) | the system module + runtime | Strings, seqs, ARC, GC — the runtime the native/JS backends link against. |
+| [aowllib](aowllib) | the system module + runtime | Strings, seqs, ARC, GC — the runtime the native/JS backends link against. |
 
 ## Why it drops in
 
