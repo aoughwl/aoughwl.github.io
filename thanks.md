@@ -25,8 +25,7 @@ Your monthly contribution goes straight into building aoughwl. Here's your acces
 - **Manage anytime.** Stripe emailed you a receipt; you can update or cancel your
   monthly contribution from there whenever you like.
 
-Thank you, genuinely. This is support offered in good faith — not a purchase of the
-product or a guarantee of specific features — and we'll do our absolute best to
-make it worth it.
+Thank you, genuinely — support offered in good faith, **not a product purchase or
+general guarantee.** We'll do our best to make it worth it.
 
 [← Back home](/){: .btn }

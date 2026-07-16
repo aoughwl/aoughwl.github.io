@@ -81,11 +81,6 @@ supporters are ever listed.
 
 ## The fine print
 
-You're supporting the work and getting access to the private Discord. That's the
-deal, plainly. This is **not** a purchase of the product and **not** a guarantee
-of any specific feature, timeline, or outcome. We'll do our absolute best to give
-supporters a genuinely good bargain and to honor the spirit of this — steering the
-AI the way supporters want and getting you in early — but it's support, offered in
-good faith, not a contract. Please don't take it as a binding promise.
+Support offered in good faith — **not a product purchase or general guarantee.**
 
 Questions first? Reach out on [Discord]({{ sup.discord_invite }}).
