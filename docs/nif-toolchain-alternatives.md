@@ -23,6 +23,8 @@ can execute entirely client-side, where the classic-Nim tools cannot.
 |:--|:--|:--|
 | [nifparser](nifparser) | `nifler` (classic-Nim parser) | Parses Nim source into the parse-dialect NIF (`.p.nif`), byte-for-byte identical to native `nifler`, but self-hosted so it can compile to JavaScript. |
 | [nifi](../nifi) | native compile-and-run | Interprets a program's *typed* NIF (`.s.nif`) directly — a tree-walking evaluator and a bytecode VM over one value model — checked against nimony's own compile-and-run. |
+| [nifjs](nifjs) | leng JS backend | Transpiles the *typed* NIF (`.s.nif`) to **native JavaScript** — fast and readable, trading low-level fidelity for JIT speed. |
+| [nifc](nifc) | leng C backend (`nifc`/lengc) | Prints the *lowered* NIF (`.c.nif`) to **C** and links it with `gcc` — the faithful native path; ARC/closures/exceptions already lowered by hexer, so GC is free. |
 
 ## Why "alternatives"
 
