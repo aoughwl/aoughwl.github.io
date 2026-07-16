@@ -1,7 +1,7 @@
 ---
 title: net stack
 grand_parent: Documentation
-parent: Libraries
+parent: Builtin Libraries
 nav_order: 1
 has_children: true
 ---

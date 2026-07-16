@@ -39,12 +39,12 @@ counterpart:
 
 | nimony stage | aoughwl stage | seam |
 |---|---|---|
-| `nifler` (parse) | **aifparser** | `source → .p.aif` |
-| `nimsem` (semcheck) | **aifsem** | `.p.aif → .s.aif` |
-| `hexer` (lower) | **aifhexer** | `.s.aif → .c.aif` |
+| `nifler` (parse) | **aowlparse** | `source → .p.aif` |
+| `nimsem` (semcheck) | **aowlsem** | `.p.aif → .s.aif` |
+| `hexer` (lower) | **aowlhexer** | `.s.aif → .c.aif` |
 
 You can run an all-aoughwl pipeline, an all-nimony pipeline, or **any mix** —
-`nifler → aifsem → hexer`, `aifparser → nimsem → aifhexer`, and so on. The seams
+`nifler → aowlsem → hexer`, `aowlparse → nimsem → aowlhexer`, and so on. The seams
 don't care which side produced the artifact.
 
 ## What "behaves identically" means
@@ -53,12 +53,12 @@ The contract is **observable-behaviour equivalence**: a program compiled and run
 through aoughwl produces the same result as the same program through stock
 nimony. We hold ourselves to it two ways:
 
-- **Byte-exactness where it's testable.** `aifparser`'s output is byte-for-byte
+- **Byte-exactness where it's testable.** `aowlparse`'s output is byte-for-byte
   `nifler`'s across the whole nimony standard library and corpus (bar one header
-  line it stamps with its own `(.vendor "aifparser")` identity, which the
+  line it stamps with its own `(.vendor "aowlparse")` identity, which the
   differential harness neutralizes). The parse artifact you feed the rest of the
   pipeline is *the same file* nimony would have produced.
-- **Differential execution.** `aifi` (the interpreter/VM) and the native/JS
+- **Differential execution.** `aowli` (the interpreter/VM) and the native/JS
   backends are checked against nimony's own compile-and-run over its test corpus.
   Same inputs, same outputs, or it's a bug.
 
@@ -73,17 +73,17 @@ self-hosts over a format it owns, it also gives you what stock nimony can't:
 - **Runs in the browser.** Parser, semcheck, and execution all compile to
   JavaScript, so the full pipeline runs client-side — see the
   [playground](../playground).
-- **Native and web backends.** [`aifc`](nifc) emits C (GC-free — ARC is baked
-  into the lowered `.c.aif`); [`aifjs`](nifjs) emits readable, near-native
+- **Native and web backends.** [`aowlc`](aowlc) emits C (GC-free — ARC is baked
+  into the lowered `.c.aif`); [`aowljs`](aowljs) emits readable, near-native
   JavaScript.
 - **Fast incremental re-checks** for live editor tooling, and a fuller,
   opinionated stdlib and networking stack.
 
 ## Status & privacy
 
-The parse front-end ([aifparser](nifparser)), the interpreter ([aifi](../nifi)),
-and the native/JS backends ([aifc](nifc), [aifjs](nifjs)) are public. The
-**semantic checker (aifsem)** and the **lowering (aifhexer)** are
+The parse front-end ([aowlparse](aowlparse)), the interpreter ([aowli](../aowli)),
+and the native/JS backends ([aowlc](aowlc), [aowljs](aowljs)) are public. The
+**semantic checker (aowlsem)** and the **lowering (aowlhexer)** are
 **intentionally kept private for now** — their docs live on this site, and
 access is granted on request (ask on Discord, **timbuktu_guy**, and you'll be
 added). The [playground](../playground) moves onto the new sem + hexing shortly.

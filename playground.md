@@ -1,7 +1,6 @@
 ---
-title: Sandbox Playground
-parent: Documentation
-nav_order: 6
+title: Playground
+nav_order: 3
 ---
 
 # Playground
@@ -32,19 +31,19 @@ Editing a program drives the full nimony pipeline, all in the browser:
 
 ```
 your source
-   │  nifparser  (aoughwl/nifparser)      main thread, ~4 ms
+   │  aowlparse  (aoughwl/aowlparse)      main thread, ~4 ms
    ▼
  .p.nif  (untyped NIF)
    │  nimsem     (nimony's checker)        Web Worker, warm-cached
    ▼
  .s.nif  (typed NIF)
    │  run engine (you pick)                Web Worker
-   ▼   ┌─ Native JS  (nifjs → real JS, JIT-compiled)   near-native speed
- output ├─ Bytecode VM  (nifi)                          faithful, fast
-        └─ Tree-walk   (nifi)                           faithful, reference
+   ▼   ┌─ Native JS  (aowljs → real JS, JIT-compiled)   near-native speed
+ output ├─ Bytecode VM  (aowli)                          faithful, fast
+        └─ Tree-walk   (aowli)                           faithful, reference
 ```
 
-- **[nifparser](docs/nifparser)** parses your source to the untyped `.p.nif` on
+- **[aowlparse](docs/aowlparse)** parses your source to the untyped `.p.nif` on
   the main thread — it's the browser-capable replacement for classic Nim's
   native-only `nifler`, and it also feeds the live editor intelligence.
 - **nimsem** turns the `.p.nif` into a typed `.s.nif`, resolving every symbol,
@@ -53,13 +52,13 @@ your source
   bundle plus a pre-semchecked `system`/`syncio`/… closure from an in-memory VFS).
 - The typed `.s.nif` is executed by an engine you pick from the toolbar
   (persisted across visits):
-  - **[Native JS](docs/nifjs)** — `nifjs` transpiles the typed
+  - **[Native JS](docs/aowljs)** — `aowljs` transpiles the typed
     NIF to **real JavaScript** (mapping nimony values onto native JS values) and
     lets the browser JIT it: **near-native speed**, and no fixed heap. A program
-    using something nifjs doesn't cover yet falls back automatically.
-  - **Bytecode VM** — [nifi](nifi) compiles the NIF to bytecode and runs a tight
+    using something aowljs doesn't cover yet falls back automatically.
+  - **Bytecode VM** — [aowli](aowli) compiles the NIF to bytecode and runs a tight
     dispatch loop. Faithful (exact nimony semantics), fast.
-  - **Tree-walk** — [nifi](nifi)'s reference interpreter; walks the typed NIF
+  - **Tree-walk** — [aowli](aowli)'s reference interpreter; walks the typed NIF
     node by node. Slowest, most faithful.
 
 The VM and tree-walk are the **faithful** engines (default: VM); Native JS is the
@@ -73,14 +72,14 @@ The same tight arithmetic loop, per iteration:
 | engine | per iteration | vs. a hand-written JS loop |
 |---|---:|---:|
 | native JS (hand-written) | ~2.9 ns | 1× |
-| **Native JS (nifjs)** | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
-| Bytecode VM (nifi) | ~39 µs | ~15,000× slower |
-| Tree-walk (nifi) | ~61 µs | ~24,000× slower |
+| **Native JS (aowljs)** | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
+| Bytecode VM (aowli) | ~39 µs | ~15,000× slower |
+| Tree-walk (aowli) | ~61 µs | ~24,000× slower |
 
-nifjs is **~18,000–28,000× faster** than the interpreter, runs **10 million
+aowljs is **~18,000–28,000× faster** than the interpreter, runs **10 million
 iterations in ~21 ms** with no out-of-memory (it has no fixed bump heap), and its
 output is byte-identical to the interpreter on supported programs. See
-**[Native JS backend](docs/nifjs)** for how and why.
+**[Native JS backend](docs/aowljs)** for how and why.
 
 The heavy stages run **off the main thread in a Web Worker**. That is what makes
 **Stop** work: a runaway loop can't be interrupted cooperatively, but the worker
@@ -92,9 +91,9 @@ during a live type-check.
 The playground is a Monaco editor with a nimony grammar and a real **language
 server running in a Web Worker**:
 
-- **Live diagnostics** — syntax errors (nifparser) as you type, type errors
+- **Live diagnostics** — syntax errors (aowlparse) as you type, type errors
   (nimsem) on a short debounce, shown as squiggles and in a problems list.
-  nifparser emits **structured, recoverable** diagnostics: unlike classic
+  aowlparse emits **structured, recoverable** diagnostics: unlike classic
   `nifler` (which aborts at the first error), it records *every* problem with a
   precise span, severity, and stable code and keeps parsing — so you see all the
   squiggles at once.
@@ -106,10 +105,10 @@ server running in a Web Worker**:
 The source pane tabs between your **Source** and the compilation tower it becomes,
 so you can watch nimony's intermediate forms directly:
 
-- **Parsed** — the untyped `.p.nif` from nifparser.
+- **Parsed** — the untyped `.p.nif` from aowlparse.
 - **Typed** — the `.s.nif` from nimsem, with types and symbols resolved.
 - **Run** — the **run rung**: the program's *execution* serialized as NIF (from
-  nifi's run emitter), the bottom of nifi's content-addressed compilation tower.
+  aowli's run emitter), the bottom of aowli's content-addressed compilation tower.
 
 Each is rendered with structure-aware highlighting and stays selectable — a copy
 is verbatim NIF.

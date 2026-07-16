@@ -1,12 +1,12 @@
 ---
-title: Libraries
+title: Builtin Libraries
 parent: Documentation
 nav_order: 2
 has_children: true
 permalink: /libraries
 ---
 
-# Nimony Libraries
+# Builtin Libraries
 
 Standard-library-grade packages written in nimony — the networking stack and the
 declarative web/markup layer. Each page below is the canonical docs for its repo;

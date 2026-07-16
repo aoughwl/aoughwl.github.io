@@ -1,7 +1,7 @@
 ---
 title: nimony-web
 grand_parent: Documentation
-parent: Backends
+parent: Web & Language Targets
 nav_order: 1
 has_children: true
 ---
@@ -35,7 +35,7 @@ as heap-plus-stack, and reads/writes it through typed-array views (`HEAP32[p >> 
 This faithfulness — simulated linear memory — is what makes the output *exact*
 (int64, pointers, ARC, C FFI all behave), but also what makes it slow and
 mangled. For a **fast, readable** path that maps nimony values onto native JS
-values instead, see the complementary **[nifjs backend](nifjs)** — it trades that
+values instead, see the complementary **[aowljs backend](aowljs)** — it trades that
 low-level fidelity for near-native speed and legible output, and powers the
 playground's Native JS engine.
 {: .note }

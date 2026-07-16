@@ -1,7 +1,7 @@
 ---
 title: Configuration
-parent: nifparser
-grand_parent: Toolchain
+parent: aowlparse
+grand_parent: Compiler Pipeline
 nav_order: 4
 ---
 
@@ -9,8 +9,8 @@ nav_order: 4
 {: .no_toc }
 
 Every option below is **off / neutral by default**, so a plain
-`nifparser p in.nim out.p.nif` produces output byte-identical to native `nifler`
-(bar the one-line `(.vendor "nifparser")` header, which nifparser always stamps
+`aowlparse p in.nim out.p.nif` produces output byte-identical to native `nifler`
+(bar the one-line `(.vendor "aowlparse")` header, which aowlparse always stamps
 as its own).
 The flags exist for editors, linters, pipelines, and non-Nim-standard sources;
 apart from `--curly` (which only *adds* accepted syntax) and the opt-in
@@ -18,7 +18,7 @@ apart from `--curly` (which only *adds* accepted syntax) and the opt-in
 input acceptance, add diagnostics, or move I/O.
 
 ```
-usage: nifparser [OPTIONS] p <in.nim> [out.p.nif]
+usage: aowlparse [OPTIONS] p <in.nim> [out.p.nif]
 ```
 
 <details open markdown="block">
@@ -61,13 +61,13 @@ body — `proc empty(): set[int] = {}` — keeps its `=` and is never read as a
 block. A one-line `= body` is left untouched.
 
 Either way the curly form emits the **same NIF** as the `:`/`=` form. This is a
-nifparser extension; native nifler has no equivalent, so output stays
+aowlparse extension; native nifler has no equivalent, so output stays
 nifler-compatible only while it is off.
 
 ## Indentation & whitespace
 
 Nim's layout is column-based, and classic Nim is **spaces-only** — its lexer
-hard-errors on a tab in indentation. nifparser keeps that as the default but can
+hard-errors on a tab in indentation. aowlparse keeps that as the default but can
 relax it for tab-using sources and validate indentation for tooling. None of these
 change the emitted NIF: the off-side rule is a *relative* column comparison, so a
 tab-indented file parses to the same tree as its space-indented equivalent.
@@ -113,7 +113,7 @@ For lint-only output with no NIF, use the [`check`](#check--lint-mode) command.
 ### `--max-depth:N`
 
 Default **0 = unlimited**. A recursion-nesting guard on the parser. When `N > 0`,
-if parse nesting through the recursive entry points exceeds `N`, nifparser prints
+if parse nesting through the recursive entry points exceeds `N`, aowlparse prints
 a message naming the line and exits non-zero — protecting the "never crashes /
 hangs" property against pathologically nested input. The counter tracks *true*
 nesting (not input width), so set it generously: ordinary code nests only a
@@ -123,7 +123,7 @@ tripping on real source.
 ## Diagnostics
 
 Unlike native `nifler` — which inherits the classic compiler's abort-on-first-error
-behaviour — nifparser is **recoverable**: it records every problem with a source
+behaviour — aowlparse is **recoverable**: it records every problem with a source
 span, keeps parsing, and still emits best-effort NIF. Diagnostics carry a
 `severity` (error/warning/hint), a stable `code` slug, a message, and a
 `line:col`–`endCol` span. Errors detected today: unknown/illegal bytes,
@@ -134,8 +134,8 @@ indentation checks below surface as warnings/hints.
 ### `check` — lint mode
 
 ```
-nifparser check <in.nim>            # diagnostics to stdout, no NIF; exit 1 on any error
-nifparser check --diagnostics:json in.nim
+aowlparse check <in.nim>            # diagnostics to stdout, no NIF; exit 1 on any error
+aowlparse check --diagnostics:json in.nim
 ```
 
 `check` runs the lexer and the structural validator and prints diagnostics **to
@@ -163,7 +163,7 @@ relative or absolute path. `off` records the path exactly as given.
 
 ## I/O
 
-By default nifparser reads a file and writes `<in>.p.nif` (or the given output
+By default aowlparse reads a file and writes `<in>.p.nif` (or the given output
 path). For pipelines and the JS build it can use the standard streams instead:
 
 | flag | effect |
@@ -176,25 +176,25 @@ path). For pipelines and the JS build it can use the standard streams instead:
 
 ```sh
 # default — nifler-compatible, spaces only
-nifparser p mod.nim mod.p.nif
+aowlparse p mod.nim mod.p.nif
 
 # accept a tab-indented file (8-column tabs), same tree as the space version
-nifparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.nif
+aowlparse --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.nif
 
 # lint a file: require a final newline, LF endings, no trailing spaces
-nifparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.nif
+aowlparse --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.nif
 
 # CI gate — fail on any illegal byte
-nifparser --strict p mod.nim mod.p.nif || echo "rejected"
+aowlparse --strict p mod.nim mod.p.nif || echo "rejected"
 
 # a pipeline: stdin -> stdout, with a recorded filename for line-info
-cat mod.nim | nifparser --stdin --stdout --filename:mod.nim p > mod.p.nif
+cat mod.nim | aowlparse --stdin --stdout --filename:mod.nim p > mod.p.nif
 
 # guard against pathological nesting
-nifparser --max-depth:400 p untrusted.nim out.p.nif
+aowlparse --max-depth:400 p untrusted.nim out.p.nif
 
 # brace blocks plus tab indentation, mixed freely
-nifparser --curly --tabs:both p editor_dialect.nim out.p.nif
+aowlparse --curly --tabs:both p editor_dialect.nim out.p.nif
 ```
 
 ## Design note: the default is always native `nifler`
@@ -202,6 +202,6 @@ nifparser --curly --tabs:both p editor_dialect.nim out.p.nif
 Every option defaults to the historical behaviour, and all of them — except
 `--curly` (additive syntax) and `--doc-comments:off` (explicit opt-in) — affect
 only **input acceptance, diagnostics, or I/O**, never the emitted node tree. That
-keeps nifparser's core contract intact: its default output is, and remains,
+keeps aowlparse's core contract intact: its default output is, and remains,
 byte-for-byte native `nifler` — apart from the `(.vendor)` header identity —
 verified by the [differential harness](testing) on every commit.

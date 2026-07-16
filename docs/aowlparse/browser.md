@@ -1,14 +1,14 @@
 ---
 title: Browser & JavaScript
-parent: nifparser
-grand_parent: Toolchain
+parent: aowlparse
+grand_parent: Compiler Pipeline
 nav_order: 7
 ---
 
 # Browser & JavaScript
 {: .no_toc }
 
-nifparser compiles to JavaScript and runs client-side, which is what lets the
+aowlparse compiles to JavaScript and runs client-side, which is what lets the
 [playground](../../playground) parse code in the browser tab with no backend. The
 machine contract: the globals the JS bundle reads and writes, how the bundle is
 built, and the editor diagnostics layer.
@@ -52,7 +52,7 @@ to run once, and the parse lives in that init — so callers re-evaluate the bun
 
 ## How the bundle is built
 
-`nifparser.js` is produced by `webtest_build.sh` in three stages:
+`aowlparse.js` is produced by `webtest_build.sh` in three stages:
 
 1. **Frontend** — `nimony c --bits:32 --define:nimNativeAlloc` compiles
    `src/webmain.nim` (plus the parser sources and the jsffi shim) into `.c.nif`
@@ -63,7 +63,7 @@ to run once, and the parse lives in that init — so callers re-evaluate the bun
 3. **Bundle** — an `awk` pass floats every module's two-phase const sections
    (`__NIMJS_CONST_ALLOC` / `_FILL`) ahead of the code (curing cross-module TDZ),
    prepends the shared `runtime.js` (the linear-memory allocator), and
-   concatenates everything into `nifparser.js`.
+   concatenates everything into `aowlparse.js`.
 
 ## Editor diagnostics (`webdiag.nim`)
 

@@ -1,25 +1,25 @@
 ---
-title: aifhexer
+title: aowlhexer
 grand_parent: Documentation
-parent: Toolchain
+parent: Compiler Pipeline
 nav_order: 6
 ---
 
-# aifhexer — the aowl lowering pass
+# aowlhexer — the aowl lowering pass
 {: .no_toc }
 
-`aifhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
+`aowlhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
 `.c.aif` that the native backend prints — injecting ARC, lifting closures,
 inlining iterators, lowering exceptions, and monomorphising generics along the
 way. It is seeded from Andreas Rumpf's `hexer` in nimony and is being
 progressively aowl-owned.
 {: .fs-6 .fw-300 }
 
-Repo: **`aoughwl/aifhexer`** (public).
+Repo: **`aoughwl/aowlhexer`** (public).
 
 ## The hard part of the compiler
 
-aifhexer is where the genuinely difficult work happens, so the backends
+aowlhexer is where the genuinely difficult work happens, so the backends
 downstream can be mere printers:
 
 | pass | effect |
@@ -33,22 +33,22 @@ downstream can be mere printers:
 
 Because ARC is injected here, every backend that consumes `.c.aif` gets
 **deterministic memory management for free** — which is exactly why
-[aifc](nifc) can be a printer.
+[aowlc](aowlc) can be a printer.
 
 ## Ours vs reused
 
 The 25 lowering passes under `src/` are vendored from Araq's `nimony/hexer` and
-are what aifhexer owns and will progressively rewrite. The shared compiler
+are what aowlhexer owns and will progressively rewrite. The shared compiler
 library is reused from a `nimony` checkout (`$NIMONY_SRC`) until an aowl-owned
 core exists: `build.sh` copies it into `.build/` and overlays `src/` so
 intra-tree `../hexer` references resolve to our copies.
 
 ## Verified in the pipeline
 
-Built from Araq's passes, aifhexer produces the same `.c.aif` as nimony's
-`hexer`, and it is the **default lowering stage** in [aifmony](aifmony): the
-driver injects `bin/aifhexer` in place of `hexer`, so a real build runs
-`.nim → aifparser → sem → aifhexer → aifc → gcc`, yielding correct native
+Built from Araq's passes, aowlhexer produces the same `.c.aif` as nimony's
+`hexer`, and it is the **default lowering stage** in [aowlmony](aowlmony): the
+driver injects `bin/aowlhexer` in place of `hexer`, so a real build runs
+`.nim → aowlparse → sem → aowlhexer → aowlc → gcc`, yielding correct native
 binaries (`fib(20)=6765`, `ack(3,4)=125`, `fib(25)=75025`).
 
 ## Roadmap

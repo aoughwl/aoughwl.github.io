@@ -1,20 +1,20 @@
 ---
-title: nifc
+title: aowlc
 grand_parent: Documentation
-parent: Toolchain
+parent: Compiler Pipeline
 nav_order: 4
 ---
 
-# nifc — a `.c.nif` → C native backend
+# aowlc — a `.c.nif` → C native backend
 {: .no_toc }
 
-`nifc` compiles nimony's **post-`hexer`** IR (`.c.nif`) to **real C** and links it
+`aowlc` compiles nimony's **post-`hexer`** IR (`.c.nif`) to **real C** and links it
 with `gcc` to a native binary. It's the self-owned native counterpart to
-[nifjs](nifjs) (the JavaScript backend) — same architecture (NIF reader +
+[aowljs](aowljs) (the JavaScript backend) — same architecture (NIF reader +
 emitter), retargeted from JS to C.
 {: .fs-6 .fw-300 }
 
-Repo: **`aoughwl/nifc`** (public). A single dependency-free JS file that reads a
+Repo: **`aoughwl/aowlc`** (public). A single dependency-free JS file that reads a
 `.c.nif` and emits C, plus a CLI driver that shells `gcc`.
 
 <details open markdown="block"><summary>Contents</summary>{: .text-delta }
@@ -46,12 +46,12 @@ What remains is a C-shaped tree with **sized types spelled out** (`(i 32)`), an
 > — ARC was injected upstream. C / JS / WASM are all just printers over hexer's
 > output.
 
-## The mirror image of nifjs
+## The mirror image of aowljs
 
-nifc and [nifjs](nifjs) start from IR at **opposite ends of hexer**, and that one
+aowlc and [aowljs](aowljs) start from IR at **opposite ends of hexer**, and that one
 choice decides everything — including fidelity:
 
-| | **nifjs** (native JS) | **nifc** (native C) |
+| | **aowljs** (native JS) | **aowlc** (native C) |
 |---|---|---|
 | input IR | `.s.nif` — *before* lowering (`int`/`string`/`seq`/objects) | `.c.nif` — *after* hexer (pointers, ARC, sized types) |
 | target | native JS values (`number`, `Array`, `{}`) | C with the real sized typedefs (`NI64`, `NU32`, `NF64`, …) |
@@ -59,14 +59,14 @@ choice decides everything — including fidelity:
 | GC | free (V8 collects) | free (ARC baked into the IR) |
 | effort | had to *invent* value mappings & worry about int-wrapping | **mechanical** — hexer already sized and ARC'd everything |
 
-So nifc is the **faithful native path**: because it reads the lowered IR, it
+So aowlc is the **faithful native path**: because it reads the lowered IR, it
 inherits exact machine-integer semantics and deterministic ARC for free — the
-very fidelity nifjs gives up for JIT speed. Both are "no GC to implement," for
+very fidelity aowljs gives up for JIT speed. Both are "no GC to implement," for
 opposite reasons.
 
 ## Readable output
 
-nifc uses the real `mangleToC` and the `importc`/`exportc` extern rule, so its C
+aowlc uses the real `mangleToC` and the `importc`/`exportc` extern rule, so its C
 reads like the reference generator's — from the recursive-fibonacci `.c.nif`:
 
 ```c
@@ -103,12 +103,12 @@ nimony's real frontend + hexer:
 - a self-contained C prelude (`NI`/`NU`/`NF`/`NC8`/`NB8`/`NIM_TRUE`/…) — no nimony runtime needed for the core
 
 Not yet lowered here: the full **system runtime** (strings/seqs/`echo`, GC
-objects), which lives in the 54 KB `system` `.c.nif` module. Anything nifc can't
-print raises `nifc: unsupported …`, so gaps are visible, never silently wrong.
+objects), which lives in the 54 KB `system` `.c.nif` module. Anything aowlc can't
+print raises `aowlc: unsupported …`, so gaps are visible, never silently wrong.
 
 ## Verified end-to-end
 
-Each `.c.nif` in `examples/` came out of nimony's own frontend + hexer; nifc
+Each `.c.nif` in `examples/` came out of nimony's own frontend + hexer; aowlc
 emits C, `gcc` compiles it, and the native binary returns the right answer:
 
 | program | call | native result |
@@ -127,10 +127,10 @@ emits C, `gcc` compiles it, and the native binary returns the right answer:
 ## Usage
 
 ```sh
-node bin/nifc emit  examples/fib.c.nif                 # emit a C translation unit
-node bin/nifc run   examples/fib.c.nif                 # whole module → standalone binary → run
-node bin/nifc build examples/compute.c.nif -o /tmp/x   # native binary at a path
-node bin/nifc exec  examples/fib.c.nif --entry fib --arg 10   # → 55
+node bin/aowlc emit  examples/fib.c.nif                 # emit a C translation unit
+node bin/aowlc run   examples/fib.c.nif                 # whole module → standalone binary → run
+node bin/aowlc build examples/compute.c.nif -o /tmp/x   # native binary at a path
+node bin/aowlc exec  examples/fib.c.nif --entry fib --arg 10   # → 55
 ```
 
 `exec` emits only the procs (and globals) transitively reachable from the entry,
@@ -142,10 +142,10 @@ external call so the unit still links on its own.
 ## Pipeline
 
 ```
-   nimony frontend            hexer (ARC, closures, exceptions,       nifc
+   nimony frontend            hexer (ARC, closures, exceptions,       aowlc
 .nim ──────────────► .s.nif ──── monomorphisation, sized types) ───► .c.nif ──► C ──► gcc ──► native
 ```
 
 The cleanest self-owned native compiler reuses the one component that's genuinely
 hard to rebuild — hexer's lowering — and owns everything else:
-[nifparser](nifparser) + `nifsem` → `hexer` → **nifc** → `gcc`.
+[aowlparse](aowlparse) + `nifsem` → `hexer` → **aowlc** → `gcc`.

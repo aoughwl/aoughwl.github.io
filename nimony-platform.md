@@ -18,11 +18,10 @@ made — see **[Engineering Notes](engineering-notes)**.
 | Section | What's inside |
 |:--|:--|
 | [AIF ≡ NIF](docs/aif) | The interop contract with Nimony: one shared byte-compatible format, drop-in seams. **Start here.** |
-| [Toolchain](docs/nif-toolchain-alternatives) | The from-scratch pipeline — `aifparser` (parse), `aifsem` (semcheck), `aifhexer` (lower), `aifc` / `aifjs` (backends), `aifi` (interpret/VM), `aifmony` (driver), `aiflib` (runtime). |
-| [Libraries](libraries) | The stdlib-grade packages: the net stack (`tcp → net → tls → serve`, `http`, `ws`, `requests`, `compress`) and the `web` / `html` / `css` layer. |
-| [Backends](backends) | Alternate code generators — the JavaScript / WebAssembly, TypeScript, and Python backends, plus the shared High-Level IR. |
+| [Compiler Pipeline](docs/compiler-pipeline) | The from-scratch pipeline — `aowlparse` (parse), `aowlsem` (semcheck), `aowlhexer` (lower), `aowlc` / `aowljs` (backends), `aowli` (interpret/VM), `aowlmony` (driver), `aiflib` (runtime). |
+| [Builtin Libraries](libraries) | The stdlib-grade packages: the net stack (`tcp → net → tls → serve`, `http`, `ws`, `requests`, `compress`) and the `web` / `html` / `css` layer. |
+| [Web & Language Targets](backends) | Compile to other platforms — the JavaScript / WebAssembly, TypeScript, and Python backends, plus the shared High-Level IR. |
 | [Tools](tools) | The Claude Code plugin + MCP server, the LSP + VSCode extension, and NIF inspection CLIs. |
-| [Playground](playground) | Run and edit in the browser, compiled client-side through the self-hosted toolchain. |
 
 ## Why it hangs together
 

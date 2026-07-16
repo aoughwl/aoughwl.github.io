@@ -49,24 +49,24 @@ Full details on the format and the drop-in seams: **[AIF ≡ NIF →](docs/aif)*
 ## The stack
 
 ```
- .nim / .aowl ──► aifparser ──► aifsem ──► aifhexer ──┬─ aifc  → C / native
-    source          parse       semcheck    lower     ├─ aifjs → JavaScript
-                                                       └─ aifi  → interpret / VM
+ .nim / .aowl ──► aowlparse ──► aowlsem ──► aowlhexer ──┬─ aowlc  → C / native
+    source          parse       semcheck    lower     ├─ aowljs → JavaScript
+                                                       └─ aowli  → interpret / VM
 ```
 
 Every seam is **AIF (≡ NIF)**, so any stage can be swapped in beside nimony's own
-(`nifler` / `nimsem` / `hexer`) or run standalone. `aifi` and `aifjs` are what
+(`nifler` / `nimsem` / `hexer`) or run standalone. `aowli` and `aowljs` are what
 power the browser **[playground](playground)**.
 
 | Stage | Repo | What it is |
 |---|---|---|
-| parse | **[aifparser](docs/nifparser)** | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
-| semcheck | **aifsem** *(private)* | clean-room `nimsem`: `.p.aif` → typed `.s.aif`. |
-| lower | **[aifhexer](docs/aifhexer)** *(private)* | ARC / closures / exceptions / monomorphisation → `.c.aif`. |
-| native | **[aifc](docs/nifc)** | post-hexer `.c.aif` → C, linked with `gcc` (GC-free — ARC baked in). |
-| web | **[aifjs](docs/nifjs)** + [aifjs-js](docs/nifjs) | typed `.s.aif` → native JavaScript; near-native speed, readable output. |
-| run | **[aifi](nifi)** | two-engine interpreter (tree-walker + bytecode VM), differentially tested against native. |
-| driver | **[aifmony](docs/aifmony)** | one command: `.nim` → { native \| interpret \| web } over the whole self-owned stack. |
+| parse | **[aowlparse](docs/aowlparse)** | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
+| semcheck | **aowlsem** *(private)* | clean-room `nimsem`: `.p.aif` → typed `.s.aif`. |
+| lower | **[aowlhexer](docs/aowlhexer)** *(private)* | ARC / closures / exceptions / monomorphisation → `.c.aif`. |
+| native | **[aowlc](docs/aowlc)** | post-hexer `.c.aif` → C, linked with `gcc` (GC-free — ARC baked in). |
+| web | **[aowljs](docs/aowljs)** + [aowljs-js](docs/aowljs) | typed `.s.aif` → native JavaScript; near-native speed, readable output. |
+| run | **[aowli](aowli)** | two-engine interpreter (tree-walker + bytecode VM), differentially tested against native. |
+| driver | **[aowlmony](docs/aowlmony)** | one command: `.nim` → { native \| interpret \| web } over the whole self-owned stack. |
 | runtime | **[aiflib](docs/aiflib)** | the aowl system module + runtime (strings / seqs / ARC / GC) the backends link against. |
 
 ## Around the stack
@@ -82,7 +82,7 @@ power the browser **[playground](playground)**.
 ## The private side
 
 Some of the stack is **intentionally kept private for now** — notably the
-semantic checker (**aifsem**) and the lowering (**aifhexer**), along with the
+semantic checker (**aowlsem**) and the lowering (**aowlhexer**), along with the
 JavaScript / TypeScript / WASM / Python backend repos. Their
 **docs live here**, and access is granted on request — just ask and you'll be
 added. The **[playground](playground)** will shortly switch over to run entirely

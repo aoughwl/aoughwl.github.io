@@ -1,11 +1,11 @@
 ---
-title: nifi
+title: aowli
 grand_parent: Documentation
-parent: Toolchain
+parent: Compiler Pipeline
 nav_order: 2
 ---
 
-# nifi
+# aowli
 {: .no_toc }
 
 A standalone interpreter for **typed nimony** — it runs the compiler's
@@ -14,7 +14,7 @@ consumes. Two independent engines execute it and produce byte-identical output,
 and they are held honest against native nimony by a differential test harness.
 {: .fs-6 .fw-300 }
 
-[Repo → github.com/aoughwl/nifi](https://github.com/aoughwl/nifi){: .btn .btn-primary }
+[Repo → github.com/aoughwl/aowli](https://github.com/aoughwl/aowli){: .btn .btn-primary }
 [Try it in the browser →](playground){: .btn }
 
 <details open markdown="block">
@@ -28,29 +28,29 @@ and they are held honest against native nimony by a differential test harness.
 
 ## Two engines, one output
 
-nifi executes the same typed NIF two different ways, and the two paths must
+aowli executes the same typed NIF two different ways, and the two paths must
 agree to the byte:
 
-- **Tree-walker (`bin/nifi-interp`)** — walks the typed NIF directly. It is the
+- **Tree-walker (`bin/aowli-interp`)** — walks the typed NIF directly. It is the
   correctness oracle: simple, source-line accurate, easy to reason about.
-- **Bytecode VM (`bin/nifi-vm`)** — compiles the NIF into a register/stack
+- **Bytecode VM (`bin/aowli-vm`)** — compiles the NIF into a register/stack
   instruction chunk and executes that chunk.
 
 Because both consume [nimony](nimony)'s post-semcheck `.s.nif`, they see
 exactly what the native backend sees — no separate parser, no separate type
 system. nimony's `seq` / `string` / `Table` and friends are library types built
-on raw `alloc`; rather than run that pointer code, nifi **intercepts** those
+on raw `alloc`; rather than run that pointer code, aowli **intercepts** those
 procs as "natives" and supplies its own value model — boxed seq, string, array,
 set, and object. The interpreter never touches raw memory.
 
 ## Differential testing
 
-`tests/crosscheck.sh` runs **both** nifi engines *and* the native nimony
+`tests/crosscheck.sh` runs **both** aowli engines *and* the native nimony
 compiler on the same program, then classifies the result:
 
 - **AGREE-PASS** — both engines match native. Everything is correct.
 - **AGREE-FAIL** — the engines agree with each other but not with native: a
-  shared gap in nifi.
+  shared gap in aowli.
 - **DIVERGE** — the two engines disagree with each other: a real bug in one of
   them.
 
@@ -66,7 +66,7 @@ see the program's evaluation as a tree, not a scroll of `echo` output.
 
 ## The run rung — a run is a NIF
 
-nifi can serialize an *execution* back into NIF. With `--emit-run` (env
+aowli can serialize an *execution* back into NIF. With `--emit-run` (env
 `NIFI_EMIT_RUN=PATH`), the interpreter emits a **run rung**: a NIF token stream
 that records what the program actually did — every binding, loop iteration, and
 value it produced — as structured, linked NIF.
@@ -93,7 +93,7 @@ and Typed (`.s.nif`) rungs — the whole tower, live in the tab.
 
 ## Status
 
-nifi proved itself by running a real pure-nimony program end-to-end: the MDN CSS
+aowli proved itself by running a real pure-nimony program end-to-end: the MDN CSS
 validator ([css](docs/css)) runs byte-identical to native on **both** engines.
 The VM already supports dynamic method dispatch. Work in progress is retargeting
 the VM onto a "partial-hexer" lowering to gain custom iterators, closures, and

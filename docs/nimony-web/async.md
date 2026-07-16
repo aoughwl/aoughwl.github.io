@@ -1,7 +1,7 @@
 ---
 title: Async runtime
 parent: nimony-web
-grand_parent: Backends
+grand_parent: Web & Language Targets
 nav_order: 5
 ---
 

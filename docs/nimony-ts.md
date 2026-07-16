@@ -1,7 +1,7 @@
 ---
 title: nimony-ts
 grand_parent: Documentation
-parent: Backends
+parent: Web & Language Targets
 nav_order: 2
 ---
 

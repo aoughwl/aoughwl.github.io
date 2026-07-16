@@ -1,16 +1,15 @@
 ---
-title: Backends
+title: Web & Language Targets
 parent: Documentation
 nav_order: 3
 has_children: true
 permalink: /backends
 ---
 
-# Nimony Backends
+# Web & Language Targets
 
-Alternative code-generation targets for the nimony compiler — compile one nimony
-program to the web, TypeScript, or Python. Each page below is the canonical docs
-for its repo.
+Compile one Nimony program to another platform — the web (JavaScript / WebAssembly),
+TypeScript, or Python. Each page below is the canonical docs for its repo.
 
 | Backend | Repo | Status |
 |---|---|---|

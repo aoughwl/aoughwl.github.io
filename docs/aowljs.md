@@ -1,21 +1,21 @@
 ---
-title: nifjs
+title: aowljs
 grand_parent: Documentation
-parent: Toolchain
+parent: Compiler Pipeline
 nav_order: 3
 ---
 
-# nifjs — a `.s.nif` → native-JavaScript backend
+# aowljs — a `.s.nif` → native-JavaScript backend
 {: .no_toc }
 
-`nifjs` transpiles a typed nimony NIF (`.s.nif`) to **real JavaScript** — mapping
+`aowljs` transpiles a typed nimony NIF (`.s.nif`) to **real JavaScript** — mapping
 nimony values onto native JS values instead of onto a simulated linear memory —
 so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**
 and its output is **readable**. It's the **Native JS** engine in the
 [playground](/playground/).
 {: .fs-6 .fw-300 }
 
-Repo: **`aoughwl/nifjs`** (public). A single, dependency-free JS file that reads a
+Repo: **`aoughwl/aowljs`** (public). A single, dependency-free JS file that reads a
 `.s.nif` and emits JavaScript.
 
 <details open markdown="block"><summary>Contents</summary>{: .text-delta }
@@ -31,7 +31,7 @@ Nimony reaches the web through two JavaScript emitters that operate at
 **different IR levels**, and that single choice is what makes them fast-or-slow
 and readable-or-mangled:
 
-| | **[nimony-web](nimony-web)** (leng, faithful) | **nifjs** (native, fast) |
+| | **[nimony-web](nimony-web)** (leng, faithful) | **aowljs** (native, fast) |
 |---|---|---|
 | input IR | `.c.nif` — *after* hexer lowers everything to pointers / `memcpy` / ARC | `.s.nif` — *before* lowering; still has `int` / `string` / `seq` / objects |
 | values | one simulated linear memory (`ArrayBuffer` + `DataView`) | native JS (`number`, `string`, `Array`, `{}`) |
@@ -40,7 +40,7 @@ and readable-or-mangled:
 
 **Speed and readability are the same decision.** The faithful
 backend is slow *and* mangled for one reason (it simulates C memory from the
-lowered IR); nifjs is fast *and* readable for the mirror reason (it emits native
+lowered IR); aowljs is fast *and* readable for the mirror reason (it emits native
 values from the high-level IR). You get both or neither — they are not separate
 features in tension.
 
@@ -51,19 +51,19 @@ The same tight arithmetic loop, timed per iteration:
 | engine | per iteration | vs. a hand-written JS loop |
 |---|---:|---:|
 | native JS (hand-written) | ~2.9 ns | 1× |
-| **nifjs** (transpiled) | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
-| bytecode VM ([nifi](nifi)) | ~39 µs | ~15,000× slower |
-| tree-walk ([nifi](nifi)) | ~61 µs | ~24,000× slower |
+| **aowljs** (transpiled) | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
+| bytecode VM ([aowli](aowli)) | ~39 µs | ~15,000× slower |
+| tree-walk ([aowli](aowli)) | ~61 µs | ~24,000× slower |
 
 - **~18,000–28,000× faster** than the interpreter on compute-bound loops.
-- **10,000,000 iterations in ~21 ms** — and *no out-of-memory*: nifjs has no
+- **10,000,000 iterations in ~21 ms** — and *no out-of-memory*: aowljs has no
   fixed bump heap, so integer arithmetic doesn't allocate and the GC reclaims.
   (The interpreter's simulated heap OOMs on large allocating loops.)
 - Output **byte-identical** to the interpreter on supported programs.
 
 ## Readable output
 
-Because nifjs works from the typed IR and keeps source names, the emitted code
+Because aowljs works from the typed IR and keeps source names, the emitted code
 reads like the program you wrote — no linear memory, no `DataView`, no
 content-addressed symbol hashes:
 
@@ -85,13 +85,13 @@ function isPrime(n){
 
 ## Coverage and fallback
 
-nifjs covers a **(growing) subset** of the language. On any node it doesn't
+aowljs covers a **(growing) subset** of the language. On any node it doesn't
 handle, the emitter throws `Unsupported(…)` and the run falls back to the
-faithful [nifi](nifi) engines — so **correctness is never worse than a normal
+faithful [aowli](aowli) engines — so **correctness is never worse than a normal
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
-Coverage is broad — nifjs runs essentially all of the language nimony can
+Coverage is broad — aowljs runs essentially all of the language nimony can
 currently express: procs and recursion (mutual **and nested / closures**);
 **generic** instances (monomorphised); `int` **and** `float` arithmetic (float
 `/` kept distinct from `div`) and comparisons; logical **and** bitwise
@@ -102,7 +102,7 @@ pairs; `inc`/`dec`; `const`, **enums** (→ ordinals), `when`, `discard`;
 `seq`/array literals, `len`, indexing (get/set), `add`/`pop`; **objects**
 (construct / field read+write, incl. through a seq), object **variants**, and
 **tuples** (construct / access / unpack); `string` concat, `add`, `$`, `len`,
-indexing, `ord`/`chr`; `echo` (float-aware); `bool`. (Beyond nifjs's reach —
+indexing, `ord`/`chr`; `echo` (float-aware); `bool`. (Beyond aowljs's reach —
 `Table`/`HashSet`, `try`/`except` — don't yet compile in nimony either.)
 
 Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
@@ -110,18 +110,18 @@ Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
 
 ### Shims — the FFI / `importc` path
 
-When a called routine isn't one nifjs built itself, and a *shim* exists, nifjs
+When a called routine isn't one aowljs built itself, and a *shim* exists, aowljs
 emits the native-JS equivalent directly — no body to transpile, no marshaling.
 The registry maps stdlib / `importc` proc names to JS: `math.*` → `Math.*`,
 `strutils.*` → `String`/`Array` methods (`toUpperAscii`, `strip`, `split`,
 `repeat`, `contains`, …), `parseInt`/`parseFloat`, `abs`/`min`/`max`. A user proc
-of the same name always wins. This is how nifjs "allows `importc`": an `importc`
+of the same name always wins. This is how aowljs "allows `importc`": an `importc`
 proc has no transpilable body, so it resolves through the shim table (or, with a
 registered shim, a `console.log`-style call to a provided JS function).
 
 ### Robustness & safety
 
-nifjs never emits a reference to a routine it didn't build. A call to a proc/func
+aowljs never emits a reference to a routine it didn't build. A call to a proc/func
 it can't transpile makes the program fall back to the interpreter rather than
 crash on an undefined function. And a `var`/`out` parameter — whose mutation
 can't round-trip through JS's pass-by-value — drops the routine so its callers
@@ -149,7 +149,7 @@ why nimony keeps hexer and the faithful backend — the two emitters are
 
 - **[nimony-web](nimony-web) / leng (faithful)** builds the playground's own
   engine bundles, runs anything, and preserves exact semantics.
-- **nifjs (native)** is the fast, readable path for user programs, with the
+- **aowljs (native)** is the fast, readable path for user programs, with the
   interpreter as its safety net.
 
 > **Want the *true faithful* version?** The exact, semantics-preserving compile —

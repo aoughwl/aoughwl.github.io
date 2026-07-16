@@ -1,14 +1,14 @@
 ---
 title: The .p.nif format
-parent: nifparser
-grand_parent: Toolchain
+parent: aowlparse
+grand_parent: Compiler Pipeline
 nav_order: 6
 ---
 
 # The `.p.nif` format
 {: .no_toc }
 
-What nifparser actually emits — enough to *read* a parse-dialect NIF by eye. This
+What aowlparse actually emits — enough to *read* a parse-dialect NIF by eye. This
 is the untyped wire form the nimony frontend consumes; the later `nimsem` stage
 turns it into the typed `.s.nif`.
 {: .fs-6 .fw-300 }
@@ -34,7 +34,7 @@ of token appear:
   [`suf`](#literals)).
 - **Empties** — a bare `.` stands for an absent optional slot.
 
-Inter-token whitespace is meaningless; nifparser's own indentation is a
+Inter-token whitespace is meaningless; aowlparse's own indentation is a
 pretty-print, not structure.
 
 ## Header
@@ -43,15 +43,15 @@ Every file begins with three directives, one per line, in this order:
 
 ```
 (.nif27)
-(.vendor "nifparser")
+(.vendor "aowlparse")
 (.dialect "nim-parsed")
 ```
 
 - `(.nif27)` — the NIF wire-format version (format 27). Fixed by the NIF builder,
-  not chosen by nifparser.
-- `(.vendor "nifparser")` — the producer id. nifparser stamps **its own** name
+  not chosen by aowlparse.
+- `(.vendor "aowlparse")` — the producer id. aowlparse stamps **its own** name
   here rather than impersonating classic `nifler` (which emits `"Nifler"`); this
-  one line is the only place a nifparser file deliberately differs from nifler's
+  one line is the only place a aowlparse file deliberately differs from nifler's
   bytes. See [Differential testing](testing).
 - `(.dialect "nim-parsed")` — the dialect: untyped, parser-level NIF.
 
@@ -112,7 +112,7 @@ raw.
 
 ## Tag vocabulary
 
-The substantially-complete set of tags nifparser emits, by category. (Plain
+The substantially-complete set of tags aowlparse emits, by category. (Plain
 identifiers, ints, floats, strings, chars and `.` empties are atoms, not tags.)
 
 **Blocks & root**
