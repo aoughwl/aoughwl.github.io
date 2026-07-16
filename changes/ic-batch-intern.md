@@ -1,7 +1,7 @@
 ---
 title: IC — Batch-intern ceiling + proof
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 23
 ---
 

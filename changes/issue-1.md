@@ -1,7 +1,7 @@
 ---
 title: "Issue #1 — `.passive` helpers didn't resolve across modules"
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 1
 ---
 

@@ -1,24 +1,20 @@
 ---
-title: Compiler work
+title: Changes
 has_children: true
 parent: Engineering Notes
 nav_order: 1
 ---
 
-# aoughwl/nimony
+# Changes — what we fixed and added
 {: .no_toc }
 
-The NIF-based compiler at the heart of the aoughwl toolchain, shipping a standard
-library built to *our* taste. Same Nim language, fewer opinions imposed on you,
-more of ours baked in.
-
-[Repo → github.com/aoughwl/nimony](https://github.com/aoughwl/nimony){: .btn .btn-primary }
-
-This page is the **record of the compiler engineering behind the stack** — the
-fixes and the `.passive`/async features that make the async story and the live
-tooling actually work. Every row below is a real change, with the test that
-proves it.
+The single record of the compiler engineering behind the stack: every fix and
+every `.passive`/async feature that make the async story and the live tooling
+work. Two buckets — **Added** and **Fixed** — and every row links to its own
+writeup (symptom, root cause, fix, files, verifying test).
 {: .fs-5 .fw-300 }
+
+[Compiler repo → github.com/aoughwl/nimony](https://github.com/aoughwl/nimony){: .btn .btn-primary }
 
 <details open markdown="block">
   <summary>Contents</summary>
@@ -45,10 +41,10 @@ proves it.
 
 ---
 
-## Features Added
+## Added
 
 Compiler support that makes nimony's `{.passive.}` CPS coroutines usable as a real
-async library. Each links to its full writeup in the [Changelog](changelog).
+async library. Each links to its full writeup.
 
 | # | Feature | Files | Verified by |
 |---|---|---|---|
@@ -102,10 +98,10 @@ huge trees) needs to be warm too; it's wired into nimony-lsp as an opt-in path.
 
 ---
 
-## Issues Fixed
+## Fixed
 
-Eight compiler fixes that went into the toolchain. Each row opens its own
-writeup — symptom, root cause, the fix, files, and the verifying test.
+Eight compiler fixes behind the async story. Each row opens its own writeup —
+symptom, root cause, the fix, files, and the verifying test.
 
 | # | Issue | Verified by |
 |---|---|---|
@@ -118,6 +114,13 @@ writeup — symptom, root cause, the fix, files, and the verifying test.
 | [7](changes/issue-7) | [Generic `race[T]` spawned via `delay` failed to link](changes/issue-7) | `tgenrace` |
 | [8](changes/issue-8) | [Imported `{.async.}` macros: three cross-target failures](changes/issue-8) | `tasyncsugar` |
 {: .ledger}
+
+**Compiler safety & diagnostics.** Four more fixes to the checker and its
+messages — rejecting a captured `var`/`out` parameter in a closure (memory
+safety), pointing the `mover` "other usage" diagnostic at the real use site,
+naming `result` instead of the mangled `result.0`, and stopping control-flow
+analysis from descending into stored macro bodies. Full root-cause writeups:
+**[Safety & diagnostics fixes](docs/nimony-fork)**.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Issue #5 — Proc-pragma macros silently dropped the routine"
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 5
 ---
 

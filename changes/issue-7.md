@@ -1,7 +1,7 @@
 ---
 title: "Issue #7 — Generic `race[T]` spawned via `delay` failed to link"
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 7
 ---
 

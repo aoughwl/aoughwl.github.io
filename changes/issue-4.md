@@ -1,7 +1,7 @@
 ---
 title: "Issue #4 — `.passive` capturing a `.raises` result crashed hexer"
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 4
 ---
 

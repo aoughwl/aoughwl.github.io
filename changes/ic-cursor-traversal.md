@@ -1,7 +1,7 @@
 ---
 title: IC — Incremental cursor traversal
-grand_parent: Compiler work
-parent: Changelog
+grand_parent: Engineering Notes
+parent: Changes
 nav_order: 21
 ---
 
