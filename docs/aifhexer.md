@@ -74,15 +74,28 @@ Measured on real hexer output (`node opt/demo.js`):
 
 **8/8** optimized programs return identical results. Passes: unreachable-code,
 dead-variable and dead-label elimination, `(stmts (stmts …))` flattening, integer
-constant folding, and algebraic identities — run to a fixpoint. It runs by
-default in the [aifmony](aifmony) pipeline (`AIFMONY_NO_OPT=1` to disable).
+constant folding, algebraic identities, and an ARC pass (`moveDestroyElim`) that
+elides an `=destroy(v)` a `=wasMoved(v)` dominates — sound because `=wasMoved`
+nils `v.data` and `=destroy` guards on it.
 
-Honest scope: for tiny integer programs `gcc -O2` erases the *runtime* difference
-downstream, but the cleanup is backend-independent (it shrinks the JS backend's
-input and the readable C too) and applies to un-optimized/debug builds. This is
-where aifhexer *improves* on stock hexer rather than rewriting its (correct,
-mature) lowering passes. `aifopt` grows toward the wins gcc **cannot** do —
-eliding redundant ARC `=copy`/`=destroy` calls, opaque to the C compiler.
+### Does it beat the stock pipeline? (measured — mostly no)
+
+We checked honestly, by disassembly: **`gcc -O2` subsumes all of it.** Dead code
+goes at any `-O`; the move/destroy ARC redundancy goes at `-O2` (gcc inlines the
+small in-TU `=destroy`, const-propagates the `nil`, elides the call):
+
+| opt level | `=destroy` calls left in a seq round-trip |
+|---|---|
+| `-O0` / `-O1` | 2 (gcc keeps the redundant one) |
+| `-O2` / `-O3` | 0 (gcc does the elision itself) |
+
+This is **why Araq leaves it** — hexer/lengc emit canonical, simple C and defer
+local cleanup to the C optimizer (lengc's own output carries the identical dead
+code). aifopt's honest value is narrower: `-O0`/`-O1` debug builds, cross-TU
+`=destroy` that gcc can't inline, and the backend-independent (JS/readability)
+cleanup. Beating `-O2` needs **high-level semantic** passes on the typed `.s.aif`
+gcc can't reconstruct — seq/string preallocation, bounds/overflow-check
+elimination, cross-module ARC elision — the real roadmap.
 
 ## Roadmap
 
