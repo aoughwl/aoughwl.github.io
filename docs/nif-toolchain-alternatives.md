@@ -25,6 +25,7 @@ can execute entirely client-side, where the classic-Nim tools cannot.
 | [nifi](../nifi) | native compile-and-run | Interprets a program's *typed* NIF (`.s.nif`) directly — a tree-walking evaluator and a bytecode VM over one value model — checked against nimony's own compile-and-run. |
 | [nifjs](nifjs) | leng JS backend | Transpiles the *typed* NIF (`.s.nif`) to **native JavaScript** — fast and readable, trading low-level fidelity for JIT speed. |
 | [nifc](nifc) | leng C backend (`nifc`/lengc) | Prints the *lowered* NIF (`.c.nif`) to **C** and links it with `gcc` — the faithful native path; ARC/closures/exceptions already lowered by hexer, so GC is free. |
+| [nifmony](nifmony) | the `nimony`/`lengc` driver | Unifies the stack: `.nim` → nifparser → sem+hexer → {nifc native \| nifi interpret \| nifjs web}. The rewrite driver — proves the ends are self-owned, reuses sem+hexer until nifsem and a self-owned lowering pass exist. |
 
 ## Why "alternatives"
 
