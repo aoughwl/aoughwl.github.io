@@ -18,9 +18,9 @@ made — see **[Engineering Notes](engineering-notes)**.
 | Section | What's inside |
 |:--|:--|
 | [AIF ≡ NIF](docs/aif) | The interop contract with Nimony: one shared byte-compatible format, drop-in seams. **Start here.** |
-| [Compiler Pipeline](docs/compiler-pipeline) | The from-scratch pipeline — `aowlparse` (parse), `aowlsem` (semcheck), `aowlhexer` (lower), `aowlc` / `aowljs` (backends), `aowli` (interpret/VM), `aowlmony` (driver), `aiflib` (runtime). |
+| [Compiler Pipeline](docs/compiler-pipeline) | The front half — `aowlparse` (parse), `aowlsem` (semcheck), `aowlhexer` (lower), `aowlmony` (driver), `aiflib` (runtime). |
 | [Builtin Libraries](libraries) | The stdlib-grade packages: the net stack (`tcp → net → tls → serve`, `http`, `ws`, `requests`, `compress`) and the `web` / `html` / `css` layer. |
-| [Web & Language Targets](backends) | Compile to other platforms — the JavaScript / WebAssembly, TypeScript, and Python backends, plus the shared High-Level IR. |
+| [Backends](backends) | Every way to run or emit a program — native C (`aowlc`), native and faithful JavaScript (`aowljs`, `aowl-web`), WebAssembly, the interpreter (`aowli`), and idiomatic TypeScript / Python. |
 | [Tools](tools) | The Claude Code plugin + MCP server, the LSP + VSCode extension, and NIF inspection CLIs. |
 
 ## Why it hangs together

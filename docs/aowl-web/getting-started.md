@@ -1,13 +1,13 @@
 ---
 title: Getting started
-parent: nimony-web
-grand_parent: Web & Language Targets
+parent: aowl-web
+grand_parent: Backends
 nav_order: 1
 ---
 
 # Getting started
 
-nimony-web gives Nim two web targets: **JavaScript** (`nim-js`) and **WebAssembly**
+aowl-web gives Nim two web targets: **JavaScript** (`nim-js`) and **WebAssembly**
 (`nim-wasm`). Both are out-of-tree codegen plugins for
 [nimony](https://github.com/nim-lang/nimony), the Nim 3.0 compiler. They read the
 lowered *Leng* IR nimony emits just before its C backend (`<module>.c.nif`) and
@@ -19,7 +19,7 @@ backends.
 ## Prerequisites
 
 - **Nim** (2.x) — only to *build* the plugins. Check with `nim --version`.
-- **A built nimony checkout** sitting next to nimony-web — nimony-web consumes nimony's
+- **A built nimony checkout** sitting next to aowl-web — aowl-web consumes nimony's
   type navigator, module loader, and name mangler through `--path`, and drives
   its frontend to produce the `.c.nif`.
 - **Node.js** — both backends run their artifacts under Node (WASM uses Node's
@@ -27,11 +27,11 @@ backends.
 
 ### 1. Clone the two repos side by side
 
-The relative `--path` in `src/nim.cfg` assumes nimony-web and nimony are siblings:
+The relative `--path` in `src/nim.cfg` assumes aowl-web and nimony are siblings:
 
 ```
 git clone https://github.com/nim-lang/nimony
-git clone https://github.com/aoughwl/nimony-web
+git clone https://github.com/aoughwl/aowl-web
 ```
 
 You should end up with:
@@ -39,7 +39,7 @@ You should end up with:
 ```
 <workspace>/
   nimony/     built: bin/ has nimony, nimsem, hexer, nifler, nifmake, lengc
-  nimony-web/     this repo
+  aowl-web/     this repo
 ```
 
 ### 2. Build nimony
@@ -54,12 +54,12 @@ nim c -o:bin/hastur src/hastur.nim
 
 That populates `nimony/bin/` with `nimony` and the rest of the toolchain.
 
-### 3. Build the nimony-web plugins
+### 3. Build the aowl-web plugins
 
-From the nimony-web checkout:
+From the aowl-web checkout:
 
 ```
-cd ../nimony-web
+cd ../aowl-web
 nim c src/nim-js.nim            # -> bin/nim-js   (.c.nif -> .js)
 nim c src/nim-wasm.nim          # -> bin/nim-wasm (.c.nif -> .wasm)
 nim c src/nim-js-link.nim            # -> bin/nim-js-link   (bundle per-module .js)
@@ -91,7 +91,7 @@ concatenate with the runtime → run under Node.
 
 # 2. Each module's .c.nif -> a .js artifact.
 for f in nc/*/*.c.nif; do
-  ../nimony-web/bin/nim-js "$f" "${f%.c.nif}.js"
+  ../aowl-web/bin/nim-js "$f" "${f%.c.nif}.js"
 done
 
 # 3. Bundle: the runtime first, then every module artifact, then the entry call.
@@ -128,7 +128,7 @@ the module and supplies the C stdio imports.
 
 # 2. The MAIN module's .c.nif -> a .wasm. --program emits the C `main` entry
 #    and its whole closure so the module is runnable on its own.
-../nimony-web/bin/nim-wasm nc/hello/hello.c.nif hello.wasm --program
+../aowl-web/bin/nim-wasm nc/hello/hello.c.nif hello.wasm --program
 
 # 3. Run it under a driver that provides fwrite/fputc/fprintf host imports.
 node driver.js hello.wasm

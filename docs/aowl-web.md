@@ -1,12 +1,12 @@
 ---
-title: nimony-web
+title: aowl-web
 grand_parent: Documentation
-parent: Web & Language Targets
-nav_order: 1
+parent: Backends
+nav_order: 4
 has_children: true
 ---
 
-# nimony-web — JavaScript & WebAssembly backends
+# aowl-web — JavaScript & WebAssembly backends
 {: .no_toc }
 
 Two backends that take Nim to the web: one emits JavaScript, the other emits
@@ -14,7 +14,7 @@ WebAssembly. Both are plugins for [nimony](../nimony) — they read the lowered 
 nimony hands its C backend and produce a `.js` or `.wasm` file instead of C. They
 share almost all of their code.
 
-> **Private repo, public docs.** The code lives at `aoughwl/nimony-web` and is
+> **Private repo, public docs.** The code lives at `aoughwl/aowl-web` and is
 > private. Want access? Discord **timbuktu_guy**.
 
 <details open markdown="block"><summary>Contents</summary>{: .text-delta }
@@ -95,7 +95,7 @@ allocator running inside the module.
 
 ## The async runtime
 
-nimony-web also ships the cooperative-async runtime built on nimony's
+aowl-web also ships the cooperative-async runtime built on nimony's
 `{.passive.}` coroutines — **46/46 under Node**. The compiler-side enablers are
 recorded on the [nimony](../nimony) page.
 
@@ -124,6 +124,6 @@ nim c -r tests/tester.nim   # drives both suites via nimony's hastur
 ```
 
 The FFI/DOM package is maintained separately at
-[`aoughwl/js`](https://github.com/aoughwl/js). `jslayout` is nimony-web's own; the
+[`aoughwl/js`](https://github.com/aoughwl/js). `jslayout` is aowl-web's own; the
 type navigator, module loader, and name mangler are consumed from the sibling
 nimony checkout via `--path`.

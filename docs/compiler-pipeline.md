@@ -8,11 +8,11 @@ has_children: true
 # Compiler Pipeline
 {: .no_toc }
 
-The from-scratch compiler, stage by stage: `source → parse → semcheck → lower →
-{ native C | JavaScript | interpret }`. Every stage is written in Nimony, compiles
-through the Nimony backends, and is validated to reproduce its stock counterpart —
-so the whole pipeline can execute entirely client-side, where the classic-Nim
-tools cannot.
+The front half of the compiler: `source → parse → semcheck → lower`. Every stage
+is written in Nimony, holds to the exact AIF (≡ NIF) wire format so it drops into
+the real toolchain, and runs client-side where the classic-Nim tools can't. Where
+the lowered IR *goes* — native C, JavaScript, WASM, an interpreter, TypeScript,
+Python — is the [Backends](../backends) section.
 {: .fs-6 .fw-300 }
 
 ---
@@ -21,18 +21,16 @@ tools cannot.
 
 | Tool | Replaces | What it does |
 |:--|:--|:--|
-| [aowlparse](aowlparse) | `nifler` (classic-Nim parser) | Parses Nim source into the parse-dialect NIF (`.p.nif`), byte-for-byte identical to native `nifler`, but self-hosted so it can compile to JavaScript. |
-| [aowli](../aowli) | native compile-and-run | Interprets a program's *typed* NIF (`.s.nif`) directly — a tree-walking evaluator and a bytecode VM over one value model — checked against nimony's own compile-and-run. |
-| [aowljs](aowljs) | leng JS backend | Transpiles the *typed* NIF (`.s.nif`) to **native JavaScript** — fast and readable, trading low-level fidelity for JIT speed. |
-| [aowlc](aowlc) | leng C backend (`aowlc`/lengc) | Prints the *lowered* NIF (`.c.nif`) to **C** and links it with `gcc` — the faithful native path; ARC/closures/exceptions already lowered by hexer, so GC is free. |
-| [aowlhexer](aowlhexer) | `hexer` (leng lowering) | Lowers `.s.aif` → `.c.aif`: injects ARC, lifts closures, inlines iterators, lowers exceptions, monomorphises. Seeded from Araq's hexer; the default lowering stage in aowlmony. |
-| [aowlmony](aowlmony) | the `nimony`/`lengc` driver | Unifies the stack: `.nim` → aowlparse → sem → **aowlhexer** → {aowlc native \| aowli interpret \| aowljs web}. The rewrite driver — parser + lowering + backend + interpreter are self-owned; only sem is reused (until aowlsem). |
+| [aowlparse](aowlparse) | `nifler` | Parses Nim/Nimony source into the parse-dialect AIF (`.p.aif`), byte-for-byte identical to `nifler`, but self-hosted so it can compile to JavaScript. |
+| aowlsem *(private)* | `nimsem` | Semantic-checks `.p.aif` → typed `.s.aif`: resolves symbols, picks overloads, instantiates generics. |
+| [aowlhexer](aowlhexer) | `hexer` | Lowers `.s.aif` → `.c.aif`: injects ARC, lifts closures, inlines iterators, lowers exceptions, monomorphises. Seeded from Araq's hexer. |
+| [aowlmony](aowlmony) | the `nimony` driver | Ties it together: `.nim` → `aowlparse` → sem → `aowlhexer` → a backend. One command, native or interpreted. |
+| [aiflib](aiflib) | the system module + runtime | Strings, seqs, ARC, GC — the runtime the native/JS backends link against. |
 
-## Why "alternatives"
+## Why it drops in
 
-These are not forks of the stock tools; they are **independent implementations of
-the same contracts**. `aowlparse` is proven against native `nifler` by a
-differential harness (byte-structural equality over the whole standard library);
-`aowli` is proven against the compiler's own output over the nimony test corpus.
-Holding to the exact wire formats is what lets them slot into the real pipeline —
-and what makes the in-browser [playground](../playground) possible.
+Each stage is an **independent implementation of the same contract**, not a patch
+on the stock tool. `aowlparse` is proven against `nifler` by a differential
+harness (byte-structural equality over the whole standard library). Holding to the
+exact AIF wire format is what lets any stage slot into the real pipeline beside
+nimony's own — and what makes the in-browser [playground](../playground) possible.

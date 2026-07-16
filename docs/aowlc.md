@@ -1,8 +1,8 @@
 ---
 title: aowlc
 grand_parent: Documentation
-parent: Compiler Pipeline
-nav_order: 4
+parent: Backends
+nav_order: 1
 ---
 
 # aowlc — a `.c.nif` → C native backend

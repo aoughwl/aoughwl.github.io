@@ -2,7 +2,7 @@
 title: aowlmony
 grand_parent: Documentation
 parent: Compiler Pipeline
-nav_order: 5
+nav_order: 3
 ---
 
 # aowlmony — the nimony rewrite driver

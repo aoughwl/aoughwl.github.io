@@ -2,7 +2,7 @@
 title: aowlhexer
 grand_parent: Documentation
 parent: Compiler Pipeline
-nav_order: 6
+nav_order: 2
 ---
 
 # aowlhexer — the aowl lowering pass

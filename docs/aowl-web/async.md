@@ -1,13 +1,13 @@
 ---
 title: Async runtime
-parent: nimony-web
-grand_parent: Web & Language Targets
+parent: aowl-web
+grand_parent: Backends
 nav_order: 5
 ---
 
 # Async on the JS backend
 
-nimony-web ships a cooperative-async runtime for the JavaScript target, built on
+aowl-web ships a cooperative-async runtime for the JavaScript target, built on
 nimony's `{.passive.}` CPS coroutines and driven by the host event loop
 (`setTimeout` / `queueMicrotask`).
 

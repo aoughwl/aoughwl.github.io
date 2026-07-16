@@ -58,7 +58,7 @@ to run once, and the parse lives in that init — so callers re-evaluate the bun
    `src/webmain.nim` (plus the parser sources and the jsffi shim) into `.c.nif`
    modules. The 32-bit native C link failure at the end is expected and harmless;
    the `.c.nif` artifacts are what matter.
-2. **`nim_js`** — [nimony-web](../nimony-web)'s JS backend turns each `.c.nif`
+2. **`nim_js`** — [aowl-web](../aowl-web)'s JS backend turns each `.c.nif`
    into a `.js` module.
 3. **Bundle** — an `awk` pass floats every module's two-phase const sections
    (`__NIMJS_CONST_ALLOC` / `_FILL`) ahead of the code (curing cross-module TDZ),
