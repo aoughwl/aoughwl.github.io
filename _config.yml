@@ -24,15 +24,25 @@ footer_content: >-
   <a href="https://discord.gg/nxa3W7w4rJ" target="_blank" rel="noopener">Contact us / Support</a>
   on Discord for access to the private backends.
 
-# Supporter / membership program (Stripe Payment Link — no backend needed).
-# To go live: paste your Stripe Payment Link (subscription) into stripe_url below.
-# While stripe_url is empty the button renders as "Opening soon" (disabled), so
-# nothing dead ships. Names/revenue on /support are read from _data/support.yml.
+# Supporter / membership program (Stripe Payment Links — no backend needed).
+# Model: PAY WHAT YOU WANT — supporters choose their own monthly contribution.
+#
+# To go live, either (or both):
+#   stripe_url  – a Stripe Payment Link where the CUSTOMER PICKS THE AMOUNT.
+#                 In Stripe: create a recurring Price with a customer-chosen
+#                 ("custom") amount, or a Payment Link with adjustable quantity
+#                 of a $1/mo unit. This is the primary "Choose your amount" button.
+#   amounts     – optional preset quick-pick buttons, each its own Payment Link
+#                 (fixed monthly prices always work for subscriptions).
+#
+# While BOTH are empty the button renders "Opening soon" (disabled), so nothing
+# dead ships. Names/revenue on /support are read from _data/support.yml.
 supporter:
   enabled: true
-  stripe_url: ""                                   # <- paste Stripe Payment Link here
+  stripe_url: ""                                   # <- "choose your amount" Payment Link
+  amounts: []                                      # e.g. - { label: "$5/mo",  url: "https://buy.stripe.com/..." }
+                                                   #      - { label: "$25/mo", url: "https://buy.stripe.com/..." }
   discord_invite: "https://discord.gg/nxa3W7w4rJ"  # private supporter Discord invite
-  price_display: ""                                # optional, e.g. "$10 / month"
 
 # GitHub Pages / Jekyll
 plugins:

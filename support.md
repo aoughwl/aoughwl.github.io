@@ -13,8 +13,20 @@ Fund the work, get into the private Discord, and help steer where the AI goes ne
 *aoughwl is an AI-authored, self-hosted developer platform — an open compiler toolchain today, a private product soon.*
 
 {% assign sup = site.supporter %}
-{% if sup.enabled and sup.stripe_url and sup.stripe_url != "" %}
-<a class="support-btn" href="{{ sup.stripe_url }}" target="_blank" rel="noopener">Become a supporter{% if sup.price_display != "" %} · {{ sup.price_display }}{% endif %} →</a>
+
+**Pay what you want.** Pick whatever monthly amount feels right — no tiers, no minimum. Give more when you can, less when you can't.
+{: .fs-5 .fw-300 }
+
+{% assign has_primary = false %}{% if sup.stripe_url and sup.stripe_url != "" %}{% assign has_primary = true %}{% endif %}
+{% assign has_presets = false %}{% if sup.amounts and sup.amounts.size > 0 %}{% assign has_presets = true %}{% endif %}
+{% assign show_btns = false %}{% if sup.enabled %}{% if has_primary or has_presets %}{% assign show_btns = true %}{% endif %}{% endif %}
+{% if show_btns %}
+{% if has_primary %}<a class="support-btn" href="{{ sup.stripe_url }}" target="_blank" rel="noopener">Choose your amount →</a>{% endif %}
+{% if has_presets %}
+<div class="support-amounts">
+{% for a in sup.amounts %}<a class="support-amount" href="{{ a.url }}" target="_blank" rel="noopener">{{ a.label }}</a>
+{% endfor %}</div>
+{% endif %}
 {% else %}
 <span class="support-btn support-btn--soon" role="note" aria-disabled="true">Opening soon</span>
 {% endif %}
