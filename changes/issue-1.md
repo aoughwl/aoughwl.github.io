@@ -1,6 +1,6 @@
 ---
 title: "Issue #1 — `.passive` helpers didn't resolve across modules"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 1
 ---

@@ -23,9 +23,7 @@ ground-up reimplementation of the Nim/Nimony toolchain.
 reimplementation of the entire Nimony toolchain** — parser, semantic checker,
 lowering, and code generators — written *in* Nimony and self-hosting, so the
 whole pipeline runs where the classic Nim compiler can't, most notably the
-browser. It is **not a fork.** The one fork we keep, `aoughwl/nimony`, is now a
-supporting reference — the oracle we validate byte-for-byte against, and where
-upstream-portable compiler fixes land — not the headline.
+browser. Built from the ground up, not patched onto an existing compiler.
 
 > **How we got here.** The aoughwl substrate was always going to run *on* Nimony.
 > We started patching Nimony where it fell short — then rebuilding the pieces from
@@ -80,7 +78,6 @@ power the browser **[playground](playground)**.
 | **[net stack](docs/net-stack)** | Eight one-concern repos — `tcp`·`net`·`tls`·`http`·`compress`·`serve`·`ws`·`requests` — TLS 1.3, dual-stack IPv6, HTTP/1.1 + HTTP/2 server, WebSocket, HTTP/3 client, browser-impersonating `requests`. |
 | **[web](docs/web)** · **[html](docs/html)** · **[css](docs/css)** | A declarative HTML+CSS DSL, a typed HTML5 registry/renderer, and an MDN-typed CSS engine that validates against the real grammar. |
 | **[nimony-ts](docs/nimony-ts)** · **[nimony-py](docs/nimony-py)** · **[nimony-hl](docs/nimony-hl)** | Idiomatic TypeScript / Python backends and the shared High-Level IR that feeds them. |
-| **[aoughwl/nimony](nimony)** | The reference fork: the byte-exact oracle, and where upstream-portable compiler fixes and the opinionated stdlib land. |
 
 ## The private side
 

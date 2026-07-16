@@ -1,6 +1,6 @@
 ---
 title: "Issue #6 — `suspend()` in a generic `.passive` proc was mis-typed"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 6
 ---

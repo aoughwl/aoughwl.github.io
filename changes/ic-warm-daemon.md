@@ -1,6 +1,6 @@
 ---
 title: IC — Warm-worker daemon (nimsem serve)
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 22
 ---

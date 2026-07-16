@@ -1,6 +1,6 @@
 ---
 title: "Issue #3 — Macro plugins failed to compile outside the repo"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 3
 ---

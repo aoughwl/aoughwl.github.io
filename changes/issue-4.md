@@ -1,6 +1,6 @@
 ---
 title: "Issue #4 — `.passive` capturing a `.raises` result crashed hexer"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 4
 ---

@@ -1,7 +1,7 @@
 ---
 title: Changelog
 grand_parent: Engineering Notes
-parent: Fork
+parent: Compiler work
 nav_order: 2
 has_children: true
 permalink: /changelog

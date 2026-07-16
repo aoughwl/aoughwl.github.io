@@ -1,6 +1,6 @@
 ---
 title: "Issue #2 — `delay <call>` crashed inside a generic proc"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 2
 ---

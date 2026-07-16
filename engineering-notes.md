@@ -18,6 +18,6 @@ and a test.
 
 | Note | What's inside |
 |:--|:--|
-| [The fork](nimony) | The `aoughwl/nimony` record — the compiler fixes and `.passive`/async features that came before the from-scratch stack, and the reason we kept the fork as a reference oracle. |
-| [Divergences from upstream](docs/nimony-fork) | Each compiler fix, root-caused: symptom → cause → fix → the test that proves it. |
-| [Changelog](changelog) | The running ledger — every issue fixed and feature added, each with its own writeup. |
+| [Compiler work](nimony) | The record of the compiler engineering behind the stack — the `.passive`/async features and the incremental-compilation wins that make live tooling fast. |
+| [Compiler fixes](docs/nimony-fork) | Each fix, root-caused: symptom → cause → fix → the test that proves it. |
+| [Changelog](changelog) | The running ledger — every issue closed and feature landed, each with its own writeup. |

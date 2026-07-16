@@ -62,9 +62,8 @@ nimony. We hold ourselves to it two ways:
   backends are checked against nimony's own compile-and-run over its test corpus.
   Same inputs, same outputs, or it's a bug.
 
-The one fork we keep — [`aoughwl/nimony`](../nimony) — exists largely to *be*
-that oracle: the reference we diff against, and the place upstream-portable
-compiler fixes land.
+The oracle is nimony's own toolchain: we keep a byte-exact reference build to diff
+against, so any drift from identical behaviour shows up the moment it appears.
 
 ## What you get on top
 

@@ -1,6 +1,6 @@
 ---
 title: "Feature — `delay <call>` inside generics"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 102
 ---

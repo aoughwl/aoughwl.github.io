@@ -1,6 +1,6 @@
 ---
 title: "Feature — Cross-module `.passive`"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 101
 ---

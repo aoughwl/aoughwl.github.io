@@ -1,6 +1,6 @@
 ---
 title: IC — Parallel dependency discovery
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 20
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Feature — `suspend()` in a generic `.passive` proc"
-grand_parent: Fork
+grand_parent: Compiler work
 parent: Changelog
 nav_order: 103
 ---
