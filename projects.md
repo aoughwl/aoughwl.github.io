@@ -16,7 +16,9 @@ repo READMEs are short stubs that point here.
 | [nifjs](docs/nifjs) — nimony-native `.s.nif` → native-JavaScript backend | `aoughwl/nifjs` | public |
 | [nifjs-js](docs/nifjs) — the hand-written JS implementation (bootstrap seed & oracle) | `aoughwl/nifjs-js` | public |
 | [nifc](docs/nifc) — `.c.nif` → C native backend (faithful; ARC baked in) | `aoughwl/nifc` | public |
-| [nifmony](docs/nifmony) — the rewrite driver: `.nim` → {native \| interpret \| web} over the self-owned stack | `aoughwl/nifmony` | public |
+| [aifmony](docs/aifmony) — the rewrite driver: `.nim` → {native \| interpret \| web} over the self-owned stack | `aoughwl/aifmony` | public |
+| [aifhexer](docs/aifhexer) — the aowl lowering pass (ARC/closures/exceptions/mono), seeded from Araq's hexer | `aoughwl/aifhexer` | public |
+| [aiflib](docs/aiflib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aiflib` | public · scaffolding |
 | [nimony-playground](playground) — browser playground, nifi compiled to JS | `aoughwl/nimony-playground` | public |
 | [nimony-web](docs/nimony-web) — JS + WASM backends & async runtime | `aoughwl/nimony-web` | private repo · public docs |
 | [nim-code](docs/nim-code) — Claude Code plugin + MCP server | `aoughwl/nim-code` | public |
