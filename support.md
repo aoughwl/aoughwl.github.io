@@ -7,15 +7,14 @@ permalink: /support
 # Become a Supporter
 {: .fs-9 }
 
-Fund the work, get into the private Discord, and help steer where the AI goes next.
+A monthly contribution funds aoughwl's continued development and gives you access to the private Discord and a direct voice in what gets built.
 {: .fs-6 .fw-300 }
 
 *aoughwl is an AI-authored, self-hosted developer platform — an open compiler toolchain today, a private product soon.*
 
 {% assign sup = site.supporter %}
 
-**Pay what you want.** Pick whatever monthly amount feels right — no tiers, no minimum. Give more when you can, less when you can't.
-{: .fs-5 .fw-300 }
+Contribute any amount you choose each month. There are no fixed tiers.
 
 {% assign has_primary = false %}{% if sup.stripe_url and sup.stripe_url != "" %}{% assign has_primary = true %}{% endif %}
 {% assign has_presets = false %}{% if sup.amounts and sup.amounts.size > 0 %}{% assign has_presets = true %}{% endif %}
@@ -33,26 +32,24 @@ Fund the work, get into the private Discord, and help steer where the AI goes ne
 
 ---
 
-## What you get
+## What your support includes
 
-- **A private Discord.** Direct line to the work — builds, decisions, and the
-  roadmap, before any of it is public.
-- **A real say in direction.** Supporters get to weigh in on what we build and how
-  we point the AI next. Your priorities move up the list.
-- **Get in early.** The full aoughwl product is coming and mostly private today.
-  Supporting now is how you get in before the door opens — and how you help pay
-  for the compute that builds it.
+- **Private Discord.** Access to development builds, the roadmap, and decisions
+  before they are public.
+- **Influence on direction.** Supporters help set priorities — what gets built,
+  and how the AI is directed.
+- **Early access.** The full aoughwl product is largely private today. Supporting
+  now secures your place as it opens up, and helps fund the compute that builds it.
 
-## Where the money goes — in the open
+## Transparency
 
-We think it's only fair to be transparent about what this brings in and who's
-behind it.
+We publish what the program brings in each month, and who is behind it.
 
 <div class="support-board">
   {% assign s = site.data.support %}
   <div class="support-stat">
     <span class="support-stat-num">{{ s.monthly_total_display }}</span>
-    <span class="support-stat-label">raised in {{ s.month }}</span>
+    <span class="support-stat-label">contributed in {{ s.month }}</span>
   </div>
   <div class="support-stat">
     <span class="support-stat-num">{{ s.supporters_count }}</span>
@@ -62,25 +59,25 @@ behind it.
 
 {% assign pubs = s.recent | where: "public", true %}
 {% if pubs.size > 0 %}
-<p class="support-recent-label">Most recent supporters</p>
+<p class="support-recent-label">Recent supporters</p>
 <ul class="support-recent">
 {% assign shown = pubs | slice: 0, s.show_recent %}
 {% for p in shown %}<li><span class="support-name">{{ p.name }}</span>{% if p.tier %}<span class="support-tier">{{ p.tier }}</span>{% endif %}</li>
 {% endfor %}
 </ul>
-<p class="support-recent-note">We only ever show the most recent supporters — never a full, scrolling roster. Supporters who'd rather stay anonymous are counted here but not named.</p>
+<p class="support-recent-note">Only the most recent supporters are listed. Supporters who prefer to remain anonymous are counted but not named.</p>
 {% else %}
-<p class="support-recent-empty">No public supporters listed yet — <strong>be the first.</strong></p>
+<p class="support-recent-empty">No supporters are listed yet.</p>
 {% endif %}
 
-## Your name, your call
+## Privacy
 
-When you join you choose whether your name shows up here or not. Public or
-anonymous, it's entirely up to you — and either way, only the most recent
-supporters are ever listed.
+When you join, you choose whether your name appears here. Public or anonymous is
+entirely your decision, and only the most recent supporters are ever listed.
 
-## The fine print
+## Terms
 
-Support offered in good faith — **not a product purchase or general guarantee.**
+Support is offered in good faith. It is not a purchase of the product and not a
+guarantee of any specific feature, timeline, or outcome.
 
-Questions first? Reach out on [Discord]({{ sup.discord_invite }}).
+Questions? Reach out on [Discord]({{ sup.discord_invite }}).
