@@ -1,6 +1,6 @@
 ---
 title: Architecture
-parent: aowl-web
+parent: Faithful JS/WASM — aowlweb
 grand_parent: Backends
 nav_order: 3
 ---
@@ -75,7 +75,7 @@ mechanical layer.
 
 ## What the two backends consume from nimony
 
-aowl-web owns `jslayout` and everything downstream of it. It consumes from the
+aowlweb owns `jslayout` and everything downstream of it. It consumes from the
 sibling nimony checkout, via `--path` in `src/nim.cfg`, the infrastructure it
 does **not** fork:
 
@@ -83,7 +83,7 @@ does **not** fork:
 - the **module loader** (`nifmodules`) — `getDeclOrNil`, `MainModule`;
 - the **name mangler** and NIF primitives (`nifcore`, `nifcoreparse`, `nifcdecl`).
 
-So aowl-web builds against nimony *master* — it uses only stock nimony NIF APIs and
+So aowlweb builds against nimony *master* — it uses only stock nimony NIF APIs and
 none of a feature branch's `src/lib` internals.
 
 ## The pipeline, end to end
@@ -108,7 +108,7 @@ nim source
 `--define:nimNativeAlloc` compiles the stdlib against Nim's own ported allocator
 (`system/alloc.nim`) over the runtime's `mmap`/`munmap`, instead of the mimalloc
 C binding — the libc-free config the web targets want. The trailing 32-bit C link
-fails on a 64-bit host, which is expected and ignored: the `.c.nif` aowl-web
+fails on a 64-bit host, which is expected and ignored: the `.c.nif` aowlweb
 consumes is emitted *before* the C backend runs, so the signal of a real error is
 simply that no `.c.nif` was produced.
 

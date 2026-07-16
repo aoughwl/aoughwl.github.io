@@ -1,6 +1,5 @@
 ---
 title: css
-grand_parent: Documentation
 parent: Builtin Libraries
 nav_order: 4
 ---

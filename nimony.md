@@ -54,20 +54,20 @@ async library. Each links to its full writeup.
 | [F4](changes/feat-proc-pragma-macros) | [Proc-pragma macros (`{.async.}`)](changes/feat-proc-pragma-macros) | `macros_nif.nim` `semcall.nim` `macro_plugin.nim` | `tasyncsugar` |
 {: .ledger}
 
-### The async runtime — `aoughwl/aowl-web`
+### The async runtime — `aoughwl/aowlweb`
 
 A complete cooperative-async runtime over these coroutines, driven by the host
 event loop — **46/46** under Node. Each row is documented on the
-**[async runtime](docs/aowl-web/async)** page.
+**[async runtime](docs/aowlweb/async)** page.
 
 | Feature | What it gives you | Docs |
 |---|---|---|
-| `Future[T]` + `await` | value-returning async, importable across modules | [async](docs/aowl-web/async) |
-| Dispatcher | `callSoon` / `drainReady` / `runForever`, reentrancy-guarded FIFO | [async](docs/aowl-web/async) |
-| Importable `sleepAsync` | reusable `{.passive.}` sleep, called cross-module | [async](docs/aowl-web/async) |
-| Generic `gather` / `all` | await many futures, importable & generic | [async](docs/aowl-web/async) |
-| Generic `race[T]` / `any` | first-to-finish wins, returns the real `T` | [async](docs/aowl-web/async) |
-| `{.async.}` proc sugar | write `{.async.}` instead of `{.passive.}` | [async](docs/aowl-web/async) |
+| `Future[T]` + `await` | value-returning async, importable across modules | [async](docs/aowlweb/async) |
+| Dispatcher | `callSoon` / `drainReady` / `runForever`, reentrancy-guarded FIFO | [async](docs/aowlweb/async) |
+| Importable `sleepAsync` | reusable `{.passive.}` sleep, called cross-module | [async](docs/aowlweb/async) |
+| Generic `gather` / `all` | await many futures, importable & generic | [async](docs/aowlweb/async) |
+| Generic `race[T]` / `any` | first-to-finish wins, returns the real `T` | [async](docs/aowlweb/async) |
+| `{.async.}` proc sugar | write `{.async.}` instead of `{.passive.}` | [async](docs/aowlweb/async) |
 {: .ledger}
 
 ---
@@ -129,7 +129,7 @@ analysis from descending into stored macro bodies. Full root-cause writeups:
 - **Raise-across-await** — the `.raises` error-tuple ABI was never threaded
   through the coroutine lowering (`coro_transform` types the lifted result as raw
   `ptr T`, not `ptr (ErrorCode, T)`). The crash is gone (issue #4), but real
-  cross-`await` exception propagation is a deferred *feature*; the aowl-web
+  cross-`await` exception propagation is a deferred *feature*; the aowlweb
   library propagates errors via `Future.err`.
 - **Dispatcher shutdown** — a coroutine that finishes *after* the entry coroutine
   returns crashes the dispatcher; keep the entry `main` last.

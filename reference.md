@@ -24,5 +24,5 @@ the repo READMEs slim down to stubs.
 | requests | [full README](docs/reference/requests) |
 
 Everything else's original README is fully captured by its
-[project page](projects); aowl-web's original docs are the child pages under
-[aowl-web](docs/aowl-web).
+[project page](projects); aowlweb's original docs are the child pages under
+[aowlweb](docs/aowlweb).

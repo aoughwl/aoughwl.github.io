@@ -1,6 +1,5 @@
 ---
 title: obfuscate
-grand_parent: Documentation
 parent: Tools
 nav_order: 4
 ---

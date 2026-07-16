@@ -1,6 +1,5 @@
 ---
-title: aowljs
-grand_parent: Documentation
+title: Native JS — aowljs
 parent: Backends
 nav_order: 2
 ---
@@ -31,7 +30,7 @@ Nimony reaches the web through two JavaScript emitters that operate at
 **different IR levels**, and that single choice is what makes them fast-or-slow
 and readable-or-mangled:
 
-| | **[aowl-web](aowl-web)** (leng, faithful) | **aowljs** (native, fast) |
+| | **[aowlweb](aowlweb)** (leng, faithful) | **aowljs** (native, fast) |
 |---|---|---|
 | input IR | `.c.nif` — *after* hexer lowers everything to pointers / `memcpy` / ARC | `.s.nif` — *before* lowering; still has `int` / `string` / `seq` / objects |
 | values | one simulated linear memory (`ArrayBuffer` + `DataView`) | native JS (`number`, `string`, `Array`, `{}`) |
@@ -147,7 +146,7 @@ exact machine-integer overflow or pointer identity it diverges. That is exactly
 why nimony keeps hexer and the faithful backend — the two emitters are
 **complementary, not a replacement**:
 
-- **[aowl-web](aowl-web) / leng (faithful)** builds the playground's own
+- **[aowlweb](aowlweb) / leng (faithful)** builds the playground's own
   engine bundles, runs anything, and preserves exact semantics.
 - **aowljs (native)** is the fast, readable path for user programs, with the
   interpreter as its safety net.

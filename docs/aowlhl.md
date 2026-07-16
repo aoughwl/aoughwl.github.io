@@ -1,16 +1,15 @@
 ---
-title: aowl-hl
-grand_parent: Documentation
+title: HL-IR — aowlhl
 parent: Backends
 nav_order: 7
 ---
 
-# aowl-hl — shared High-Level IR
+# aowlhl — shared High-Level IR
 {: .no_toc }
 
 The **shared lowering** for the idiomatic Nim-to-high-level backends: it turns
 nimony's sem'd IR into a small, target-neutral **High-Level IR (HL-IR)** that the
-thin language emitters — [aowl-ts](aowl-ts) and [aowl-py](aowl-py) —
+thin language emitters — [aowlts](aowlts) and [aowlpy](aowlpy) —
 render into TypeScript and Python.
 
 > **Status: early scaffold** · private repo. No lowering code has landed yet.
@@ -29,7 +28,7 @@ nimony  ──▶  <module>.s.nif   (sem'd, pre-hexer)
                   │
                   ▼
    ┌──────────────────────────────────┐
-   │  aowl-hl  (this repo)           │   the shared ~85%
+   │  aowlhl  (this repo)           │   the shared ~85%
    │  sem'd NIF  →  High-Level IR      │
    │   • structured control flow       │
    │   • inline iterators; defer→finally│
@@ -41,12 +40,12 @@ nimony  ──▶  <module>.s.nif   (sem'd, pre-hexer)
    └──────────────────────────────────┘
         │                          │
         ▼                          ▼
-   aowl-ts emitter          aowl-py emitter
+   aowlts emitter          aowlpy emitter
    (HL-IR → TypeScript)       (HL-IR → Python)
 ```
 
 **HL-IR** is a small target-neutral AST, each node tagged with an HL type
 (`Int/Big/Float/Bool/Str/List/Dict/Set/Obj/Ref/Union/Func/Opt`) so the emitters can
 make the few divergent decisions (e.g. TS `number`/`bigint`, `Map` keying). Full
-design in [`docs/design.md`](https://github.com/aoughwl/aowl-hl/blob/main/docs/design.md)
+design in [`docs/design.md`](https://github.com/aoughwl/aowlhl/blob/main/docs/design.md)
 in the repo.

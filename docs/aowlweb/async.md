@@ -1,13 +1,13 @@
 ---
 title: Async runtime
-parent: aowl-web
+parent: Faithful JS/WASM — aowlweb
 grand_parent: Backends
 nav_order: 5
 ---
 
 # Async on the JS backend
 
-aowl-web ships a cooperative-async runtime for the JavaScript target, built on
+aowlweb ships a cooperative-async runtime for the JavaScript target, built on
 nimony's `{.passive.}` CPS coroutines and driven by the host event loop
 (`setTimeout` / `queueMicrotask`).
 

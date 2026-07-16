@@ -1,6 +1,5 @@
 ---
 title: aowlmony
-grand_parent: Documentation
 parent: Compiler Pipeline
 nav_order: 3
 ---

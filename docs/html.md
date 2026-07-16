@@ -1,6 +1,5 @@
 ---
 title: html
-grand_parent: Documentation
 parent: Builtin Libraries
 nav_order: 3
 ---

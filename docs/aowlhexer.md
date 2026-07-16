@@ -1,6 +1,5 @@
 ---
 title: aowlhexer
-grand_parent: Documentation
 parent: Compiler Pipeline
 nav_order: 2
 ---

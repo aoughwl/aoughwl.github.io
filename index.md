@@ -11,7 +11,7 @@ Next-gen self-hosted platform for things n stuff — now standing on our own
 ground-up reimplementation of the Nim/Nimony toolchain.
 {: .fs-6 .fw-300 }
 
-[Documentation →](documentation){: .btn .btn-primary .mr-2 }
+[The compiler →](docs/compiler-pipeline){: .btn .btn-primary .mr-2 }
 [Interop: AIF ≡ NIF →](docs/aif){: .btn .mr-2 }
 [Engineering Notes →](engineering-notes){: .btn }
 
@@ -77,7 +77,7 @@ power the browser **[playground](playground)**.
 | **[nimony-lsp](docs/nimony-lsp)** | Language Server + full VSCode extension; live as-you-type diagnostics. |
 | **[net stack](docs/net-stack)** | Eight one-concern repos — `tcp`·`net`·`tls`·`http`·`compress`·`serve`·`ws`·`requests` — TLS 1.3, dual-stack IPv6, HTTP/1.1 + HTTP/2 server, WebSocket, HTTP/3 client, browser-impersonating `requests`. |
 | **[web](docs/web)** · **[html](docs/html)** · **[css](docs/css)** | A declarative HTML+CSS DSL, a typed HTML5 registry/renderer, and an MDN-typed CSS engine that validates against the real grammar. |
-| **[aowl-ts](docs/aowl-ts)** · **[aowl-py](docs/aowl-py)** · **[aowl-hl](docs/aowl-hl)** | Idiomatic TypeScript / Python backends and the shared High-Level IR that feeds them. |
+| **[aowlts](docs/aowlts)** · **[aowlpy](docs/aowlpy)** · **[aowlhl](docs/aowlhl)** | Idiomatic TypeScript / Python backends and the shared High-Level IR that feeds them. |
 
 ## The private side
 

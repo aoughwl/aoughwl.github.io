@@ -1,7 +1,6 @@
 ---
 title: AIF ≡ NIF (interop)
-parent: Documentation
-nav_order: 0
+nav_order: 1
 permalink: /docs/aif
 ---
 

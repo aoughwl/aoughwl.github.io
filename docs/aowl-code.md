@@ -1,6 +1,5 @@
 ---
 title: aowl-code
-grand_parent: Documentation
 parent: Tools
 nav_order: 1
 ---

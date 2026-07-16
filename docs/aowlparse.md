@@ -1,6 +1,5 @@
 ---
 title: aowlparse
-grand_parent: Documentation
 parent: Compiler Pipeline
 nav_order: 1
 has_children: true

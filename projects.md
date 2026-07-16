@@ -21,13 +21,13 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlmony](docs/aowlmony) — the driver: `.nim` → {native \| interpret \| web} over the whole stack | `aoughwl/aowlmony` | public |
 | [aowllib](docs/aowllib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aowllib` | public · scaffolding |
 | [nimony-playground](playground) — browser playground, `aowli` compiled to JS | `aoughwl/nimony-playground` | public |
-| [aowl-web](docs/aowl-web) — JS + WASM backends & async runtime | `aoughwl/aowl-web` | private repo · public docs |
+| [aowlweb](docs/aowlweb) — JS + WASM backends & async runtime | `aoughwl/aowlweb` | private repo · public docs |
 | [aowl-code](docs/aowl-code) — Claude Code plugin + MCP server | `aoughwl/aowl-code` | public |
 | [nimony-lsp](docs/nimony-lsp) — Language Server + VSCode extension | `aoughwl/nimony-lsp` | public |
 | [net stack](docs/net-stack) — `tcp`/`net`/`tls`/`http`/`compress`/`serve`/`ws`/`requests` | `aoughwl/{tcp,net,tls,http,compress,serve,ws,requests}` | public |
 | [web](docs/web) — HTML + validated CSS in one nimony block (DSL) | `aoughwl/web` | public |
 | [html](docs/html) — typed HTML5 registry + renderer | `aoughwl/html` | public |
 | [css](docs/css) — MDN-typed CSS engine (parse + validate) | `aoughwl/css` | public |
-| [aowl-ts](docs/aowl-ts) — idiomatic TypeScript backend | `aoughwl/aowl-ts` | early scaffold · private |
-| [aowl-py](docs/aowl-py) — idiomatic Python backend | `aoughwl/aowl-py` | early scaffold · private |
-| [aowl-hl](docs/aowl-hl) — shared High-Level IR | `aoughwl/aowl-hl` | early scaffold · private |
+| [aowlts](docs/aowlts) — idiomatic TypeScript backend | `aoughwl/aowlts` | early scaffold · private |
+| [aowlpy](docs/aowlpy) — idiomatic Python backend | `aoughwl/aowlpy` | early scaffold · private |
+| [aowlhl](docs/aowlhl) — shared High-Level IR | `aoughwl/aowlhl` | early scaffold · private |

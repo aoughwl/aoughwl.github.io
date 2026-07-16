@@ -1,6 +1,6 @@
 ---
 title: JavaScript FFI and DOM
-parent: aowl-web
+parent: Faithful JS/WASM — aowlweb
 grand_parent: Backends
 nav_order: 4
 ---
@@ -18,7 +18,7 @@ bridges the two worlds, and the DOM bindings sit on top of it.
 
 > **Where the FFI package lives.** The canonical FFI/DOM library is maintained in
 > a separate repo, [`aoughwl/js`](https://github.com/aoughwl/js) — that's the
-> package aowl-web's JS DOM examples build on. The copies of `jsffi.nim`,
+> package aowlweb's JS DOM examples build on. The copies of `jsffi.nim`,
 > `domlib.nim`, and `dom.nim` under `tests/jsbackend/` are **vendored test
 > fixtures**: in-tree snapshots so the suite is self-contained, not the source of
 > truth. Track `aoughwl/js` for the maintained version.
