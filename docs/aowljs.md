@@ -100,8 +100,9 @@ either.) Not yet lowered for standalone emit: capturing **closures**, custom
 playground these fall back to the interpreter.
 
 Against the shared differential corpus (`aowlhl/corpus`, 44 programs diffed vs
-native nimony) aowljs sits at **35/44 fast, 36/44 faithful**; `tests/run_faithful.sh`
-is **5/5**.
+native nimony) aowljs sits at **37/44 fast, 39/44 faithful**; `tests/run_faithful.sh`
+is **5/5**. (Float values print with a trailing `.0` — `echo`/`$` consult a static
+float-type environment, including tuple float elements.)
 
 Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
 **shim registry**.

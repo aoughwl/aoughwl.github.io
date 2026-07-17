@@ -224,6 +224,8 @@ every wrapping backend makes and is what hardware does.
 - user generic instances (monomorphized) are emitted;
 - tuples (construction, indexing, tuple return types);
 - `var`/`out` parameters via boxing;
+- float values print with a trailing `.0` via `echo`/`$` (tracked through a static
+  float-type environment, incl. tuple float elements);
 - `echo` (→ a captured-output shim printed once at the end);
 - multi-module programs (imported user modules emitted in dependency order).
 
@@ -249,7 +251,7 @@ The test harness (`tests/run.sh`) compiles each `tests/*.nim` with nimony for th
 reference stdout, transpiles it, runs the emitted `.ts` with node, and diffs.
 Current suite: **8/8 byte-identical** fast + **6/6 faithful**. The shared
 differential corpus (`aowlhl/corpus`, 44 programs vs native nimony) sits at
-**35/44 fast, 37/44 faithful**; the remaining fails are the known-limitation
+**37/44 fast, 40/44 faithful**; the remaining fails are the known-limitation
 items below.
 
 ## Known limitations / TODO
@@ -259,9 +261,6 @@ items below.
   `--experimental-transform-types`, `tsc`, or `deno`;
 - **closures / first-class `{.closure.}` iterators** — not yet lowered;
 - **inheritance (`object of`) and `ref object`** field mutation — not yet lowered;
-- **float display of a statically-untyped value** — `var a = 1.0; echo a` prints
-  `1` (the writer routes on expression shape; a bare var/tuple-element carries no
-  static float type). Needs a symbol→type map;
 - **`set[T]`** membership emits an inline `Set`/OR-chain (functional, not typed as
   a nominal set);
 - **macros / compile-time execution**, `try`/`except`/`raise`, and `defer` are
