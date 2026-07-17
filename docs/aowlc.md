@@ -1,6 +1,6 @@
 ---
 title: C — aowlc
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 6
 ---
 

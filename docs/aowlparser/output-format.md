@@ -1,7 +1,8 @@
 ---
+nav_exclude: true
 title: The .p.nif format
 parent: Parser — aowlparser
-grand_parent: The compiler — aowlmony
+grand_parent: aowlmony
 nav_order: 6
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Native JS — aowljs
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 7
 ---
 

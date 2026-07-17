@@ -1,8 +1,8 @@
 ---
 title: Faithful JS/WASM — aowlweb
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 8
-has_children: true
+has_children: false
 ---
 
 # aowlweb — JavaScript & WebAssembly backends

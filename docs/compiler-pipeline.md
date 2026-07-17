@@ -1,10 +1,10 @@
 ---
-title: The compiler — aowlmony
+title: aowlmony
 nav_order: 1
 has_children: true
 ---
 
-# The compiler — aowlmony
+# aowlmony
 {: .no_toc }
 
 The whole compiler, driven by `aowlmony`: `source → parse → semcheck → lower →

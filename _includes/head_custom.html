@@ -177,17 +177,19 @@
   /* the collapse chevron: a touch more visible so groups read as groups */
   .site-nav .nav-list-expander svg { opacity: 0.8; }
 
-  /* per-item repo link (right-aligned, external icon) — injected by the script below */
-  .site-nav .nav-list-item.has-nav-repo { position: relative; }
-  .site-nav .has-nav-repo > .nav-list-link { padding-right: 4.8rem !important; }
+  /* per-item repo link: label left, repo pushed RIGHT (no dash) + external icon — injected by JS */
+  .site-nav .nav-list-item.has-nav-repo { display: flex; align-items: baseline; }
+  .site-nav .has-nav-repo > .nav-list-link { flex: 1 1 auto; min-width: 0; }
   .nav-repo {
-    position: absolute; top: 0; bottom: 0; right: 0.5rem;
-    display: inline-flex; align-items: center; gap: 0.22rem;
-    font-size: 0.7rem; opacity: 0.5; color: inherit;
+    flex: 0 0 auto; margin-left: auto; padding-right: 0.55rem;
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-size: 0.72rem; opacity: 0.55; color: inherit;
     text-decoration: none !important; white-space: nowrap;
   }
   .nav-repo:hover { opacity: 0.95; }
-  .nav-repo svg { width: 10px; height: 10px; flex: 0 0 auto; }
+  .nav-repo svg { width: 11px; height: 11px; flex: 0 0 auto; }
+  /* breathing room between nav items */
+  .site-nav .nav-list .nav-list-item { margin: 0.22rem 0; }
 </style>
 
 <!-- split each "Label — reponame" nav item into: label (-> doc page) + a
@@ -203,7 +205,7 @@
       if (li.querySelector(':scope > .nav-list')) return;               // group -> keep whole
       var link = li.querySelector(':scope > .nav-list-link');
       if (!link) return;
-      var m = link.textContent.trim().match(/^(.*\S)\s+—\s+([A-Za-z0-9._-]+)$/);
+      var m = link.textContent.trim().match(/^(.*\S)\s+[—–-]\s+([A-Za-z0-9._-]+)$/);
       if (!m) return;
       link.textContent = m[1];
       var a = document.createElement('a');

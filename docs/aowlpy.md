@@ -1,6 +1,6 @@
 ---
 title: Python — aowlpy
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 10
 ---
 

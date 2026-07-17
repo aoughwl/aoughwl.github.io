@@ -1,6 +1,6 @@
 ---
 title: High-Level IR — aowlhl
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 11
 ---
 

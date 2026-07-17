@@ -1,7 +1,8 @@
 ---
+nav_exclude: true
 title: Coverage
 parent: Parser — aowlparser
-grand_parent: The compiler — aowlmony
+grand_parent: aowlmony
 nav_order: 5
 ---
 

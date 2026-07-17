@@ -11,7 +11,7 @@ Next-gen self-hosted platform for things n stuff — now standing on our own
 ground-up reimplementation of the Nim/Nimony toolchain.
 {: .fs-6 .fw-300 }
 
-[The compiler →](docs/compiler-pipeline){: .btn .btn-primary .mr-2 }
+[aowlmony →](docs/compiler-pipeline){: .btn .btn-primary .mr-2 }
 [Interop: AIF ≡ NIF →](docs/aif){: .btn .mr-2 }
 [Engineering Notes →](engineering-notes){: .btn }
 

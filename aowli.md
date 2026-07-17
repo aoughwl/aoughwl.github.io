@@ -1,6 +1,6 @@
 ---
 title: Interpreter — aowli
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 5
 ---
 

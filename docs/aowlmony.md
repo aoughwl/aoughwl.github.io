@@ -1,6 +1,6 @@
 ---
 title: Driver — aowlmony
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 3
 ---
 

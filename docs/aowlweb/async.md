@@ -1,7 +1,8 @@
 ---
+nav_exclude: true
 title: Async runtime
 parent: Faithful JS/WASM — aowlweb
-grand_parent: The compiler — aowlmony
+grand_parent: aowlmony
 nav_order: 5
 ---
 

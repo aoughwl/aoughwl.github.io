@@ -1,6 +1,6 @@
 ---
 title: TypeScript — aowlts
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 9
 ---
 

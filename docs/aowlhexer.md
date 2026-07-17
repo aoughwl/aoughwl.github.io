@@ -1,6 +1,7 @@
 ---
+nav_exclude: true
 title: Lowering — aowlhexer
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 2
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: Parser — aowlparser
-parent: The compiler — aowlmony
+parent: aowlmony
 nav_order: 1
-has_children: true
+has_children: false
 ---
 
 # aowlparser — Nim → NIF parser
