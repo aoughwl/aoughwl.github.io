@@ -72,9 +72,11 @@ export default {
   extends: DefaultTheme,
   Layout() {
     return h(DefaultTheme.Layout, null, {
-      // Playground on the left, before the search box
-      'nav-bar-content-before': () =>
-        h('div', { class: 'nav-left' }, [
+      // Right side (after the full-width search): Playground, then a separator,
+      // then the GitHub · Discord · Support cluster. The theme toggle is pulled
+      // out of the bar to a fixed bottom-right corner via CSS.
+      'nav-bar-content-after': () =>
+        h('div', { class: 'nav-right' }, [
           extLink({
             cls: 'nav-pg-link',
             href: PLAYGROUND_URL,
@@ -84,13 +86,11 @@ export default {
             rightIcon: REDIRECT_SVG,
             label: 'Open the playground',
           }),
-        ]),
-      // GitHub · Discord · Support cluster on the right
-      'nav-bar-content-after': () =>
-        h('div', { class: 'nav-social' }, [
-          extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
-          extLink({ cls: 'nav-social-link', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
-          extLink({ cls: 'nav-social-link', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
+          h('div', { class: 'nav-social' }, [
+            extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
+            extLink({ cls: 'nav-social-link', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
+            extLink({ cls: 'nav-social-link', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
+          ]),
         ]),
     })
   },

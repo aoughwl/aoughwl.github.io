@@ -63,15 +63,31 @@
 /* logo + "docs" centered within the title column (not left-aligned) */
 .VPNavBarTitle .title { justify-content: center; }
 
-/* ---- Custom nav links: Playground (left) + GitHub·Discord·Support (right) - */
-.nav-left { display: inline-flex; align-items: center; }
+/* ---- Theme toggle: pulled OUT of the bar to a fixed bottom-right corner ---- */
+.VPNavBarAppearance,
+.VPNavBar .VPNavBarAppearance {
+  display: flex !important;
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  padding: 5px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 999px;
+  background: var(--vp-c-bg-elv);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.VPNavBarAppearance::before { display: none !important; } /* kill its separator */
+
+/* ---- Custom nav links: right cluster — Playground | GitHub·Discord·Support - */
+.nav-right { display: inline-flex; align-items: center; gap: 2px; }
 .nav-social {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  margin-left: 10px;
+  margin-left: 8px;
   padding-left: 12px;
-  border-left: 1px solid var(--vp-c-divider); /* separator before the cluster */
+  border-left: 1px solid var(--vp-c-divider); /* the kept separator */
 }
 .nav-pg-link,
 .nav-social-link {
@@ -116,26 +132,36 @@
 /* wider search modal input */
 .VPLocalSearchBox .search-bar { max-width: none; }
 
-/* ---- Sidebar rows: repo badge as a flex child + full-row hover ---- */
-/* make each row a flex line so name grows and badge/caret sit at the right */
+/* ---- Sidebar rows: flex line, caret on the LEFT, badge flush-right ---- */
 .VPSidebarItem .item {
   display: flex;
   align-items: center;
+  /* padding + negative margin so the hover background has breathing room
+     while the text stays aligned with the region labels */
+  padding: 4px 10px;
+  margin: 0 -10px;
+  border-radius: 7px;
 }
 .VPSidebarItem .item > .link { flex: 1 1 auto; min-width: 0; }
-.VPSidebarItem .item > .caret { flex: 0 0 auto; }
 
-/* hover the WHOLE row (name + badge together) so the badge clearly belongs;
-   only real link rows, not the region-label headers */
-.VPSidebarItem.is-link > .item:hover {
-  background: var(--vp-c-default-soft);
-  border-radius: 6px;
+/* collapse caret goes to the LEFT (a tree-style disclosure) so every repo
+   badge can right-align in one column regardless of children */
+.VPSidebarItem.collapsible > .item > .caret {
+  order: -1;
+  flex: 0 0 auto;
+  margin: 0 2px 0 -4px;
 }
+/* leaf rows indent to line their names up with the collapsible ones */
+.VPSidebarItem.is-link:not(.collapsible) > .item > .link { padding-left: 1.25rem; }
 
-/* the "aowljs ↗" badge — right-aligned, links to the repo */
+/* hover the WHOLE row (name + badge together); only real link rows */
+.VPSidebarItem.is-link > .item:hover { background: var(--vp-c-default-soft); }
+
+/* the "aowljs ↗" badge — pushed to the far right, links to the repo */
 .repo-badge {
   flex: 0 0 auto;
-  margin-left: 8px;
+  order: 2;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -172,8 +198,8 @@
 }
 .VPSidebarItem.level-0:last-child { margin-bottom: 0; }
 
-/* tighten every row */
-.VPSidebarItem .item { min-height: 0; padding: 1px 0; }
+/* tighten every row (padding is set above with the hover-breathing-room trick) */
+.VPSidebarItem .item { min-height: 0; }
 .VPSidebarItem .link .link-text,
 .VPSidebarItem .text {
   line-height: 1.45;
