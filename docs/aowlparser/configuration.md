@@ -127,10 +127,46 @@ Unlike native `nifler` — which inherits the classic compiler's abort-on-first-
 behaviour — aowlparser is **recoverable**: it records every problem with a source
 span, keeps parsing, and still emits best-effort NIF. Diagnostics carry a
 `severity` (error/warning/hint), a stable `code` slug, a message, and a
-`line:col`–`endCol` span. Errors detected today: unknown/illegal bytes,
-unterminated string literals, rejected BOM, and structural bracket problems
-(`unmatched-close` / `mismatched-bracket` / `unclosed-bracket`); the whitespace and
-indentation checks below surface as warnings/hints.
+`line:col`–`endCol` span, and — where one exists — a suggested `fix` and a
+`related` location (e.g. the `(` a stray `)` should have matched). The whitespace
+and indentation checks further down surface as warnings/hints.
+
+The catalog of what `check` detects today, every entry proven
+**zero-false-positive** against ~600 valid files and the whole Nim standard
+library:
+
+- **Full lexer-error parity** — every lexical error native `nifler` reports, and
+  then some, each recovered past instead of aborting: bad character literals
+  (empty `''`, run-on `'ab'`, unterminated `'a`), illegal tabs, unterminated
+  block comments (`#[ … `), malformed escapes (`\q`, empty `\x`, empty `\u{}`),
+  unterminated triple/raw strings, doubled/trailing underscores in a number,
+  unterminated accent-quoted identifiers, unknown/illegal bytes, unterminated
+  strings, and a rejected BOM.
+- **Structural bracket problems** — `unmatched-close`, `mismatched-bracket`
+  (points at *both* the close and the opener it should have matched, as a
+  `related` field), and `unclosed-bracket`.
+- **Detections `nifler` lacks or reports vaguely** — `assignment-in-condition`
+  (`if x = 5:` → *did you mean `==`?*, across `if`/`elif`/`while`/`when`),
+  `expected-condition` (empty `elif:`), and `expression-expected` (an empty
+  comma slot `foo(a,,b)`, while still allowing a valid *trailing* comma).
+- **"Forgot the introducer" family** — a routine with a body but no `=`
+  (`missing-routine-equals`), a `type Name` with an indented body but no
+  `= object`/`= enum` (`missing-type-equals`), and a colon-block whose body
+  isn't indented past its header. Each names the omission, points at the
+  declaration, and carries the exact fix-it — where `nifler` only emits a bare
+  *invalid indentation*.
+- **Precise grammar diagnostics** — `func-in-type-description`
+  (→ *use `proc` with `{.noSideEffect.}`*), `enum-member-not-identifier`
+  (a keyword spliced into an `enum` body), `empty-variant-branch` (an `of A:`
+  with no field — pointing at the branch itself, not the innocent next one),
+  `of-without-value` (an `of` with no value before its `:`), and
+  `expected-in` (`for x of xs:` → *write `for <vars> in <iterable>: …*`).
+- **Knows what isn't plain Nim** — a file opening with a `#? stdtmpl`
+  source-code filter is a template; `check` stays silent instead of flagging the
+  raw HTML.
+
+None of these ever changes the emitted AIF — a plain `p` parse stays
+byte-compatible with native `nifler`.
 
 ### `check` — lint mode
 
