@@ -1,7 +1,7 @@
 ---
 title: Native JS — aowljs
-parent: Backends
-nav_order: 2
+parent: The compiler — aowlmony
+nav_order: 7
 ---
 
 # aowljs — a `.s.nif` → native-JavaScript backend

@@ -1,7 +1,7 @@
 ---
 title: Python — aowlpy
-parent: Backends
-nav_order: 6
+parent: The compiler — aowlmony
+nav_order: 10
 ---
 
 # aowlpy — idiomatic Python backend

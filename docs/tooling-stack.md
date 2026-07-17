@@ -1,4 +1,5 @@
 ---
+nav_exclude: true
 title: IC, aowl-lsp & aiflens
 parent: Tools
 nav_order: 1

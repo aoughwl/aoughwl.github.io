@@ -1,6 +1,6 @@
 ---
-title: aowlparser
-parent: Compiler Pipeline
+title: Parser — aowlparser
+parent: The compiler — aowlmony
 nav_order: 1
 has_children: true
 ---

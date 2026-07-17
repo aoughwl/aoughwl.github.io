@@ -1,5 +1,5 @@
 ---
-title: obfuscate
+title: Obfuscator — obfuscate
 parent: Tools
 nav_order: 4
 ---

@@ -1,6 +1,6 @@
 ---
-title: aowlhexer
-parent: Compiler Pipeline
+title: Lowering — aowlhexer
+parent: The compiler — aowlmony
 nav_order: 2
 ---
 

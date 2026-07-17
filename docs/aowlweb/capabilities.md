@@ -1,7 +1,7 @@
 ---
 title: Capabilities
 parent: Faithful JS/WASM — aowlweb
-grand_parent: Backends
+grand_parent: The compiler — aowlmony
 nav_order: 2
 ---
 

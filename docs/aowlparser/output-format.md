@@ -1,7 +1,7 @@
 ---
 title: The .p.nif format
-parent: aowlparser
-grand_parent: Compiler Pipeline
+parent: Parser — aowlparser
+grand_parent: The compiler — aowlmony
 nav_order: 6
 ---
 

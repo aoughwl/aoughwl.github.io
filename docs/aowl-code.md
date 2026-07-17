@@ -1,5 +1,5 @@
 ---
-title: aowl-code
+title: Claude Code Plugin & MCP — aowl-code
 parent: Tools
 nav_order: 1
 ---

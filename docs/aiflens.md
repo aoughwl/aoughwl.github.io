@@ -1,7 +1,7 @@
 ---
-title: aiflens
+title: AIF CLI — aiflens
 parent: Tools
-nav_order: 2
+nav_order: 3
 ---
 
 # aiflens — a NIF lens for tooling

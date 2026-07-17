@@ -1,7 +1,7 @@
 ---
-title: HL-IR — aowlhl
-parent: Backends
-nav_order: 7
+title: High-Level IR — aowlhl
+parent: The compiler — aowlmony
+nav_order: 11
 ---
 
 # aowlhl — shared High-Level IR

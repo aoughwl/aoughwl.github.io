@@ -1,6 +1,7 @@
 ---
-title: AIF ≡ NIF (interop)
-nav_order: 1
+parent: The compiler — aowlmony
+title: AIF ≡ NIF
+nav_order: 0
 permalink: /docs/aif
 ---
 

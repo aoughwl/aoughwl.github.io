@@ -1,7 +1,7 @@
 ---
 title: TypeScript — aowlts
-parent: Backends
-nav_order: 5
+parent: The compiler — aowlmony
+nav_order: 9
 ---
 
 # aowlts — idiomatic TypeScript backend

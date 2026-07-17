@@ -1,7 +1,7 @@
 ---
 title: C — aowlc
-parent: Backends
-nav_order: 1
+parent: The compiler — aowlmony
+nav_order: 6
 ---
 
 # aowlc — a `.c.nif` → C native backend

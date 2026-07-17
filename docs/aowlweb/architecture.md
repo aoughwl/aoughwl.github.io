@@ -1,7 +1,7 @@
 ---
 title: Architecture
 parent: Faithful JS/WASM — aowlweb
-grand_parent: Backends
+grand_parent: The compiler — aowlmony
 nav_order: 3
 ---
 
