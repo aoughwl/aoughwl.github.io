@@ -214,6 +214,12 @@ every wrapping backend makes and is what hardware does.
   expression via an IIFE), `for` over ranges / `countdown` / collections, with one
   or two loop variables; `break` / `continue`;
 - `object` → `interface`, object construction → object literal, field access;
+- `ref object` → object reference (construct/field-read/mutate, `== nil` → `=== null`);
+  ARC/RTTI hooks are dropped (JS is GC'd);
+- inheritance (`object of`) → `interface … extends …`, base fields flattened; upcast
+  is identity (structural);
+- custom `iterator`s → native generators (`function*` + `yield`, driven by `for..of`);
+- closures → inline arrow functions with native lexical capture;
 - `enum` → real TS `enum`, qualified member references;
 - `seq`/`array` literals, indexing, index-store (`s[i] = v`), `len`, `add`,
   `newSeq(n)`;
@@ -249,18 +255,18 @@ node --experimental-transform-types prog.ts
 
 The test harness (`tests/run.sh`) compiles each `tests/*.nim` with nimony for the
 reference stdout, transpiles it, runs the emitted `.ts` with node, and diffs.
-Current suite: **8/8 byte-identical** fast + **6/6 faithful**. The shared
+Current suite: **12/12 byte-identical** fast + **9/9 faithful**. The shared
 differential corpus (`aowlhl/corpus`, 44 programs vs native nimony) sits at
-**37/44 fast, 40/44 faithful**; the remaining fails are the known-limitation
-items below.
+**41/44 fast, 44/44 faithful** (faithful is a clean sweep); the remaining fast-mode
+fails are the by-design int64 cases below.
 
 ## Known limitations / TODO
 
 - **enums** compile to real TS `enum`s, which are not erasable — plain
   `node --experimental-strip-types` rejects them; use
   `--experimental-transform-types`, `tsc`, or `deno`;
-- **closures / first-class `{.closure.}` iterators** — not yet lowered;
-- **inheritance (`object of`) and `ref object`** field mutation — not yet lowered;
+- **fast-mode int64/uint64** wrap/precision past 2⁵³ — by design; use `--faithful`
+  (the corpus's only fast-mode fails are these);
 - **`set[T]`** membership emits an inline `Set`/OR-chain (functional, not typed as
   a nominal set);
 - **macros / compile-time execution**, `try`/`except`/`raise`, and `defer` are

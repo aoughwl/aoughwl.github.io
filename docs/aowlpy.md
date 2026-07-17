@@ -101,15 +101,17 @@ bin/aowlpy /tmp/nc/<mainhash>.s.nif > prog.py && python3 prog.py
 native output — currently **11/11 byte-identical** (basics, arithmetic/bitwise,
 strings, seq, tuples, `var`-params, `case`, objects/dataclasses, countdown,
 cross-module import). Against the shared differential corpus (`aowlhl/corpus`, 44
-programs vs native nimony) aowlpy sits at **38/44**.
+programs vs native nimony) aowlpy sits at **42/44**. `ref object` (class instance +
+field mutation, `== nil` → `is None`; ARC/RTTI hooks dropped under GC), inheritance
+(`class Derived(Base)`, identity upcast), custom `iterator`s (Python generator `def`
++ `yield`), and closures (nested `def` with lexical capture) all lower to native
+Python.
 
 ## Limitations / TODO
 
-Deliberately deferred (clearly marked in the source): closures / first-class
-function capture, custom `iterator`s, inheritance (`object of`) and `ref object`
-mutation, generic instances (needs a `TypeVar` preamble), `Table`/`HashSet`
-set-literal lowering, macros, exceptions (`try`/`raise`), and `var`-param
-arguments in *expression* position (statement-position calls get correct cell
-write-back; expression position is read-only). Emitted names favour readability
-over global uniqueness, so deeply shadowed identifiers across scopes are a known
-sharp edge.
+Deliberately deferred (clearly marked in the source): generic instances (needs a
+`TypeVar` preamble / dropped annotation), `Table`/`HashSet` set-literal lowering,
+macros, exceptions (`try`/`raise`), and `var`-param arguments in *expression*
+position (statement-position calls get correct cell write-back; expression
+position is read-only). Emitted names favour readability over global uniqueness,
+so deeply shadowed identifiers across scopes are a known sharp edge.

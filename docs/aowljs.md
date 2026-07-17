@@ -95,12 +95,14 @@ concat, `add`, `$`, `len`, indexing, relational (`==`/`<`/`>`/…), slicing
 `echo` (float-aware); `bool`. User procs named like a builtin (`add`, `len`, …)
 emit real calls — magic dispatch is gated on symbol origin, not name. (Beyond
 aowljs's reach — `Table`/`HashSet`, `try`/`except` — don't yet compile in nimony
-either.) Not yet lowered for standalone emit: capturing **closures**, custom
-`iterator`s, inheritance (`object of`) and `ref object` mutation — in the
-playground these fall back to the interpreter.
+either.) Also lowered to native JS: `ref object` (object reference + field mutate,
+`== nil` → `=== null`; ARC/RTTI hooks dropped under GC), inheritance (`object of`,
+base fields flattened, upcast = identity), custom `iterator`s → generators
+(`function*`/`yield`/`for..of`), and closures → inline arrow functions (lexical
+capture).
 
 Against the shared differential corpus (`aowlhl/corpus`, 44 programs diffed vs
-native nimony) aowljs sits at **37/44 fast, 39/44 faithful**; `tests/run_faithful.sh`
+native nimony) aowljs sits at **41/44 fast, 43/44 faithful**; `tests/run_faithful.sh`
 is **5/5**. (Float values print with a trailing `.0` — `echo`/`$` consult a static
 float-type environment, including tuple float elements.)
 
