@@ -38,7 +38,7 @@ things fall out that a sealed binary can't give you:
   `hexer`), or replace it with your own, without touching the rest.
 - **Runs where a packed binary can't** — most notably the **browser**: the
   parser, checker, and interpreter are compiled to JavaScript and run
-  client-side. Try it in the [playground](/playground).
+  client-side. Try it in the [playground](https://aoughwl.github.io/playground/).
 
 Same programs, same output — Nim and Nimony code behaves identically — but the
 machine that produces it is open at every joint instead of sealed shut.

@@ -5,7 +5,7 @@ semantic checker, lowering, and code generators — written *in* Nimony,
 self-hosting, and **open at every seam**. It runs Nim/Nimony **identically**, and
 runs where the classic compiler can't: **right in your browser**.
 
-[▶ Open the Playground](/playground/)
+[▶ Open the Playground](https://aoughwl.github.io/playground/)
 [How this works](/docs/how-it-works)
 [GitHub](https://github.com/aoughwl)
 
@@ -32,7 +32,7 @@ stage on its own**, and the entire pipeline runs **client-side**.
 
 ## What you get that stock Nimony doesn't
 
-- 🌐 **Runs in the browser** — parse → semcheck → run, fully client-side. **[Try it live →](/playground/)**
+- 🌐 **Runs in the browser** — parse → semcheck → run, fully client-side. **[Try it live →](https://aoughwl.github.io/playground/)**
 - 🎯 **Byte-exact parity** — `aowlparser` is proven against `nifler` by a differential harness over the **entire** standard library.
 - 🧩 **Many targets** — native **C**, native/faithful **JavaScript**, **WASM**, an **interpreter + bytecode VM**, plus idiomatic **TypeScript** and **Python**.
 - 📚 **A fuller stdlib** — a complete networking stack (TLS 1.3, HTTP/1.1 + HTTP/2, WebSocket, HTTP/3) and a typed HTML/CSS layer.
@@ -66,7 +66,7 @@ stage on its own**, and the entire pipeline runs **client-side**.
 
 | Project | What it is |
 |:--|:--|
-| **[▶ Playground](/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
+| **[▶ Playground](https://aoughwl.github.io/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
 | **[aowl-code](/docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain. |
 | **[aowl-lsp](/docs/aowl-lsp)** | Language Server + VSCode extension, live as-you-type diagnostics. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |

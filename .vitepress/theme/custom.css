@@ -20,7 +20,7 @@
   --vp-c-divider: #1c1c20;
   --vp-c-gutter: #000000;
 
-  --vp-nav-bg-color: rgba(10, 10, 11, 0.8);
+  --vp-nav-bg-color: #0a0a0b; /* solid, no transparency */
   --vp-sidebar-bg-color: #0a0a0b;
   --vp-code-block-bg: #050506;
 }
@@ -40,24 +40,71 @@
   --vp-c-brand-soft: rgba(150, 130, 255, 0.14);
 }
 
-/* Frosted, thin top nav */
+/* ---- Top nav: SOLID background, no blur/transparency ---- */
 .VPNav .VPNavBar {
   border-bottom: 1px solid var(--vp-c-divider);
-  backdrop-filter: saturate(140%) blur(12px);
+  backdrop-filter: none !important;
+  background-color: var(--vp-nav-bg-color);
+}
+.VPNavBar .title,
+.VPNavBar.has-sidebar .title,
+.VPNavBar .content,
+.VPNavBar.has-sidebar .content {
+  background-color: var(--vp-nav-bg-color) !important;
+  backdrop-filter: none !important;
 }
 
-/* ---- Search: let it stretch instead of a tiny pill ---- */
+/* logo + "docs" centered within the title column (not left-aligned) */
+.VPNavBarTitle .title {
+  justify-content: center;
+}
+
+/* ---- Search: stretch it wide instead of a tiny pill ---- */
 .VPNavBarSearch {
-  flex-grow: 1;
-  justify-content: flex-start;
+  flex-grow: 1 !important;
+  justify-content: flex-start !important;
   padding-left: 24px;
 }
-.VPNavBarSearch .DocSearch-Button {
+.VPNavBarSearch #local-search {
   width: 100%;
-  max-width: 360px;
+  max-width: 460px;
+}
+.VPNavBarSearch #local-search > button,
+.VPNavBarSearch .DocSearch-Button {
+  width: 100% !important;
+  max-width: 460px !important;
 }
 /* wider search modal input */
 .VPLocalSearchBox .search-bar { max-width: none; }
+
+/* ---- Sidebar repo badge: right-aligned "aowljs ↗" → the repo ---- */
+.VPSidebarItem .item { position: relative; }
+.repo-badge {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--vp-c-text-3);
+  background: transparent;
+  z-index: 4;
+  transition: color 0.15s, background-color 0.15s;
+}
+/* clear the collapse chevron on group rows */
+.VPSidebarItem.collapsible > .item .repo-badge { right: 30px; }
+.repo-badge:hover { color: var(--vp-c-brand-1); background: var(--vp-c-default-soft); }
+.repo-badge svg { flex: 0 0 auto; opacity: 0.85; }
+.repo-badge:hover svg { opacity: 1; }
+/* reserve room so long names don't sit under the badge */
+.item.has-repo-badge > .link .text { padding-right: 4.5rem; }
+.VPSidebarItem.collapsible > .item.has-repo-badge > .link .text { padding-right: 6rem; }
 
 /* ---- Custom GitHub nav link (icon + text, one link, with a divider) ---- */
 .nav-gh-link {

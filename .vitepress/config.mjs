@@ -74,7 +74,7 @@ const sidebar = [
         text: 'Tools',
         collapsed: false,
         items: [
-          { text: '▶ Playground', link: '/playground/' },
+          { text: '▶ Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
           { text: 'Claude Code Plugin & MCP — aowl-code', link: '/docs/aowl-code' },
           { text: 'LSP — aowl-lsp', link: '/docs/aowl-lsp' },
           { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
@@ -165,7 +165,9 @@ export default defineConfig({
     siteTitle: 'docs',
 
     nav: [
-      { text: 'Playground', link: '/playground/' },
+      // absolute URL + same-tab target: /playground/ is a static app, not a
+      // VitePress route, so the SPA router must NOT intercept the click.
+      { text: 'Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
       { text: 'Discord', link: 'https://discord.gg/nxa3W7w4rJ' },
     ],
 
