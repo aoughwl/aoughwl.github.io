@@ -144,3 +144,49 @@ control flow to be walked for move analysis.
 **Verified.** Minimal cross-module and same-file repros compile and run; the
 `macros` test suite passes 6/6; and a macro-with-nested-recursive-helper now
 works as an imported library.
+
+### Nested `case`-in-`case` objects no longer crash construction
+
+*Commit `efd5adc6`.*
+
+**Symptom.** A variant object with a `case` branch whose body itself holds
+another `case` crashed the compiler while building an object constructor:
+
+```
+nifcursors.nim(149,3) `c.p != nil and c.rem > 0` [AssertionDefect]
+```
+
+Minimal repro:
+
+```nim
+type
+  Outer = object
+    case a: bool
+    of true:
+      case b: bool
+      of true: x: int
+      of false: y: int
+    of false: z: int
+var o = Outer(a: true, b: true, x: 1)
+```
+
+**Root cause.** In `src/nimony/sem.nim`, a variant branch body is either a bare
+field or, when it holds more than one member, a `(stmts …)` list. The
+object-constructor default-fill path assumed the list contained only fields:
+`fieldsPresentInInitExpr` (the scan deciding which branch a set field belongs to)
+and the field-emit loops in `fieldsPresentInBranch` called `takeLocal` on every
+list item. A nested `(case …)` node is not a local, so `takeLocal` returned a
+`Local` with an unset `name` cursor, and the following `name.symId` load tripped
+the `load` assertion at `nifcursors.nim:149`.
+
+**Fix.** Intercept `case` nodes in both the scan and the emit loops and recurse.
+`caseHasSetField` scans a nested case's discriminator and every branch body for a
+set field; `emitNestedCase` re-enters the standard selector + `fieldsPresentInBranch`
+path for the nested variant. The recursion is depth-independent, so it also
+covers three-or-more-level nesting, variants inside a `ref object`, and branches
+carrying managed (`string`/`seq`/`ref`) fields.
+
+**Verified.** The repro and a battery of variants (default-fill of an inner
+branch, the other outer branch, triple nesting, ref-wrapped, and a managed-string
+branch) all compile and emit the expected constructor; `tests/nimony/object`
+(20 cases) and `tests/nimony/casestmt` (4 cases) stay green.
