@@ -176,7 +176,47 @@
   }
   /* the collapse chevron: a touch more visible so groups read as groups */
   .site-nav .nav-list-expander svg { opacity: 0.8; }
+
+  /* per-item repo link (right-aligned, external icon) — injected by the script below */
+  .site-nav .nav-list-item.has-nav-repo { position: relative; }
+  .site-nav .has-nav-repo > .nav-list-link { padding-right: 4.8rem !important; }
+  .nav-repo {
+    position: absolute; top: 0; bottom: 0; right: 0.5rem;
+    display: inline-flex; align-items: center; gap: 0.22rem;
+    font-size: 0.7rem; opacity: 0.5; color: inherit;
+    text-decoration: none !important; white-space: nowrap;
+  }
+  .nav-repo:hover { opacity: 0.95; }
+  .nav-repo svg { width: 10px; height: 10px; flex: 0 0 auto; }
 </style>
+
+<!-- split each "Label — reponame" nav item into: label (-> doc page) + a
+     right-aligned repo link with an external icon (-> github.com/aoughwl/reponame).
+     Leaf items only, so collapsible groups keep their chevron. -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/>' +
+      '<path d="M17 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h5"/></svg>';
+    document.querySelectorAll('.site-nav .nav-list-item').forEach(function (li) {
+      if (li.querySelector(':scope > .nav-list')) return;               // group -> keep whole
+      var link = li.querySelector(':scope > .nav-list-link');
+      if (!link) return;
+      var m = link.textContent.trim().match(/^(.*\S)\s+—\s+([A-Za-z0-9._-]+)$/);
+      if (!m) return;
+      link.textContent = m[1];
+      var a = document.createElement('a');
+      a.className = 'nav-repo';
+      a.href = 'https://github.com/aoughwl/' + m[2];
+      a.target = '_blank'; a.rel = 'noopener';
+      a.title = 'aoughwl/' + m[2] + ' on GitHub';
+      a.innerHTML = '<span>' + m[2] + '</span>' + EXT;
+      li.appendChild(a);
+      li.classList.add('has-nav-repo');
+    });
+  });
+</script>
 <!-- AI-generated disclosure (red), shown at the top of the content. Dismissable. -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
