@@ -167,35 +167,31 @@
 /* hover the WHOLE row (name + badge together); only real link rows */
 .VPSidebarItem.is-link > .item:hover { background: var(--vp-c-default-soft); }
 
-/* the "aowljs ↗" badge — flush to the reserved column, links to the repo.
-   Styled as a small button with a real hit area so it's easy to click. */
+/* the "aowljs ↗" badge — subtle, flush to the reserved column, links to the repo.
+   position + z-index lift it ABOVE the row's (full-width, invisible) link text
+   box, which otherwise overlaps the badge and steals its clicks. */
 .repo-badge {
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 3px;
-  padding: 3px 8px;
-  min-height: 23px;
-  border-radius: 6px;
-  border: 1px solid var(--vp-c-divider);
+  padding: 1px 6px;
+  border-radius: 5px;
   font-size: 0.72rem;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.3;
   color: var(--vp-c-text-3);
-  background: var(--vp-c-bg-soft);
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+  background: transparent;
+  transition: color 0.15s, background-color 0.15s;
 }
-.repo-badge:hover {
-  color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
-  border-color: var(--vp-c-brand-1);
-}
+.repo-badge:hover { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
 .repo-badge svg { flex: 0 0 auto; opacity: 0.85; }
 .repo-badge:hover svg { opacity: 1; }
 /* icon-only badge (libraries / playground — label already IS the repo name) */
-.repo-badge.icon-only { padding: 4px; min-width: 23px; }
+.repo-badge.icon-only { padding: 2px 4px; }
 
 /* --- Sidebar: tighter than default, region labels as small-caps headers --- */
 .VPSidebar { padding-top: 1.25rem; }
