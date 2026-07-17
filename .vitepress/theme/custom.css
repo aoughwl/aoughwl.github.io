@@ -1,37 +1,43 @@
 /* ---------------------------------------------------------------------------
    aoughwl — VitePress theme overrides.
-   Near-black dark palette (matches the old #0a0a0b site), tight sidebar,
-   region-label section headers, thin scrollbars.
+   Dark palette is scoped to .dark so the light theme (toggle) still works.
+   Structural tweaks (sidebar spacing, region labels, scrollbars, GitHub link)
+   are theme-agnostic and use VitePress vars.
    --------------------------------------------------------------------------- */
 
-:root {
-  /* backgrounds */
+/* ---- Dark palette: near-black, matches the old #0a0a0b site ---- */
+.dark {
   --vp-c-bg: #0a0a0b;
   --vp-c-bg-alt: #0c0c0e;
   --vp-c-bg-soft: #141417;
   --vp-c-bg-elv: #141417;
 
-  /* text */
   --vp-c-text-1: #ededf0;
   --vp-c-text-2: #b6b6bf;
   --vp-c-text-3: #7c7c88;
 
-  /* borders / dividers */
   --vp-c-border: #26262b;
   --vp-c-divider: #1c1c20;
   --vp-c-gutter: #000000;
 
-  /* brand accent — soft violet, reads well on near-black */
+  --vp-nav-bg-color: rgba(10, 10, 11, 0.8);
+  --vp-sidebar-bg-color: #0a0a0b;
+  --vp-code-block-bg: #050506;
+}
+.dark .vp-doc div[class*='language-'] { background: #050506; }
+
+/* brand accent — soft violet, works on both themes */
+:root {
+  --vp-c-brand-1: #7c5cff;
+  --vp-c-brand-2: #6b4bf0;
+  --vp-c-brand-3: #5a3ce0;
+  --vp-c-brand-soft: rgba(124, 92, 255, 0.14);
+}
+.dark {
   --vp-c-brand-1: #b3a4ff;
   --vp-c-brand-2: #a08fff;
   --vp-c-brand-3: #8a76f0;
   --vp-c-brand-soft: rgba(150, 130, 255, 0.14);
-
-  /* nav */
-  --vp-nav-bg-color: rgba(10, 10, 11, 0.8);
-  --vp-sidebar-bg-color: #0a0a0b;
-
-  --vp-c-gray-soft: rgba(140, 140, 155, 0.16);
 }
 
 /* Frosted, thin top nav */
@@ -40,10 +46,44 @@
   backdrop-filter: saturate(140%) blur(12px);
 }
 
-/* --- Sidebar: tighter than default, region labels as small-caps headers --- */
-.VPSidebar {
-  padding-top: 1.25rem;
+/* ---- Search: let it stretch instead of a tiny pill ---- */
+.VPNavBarSearch {
+  flex-grow: 1;
+  justify-content: flex-start;
+  padding-left: 24px;
 }
+.VPNavBarSearch .DocSearch-Button {
+  width: 100%;
+  max-width: 360px;
+}
+/* wider search modal input */
+.VPLocalSearchBox .search-bar { max-width: none; }
+
+/* ---- Custom GitHub nav link (icon + text, one link, with a divider) ---- */
+.nav-gh-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  margin: 0 8px 0 12px;
+  padding-left: 16px;
+  border-left: 1px solid var(--vp-c-divider); /* the separator */
+  color: var(--vp-c-text-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 24px;
+  transition: color 0.2s;
+}
+.nav-gh-link:hover { color: var(--vp-c-text-1); }
+.nav-gh-icon { display: inline-flex; align-items: center; }
+.nav-gh-text { display: inline-block; }
+@media (max-width: 768px) {
+  .nav-gh-link .nav-gh-text { display: none; } /* icon-only when cramped */
+  .nav-gh-link { padding-left: 12px; margin-left: 8px; }
+}
+
+/* --- Sidebar: tighter than default, region labels as small-caps headers --- */
+.VPSidebar { padding-top: 1.25rem; }
 
 /* top-level group titles = our region labels (OVERVIEW / PIPELINE / …) */
 .VPSidebarItem.level-0 > .item > .text,
@@ -63,10 +103,7 @@
 .VPSidebarItem.level-0:last-child { margin-bottom: 0; }
 
 /* tighten every row */
-.VPSidebarItem .item {
-  min-height: 0;
-  padding: 1px 0;
-}
+.VPSidebarItem .item { min-height: 0; padding: 1px 0; }
 .VPSidebarItem .link .link-text,
 .VPSidebarItem .text {
   line-height: 1.45;
@@ -74,12 +111,10 @@
   font-size: 0.86rem;
 }
 
-/* nested (stage) links slightly denser + calmer color */
+/* nested (stage) links slightly calmer color; active = accent */
 .VPSidebarItem.level-1 .link-text,
 .VPSidebarItem.level-2 .link-text,
-.VPSidebarItem.level-3 .link-text {
-  color: var(--vp-c-text-2);
-}
+.VPSidebarItem.level-3 .link-text { color: var(--vp-c-text-2); }
 .VPSidebarItem.level-1.is-active > .item .link-text,
 .VPSidebarItem.level-2.is-active > .item .link-text,
 .VPSidebarItem.level-3.is-active > .item .link-text {
@@ -87,7 +122,7 @@
   font-weight: 600;
 }
 
-/* the collapse chevron: keep it aligned and clearly clickable */
+/* collapse chevron aligned + clearly clickable */
 .VPSidebarItem .caret {
   width: 1.5rem;
   height: 1.5rem;
@@ -97,26 +132,12 @@
 }
 
 /* --- Thin scrollbars everywhere --- */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--vp-c-border) transparent;
-}
+* { scrollbar-width: thin; scrollbar-color: var(--vp-c-border) transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb {
-  background: var(--vp-c-border);
-  border-radius: 8px;
-}
+*::-webkit-scrollbar-thumb { background: var(--vp-c-border); border-radius: 8px; }
 *::-webkit-scrollbar-thumb:hover { background: #3a3a42; }
 
 /* --- Content polish --- */
 .vp-doc h1 { letter-spacing: -0.02em; }
 .vp-doc a { text-underline-offset: 3px; }
-
-/* code blocks a touch darker than page for separation */
-.vp-doc div[class*='language-'] { background: #050506; }
-:root { --vp-code-block-bg: #050506; }
-
-/* buttons that used just-the-docs .btn now render as plain links — give the
-   hero CTA links (first paragraph after H1 with bracketed arrows) breathing room */
-.vp-doc h1 + p a { white-space: nowrap; }

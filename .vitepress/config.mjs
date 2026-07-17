@@ -127,7 +127,7 @@ export default defineConfig({
     'A ground-up, self-hosted reimplementation of the Nimony toolchain — parser, semantic checker, lowering, and code generators — open at every seam and running in your browser.',
   lang: 'en-US',
   cleanUrls: true,
-  appearance: 'force-dark',
+  appearance: 'dark', // default dark, but the theme toggle stays available
   ignoreDeadLinks: true,
   lastUpdated: false,
 
@@ -157,21 +157,22 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: '/assets/aoughwl-logo-white.png',
-    siteTitle: 'aoughwl',
+    // logo already spells "aoughwl"; the label beside it reads "docs" (light/dark pair)
+    logo: {
+      light: '/assets/aoughwl-logo-black.png',
+      dark: '/assets/aoughwl-logo-white.png',
+    },
+    siteTitle: 'docs',
 
     nav: [
       { text: 'Playground', link: '/playground/' },
-      { text: 'How it works', link: '/docs/how-it-works' },
       { text: 'Discord', link: 'https://discord.gg/nxa3W7w4rJ' },
-      { text: 'GitHub', link: 'https://github.com/aoughwl' },
     ],
 
     sidebar,
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/aoughwl' },
-    ],
+    // GitHub is rendered as a single icon+text link via the nav-bar-content-after
+    // slot (see .vitepress/theme/index.js) — not as a separate socialLinks icon.
 
     search: { provider: 'local' },
 
