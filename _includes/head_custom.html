@@ -142,6 +142,40 @@
   }
   .support-tier { font-size: 0.72rem; opacity: 0.7; }
   .support-recent-note, .support-recent-empty { font-size: 0.85rem; opacity: 0.8; }
+
+  /* ---- sidebar nav: make the nesting levels legible (they were blending) ---- */
+  /* top-level groups: bolder, a little breathing room between them */
+  .site-nav > .nav-list > .nav-list-item > .nav-list-link {
+    font-weight: 600 !important;
+    font-size: 0.93rem;
+  }
+  .site-nav > .nav-list > .nav-list-item { margin-top: 0.1rem; }
+
+  /* every nested level gets a vertical guide-rail + step-in, and gets lighter */
+  .site-nav .nav-list .nav-list {
+    margin-left: 0.72rem;
+    padding-left: 0.15rem;
+    border-left: 1px solid rgba(125, 150, 255, 0.28);
+  }
+  .site-nav .nav-list .nav-list .nav-list-link {
+    font-weight: 400 !important;
+    opacity: 0.9;
+  }
+  /* third level (sub-sub): smaller, dimmer, fainter rail */
+  .site-nav .nav-list .nav-list .nav-list { border-left-color: rgba(125, 150, 255, 0.16); }
+  .site-nav .nav-list .nav-list .nav-list .nav-list-link {
+    font-size: 0.82rem;
+    opacity: 0.74;
+  }
+
+  /* active item: unmistakable accent (inset bar so layout doesn't shift) */
+  .site-nav .nav-list-link.active {
+    font-weight: 600 !important;
+    color: #b7c1ff !important;
+    box-shadow: inset 2px 0 0 #7d96ff;
+  }
+  /* the collapse chevron: a touch more visible so groups read as groups */
+  .site-nav .nav-list-expander svg { opacity: 0.8; }
 </style>
 <!-- AI-generated disclosure (red), shown at the top of the content. Dismissable. -->
 <script>
