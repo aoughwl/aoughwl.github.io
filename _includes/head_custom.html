@@ -198,6 +198,22 @@
   .site-nav .nav-list-item.has-nav-repo.nav-repo-current { background: var(--bg-elev-2); }
   .site-nav .has-nav-repo.nav-repo-current > .nav-list-link { color: var(--text); }
   .site-nav .has-nav-repo.nav-repo-current .nav-repo { opacity: 0.9; }
+  /* ACTIVE split item: the theme paints the `.active` background on the first
+     <a> (the label), which is only the left half of the flex row — so the
+     highlight stops mid-item. Promote it to the whole <li>, and strip the
+     half-width background off the inner link. Keyed off `.active` directly so it
+     holds even when the script's pathname check for `nav-repo-current` doesn't. */
+  .site-nav .nav-list-item.has-nav-repo:has(> .nav-list-link.active) {
+    background: var(--bg-elev-2);
+    box-shadow: inset 2px 0 0 #7d96ff;
+    border-radius: 0 4px 4px 0;
+  }
+  .site-nav .has-nav-repo > .nav-list-link.active {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;   /* the accent bar now lives on the row */
+  }
+  .site-nav .has-nav-repo:has(> .nav-list-link.active) .nav-repo { opacity: 0.9; }
 </style>
 
 <!-- split each "Label — reponame" nav item into: label (-> doc page) + a
@@ -224,7 +240,10 @@
       a.innerHTML = '<span>' + m[2] + '</span>' + EXT;
       li.appendChild(a);
       li.classList.add('has-nav-repo');
-      if (link.pathname === location.pathname) li.classList.add('nav-repo-current');
+      /* full-row highlight for the current item — trust the theme's own `.active`
+         first (handles index pages / trailing slashes), fall back to pathname. */
+      if (link.classList.contains('active') || link.pathname === location.pathname)
+        li.classList.add('nav-repo-current');
     });
   });
 </script>
