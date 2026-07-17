@@ -102,7 +102,8 @@ base fields flattened, upcast = identity), custom `iterator`s → generators
 capture).
 
 Against the shared differential corpus (`aowlhl/corpus`, 44 programs diffed vs
-native nimony) aowljs sits at **41/44 fast, 43/44 faithful**; `tests/run_faithful.sh`
+native nimony) aowljs sits at **41/44 fast, 44/44 faithful** (faithful is a clean
+sweep; the fast-mode fails are the by-design int64 cases); `tests/run_faithful.sh`
 is **5/5**. (Float values print with a trailing `.0` — `echo`/`$` consult a static
 float-type environment, including tuple float elements.)
 
