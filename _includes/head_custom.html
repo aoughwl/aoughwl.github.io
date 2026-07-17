@@ -194,6 +194,10 @@
   .site-nav .nav-list-item.has-nav-repo:hover { background: var(--bg-elev-2); }
   .site-nav .has-nav-repo:hover > .nav-list-link { color: var(--text); }
   .site-nav .has-nav-repo:hover .nav-repo { opacity: 0.9; }
+  /* selected/current split item: same full-row highlight (marked by the script) */
+  .site-nav .nav-list-item.has-nav-repo.nav-repo-current { background: var(--bg-elev-2); }
+  .site-nav .has-nav-repo.nav-repo-current > .nav-list-link { color: var(--text); }
+  .site-nav .has-nav-repo.nav-repo-current .nav-repo { opacity: 0.9; }
 </style>
 
 <!-- split each "Label — reponame" nav item into: label (-> doc page) + a
@@ -220,6 +224,7 @@
       a.innerHTML = '<span>' + m[2] + '</span>' + EXT;
       li.appendChild(a);
       li.classList.add('has-nav-repo');
+      if (link.pathname === location.pathname) li.classList.add('nav-repo-current');
     });
   });
 </script>
