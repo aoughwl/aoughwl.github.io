@@ -1,7 +1,7 @@
 ---
 title: Runtime — aowllib
 parent: aowlmony
-nav_order: 5
+nav_order: 4
 ---
 
 # aowllib — the aowl system module + runtime

@@ -3,16 +3,16 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="shortcut icon" href="/favicon.ico">
 
-<!-- CRITICAL, render-blocking, first thing painted: set the page background (and a
-     matching text colour) from the theme BEFORE the main stylesheet loads, so a
-     full-page navigation never flashes white/unstyled between loads. The theme
-     script below runs synchronously first, so [data-theme] is already set here. -->
+<!-- CRITICAL, first thing painted: set the page background (and a matching text
+     colour) from the theme BEFORE the main stylesheet loads, on BOTH html and
+     body, so a full-page navigation paints dark immediately instead of flashing an
+     unstyled white frame. The theme script below runs synchronously, so
+     [data-theme] is already resolved by first paint.
+     (NB: no @view-transition — a cross-document transition here snapshotted the
+     unstyled white frame and made the flash worse, not better.) -->
 <style>
-  html { background: #0a0a0b; color: #ededf0; }
-  html[data-theme="light"] { background: #ffffff; color: #0a0a0b; }
-  /* Smooth cross-document navigation where supported (Chrome): a quick fade
-     instead of a hard white blink. Non-supporting browsers just navigate. */
-  @view-transition { navigation: auto; }
+  html, body { background: #0a0a0b; color: #ededf0; }
+  html[data-theme="light"], html[data-theme="light"] body { background: #ffffff; color: #0a0a0b; }
 </style>
 
 <!-- webfonts — display=optional (not swap): once the fonts are cached (after the
@@ -161,12 +161,23 @@
   .support-tier { font-size: 0.72rem; opacity: 0.7; }
   .support-recent-note, .support-recent-empty { font-size: 0.85rem; opacity: 0.8; }
 
+  /* ---- thin, themed scrollbars everywhere ---- */
+  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong); border-radius: 6px;
+    border: 2px solid transparent; background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); background-clip: content-box; }
+  ::-webkit-scrollbar-corner { background: transparent; }
+
   /* ---- sidebar nav: flex layout (requested) ---- */
   /* the <nav> itself: a flex COLUMN (it was defaulting to row, which broke the
      layout) with a big 25px gap between its stacked regions */
   nav.site-nav { display: flex; flex-direction: column; gap: 25px; }
-  /* each list stacks vertically with a small 5px gap between items */
-  .site-nav .nav-list { display: flex; flex-direction: column; gap: 5px; }
+  /* each list stacks vertically; keep the root gap very tight */
+  .site-nav .nav-list { display: flex; flex-direction: column; gap: 2px; }
   /* the LAST item of any nav list gets a big 50px gap below it, so groups
      visibly separate from whatever follows */
   .site-nav .nav-list > .nav-list-item:last-child { margin-bottom: 50px; }
@@ -231,7 +242,7 @@
   /* vertical spacing lives on the link (inside the border) so items of one region
      don't gap apart and break their shared rail segment */
   .site-nav .nav-region-host > .nav-list-item > .nav-list-link {
-    padding-top: 0.3rem; padding-bottom: 0.3rem;
+    padding-top: 0.16rem; padding-bottom: 0.16rem;
   }
   /* the labels carry no rail — their top margin is the visible break between segments */
   .site-nav .nav-region-host > .nav-region { border-left: none; padding-left: 0.9rem; }
@@ -267,7 +278,7 @@
   .nav-repo:hover { opacity: 0.95; }
   .nav-repo svg { width: 11px; height: 11px; flex: 0 0 auto; }
   /* breathing room between nav items */
-  .site-nav .nav-list .nav-list .nav-list-item { margin: 0.22rem 0; }
+  .site-nav .nav-list .nav-list .nav-list-item { margin: 0.08rem 0; }
   /* split items have TWO <a> children — highlight the whole row, not just the label */
   .site-nav .nav-list-item.has-nav-repo:hover { background: var(--bg-elev-2); }
   .site-nav .has-nav-repo:hover > .nav-list-link { color: var(--text); }
@@ -358,6 +369,19 @@
     insertLabelBefore(byHref('/docs/aowlparser'), 'Pipeline');
     insertLabelBefore(byHref('/docs/aowlc'), 'Emitters');
     insertLabelBefore(byText('Tools'), 'Ecosystem');
+
+    /* aowlmony is the landing page — expand its group by default so the
+       Pipeline / Emitters / Ecosystem sections are visible on arrival. Only
+       expand if it's currently collapsed, so we never toggle it shut. */
+    var topLinks = document.querySelectorAll('.site-nav > .nav-list > .nav-list-item > .nav-list-link');
+    for (var t = 0; t < topLinks.length; t++) {
+      if ((topLinks[t].textContent || '').trim() !== 'aowlmony') continue;
+      var li = topLinks[t].closest('.nav-list-item');
+      var sub = li && (li.querySelector(':scope > .nav-list'));
+      var exp = li && (li.querySelector(':scope > .nav-list-expander') || li.querySelector('.nav-list-expander'));
+      if (sub && exp && getComputedStyle(sub).display === 'none') exp.click();
+      break;
+    }
   });
 </script>
 
