@@ -184,7 +184,7 @@
   /* ---- sidebar nav: flex layout (requested) ---- */
   /* the <nav> itself: a flex COLUMN (it was defaulting to row, which broke the
      layout) with a big 25px gap between its stacked regions */
-  nav.site-nav { display: flex; flex-direction: column; gap: 25px; }
+  nav.site-nav { display: flex; flex-direction: column; gap: 0px; }
   /* GitHub lives in the nav's SECOND <ul> (external links). Render it at the TOP
      via flex order — no DOM move, so aowlmony stays the auto-expanded first real
      item and doesn't become the "home". */
@@ -208,8 +208,14 @@
   /* the collapse chevron is a 2–3rem absolute box — shrink it to the compact row
      so it stays vertically centred */
   .site-nav .nav-list-expander {
-    width: 1.7rem; height: auto; top: 0; bottom: 0; padding: 0;
+    width: 1.7rem;
+    height: 1.7rem;      /* JUST the label row — NOT the whole (expanded) item, or the
+                            button stretches over the children and eats their clicks
+                            (that's why sub-groups couldn't be collapsed) */
+    top: 0; bottom: auto; padding: 0;
     display: flex; align-items: center; justify-content: center;
+    z-index: 2;          /* above the link's hover/active background, so the chevron
+                            stays visible and clickable */
   }
   .site-nav .nav-list-expander svg { width: 0.9rem; height: 0.9rem; }
 
