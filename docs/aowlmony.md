@@ -108,7 +108,8 @@ Per the directive to standardise on **AIF (aowl intermediate format)**, the
 self-owned components carry the `aif-` prefix: [aowlparser](aowlparser),
 [aowlsem](nifsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aowllib](aowllib),
 [aowljs](aowljs), and this driver, aowlmony. [aowli](../aowli) is the interpreter over
-`.s.aif`. What remains to finish the rewrite:
+`.s.aif`; [aowlsuggest](aowlsuggest) is the diagnostics / quick-fix / editor layer
+built on the parser's recoverable errors. What remains to finish the rewrite:
 
 - **[aowlsem](nifsem)** — finish it → drop the reused nimony `nimsem`.
 - **[aowllib](aowllib)** — the self-owned system module + runtime, so native
