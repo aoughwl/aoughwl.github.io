@@ -1,8 +1,8 @@
 ---
 title: tcp
-parent: net stack
-grand_parent: Builtin Libraries
-nav_order: 1
+parent: "Builtin Libraries"
+grand_parent: aowlmony
+nav_order: 2
 ---
 
 # tcp — native blocking sockets

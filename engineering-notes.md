@@ -1,6 +1,6 @@
 ---
 title: Engineering Notes
-nav_order: 5
+nav_order: 20
 has_children: true
 permalink: /engineering-notes
 ---

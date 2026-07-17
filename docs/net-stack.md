@@ -1,8 +1,8 @@
 ---
 title: net stack
-parent: Builtin Libraries
+parent: "Builtin Libraries"
 nav_order: 1
-has_children: true
+grand_parent: aowlmony
 ---
 
 # The net stack

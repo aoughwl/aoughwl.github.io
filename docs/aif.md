@@ -1,8 +1,8 @@
 ---
-parent: aowlmony
 title: AIF ≡ NIF
-nav_order: 0
 permalink: /docs/aif
+parent: Engineering Notes
+nav_order: 2
 ---
 
 # AIF ≡ NIF — how aoughwl interops with Nimony

@@ -1,8 +1,8 @@
 ---
 title: ws
-parent: net stack
-grand_parent: Builtin Libraries
-nav_order: 7
+parent: "Builtin Libraries"
+grand_parent: aowlmony
+nav_order: 8
 ---
 
 # ws — WebSocket (RFC 6455)

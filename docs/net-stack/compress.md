@@ -1,8 +1,8 @@
 ---
 title: compress
-parent: net stack
-grand_parent: Builtin Libraries
-nav_order: 5
+parent: "Builtin Libraries"
+grand_parent: aowlmony
+nav_order: 6
 ---
 
 # compress — gzip / brotli / zstd codecs

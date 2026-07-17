@@ -3,10 +3,16 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="shortcut icon" href="/favicon.ico">
 
-<!-- webfonts -->
+<!-- webfonts — display=optional (not swap): once the fonts are cached (after the
+     first page), every later navigation renders straight in the real font with NO
+     fallback→webfont swap flash. preload the stylesheet so it's fetched at highest
+     priority on the first visit too. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional">
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional">
 
 <!-- apply saved theme before paint (no flash); dark is default -->
 <script>
@@ -143,6 +149,38 @@
   .support-tier { font-size: 0.72rem; opacity: 0.7; }
   .support-recent-note, .support-recent-empty { font-size: 0.85rem; opacity: 0.8; }
 
+  /* ---- sidebar nav: flex layout (requested) ---- */
+  /* the <nav> itself: flex + a big 25px gap between its regions */
+  nav.site-nav { display: flex; gap: 25px; }
+  /* each list stacks vertically with a small 5px gap between items */
+  .site-nav .nav-list { display: flex; flex-direction: column; gap: 5px; }
+  /* the LAST item of any nav list gets a big 50px gap below it, so groups
+     visibly separate from whatever follows */
+  .site-nav .nav-list > .nav-list-item:last-child { margin-bottom: 50px; }
+
+  /* aowlmony "Pipeline" / "Emitters" region labels — non-clickable headers that
+     just caption a run of items (injected by the script further down) */
+  .site-nav .nav-region {
+    list-style: none;
+    margin: 0.85rem 0 0.1rem;
+    padding: 0 0.75rem;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.72;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Engineering Notes sits at the very bottom of the top level — give it a big
+     gap above so it clearly stands apart from the aowlmony group */
+  .site-nav > .nav-list > .nav-list-item:has(> a.nav-list-link[href*="engineering-notes"]) {
+    margin-top: 42px;
+  }
+
   /* ---- sidebar nav: make the nesting levels legible (they were blending) ---- */
   /* top-level groups: bolder, a little breathing room between them */
   .site-nav > .nav-list > .nav-list-item > .nav-list-link {
@@ -247,6 +285,33 @@
     });
   });
 </script>
+<!-- inject the two non-clickable region labels inside the aowlmony sub-nav:
+     "Pipeline" before the Parser item, "Emitters" before the C (aowlc) item.
+     Keyed off the item hrefs, so it's independent of the repo-split script. -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function insertLabel(hrefNeedle, text) {
+      var links = document.querySelectorAll('.site-nav .nav-list-link');
+      var link = null;
+      for (var i = 0; i < links.length; i++) {
+        if ((links[i].getAttribute('href') || '').indexOf(hrefNeedle) !== -1) { link = links[i]; break; }
+      }
+      if (!link) return;
+      var li = link.closest('.nav-list-item');
+      if (!li || !li.parentNode) return;
+      var prev = li.previousElementSibling;
+      if (prev && prev.classList.contains('nav-region')) return;   /* idempotent */
+      var lbl = document.createElement('li');
+      lbl.className = 'nav-region';
+      lbl.setAttribute('aria-hidden', 'true');
+      lbl.textContent = text;
+      li.parentNode.insertBefore(lbl, li);
+    }
+    insertLabel('/docs/aowlparser', 'Pipeline');
+    insertLabel('/docs/aowlc', 'Emitters');
+  });
+</script>
+
 <!-- AI-generated disclosure (red), shown at the top of the content. Dismissable. -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {

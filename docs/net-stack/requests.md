@@ -1,8 +1,8 @@
 ---
 title: requests
-parent: net stack
-grand_parent: Builtin Libraries
-nav_order: 8
+parent: "Builtin Libraries"
+grand_parent: aowlmony
+nav_order: 9
 ---
 
 # requests — browser-identical HTTP client

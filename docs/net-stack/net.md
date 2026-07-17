@@ -1,8 +1,8 @@
 ---
 title: net
-parent: net stack
-grand_parent: Builtin Libraries
-nav_order: 2
+parent: "Builtin Libraries"
+grand_parent: aowlmony
+nav_order: 3
 ---
 
 # net — sockets with ergonomics

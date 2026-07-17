@@ -1,7 +1,8 @@
 ---
 title: Claude Code Plugin & MCP — aowl-code
 parent: Tools
-nav_order: 1
+nav_order: 2
+grand_parent: aowlmony
 ---
 
 # aowl-code — Nim/Nimony Claude Code plugin & MCP server

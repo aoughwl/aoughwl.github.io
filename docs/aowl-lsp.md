@@ -1,7 +1,8 @@
 ---
 title: LSP — aowl-lsp
 parent: Tools
-nav_order: 2
+nav_order: 3
+grand_parent: aowlmony
 ---
 
 # aowl-lsp — Language Server + VSCode extension

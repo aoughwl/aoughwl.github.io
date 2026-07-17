@@ -1,7 +1,8 @@
 ---
 title: Obfuscator — obfuscate
 parent: Tools
-nav_order: 4
+nav_order: 5
+grand_parent: aowlmony
 ---
 
 # obfuscate — Nimony obfuscators (name + NIF control-flow)

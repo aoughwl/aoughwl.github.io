@@ -3,6 +3,7 @@ nav_exclude: true
 title: IC, aowl-lsp & aiflens
 parent: Tools
 nav_order: 1
+grand_parent: aowlmony
 ---
 
 # The tooling stack: incremental compilation, aowl-lsp & aiflens
