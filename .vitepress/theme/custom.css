@@ -42,7 +42,6 @@
 
 /* ---- Top nav: SOLID background, no blur/transparency ---- */
 .VPNav .VPNavBar {
-  border-bottom: 1px solid var(--vp-c-divider);
   backdrop-filter: none !important;
   background-color: var(--vp-nav-bg-color);
 }
@@ -54,9 +53,49 @@
   backdrop-filter: none !important;
 }
 
+/* One full-width divider across the whole nav (not the partial title border).
+   The default line uses --vp-c-gutter (which is near-black here) and, in
+   has-sidebar mode, is padded in by the sidebar width — undo both. */
+.VPNavBar.has-sidebar .title { border-bottom-color: transparent !important; }
+.VPNavBar .divider { padding-left: 0 !important; }
+.VPNavBar .divider-line { background-color: var(--vp-c-border) !important; }
+
 /* logo + "docs" centered within the title column (not left-aligned) */
-.VPNavBarTitle .title {
-  justify-content: center;
+.VPNavBarTitle .title { justify-content: center; }
+
+/* ---- Custom nav links: Playground (left) + GitHub·Discord·Support (right) - */
+.nav-left { display: inline-flex; align-items: center; }
+.nav-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 10px;
+  padding-left: 12px;
+  border-left: 1px solid var(--vp-c-divider); /* separator before the cluster */
+}
+.nav-pg-link,
+.nav-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+  transition: color 0.15s, background-color 0.15s;
+  white-space: nowrap;
+}
+.nav-pg-link { font-weight: 600; color: var(--vp-c-text-1); }
+.nav-pg-link:hover { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
+.nav-social-link:hover { color: var(--vp-c-text-1); background: var(--vp-c-default-soft); }
+.nav-ico { display: inline-flex; align-items: center; }
+.nav-ico-r { opacity: 0.55; }
+.nav-pg-link:hover .nav-ico-r { opacity: 0.9; }
+@media (max-width: 860px) {
+  .nav-pg-link .nav-txt,
+  .nav-social-link .nav-txt { display: none; } /* icon-only when cramped */
 }
 
 /* ---- Search: stretch it wide instead of a tiny pill ---- */
@@ -77,57 +116,41 @@
 /* wider search modal input */
 .VPLocalSearchBox .search-bar { max-width: none; }
 
-/* ---- Sidebar repo badge: right-aligned "aowljs ↗" → the repo ---- */
-.VPSidebarItem .item { position: relative; }
+/* ---- Sidebar rows: repo badge as a flex child + full-row hover ---- */
+/* make each row a flex line so name grows and badge/caret sit at the right */
+.VPSidebarItem .item {
+  display: flex;
+  align-items: center;
+}
+.VPSidebarItem .item > .link { flex: 1 1 auto; min-width: 0; }
+.VPSidebarItem .item > .caret { flex: 0 0 auto; }
+
+/* hover the WHOLE row (name + badge together) so the badge clearly belongs;
+   only real link rows, not the region-label headers */
+.VPSidebarItem.is-link > .item:hover {
+  background: var(--vp-c-default-soft);
+  border-radius: 6px;
+}
+
+/* the "aowljs ↗" badge — right-aligned, links to the repo */
 .repo-badge {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex: 0 0 auto;
+  margin-left: 8px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 5px;
   font-size: 0.72rem;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.3;
   color: var(--vp-c-text-3);
   background: transparent;
-  z-index: 4;
   transition: color 0.15s, background-color 0.15s;
 }
-/* clear the collapse chevron on group rows */
-.VPSidebarItem.collapsible > .item .repo-badge { right: 30px; }
-.repo-badge:hover { color: var(--vp-c-brand-1); background: var(--vp-c-default-soft); }
+.repo-badge:hover { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
 .repo-badge svg { flex: 0 0 auto; opacity: 0.85; }
 .repo-badge:hover svg { opacity: 1; }
-/* reserve room so long names don't sit under the badge */
-.item.has-repo-badge > .link .text { padding-right: 4.5rem; }
-.VPSidebarItem.collapsible > .item.has-repo-badge > .link .text { padding-right: 6rem; }
-
-/* ---- Custom GitHub nav link (icon + text, one link, with a divider) ---- */
-.nav-gh-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 24px;
-  margin: 0 8px 0 12px;
-  padding-left: 16px;
-  border-left: 1px solid var(--vp-c-divider); /* the separator */
-  color: var(--vp-c-text-2);
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 24px;
-  transition: color 0.2s;
-}
-.nav-gh-link:hover { color: var(--vp-c-text-1); }
-.nav-gh-icon { display: inline-flex; align-items: center; }
-.nav-gh-text { display: inline-block; }
-@media (max-width: 768px) {
-  .nav-gh-link .nav-gh-text { display: none; } /* icon-only when cramped */
-  .nav-gh-link { padding-left: 12px; margin-left: 8px; }
-}
 
 /* --- Sidebar: tighter than default, region labels as small-caps headers --- */
 .VPSidebar { padding-top: 1.25rem; }

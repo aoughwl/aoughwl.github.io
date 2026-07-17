@@ -74,7 +74,7 @@ const sidebar = [
         text: 'Tools',
         collapsed: false,
         items: [
-          { text: '▶ Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
+          { text: 'Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
           { text: 'Claude Code Plugin & MCP — aowl-code', link: '/docs/aowl-code' },
           { text: 'LSP — aowl-lsp', link: '/docs/aowl-lsp' },
           { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
@@ -164,17 +164,9 @@ export default defineConfig({
     },
     siteTitle: 'docs',
 
-    nav: [
-      // absolute URL + same-tab target: /playground/ is a static app, not a
-      // VitePress route, so the SPA router must NOT intercept the click.
-      { text: 'Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
-      { text: 'Discord', link: 'https://discord.gg/nxa3W7w4rJ' },
-    ],
-
+    // Top-nav links (Playground on the left; GitHub · Discord · Support on the
+    // right) are all rendered with icons via the nav slots in theme/index.js.
     sidebar,
-
-    // GitHub is rendered as a single icon+text link via the nav-bar-content-after
-    // slot (see .vitepress/theme/index.js) — not as a separate socialLinks icon.
 
     search: { provider: 'local' },
 
