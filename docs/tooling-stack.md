@@ -1,15 +1,15 @@
 ---
-title: IC, nimony-lsp & niflens
+title: IC, aowl-lsp & aiflens
 parent: Tools
 nav_order: 1
 ---
 
-# The tooling stack: incremental compilation, nimony-lsp & niflens
+# The tooling stack: incremental compilation, aowl-lsp & aiflens
 {: .no_toc }
 
 How editor tooling for [Nimony](../nimony) actually works, end to end — the
-**incremental compiler** at the bottom, the **[nimony-lsp](nimony-lsp)** server
-that rides it, and the **[niflens](niflens)** NIF-reading core they share.
+**incremental compiler** at the bottom, the **[aowl-lsp](aowl-lsp)** server
+that rides it, and the **[aiflens](aiflens)** NIF-reading core they share.
 
 <details open markdown="block">
   <summary>Contents</summary>
@@ -25,8 +25,8 @@ that rides it, and the **[niflens](niflens)** NIF-reading core they share.
 | Layer | What it is | Role in tooling |
 |---|---|---|
 | **IC** — incremental `nimony check` | the compiler's one-shot check + on-disk artifact cache (`nimcache/*.s.nif`) | the *engine*: warm re-checks are ~0.00s, so navigation/diagnostics can be one-shot instead of a daemon |
-| **nimony-lsp** | a JSON-RPC LSP server + VSCode client | the *shaping*: turns compiler output into hover, definition, references, completion, inlay, semantic tokens, live diagnostics |
-| **niflens** | a thin library/CLI over Nimony's NIF libraries | the *reader*: walks `.s.nif` artifacts into structured facts (symbols, types, outline) that the LSP shapes |
+| **aowl-lsp** | a JSON-RPC LSP server + VSCode client | the *shaping*: turns compiler output into hover, definition, references, completion, inlay, semantic tokens, live diagnostics |
+| **aiflens** | a thin library/CLI over Nimony's NIF libraries | the *reader*: walks `.s.nif` artifacts into structured facts (symbols, types, outline) that the LSP shapes |
 
 The design commitment, aligned with Araq's `nim track` direction: **one-shot
 checks against a warm cache, no semantic daemon.** No long-lived analysis
@@ -43,7 +43,7 @@ one-shot tooling is viable: after the first check, every hover/definition/
 keystroke-check is effectively free.
 
 Warmth is fragile. Two non-obvious failure modes broke it (both now fixed in
-nimony-lsp — see below); they are properties of *IC itself*, not the LSP:
+aowl-lsp — see below); they are properties of *IC itself*, not the LSP:
 
 ### 1. The cache is keyed by the path string as given
 
@@ -76,7 +76,7 @@ longer thrashes. Measured: interleaved hovers **71ms → 10ms** instead of
 
 ---
 
-## nimony-lsp: shaping IC into an editor experience
+## aowl-lsp: shaping IC into an editor experience
 
 Every feature request is a one-shot `nimony check` against the (now per-file)
 warm cache:
@@ -86,7 +86,7 @@ warm cache:
 - **definition / references / hover** — the compiler's `idetools`
   (`--def` / `--usages`), reading the *unsaved buffer* when it differs from disk.
 - **completion, inlay hints, document symbols, semantic tokens, type/call
-  hierarchies** — read the `.s.nif` artifact directly (this is the niflens
+  hierarchies** — read the `.s.nif` artifact directly (this is the aiflens
   layer, below).
 
 ### Symptoms, root causes, fixes
@@ -101,25 +101,25 @@ warm cache:
 | Bogus `: int` inlay hints in comments/imports | synthesized NIF decls with misattributed line-info | gate hints to real `let`/`var`/`const` sites |
 | Up to 3 servers thrashing one cache | client ran `startClient()` before `stopClient()` finished | serialize stop→start in the client |
 
-Full ledger: the repo's [`doc/CHANGES.md`](https://github.com/aoughwl/nimony-lsp/blob/main/doc/CHANGES.md).
+Full ledger: the repo's [`doc/CHANGES.md`](https://github.com/aoughwl/aowl-lsp/blob/main/doc/CHANGES.md).
 
 ---
 
-## niflens: the shared NIF-reading core
+## aiflens: the shared NIF-reading core
 
 Everything the LSP does *beyond* diagnostics and `--def`/`--usages` — nested
 document symbols, hover signatures, member/UFCS completion, semantic tokens,
 inlay types — comes from **reading the `.s.nif` artifact**. That reading is
-exactly what [niflens](niflens) does: a thin library over Nimony's own NIF
+exactly what [aiflens](aiflens) does: a thin library over Nimony's own NIF
 libraries that emits structured facts (the flat symbol table, outlines, types),
 and which also backs the `aowl-code` MCP plugin via its CLI.
 
-Today nimony-lsp's `nifindex.nim` carries its own copy of that NIF-walk. The
-**convergence plan**: extract niflens's core as a linkable library, have the LSP
+Today aowl-lsp's `nifindex.nim` carries its own copy of that NIF-walk. The
+**convergence plan**: extract aiflens's core as a linkable library, have the LSP
 **link** it (not shell out — that would add per-request process-spawn latency),
 and keep only the LSP-shaping (SymbolKind mapping, coordinate conversion, wire
 types, the member-completion temp-compile) on top. One reader, two mouths
-(niflens CLI + linked lib), no drift.
+(aiflens CLI + linked lib), no drift.
 
 On the **daemon question**, both agree with Araq: navigation rides the one-shot
 `idetools`/`track` path; any `serve` is scoped to *NIF-index caching only*
@@ -129,7 +129,7 @@ On the **daemon question**, both agree with Araq: navigation rides the one-shot
 
 ## Roadmap: what would make IC a great tooling backend
 
-These are **compiler-side** primitives, not things the LSP or niflens should
+These are **compiler-side** primitives, not things the LSP or aiflens should
 reimplement:
 
 1. **Structured/JSON diagnostics from `nimony check`** — kill the fragile
@@ -143,5 +143,5 @@ reimplement:
    re-deriving types from `.s.nif`.
 
 Everything else is polish: per-file cache cleanup for closed files, background
-pre-warming of open files, and the niflens core extraction.
+pre-warming of open files, and the aiflens core extraction.
 </content>

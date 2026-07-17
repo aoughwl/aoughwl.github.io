@@ -1,16 +1,16 @@
 ---
-title: nimony-lsp
+title: aowl-lsp
 parent: Tools
 nav_order: 3
 ---
 
-# nimony-lsp — Language Server + VSCode extension
+# aowl-lsp — Language Server + VSCode extension
 {: .no_toc }
 
 A [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)
 implementation for **[Nimony](../nimony)**, together with a full VSCode extension.
 
-[Repo → github.com/aoughwl/nimony-lsp](https://github.com/aoughwl/nimony-lsp){: .btn .btn-primary }
+[Repo → github.com/aoughwl/aowl-lsp](https://github.com/aoughwl/aowl-lsp){: .btn .btn-primary }
 
 The server is built directly on Nimony's own infrastructure. Navigation is served
 by the compiler's `idetools` backend (`--def` / `--usages`), diagnostics by
@@ -90,7 +90,7 @@ that first check cheap is a compiler-side problem (incremental `check`).
 
 Nimony ships a real IDE backend (`idetools`) and a lowered, fully typed
 representation of every module in `nimcache/` — but nothing consumed either from
-an editor. `nimony-lsp` turns those existing outputs into the standard protocol
+an editor. `aowl-lsp` turns those existing outputs into the standard protocol
 every editor already speaks, rather than building a parallel analysis engine:
 
 | Editor need | What Nimony already emits | How the server uses it |
@@ -147,7 +147,7 @@ path, so navigation never regresses or hangs.
 Build the server, then install the bundled extension:
 
 ```
-cd server && nimble build          # -> server/bin/nimony-lsp
+cd server && nimble build          # -> server/bin/aowl-lsp
 cd ../client && npm install && npm run bundle
 npx vsce package                   # -> nimony-<version>.vsix
 code --install-extension nimony-<version>.vsix --force
@@ -168,7 +168,7 @@ if you install it elsewhere.
 
 | Setting | Default | Purpose |
 |---|---|---|
-| `nimony.serverPath` | *(auto)* | Path to the `nimony-lsp` binary |
+| `nimony.serverPath` | *(auto)* | Path to the `aowl-lsp` binary |
 | `nimony.nimonyPath` | `.../nimony/bin/nimony` | Path to the Nimony compiler |
 | `nimony.extraPaths` | `[]` | Extra module search paths |
 | `nimony.daemonPath` | *(empty)* | Optional `nimsem serve` binary for the warm backend |
@@ -192,5 +192,5 @@ driver modules only do the 0/1-based line/col shift.
 
 ---
 
-See the **[full reference](../reference/nimony-lsp)** for the module contracts and
+See the **[full reference](../reference/aowl-lsp)** for the module contracts and
 the complete data-format ground truth.

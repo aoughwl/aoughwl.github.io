@@ -112,7 +112,7 @@ nim-code/                         ${CLAUDE_PLUGIN_ROOT}
 │   ├── test_server.py            self-test: exercises all tools against live nim/nimony
 │   └── README.md                 manual nimsuggest / nimsem fallback notes
 ├── scripts/
-│   ├── lsp-dispatch.py           picks nimlangserver vs nimony-lsp per project
+│   ├── lsp-dispatch.py           picks nimlangserver vs aowl-lsp per project
 │   └── gen-nif-grammar.py        regenerates skills/nif-format/nif-grammar.md
 ├── hooks/
 │   ├── hooks.json                hook wiring
@@ -134,7 +134,7 @@ Fourteen tools are exposed by the `nimlang` server. `compile`, `build`, `outline
 `defs_uses`, `explain_failure`, `phase_report`, `shrink`, `api`, and `symbols`
 support both toolchains; `decl_of` is Nimony‑only. The `nif_*` tools operate on
 Nimony NIF artifacts and are Nimony‑only; `nif_outline`, `nif_query`, and
-`nif_render` (like `decl_of`) prefer the [`niflens`](https://github.com/aoughwl/niflens)
+`nif_render` (like `decl_of`) prefer the [`aiflens`](https://github.com/aoughwl/aiflens)
 helper — the compiler's own NIF libraries — and fall back to the in‑Python NIF
 parser when it is absent (each reports `backend`). Every tool accepts `terse` (see
 [Terse mode](#terse-mode)). `compile`, `build`, and `defs_uses` also accept
@@ -151,7 +151,7 @@ parser when it is absent (each reports `backend`). Every tool accepts `terse` (s
 | `shrink` | `(file, toolchain="auto")` | Delta‑debugs a failing file, dropping top‑level statements while the first `Error:` message is preserved. Returns `{original_lines, minimal_lines, minimal_source, kept_error}`. Iteration‑ and time‑bounded. | both |
 | `api` | `(module, toolchain="auto", needle=None)` | Typed public API of a module or dependency without reading its source. Nim runs `nim jsondoc` on a `.nim` path, an installed nimble package (e.g. `chroma`), or a stdlib module (e.g. `std/tables`), returning `{name, kind, sig}` entries. For a `.nif`/Nimony target the typed API is the compiled artifact, rendered via `nif_render`. `needle` filters by name substring. | both |
 | `symbols` | `(name, root=".", kind=None, uses=false)` | Project‑wide symbol search by name substring; regex‑based and toolchain‑agnostic. Returns `{defs, root}`, and `{uses}` when `uses:true`. Skips `nimcache`, `.git`, `htmldocs`, and nimble dirs; bounded for large trees. | both |
-| `decl_of` | `(symbol, cwd=".", kind=None)` | Reverse index: a Nimony symId (`add.0.tgokb0h9q`, as emitted by `defs_uses`/idetools) or a plain name → its declaration site(s) `{sym, name, kind, file, line, col, signature, nif}`, plus `backend`. Prefers the [`niflens`](https://github.com/aoughwl/niflens) helper (the compiler's own NIF libraries — authoritative positions and module‑qualified symIds) and falls back to an in‑Python NIF walk when it is absent. Fills the symId‑keyed gap `symbols` (by name) and `defs_uses` (by position) leave open — for semantic tokens / workspace symbol. | Nimony |
+| `decl_of` | `(symbol, cwd=".", kind=None)` | Reverse index: a Nimony symId (`add.0.tgokb0h9q`, as emitted by `defs_uses`/idetools) or a plain name → its declaration site(s) `{sym, name, kind, file, line, col, signature, nif}`, plus `backend`. Prefers the [`aiflens`](https://github.com/aoughwl/aiflens) helper (the compiler's own NIF libraries — authoritative positions and module‑qualified symIds) and falls back to an in‑Python NIF walk when it is absent. Fills the symId‑keyed gap `symbols` (by name) and `defs_uses` (by position) leave open — for semantic tokens / workspace symbol. | Nimony |
 | `nif_outline` | `(nif_file)` | Top‑level `(tag name …)` nodes of a NIF artifact — names only, no bodies. | Nimony |
 | `nif_query` | `(nif_file, needle)` | S‑expr subtrees whose head tag or symbol matches `needle`, each snippet truncated, via a paren‑matching scanner. | Nimony |
 | `nif_render` | `(nif_file, needle=None)` | Renders NIF node(s) as compact pseudo‑Nim (`proc`/`var`/`let`/`call`/`if`/`type`/… mapped to Nim‑like syntax; `sym.NN.mod` demangled to `sym`), falling back to a raw snippet for unknown tags. Roughly an order of magnitude smaller than raw NIF. | Nimony |
@@ -244,7 +244,7 @@ server** — walk up from the workspace for a `nimony.paths`/`nimony.cfg` (or a
 | Detected | Server | Install |
 |----------|--------|---------|
 | Nim (default) | [`nimlangserver`](https://github.com/nim-lang/langserver) | `nimble install nimlangserver` |
-| Nimony | [`aoughwl/nimony-lsp`](https://github.com/aoughwl/nimony-lsp) | build `server/` → put `nimony-lsp` on `PATH` |
+| Nimony | [`aoughwl/aowl-lsp`](https://github.com/aoughwl/aowl-lsp) | build `server/` → put `aowl-lsp` on `PATH` |
 
 Because only one server is ever started, the same‑extension hazard never
 arises, and no per‑project configuration is required. Overrides (all optional
@@ -254,7 +254,7 @@ from the `nimony` on `PATH`). If the selected server is not installed, the
 dispatcher exits with a one‑line reason in the `/plugin` **Errors** tab and
 nothing else is affected.
 
-`nimony-lsp` is verified working end‑to‑end against `nimony` 0.4.0 —
+`aowl-lsp` is verified working end‑to‑end against `nimony` 0.4.0 —
 diagnostics, goto‑definition, find‑references, hover, and document symbols all
 respond (completion is advertised). A Nimony project without the LSP loses
 nothing else: navigation and diagnostics stay on the MCP tools (`compile`,
@@ -379,15 +379,15 @@ parsed:
 `mcp/test_server.py` starts the server and exercises all fourteen tools against
 live `nim` and `nimony` compiles; run it to verify the environment.
 
-The optional [`niflens`](https://github.com/aoughwl/niflens) helper (a Nim CLI
+The optional [`aiflens`](https://github.com/aoughwl/aiflens) helper (a Nim CLI
 over Nimony's own NIF libraries) is preferred by `decl_of` when on `PATH` (or
 `$NIFLENS`); without it, `decl_of` falls back to the in‑Python NIF walk. Build
-it with `NIMONY_SRC=<nimony checkout> nimble build` and put `bin/niflens` on
+it with `NIMONY_SRC=<nimony checkout> nimble build` and put `bin/aiflens` on
 `PATH`. Not required for any other tool.
 
 The optional LSP additionally needs a language server on `PATH` —
 **nimlangserver** (`nimble install nimlangserver`) for Nim and/or
-**nimony-lsp** ([aoughwl/nimony-lsp](https://github.com/aoughwl/nimony-lsp)) for
+**aowl-lsp** ([aoughwl/aowl-lsp](https://github.com/aoughwl/aowl-lsp)) for
 Nimony; the dispatcher picks per project. See [LSP](#lsp-optional). Neither is
 required for any MCP tool, hook, command, or skill.
 
@@ -408,13 +408,13 @@ required for any MCP tool, hook, command, or skill.
 ## Changelog
 
 - **0.6** — `nif_outline`, `nif_query`, and `nif_render` now also prefer the
-  [`niflens`](https://github.com/aoughwl/niflens) helper (the compiler's own NIF
+  [`aiflens`](https://github.com/aoughwl/aiflens) helper (the compiler's own NIF
   libraries) with the in‑Python parser as fallback — completing the migration of
-  NIF *parsing* off the regex path for every NIF tool. niflens gained `render`,
+  NIF *parsing* off the regex path for every NIF tool. aiflens gained `render`,
   `index` (`.s.idx.nif` via `nifindexes`), `outline`, `query`, and a `serve`
   stdio daemon (one process across requests — the basis for a shared NIF daemon
   backing both this plugin and a Nimony LSP).
-- **0.5** — `decl_of` now prefers the [`niflens`](https://github.com/aoughwl/niflens)
+- **0.5** — `decl_of` now prefers the [`aiflens`](https://github.com/aoughwl/aiflens)
   helper — a Nim CLI over Nimony's own NIF libraries (`nifreader`/`nifstreams`/
   `nifcursors`) — for authoritative line info and module‑qualified symIds,
   falling back to the in‑Python NIF walk when it is absent (reported as
@@ -423,7 +423,7 @@ required for any MCP tool, hook, command, or skill.
   server stays the zero‑install orchestration layer; the same core is intended
   to back a Nimony LSP and a persistent NIF daemon.
 - **0.4** — Builder‑mode additions for consumers reimplementing the toolchain
-  (feedback from building `nimony-lsp`): `decl_of` reverse‑index tool (symId →
+  (feedback from building `aowl-lsp`): `decl_of` reverse‑index tool (symId →
   declaration site from the `.s.nif`); `raw` mode on `compile`/`build`/
   `defs_uses` that echoes the exact argv and surfaces the idetools relative‑path
   contract the tools otherwise hide; a generated parser‑grade
@@ -431,10 +431,10 @@ required for any MCP tool, hook, command, or skill.
   decl‑kind classes and child‑slot layouts; and a `compiler-contracts` skill.
 - **0.3** — LSP is now a single auto‑dispatching `.lsp.json` entry
   (`scripts/lsp-dispatch.py`): it applies the plugin's toolchain detection per
-  project and `exec`s `nimlangserver` for Nim or `nimony-lsp` for Nimony,
+  project and `exec`s `nimlangserver` for Nim or `aowl-lsp` for Nimony,
   launching exactly one server so the shared‑`.nim` collision cannot arise.
   Replaces the earlier Nim‑only entry plus the unsupported project‑settings
-  opt‑in. `nimony-lsp` ([aoughwl/nimony-lsp](https://github.com/aoughwl/nimony-lsp))
+  opt‑in. `aowl-lsp` ([aoughwl/aowl-lsp](https://github.com/aoughwl/aowl-lsp))
   verified against `nimony` 0.4.0 (diagnostics, goto‑def, find‑refs, hover,
   document symbols).
 - **0.2** — Terse mode on all tools (`NIMLANG_AGGRESSIVE`); `explain_failure`,

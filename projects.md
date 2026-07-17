@@ -23,7 +23,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [nimony-playground](playground) — browser playground, `aowli` compiled to JS | `aoughwl/nimony-playground` | public |
 | [aowlweb](docs/aowlweb) — JS + WASM backends & async runtime | `aoughwl/aowlweb` | private repo · public docs |
 | [aowl-code](docs/aowl-code) — Claude Code plugin + MCP server | `aoughwl/aowl-code` | public |
-| [nimony-lsp](docs/nimony-lsp) — Language Server + VSCode extension | `aoughwl/nimony-lsp` | public |
+| [aowl-lsp](docs/aowl-lsp) — Language Server + VSCode extension | `aoughwl/aowl-lsp` | public |
 | [net stack](docs/net-stack) — `tcp`/`net`/`tls`/`http`/`compress`/`serve`/`ws`/`requests` | `aoughwl/{tcp,net,tls,http,compress,serve,ws,requests}` | public |
 | [web](docs/web) — HTML + validated CSS in one nimony block (DSL) | `aoughwl/web` | public |
 | [html](docs/html) — typed HTML5 registry + renderer | `aoughwl/html` | public |

@@ -76,7 +76,7 @@ event loop — **46/46** under Node. Each row is documented on the
 
 Nimony's design already leans on cached, typed NIF artifacts per module — which
 makes it a natural fit for *fast re-checks*. We push that further so
-that interactive tooling (the **[nimony-lsp](docs/nimony-lsp)** language server's
+that interactive tooling (the **[aowl-lsp](docs/aowl-lsp)** language server's
 live as-you-type diagnostics, in particular) has a compile path that stays warm
 and cheap. These are the concrete wins, most user-visible first.
 
@@ -90,11 +90,11 @@ and cheap. These are the concrete wins, most user-visible first.
 
 **Why this matters for editors.** A whole-project `nimony check` is ~1.1s cold
 but only **~10–25ms** on an incremental warm re-check. That gap is exactly what
-lets nimony-lsp publish diagnostics *on every keystroke* (against the unsaved
+lets aowl-lsp publish diagnostics *on every keystroke* (against the unsaved
 buffer, in an isolated nimcache) without a background daemon — see the
-[nimony-lsp](docs/nimony-lsp) page. The `nimsem serve` daemon above is the
+[aowl-lsp](docs/aowl-lsp) page. The `nimsem serve` daemon above is the
 next-tier backend for when cross-module query latency (go-to-def / references on
-huge trees) needs to be warm too; it's wired into nimony-lsp as an opt-in path.
+huge trees) needs to be warm too; it's wired into aowl-lsp as an opt-in path.
 
 ---
 

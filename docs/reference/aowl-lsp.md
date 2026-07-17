@@ -1,13 +1,13 @@
 ---
-title: nimony-lsp
+title: aowl-lsp
 nav_exclude: true
 parent: Single Page READMEs
 nav_order: 2
 ---
 
-> Verbatim archive of the original `aoughwl/nimony-lsp` README. Curated summary: [nimony-lsp project page](../nimony-lsp).
+> Verbatim archive of the original `aoughwl/aowl-lsp` README. Curated summary: [aowl-lsp project page](../aowl-lsp).
 
-# nimony-lsp
+# aowl-lsp
 
 A [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)
 implementation for **[Nimony](https://github.com/nim-lang/nimony)** — the
@@ -43,7 +43,7 @@ wrapper around it.
 
 Nimony ships a real IDE backend — `idetools` — and a lowered, fully typed
 representation of every module in `nimcache/`. Nothing consumed either from an
-editor. `nimony-lsp` closes that gap by turning the compiler's existing outputs
+editor. `aowl-lsp` closes that gap by turning the compiler's existing outputs
 into the standard protocol every modern editor already speaks, rather than
 building a parallel analysis engine:
 
@@ -117,8 +117,8 @@ needed. Verbs implemented: `defs`, `usages`/`references`, `symbols`
 ## Layout
 
 ```
-nimony-lsp/
-├── server/                     Nim 2.x LSP server → single binary `nimony-lsp`
+aowl-lsp/
+├── server/                     Nim 2.x LSP server → single binary `aowl-lsp`
 │   ├── nimony_lsp.nimble
 │   ├── config.nims             adds Nimony's src/lib to the module path
 │   └── src/
@@ -165,7 +165,7 @@ nimony-lsp/
 
 ```bash
 cd server
-nimble build            # → server/bin/nimony-lsp
+nimble build            # → server/bin/aowl-lsp
 ```
 
 `config.nims` adds Nimony's `src/lib` to the compile path so the server links the
@@ -188,7 +188,7 @@ Host, or run `vsce package` to produce an installable `.vsix`.
 
 The extension registers the server for `.nim`, `.nims`, and `.nimony` files. In
 any LSP-capable editor the wiring is the same three facts: launch
-`server/bin/nimony-lsp`, talk JSON-RPC over stdio, and pass the compiler path in
+`server/bin/aowl-lsp`, talk JSON-RPC over stdio, and pass the compiler path in
 `initializationOptions.nimonyPath`.
 
 Note that Nim and Nimony share the `.nim` extension. A workspace is one language
@@ -202,7 +202,7 @@ counterpart.
 
 | Setting | Default | Meaning |
 |---------|---------|---------|
-| `nimony.serverPath` | auto | Path to the `nimony-lsp` binary. Empty → the bundled binary, then a built-in fallback. |
+| `nimony.serverPath` | auto | Path to the `aowl-lsp` binary. Empty → the bundled binary, then a built-in fallback. |
 | `nimony.nimonyPath` | `/home/savant/nimony/bin/nimony` | The Nimony compiler the server drives. |
 | `nimony.extraPaths` | `[]` | Extra `--path` entries handed to the compiler. |
 | `nimony.trace.server` | `off` | LSP JSON-RPC tracing (`off` / `messages` / `verbose`). |

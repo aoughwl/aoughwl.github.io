@@ -12,7 +12,7 @@ nav_order: 22
 {: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
-**Type** `feature` · **Status** <span class="pill ok">Prototype (Phase 1)</span> · **Consumed by** [nimony-lsp](../docs/nimony-lsp) (opt-in) · [← ledger](../nimony)
+**Type** `feature` · **Status** <span class="pill ok">Prototype (Phase 1)</span> · **Consumed by** [aowl-lsp](../docs/aowl-lsp) (opt-in) · [← ledger](../nimony)
 </div>
 
 ## The change
@@ -41,5 +41,5 @@ text format.
 ## Why it's opt-in for the cold build
 The cold full-build payoff is marginal — `system` re-intern is CPU-cheap and
 hidden behind the parallel fan-out — so `serve` is oriented toward
-persistent-session use. [nimony-lsp](../docs/nimony-lsp) wires it as an **opt-in**
+persistent-session use. [aowl-lsp](../docs/aowl-lsp) wires it as an **opt-in**
 navigation backend that falls back to `idetools` on any miss.

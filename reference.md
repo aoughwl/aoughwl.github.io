@@ -16,7 +16,7 @@ the repo READMEs slim down to stubs.
 | Library | Reference |
 |---|---|
 | aowl-code | [full README](docs/reference/aowl-code) |
-| nimony-lsp | [full README](docs/reference/nimony-lsp) |
+| aowl-lsp | [full README](docs/reference/aowl-lsp) |
 | tcp | [full README](docs/reference/tcp) |
 | net | [full README](docs/reference/net) |
 | http | [full README](docs/reference/http) |
