@@ -18,10 +18,12 @@ nav_order: 2
 
 ---
 
-Every command shares three flags: `--parser:PATH` picks the aowlparser binary
-(else `$AOWLPARSER`, else the default checkout); `--stdin` reads source from
-stdin instead of a file; `--filename:NAME` sets the path reported in diagnostics
-and URIs when reading stdin.
+`fix` and `lint` accept **files or directories** — a directory is walked for
+`*.nim`, with repeatable `--exclude:GLOB` (supporting `*` and `?`) to prune it.
+Shared flags: `--parser:PATH` picks the aowlparser binary (else `$AOWLPARSER`,
+else the default checkout); `--stdin` reads source from stdin; `--filename:NAME`
+sets the path reported in diagnostics and URIs when reading stdin; `--color`
+colorizes human output; `--no-suppress` ignores inline suppression markers.
 
 ## `fix`
 
@@ -57,12 +59,26 @@ suggestions (need human judgement — not auto-applied):
 ## `lint`
 
 ```sh
-aowlsuggest lint <files...> [--format:json]
+aowlsuggest lint <paths...> [--format:text|json|sarif] [--stats] [--exclude:GLOB]
 ```
 
-Batch-lints many files. Human-readable by default; `--format:json` emits a single
-object with a per-file breakdown and a summary. Exits non-zero if any file has an
-error-severity diagnostic or fails to run — CI-friendly.
+Batch-lints files and directories. Human-readable by default; `--format:json`
+emits a per-file breakdown with a summary; `--format:sarif` emits SARIF 2.1.0 for
+GitHub code scanning and other dashboards (see [Editor
+integration](editor-integration#ci-formats-sarif)). `--stats` adds a per-code
+count. Exits non-zero if any file has an error-severity diagnostic or fails to
+run — CI-friendly.
+
+```console
+$ aowlsuggest lint src --exclude:'*/vendor/*' --stats
+src/a.nim:12:6: error[assignment-in-condition]: '=' assigns; this 'if' condition needs a comparison
+  help: did you mean '=='?
+
+by code:
+  1	assignment-in-condition
+
+7 file(s) checked, 1 with issues: 1 error(s), 0 warning(s)
+```
 
 ```console
 $ aowlsuggest lint src/*.nim
@@ -86,14 +102,53 @@ $ echo $?
 }
 ```
 
-## `lsp`
+## `lsp` and `lsp-server`
 
 ```sh
-aowlsuggest lsp <file>
+aowlsuggest lsp <file>        # one-shot payload
+aowlsuggest lsp-server        # a persistent stdio Language Server
 ```
 
-Emits an editor payload: LSP `Diagnostic` objects and `CodeAction` quick-fixes in
-one JSON object. Covered in full under [Editor integration](editor-integration).
+`lsp` emits a one-shot editor payload; `lsp-server` is a full stdio JSON-RPC
+Language Server. Both are covered under [Editor
+integration](editor-integration).
+
+## `explain`
+
+```sh
+aowlsuggest explain [code] [--format:json]
+```
+
+Describes a diagnostic code — what it means, a bad/good example, and whether it
+is auto-fixable — or, with no argument, lists every known code. The knowledge
+base is derived from aowlparser's diagnostic set.
+
+```console
+$ aowlsuggest explain assignment-in-condition
+assignment-in-condition — Assignment '=' where a comparison was meant
+
+A bare '=' at the top level of an if/elif/while/when condition assigns rather
+than compares — almost always a typo for '=='.
+
+  bad:  if x = 5:
+  good: if x == 5:
+
+auto-fixable: yes
+```
+
+## Inline suppression
+
+A project can silence an accepted diagnostic with a comment. This is a **source
+line scan** (it looks for the marker after a `#`), not a reparse:
+
+```nim
+foo(bar)     # aowlsuggest:ignore                  suppress every code on this line
+baz(qux)     # aowlsuggest:ignore[expected-colon]  suppress only these codes
+# aowlsuggest:ignore-next
+risky_line()                                       # suppressed by the line above
+```
+
+Suppression is on by default for `lint` and `check`; `--no-suppress` disables it.
 
 ## `check`
 

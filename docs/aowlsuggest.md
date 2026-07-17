@@ -39,13 +39,16 @@ diagnostic stream is only half of a good developer experience.
 
 - **Quick-fixes.** `if x = 5:` → `if x == 5:`; a missing `:` inserted; a
   mismatched `]` swapped for the `)` its opener wants; a `=` added to a routine
-  that forgot it. Each is **verified** by re-running the parser, so a fix can
-  never corrupt valid code.
-- **Batch / CI linting.** Lint a whole tree, human-readable or JSON, with a
-  non-zero exit on any error.
-- **Editor integration.** LSP `Diagnostic` objects (0-based ranges, related
-  information) plus `CodeAction` quick-fixes — including ranked "did you mean"
-  alternatives — and support for checking an **unsaved buffer** over stdin.
+  that forgot it; a stray bracket removed; a char literal closed. Each is
+  **verified** by re-running the parser, so a fix can never corrupt valid code.
+- **Batch / CI linting.** Lint a whole directory tree — human-readable, JSON, or
+  **SARIF 2.1.0** for GitHub code scanning — with `--exclude` globs, per-code
+  `--stats`, and a non-zero exit on any error.
+- **Editor integration.** A one-shot LSP payload *and* a full stdio **LSP
+  server**: live `publishDiagnostics` and `CodeAction` quick-fixes (with ranked
+  "did you mean" alternatives), plus checking an **unsaved buffer** over stdin.
+- **Understand & silence.** `explain <code>` documents any diagnostic; inline
+  `# aowlsuggest:ignore` markers suppress accepted ones.
 
 ## The one rule
 
@@ -59,10 +62,12 @@ fix is to extend *aowlparser's* schema — not to re-derive it here. See
 ## At a glance
 
 ```sh
-aowlsuggest fix   <file> [--write] [--dry-run]   apply verified quick-fixes
-aowlsuggest lint  <files...> [--format:json]     batch lint (nonzero exit on error)
-aowlsuggest lsp   <file>                          LSP diagnostics + code actions (JSON)
-aowlsuggest check <file> [--format:json]          raw diagnostics pass-through
+aowlsuggest fix    <paths...> [--write] [--dry-run]      apply verified quick-fixes
+aowlsuggest lint   <paths...> [--format:text|json|sarif] batch lint (nonzero exit on error)
+aowlsuggest lsp    <file>                                 LSP diagnostics + code actions (JSON)
+aowlsuggest lsp-server                                    a stdio LSP server (JSON-RPC)
+aowlsuggest check  <file> [--format:...]                  raw diagnostics pass-through
+aowlsuggest explain [code]                                explain a diagnostic code
 ```
 
 ```console

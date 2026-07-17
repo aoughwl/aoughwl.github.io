@@ -88,3 +88,48 @@ in; `--filename:NAME` supplies the path to report in the `uri` and in
 diagnostics. This means the whole surface — diagnostics, related locations, and
 quick-fixes — works on in-flight edits, not just saved files. See
 [Commands](commands#stdin-linting-an-unsaved-buffer).
+
+## The LSP server
+
+`aowlsuggest lsp-server` is a persistent **Language Server** over stdio, so an
+editor drives it directly rather than shelling out per file. It speaks JSON-RPC
+2.0 with LSP's `Content-Length` framing and implements:
+
+| message | behaviour |
+|---------|-----------|
+| `initialize` | advertises `textDocumentSync: 1` (Full) and `codeActionProvider` |
+| `textDocument/didOpen` | store the buffer, publish diagnostics |
+| `textDocument/didChange` | replace the buffer (full sync), re-publish |
+| `textDocument/didSave` | re-publish for the saved buffer |
+| `textDocument/didClose` | drop the buffer, clear its diagnostics |
+| `textDocument/codeAction` | quick-fixes for diagnostics in the requested range |
+| `shutdown` / `exit` | clean teardown |
+
+Each `didOpen`/`didChange` runs aowlparser on the current buffer and pushes a
+`textDocument/publishDiagnostics` notification; the diagnostics and the
+`codeAction` responses are the exact objects described above. A minimal session:
+
+```
+→ initialize                     ← { capabilities: { textDocumentSync: 1, codeActionProvider: true } }
+→ didOpen  "if x = 5:\n …"        ← publishDiagnostics [ assignment-in-condition ]
+→ codeAction (line 0)            ← [ { title: "change '=' to '=='", … } ]
+→ didChange "let ok = 1\n"        ← publishDiagnostics [ ]
+→ shutdown / exit
+```
+
+## CI formats: SARIF
+
+For batch use, `lint --format:sarif` emits **SARIF 2.1.0** — the format GitHub
+code scanning ingests to annotate pull requests. Rules are the distinct codes
+seen, described from the [explain](commands#explain) knowledge base; regions use
+SARIF's 1-based line and column convention.
+
+```yaml
+# a CI step
+- run: aowlsuggest lint src --format:sarif > aowlsuggest.sarif
+- uses: github/codeql-action/upload-sarif@v3
+  with: { sarif_file: aowlsuggest.sarif }
+```
+
+`lint` also offers `--format:json` (a per-file breakdown plus a summary) and a
+non-zero exit on any error, so it slots into any CI without SARIF too.

@@ -34,6 +34,13 @@ Mirroring aowlparser's own `diag.sh` discipline, each fix has two cases:
 Plus coverage of the dry-run diff, `lint --format:json`, exit codes, the ranked
 LSP code actions, stdin buffers, and `version`.
 
+## Feature tests — `tests/features.sh`
+
+Covers the wider surface: the expanded auto-fixes, directory walking with
+`--exclude`, `--stats`, SARIF output, `explain`, inline suppression (each marker
+form), and a scripted **LSP server** session (initialize → didOpen →
+publishDiagnostics → codeAction → shutdown).
+
 ## Zero false positives — `tests/zerofp.sh`
 
 Run over aowlparser's own oracle corpus of **known-valid** files:

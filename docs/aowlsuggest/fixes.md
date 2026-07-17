@@ -27,7 +27,7 @@ code.
 aowlparser's `fix` field is a *human* hint (`"did you mean '=='?"`,
 `"insert ':' at the end of the line"`), not a machine edit. So aowlsuggest maps a
 diagnostic to a concrete edit itself, and it does so **only** where the repair is
-unambiguous and localized. Four codes qualify today:
+unambiguous and localized:
 
 | code | repair | example |
 |------|--------|---------|
@@ -35,11 +35,22 @@ unambiguous and localized. Four codes qualify today:
 | `mismatched-bracket` | swap the wrong close for the one its opener wants | `(1 + 2]` → `(1 + 2)` |
 | `expected-colon` | insert `:` at the end of the header | `if c` → `if c:` |
 | `missing-routine-equals` | insert `=` after the signature | `proc f()` → `proc f() =` |
+| `unterminated-char` | add the missing closing `'` | `'a` → `'a'` |
+| `unmatched-close` | delete a surplus close bracket | `x)` → `x` |
+| `unclosed-bracket` | add the matching close (single-line) | `(1 + 2` → `(1 + 2)` |
+| `tabs-not-allowed` | replace a **mid-line** tab with a space | `let⇥x` → `let x` |
 
 Each carries a **guard** so a surprising span degrades to "no auto-fix" rather
 than a bad splice: the assignment fix checks the span really is a single `=`; the
-bracket fix checks the span is a close bracket and reads the opener from the
-message; the colon/`=` inserts check the line doesn't already end that way.
+bracket fixes check the span is a bracket char and read the opener from the
+message; the colon/`=` inserts check the line doesn't already end that way; the
+tab fix only touches a tab that is *not* indentation (an indentation tab changes
+block structure by an unknown amount, so it stays a suggestion).
+
+More aggressive repairs — deleting a bracket, appending a closer — are safe only
+because of the verify loop below: `unclosed-bracket`'s "append a closer on this
+line" is correct for a single-line bracket and simply *rejected* when the bracket
+legitimately spans lines (the edit wouldn't reduce errors there).
 
 Everything else with a repair hint is surfaced as a **suggestion** — reported,
 never applied. `expected-condition` ("add a condition") is a good example: the
