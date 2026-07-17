@@ -215,8 +215,13 @@ every wrapping backend makes and is what hardware does.
   or two loop variables; `break` / `continue`;
 - `object` → `interface`, object construction → object literal, field access;
 - `enum` → real TS `enum`, qualified member references;
-- `seq`/`array` literals, indexing, `len`, `add`, `newSeq`;
-- string ops (`&`, `len`, `add`, `$`, case/trim/split/contains helpers);
+- `seq`/`array` literals, indexing, index-store (`s[i] = v`), `len`, `add`,
+  `newSeq(n)`;
+- string ops (`&`, `len`, `add`, `$`, relational `==`/`<`/`>`/…, slicing
+  `s[a..b]`/`s[a..<b]`, case/trim/split/contains helpers);
+- user procs whose names collide with builtins (`add`, `len`, `inc`, `ord`, …)
+  emit real calls — magic dispatch is gated on symbol origin, not name;
+- user generic instances (monomorphized) are emitted;
 - tuples (construction, indexing, tuple return types);
 - `var`/`out` parameters via boxing;
 - `echo` (→ a captured-output shim printed once at the end);
@@ -242,8 +247,10 @@ node --experimental-transform-types prog.ts
 
 The test harness (`tests/run.sh`) compiles each `tests/*.nim` with nimony for the
 reference stdout, transpiles it, runs the emitted `.ts` with node, and diffs.
-Current suite: **8/8 byte-identical** (arithmetic, strings, seq+loops, control
-flow, objects+enums, `var` params, `countdown`, tuples).
+Current suite: **8/8 byte-identical** fast + **6/6 faithful**. The shared
+differential corpus (`aowlhl/corpus`, 44 programs vs native nimony) sits at
+**35/44 fast, 37/44 faithful**; the remaining fails are the known-limitation
+items below.
 
 ## Known limitations / TODO
 
@@ -251,8 +258,10 @@ flow, objects+enums, `var` params, `countdown`, tuples).
   `node --experimental-strip-types` rejects them; use
   `--experimental-transform-types`, `tsc`, or `deno`;
 - **closures / first-class `{.closure.}` iterators** — not yet lowered;
-- **user generic instantiations** that aren't intercepted at the call site are
-  skipped (only the built-in `seq`/`string` machinery is currently intercepted);
+- **inheritance (`object of`) and `ref object`** field mutation — not yet lowered;
+- **float display of a statically-untyped value** — `var a = 1.0; echo a` prints
+  `1` (the writer routes on expression shape; a bare var/tuple-element carries no
+  static float type). Needs a symbol→type map;
 - **`set[T]`** membership emits an inline `Set`/OR-chain (functional, not typed as
   a nominal set);
 - **macros / compile-time execution**, `try`/`except`/`raise`, and `defer` are

@@ -80,18 +80,28 @@ Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
 Coverage is broad — aowljs runs essentially all of the language nimony can
-currently express: procs and recursion (mutual **and nested / closures**);
-**generic** instances (monomorphised); `int` **and** `float` arithmetic (float
+currently express: procs and recursion (mutual **and nested**); **generic**
+instances (monomorphised); `int` **and** `float` arithmetic (float
 `/` kept distinct from `div`) and comparisons; logical **and** bitwise
 `and`/`or`/`xor`/`not`/`shl`/`shr`; `if`/`elif`/`else` **and if-expressions**;
 `case` (statement **and** expression, ranges, string selectors); `while` with
 `break`/`continue`; `for` over ranges, collections, `countdown`, and `for i, x in`
 pairs; `inc`/`dec`; `const`, **enums** (→ ordinals), `when`, `discard`;
-`seq`/array literals, `len`, indexing (get/set), `add`/`pop`; **objects**
-(construct / field read+write, incl. through a seq), object **variants**, and
-**tuples** (construct / access / unpack); `string` concat, `add`, `$`, `len`,
-indexing, `ord`/`chr`; `echo` (float-aware); `bool`. (Beyond aowljs's reach —
-`Table`/`HashSet`, `try`/`except` — don't yet compile in nimony either.)
+`seq`/array literals, `len`, indexing (get/set), index-store, `newSeq(n)`,
+`add`/`pop`; **objects** (construct / field read+write, incl. through a seq),
+object **variants**, and **tuples** (construct / access / unpack); `string`
+concat, `add`, `$`, `len`, indexing, relational (`==`/`<`/`>`/…), slicing
+(`s[a..b]`/`s[a..<b]`), `ord`/`chr`; imported user modules (dependency-first);
+`echo` (float-aware); `bool`. User procs named like a builtin (`add`, `len`, …)
+emit real calls — magic dispatch is gated on symbol origin, not name. (Beyond
+aowljs's reach — `Table`/`HashSet`, `try`/`except` — don't yet compile in nimony
+either.) Not yet lowered for standalone emit: capturing **closures**, custom
+`iterator`s, inheritance (`object of`) and `ref object` mutation — in the
+playground these fall back to the interpreter.
+
+Against the shared differential corpus (`aowlhl/corpus`, 44 programs diffed vs
+native nimony) aowljs sits at **35/44 fast, 36/44 faithful**; `tests/run_faithful.sh`
+is **5/5**.
 
 Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a
 **shim registry**.

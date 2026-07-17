@@ -62,7 +62,7 @@ dependency-first module-init order (`hlload.moduleInitOrder`).
 | `proc` / `func` | `def` with parameter and return **type hints** |
 | `var` / `out` params | single-element cell boxes with call-site write-back |
 | `if`/`elif`/`else`, `while` | native, indentation-structured |
-| `case` | `if`/`elif` chain over a once-bound selector (ranges → `lo <= s <= hi`) |
+| `case` | `if`/`elif` chain over a once-bound selector (ranges → `lo <= s <= hi`); as expression, each branch assigns the target |
 | `for` in `a..<b` / `a..b` | `range(a, b)` / `range(a, b+1)` |
 | `for` in `countdown(a, b)` | reverse `range` |
 | `for x in xs` / `for i, x in xs` | iteration / `enumerate` |
@@ -70,12 +70,17 @@ dependency-first module-init order (`hlload.moduleInitOrder`).
 | arithmetic / bit / comparison / boolean ops | native operators |
 | int `div` / `mod` | truncating `_idiv` / `_imod` helpers (aowl truncates toward zero) |
 | string builtins (`len`, `&`, `toUpper/LowerAscii`, `strip`, `contains`, …) | native `str`/`len` |
+| string relational (`==`/`<`/`>`/…), slicing `s[a..b]`/`s[a..<b]` | native operators / `s[a:b(+1)]` |
+| `seq` index-store `s[i] = v`, `newSeq[T](n)` | `s[i] = v` / `[0]*n` |
 | `$` / `chr` / `ord` / `abs` / `min` / `max` / math | `str()` / `chr()` / `ord()` / `math.*` |
+| overloaded procs | `def` names disambiguated per symbol; each call resolves its own |
 | multi-module program | imported user modules' top-level init replayed first |
 
 Foreign declarations (std/`system` routines and generic instantiations that leak
 into the module) are skipped: their seq/string/etc. operations are handled
-natively at the call sites, so the low-level stdlib bodies are never emitted.
+natively at the call sites, so the low-level stdlib bodies are never emitted. A
+user proc whose name collides with a builtin (`add`, `len`, …) is *not* rewritten
+to the magic — dispatch is gated on symbol origin, not name.
 
 ## Build & run
 
@@ -95,13 +100,16 @@ bin/aowlpy /tmp/nc/<mainhash>.s.nif > prog.py && python3 prog.py
 `.s.nif`, `py_compile`-checks the emitted Python, runs it, and diffs against the
 native output — currently **11/11 byte-identical** (basics, arithmetic/bitwise,
 strings, seq, tuples, `var`-params, `case`, objects/dataclasses, countdown,
-cross-module import).
+cross-module import). Against the shared differential corpus (`aowlhl/corpus`, 44
+programs vs native nimony) aowlpy sits at **38/44**.
 
 ## Limitations / TODO
 
 Deliberately deferred (clearly marked in the source): closures / first-class
-function capture, `Table`/`HashSet` set-literal lowering, generics edge cases,
-macros, exceptions (`try`/`raise`), and `var`-param arguments in *expression*
-position (statement-position calls get correct cell write-back; expression
-position is read-only). Emitted names favour readability over global uniqueness,
-so deeply shadowed identifiers across scopes are a known sharp edge.
+function capture, custom `iterator`s, inheritance (`object of`) and `ref object`
+mutation, generic instances (needs a `TypeVar` preamble), `Table`/`HashSet`
+set-literal lowering, macros, exceptions (`try`/`raise`), and `var`-param
+arguments in *expression* position (statement-position calls get correct cell
+write-back; expression position is read-only). Emitted names favour readability
+over global uniqueness, so deeply shadowed identifiers across scopes are a known
+sharp edge.
