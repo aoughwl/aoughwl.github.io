@@ -3,6 +3,7 @@ title: Changes
 has_children: true
 parent: Engineering Notes
 nav_order: 1
+nav_exclude: true
 ---
 
 # Changes — what we fixed and added

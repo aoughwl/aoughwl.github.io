@@ -5,33 +5,93 @@ has_children: true
 permalink: /
 ---
 
-# aowlmony
-{: .no_toc }
+# aoughwl
+{: .fs-9 .no_toc }
 
-The whole compiler, driven by `aowlmony`: `source → parse → semcheck → lower →
-{ native C · JavaScript · WASM · interpret · TypeScript · Python }`. Every stage is
-written in Nimony, holds to the exact AIF (≡ NIF) wire format so it drops into the
-real toolchain, and runs client-side where the classic-Nim tools can't. The pages
-in this section are its parts, front to back.
+A **from-scratch reimplementation of the entire Nimony toolchain** — parser,
+semantic checker, lowering, and code generators — written *in* Nimony,
+self-hosting, and **open at every seam**. It runs Nim/Nimony **identically**, and
+runs where the classic compiler can't: **right in your browser**.
 {: .fs-6 .fw-300 }
+
+[▶ Open the Playground](/playground/){: .btn .btn-primary .mr-2 }
+[How this works](/docs/how-it-works){: .btn .mr-2 }
+[GitHub](https://github.com/aoughwl){: .btn }
 
 ---
 
-## Front to back
+## Why this exists
 
-| Part | Repo | What it does |
+The classic Nim/Nimony compiler ships as a **sealed binary** — the stages run
+*inside* it, out of reach. aowlmony is the opposite: a **pipeline of separate,
+open tools**, with a stable, inspectable IR flowing between every one.
+
+```
+ .nim / .aowl ─► aowlparser ─► aowlsem ─► aowlhexer ─┬─ aowlc  → C / native
+    source         parse       semcheck    lower     ├─ aowljs → JavaScript / WASM
+                                                      ├─ aowli  → interpret / VM
+                                                      └─ aowlts · aowlpy → TS / Python
+```
+
+Every seam is **AIF — byte-for-byte Nimony's NIF**. That single fact is the whole
+story: each stage is a genuine **drop-in** beside nimony's own
+(`nifler` / `nimsem` / `hexer`), you can **read the IR** at any point, **run a
+stage on its own**, and the entire pipeline runs **client-side**.
+→ **[How this works](/docs/how-it-works)**
+
+## What you get that stock Nimony doesn't
+{: .no_toc }
+
+- 🌐 **Runs in the browser** — parse → semcheck → run, fully client-side. **[Try it live →](/playground/)**
+- 🎯 **Byte-exact parity** — `aowlparser` is proven against `nifler` by a differential harness over the **entire** standard library.
+- 🧩 **Many targets** — native **C**, native/faithful **JavaScript**, **WASM**, an **interpreter + bytecode VM**, plus idiomatic **TypeScript** and **Python**.
+- 📚 **A fuller stdlib** — a complete networking stack (TLS 1.3, HTTP/1.1 + HTTP/2, WebSocket, HTTP/3) and a typed HTML/CSS layer.
+- ⚡ **Instant incremental re-checks** — the checker is warm and fast enough for live, as-you-type editor tooling.
+
+---
+
+## The pipeline — front to back
+
+| Stage | Repo | What it is |
 |:--|:--|:--|
-| parse | [aowlparser](aowlparser) | Nim/Nimony source → `.p.aif`; byte-for-byte identical to `nifler`, self-hosted so it compiles to JavaScript. |
-| semcheck | aowlsem *(private)* | `.p.aif` → typed `.s.aif`: resolves symbols, picks overloads, instantiates generics. |
-| lower | [aowlhexer](aowlhexer) | `.s.aif` → `.c.aif`: ARC, closures, iterators, exceptions, monomorphisation. Seeded from Araq's hexer. |
-| driver | [aowlmony](aowlmony) | Ties it together: one command, `.nim` → parse → sem → lower → a backend. |
-| runtime | [aowllib](aowllib) | Strings, seqs, ARC, GC — what the native/JS backends link against. |
-| run / emit | [aowli](../aowli) · [aowlc](aowlc) · [aowljs](aowljs) · [aowlweb](aowlweb) · [aowlts](aowlts) · [aowlpy](aowlpy) · [aowlhl](aowlhl) | Every target the lowered IR can become — interpret, native C, native/faithful JS, WASM, TypeScript, Python. |
+| **parse** | [aowlparser](/docs/aowlparser) | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
+| **semcheck** | aowlsem *(private)* | `.p.aif` → typed `.s.aif`: symbols, overloads, generic instantiation. |
+| **lower** | [aowlhexer](/docs/aowlhexer) *(private)* | `.s.aif` → `.c.aif`: ARC, closures, iterators, exceptions, monomorphisation. |
+| **drive** | [Pipeline Driver](/docs/aowlmony) | one command: `.nim` → { native · interpret · web } over the whole stack. |
+| **runtime** | [aowllib](/docs/aowllib) | strings / seqs / ARC / GC the native + JS backends link against. |
+| **HL-IR** | [aowlhl](/docs/aowlhl) | the shared high-level IR that feeds the TypeScript / Python emitters. |
 
-## Why it drops in
+## Targets
 
-Each part is an **independent implementation of the same contract**, not a patch on
-the stock tool. `aowlparser` is proven against `nifler` by a differential harness
-(byte-structural equality over the whole standard library). Holding to the exact
-AIF wire format is what lets any stage slot into the real pipeline beside nimony's
-own — and what makes the in-browser [playground](../playground) possible.
+| Target | Repo | Notes |
+|:--|:--|:--|
+| **interpret / VM** | [aowli](/aowli) | tree-walker **+ bytecode VM**, differentially tested against native. |
+| **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc` — **GC-free**, ARC baked in. |
+| **JavaScript** | [aowljs](/docs/aowljs) | typed IR → native JS; near-native speed, readable output. |
+| **JS / WASM** | [aowlweb](/docs/aowlweb) | the faithful browser runtime, with an async runtime. |
+| **TypeScript** | [aowlts](/docs/aowlts) | idiomatic TypeScript. |
+| **Python** | [aowlpy](/docs/aowlpy) | idiomatic Python. |
+
+## Tools & libraries
+
+| Project | What it is |
+|:--|:--|
+| **[▶ Playground](/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
+| **[aowl-code](/docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain. |
+| **[aowl-lsp](/docs/aowl-lsp)** | Language Server + VSCode extension, live as-you-type diagnostics. |
+| **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |
+| **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
+| **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |
+
+---
+
+## The private side
+
+The **semantic checker (aowlsem)** and the **lowering (aowlhexer)**, along with the
+JavaScript / TypeScript / WASM / Python backend repos, are **kept private for
+now** — their **docs are public here**, and access is granted on request (just
+ask). The playground moves onto the new sem + hexing shortly.
+
+And this toolchain is the **floor, not the building**. The full aoughwl platform it
+was built to carry opens up as the stack matures. Curious? Reach out on
+**[Discord](https://discord.gg/nxa3W7w4rJ)** (`timbuktu_guy`).

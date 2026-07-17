@@ -3,6 +3,7 @@ title: Engineering Notes
 nav_order: 20
 has_children: true
 permalink: /engineering-notes
+nav_exclude: true
 ---
 
 # Engineering Notes

@@ -185,6 +185,11 @@
   /* the <nav> itself: a flex COLUMN (it was defaulting to row, which broke the
      layout) with a big 25px gap between its stacked regions */
   nav.site-nav { display: flex; flex-direction: column; gap: 25px; }
+  /* GitHub lives in the nav's SECOND <ul> (external links). Render it at the TOP
+     via flex order — no DOM move, so aowlmony stays the auto-expanded first real
+     item and doesn't become the "home". */
+  .site-nav > .nav-list:not(:first-child) { order: -1; gap: 2px; }
+  .site-nav > .nav-list:not(:first-child) > .nav-list-item:last-child { margin-bottom: 14px; }
   /* each list stacks vertically; keep the root gap very tight */
   .site-nav .nav-list { display: flex; flex-direction: column; gap: 2px; }
   /* the LAST item of any nav list gets a big 50px gap below it, so groups

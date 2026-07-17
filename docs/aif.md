@@ -3,6 +3,7 @@ title: AIF ≡ NIF
 permalink: /docs/aif
 parent: Engineering Notes
 nav_order: 2
+nav_exclude: true
 ---
 
 # AIF ≡ NIF — how aoughwl interops with Nimony
