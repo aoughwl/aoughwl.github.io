@@ -4,7 +4,7 @@
 nimony values onto native JS values instead of onto a simulated linear memory —
 so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**
 and its output is **readable**. It's the **Native JS** engine in the
-[playground](/playground/).
+[playground](https://aoughwl.github.io/playground/).
 
 Repo: **`aoughwl/aowljs`** (public). A single, dependency-free JS file that reads a
 `.s.nif` and emits JavaScript.
@@ -139,8 +139,6 @@ Native values buy speed and readability by giving up **low-level fidelity**:
 - pointer arithmetic, `ptr` / `addr`, object *identity* vs value.
 - precise ARC / destructor timing.
 - C FFI (`importc`) — there is no C to call.
-- a float printed straight from a *bare variable* may drop its `.0` (float
-  literals and float *expressions* keep it).
 
 For the overwhelming majority of Nim that is invisible; for code that leans on
 exact machine-integer overflow or pointer identity it diverges. That is exactly
@@ -266,4 +264,4 @@ silently instead of raising an `OverflowDefect` — matching what nimony emits w
 runtime overflow checks off (its default here, byte-exact), and what hardware
 does. A build that raises overflow defects is a possible future refinement.
 
-See the [playground](/playground/) to switch engines and compare.
+See the [playground](https://aoughwl.github.io/playground/) to switch engines and compare.
