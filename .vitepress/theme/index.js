@@ -1,4 +1,4 @@
-import { h } from 'vue'
+import { h, ref, onMounted } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import './custom.css'
 
@@ -8,7 +8,6 @@ const DISCORD_SVG = `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden
 const HEART_SVG = `<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>`
 const PLAY_SVG = `<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"></path></svg>`
 const REDIRECT_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>`
-// smaller redirect for the sidebar repo badges
 const REDIRECT_SM = `<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>`
 
 const DISCORD_URL = 'https://discord.gg/nxa3W7w4rJ'
@@ -19,36 +18,62 @@ const PLAYGROUND_URL = 'https://aoughwl.github.io/playground/'
 const REPO_BASE = 'https://github.com/aoughwl/'
 const SEP = ' — '
 
-// external icon+text link builder
+// Repos for sidebar items that DON'T use the "Name — repo" label form (their
+// label is already the bare repo name, or an external app). These get an
+// icon-only "↗" badge to their repo.
+const REPO_BY_PATH = {
+  '/docs/web': 'web',
+  '/docs/html': 'html',
+  '/docs/css': 'css',
+  '/docs/net-stack/tcp': 'tcp',
+  '/docs/net-stack/net': 'net',
+  '/docs/net-stack/tls': 'tls',
+  '/docs/net-stack/http': 'http',
+  '/docs/net-stack/compress': 'compress',
+  '/docs/net-stack/serve': 'serve',
+  '/docs/net-stack/ws': 'ws',
+  '/docs/net-stack/requests': 'requests',
+}
+const PLAYGROUND_REPO = 'nimony-playground'
+
+const norm = (p) => (p || '').replace(/index$/, '').replace(/\.html$/, '').replace(/\/$/, '') || '/'
+
+// external icon+text link builder (used by the nav)
 function extLink({ cls, href, target, icon, text, rightIcon, label }) {
   const kids = []
   if (icon) kids.push(h('span', { class: 'nav-ico', innerHTML: icon }))
   if (text) kids.push(h('span', { class: 'nav-txt' }, text))
   if (rightIcon) kids.push(h('span', { class: 'nav-ico nav-ico-r', innerHTML: rightIcon }))
-  return h(
-    'a',
-    { class: cls, href, target: target || '_blank', rel: 'noopener', 'aria-label': label || text },
-    kids
-  )
+  return h('a', { class: cls, href, target: target || '_blank', rel: 'noopener', 'aria-label': label || text }, kids)
 }
 
 // ---- sidebar repo badges --------------------------------------------------
-// "Native JS — aowljs" -> "Native JS" (page link) + right-aligned "aowljs ↗"
-// badge → github.com/aoughwl/aowljs. Inserted before any collapse caret so the
-// row layout stays clean. Idempotent (survives Vue re-renders).
 function decorateSidebar() {
-  const texts = document.querySelectorAll('.VPSidebar .VPSidebarItem .item > .link .text')
-  texts.forEach((p) => {
-    const item = p.closest('.item')
-    if (!item) return
+  const items = document.querySelectorAll('.VPSidebar .VPSidebarItem .item > .link')
+  items.forEach((link) => {
+    const p = link.querySelector('.text')
+    const item = link.closest('.item')
+    if (!p || !item) return
+
+    let repo = null
+    let withText = false
     const full = p.dataset.full || p.textContent
     const idx = full.indexOf(SEP)
-    if (idx === -1) return
+    const linkPath = norm(new URL(link.getAttribute('href') || '/', location.origin).pathname)
 
-    p.dataset.full = full
-    const name = full.slice(0, idx).trim()
-    const repo = full.slice(idx + SEP.length).trim()
-    if (p.textContent !== name) p.textContent = name
+    if (idx !== -1) {
+      // "Native JS — aowljs" → name + "aowljs ↗"
+      p.dataset.full = full
+      const name = full.slice(0, idx).trim()
+      repo = full.slice(idx + SEP.length).trim()
+      withText = true
+      if (p.textContent !== name) p.textContent = name
+    } else if (REPO_BY_PATH[linkPath]) {
+      repo = REPO_BY_PATH[linkPath] // icon-only badge
+    } else if ((link.getAttribute('href') || '') === PLAYGROUND_URL) {
+      repo = PLAYGROUND_REPO // icon-only badge for the playground app
+    }
+    if (!repo) return
 
     let badge = item.querySelector(':scope > .repo-badge')
     if (!badge) {
@@ -56,6 +81,7 @@ function decorateSidebar() {
       badge.className = 'repo-badge'
       badge.target = '_blank'
       badge.rel = 'noopener'
+      // clicks must open the repo, never toggle/navigate the row
       badge.addEventListener('click', (e) => e.stopPropagation())
       const caret = item.querySelector(':scope > .caret')
       if (caret) item.insertBefore(badge, caret)
@@ -64,60 +90,102 @@ function decorateSidebar() {
     }
     const href = REPO_BASE + repo
     if (badge.getAttribute('href') !== href) badge.setAttribute('href', href)
-    badge.innerHTML = `<span class="repo-badge-name">${repo}</span>${REDIRECT_SM}`
+    badge.title = 'github.com/aoughwl/' + repo
+    badge.classList.toggle('icon-only', !withText)
+    badge.innerHTML = withText ? `<span class="repo-badge-name">${repo}</span>${REDIRECT_SM}` : REDIRECT_SM
   })
+}
+
+// after navigation, make sure the section you landed on is expanded
+function ensureActiveExpanded() {
+  document.querySelectorAll('.VPSidebar .VPSidebarItem.collapsible.collapsed').forEach((sec) => {
+    const link = sec.querySelector(':scope > .item > .link')
+    if (!link) return
+    if (norm(new URL(link.getAttribute('href') || '/', location.origin).pathname) === norm(location.pathname)) {
+      sec.querySelector(':scope > .item > .caret')?.click()
+    }
+  })
+}
+
+// click/double-click behaviour for collapsible rows (delegated, survives re-render)
+let toggleTimer = null
+function bindCollapse(sidebar) {
+  const caretOf = (link) => link.closest('.item')?.querySelector(':scope > .caret')
+  sidebar.addEventListener('click', (e) => {
+    const link = e.target.closest('a.VPLink.link')
+    if (!link) return // caret / badge / non-link → leave to VitePress
+    const sec = link.closest('.VPSidebarItem')
+    if (!sec || !sec.classList.contains('collapsible')) return
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return // allow open-in-new-tab
+    const here = norm(location.pathname)
+    const to = norm(new URL(link.getAttribute('href') || '/', location.origin).pathname)
+    if (here === to) {
+      // already on this page → single click toggles (debounced against dblclick)
+      e.preventDefault()
+      e.stopPropagation()
+      if (toggleTimer) return
+      toggleTimer = setTimeout(() => { toggleTimer = null; caretOf(link)?.click() }, 200)
+    }
+    // navigating to a new page: let it navigate; ensureActiveExpanded() opens it
+  })
+  sidebar.addEventListener('dblclick', (e) => {
+    const link = e.target.closest('a.VPLink.link')
+    if (!link) return
+    const sec = link.closest('.VPSidebarItem')
+    if (!sec || !sec.classList.contains('collapsible')) return
+    e.preventDefault()
+    e.stopPropagation()
+    if (toggleTimer) { clearTimeout(toggleTimer); toggleTimer = null }
+    caretOf(link)?.click()
+  })
+}
+
+// ---- client-only nav extras (renders after mount → no hydration mismatch) --
+const NavExtras = {
+  setup() {
+    const mounted = ref(false)
+    onMounted(() => { mounted.value = true })
+    return () =>
+      mounted.value
+        ? h('div', { class: 'nav-right' }, [
+            extLink({ cls: 'nav-pg-link', href: PLAYGROUND_URL, target: '_self', icon: PLAY_SVG, text: 'Playground', rightIcon: REDIRECT_SVG, label: 'Open the playground' }),
+            h('div', { class: 'nav-social' }, [
+              extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
+              extLink({ cls: 'nav-social-link', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
+              extLink({ cls: 'nav-social-link', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
+            ]),
+          ])
+        : null
+  },
 }
 
 export default {
   extends: DefaultTheme,
   Layout() {
     return h(DefaultTheme.Layout, null, {
-      // Right side (after the full-width search): Playground, then a separator,
-      // then the GitHub · Discord · Support cluster. The theme toggle is pulled
-      // out of the bar to a fixed bottom-right corner via CSS.
-      'nav-bar-content-after': () =>
-        h('div', { class: 'nav-right' }, [
-          extLink({
-            cls: 'nav-pg-link',
-            href: PLAYGROUND_URL,
-            target: '_self',
-            icon: PLAY_SVG,
-            text: 'Playground',
-            rightIcon: REDIRECT_SVG,
-            label: 'Open the playground',
-          }),
-          h('div', { class: 'nav-social' }, [
-            extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
-            extLink({ cls: 'nav-social-link', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
-            extLink({ cls: 'nav-social-link', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
-          ]),
-        ]),
+      'nav-bar-content-after': () => h(NavExtras),
     })
   },
   enhanceApp({ router }) {
     if (typeof window === 'undefined') return
-    const run = () => requestAnimationFrame(decorateSidebar)
+    const run = () => requestAnimationFrame(() => { decorateSidebar(); ensureActiveExpanded() })
     const orig = router.onAfterRouteChanged
-    router.onAfterRouteChanged = (to) => {
-      orig?.(to)
-      run()
-    }
+    router.onAfterRouteChanged = (to) => { orig?.(to); run() }
     if (document.readyState !== 'loading') run()
     else window.addEventListener('DOMContentLoaded', run)
-    const startObserver = () => {
+
+    const start = () => {
       const sb = document.querySelector('.VPSidebar')
-      if (!sb) return setTimeout(startObserver, 150)
+      if (!sb) return setTimeout(start, 150)
+      bindCollapse(sb)
       let queued = false
       new MutationObserver(() => {
         if (queued) return
         queued = true
-        requestAnimationFrame(() => {
-          queued = false
-          decorateSidebar()
-        })
+        requestAnimationFrame(() => { queued = false; decorateSidebar() })
       }).observe(sb, { childList: true, subtree: true })
-      decorateSidebar()
+      run()
     }
-    startObserver()
+    start()
   },
 }
