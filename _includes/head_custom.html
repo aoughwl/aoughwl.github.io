@@ -21,10 +21,19 @@
      priority on the first visit too. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Load the webfont stylesheet NON-render-blocking (preload → swap to stylesheet
+     onload). A render-blocking EXTERNAL stylesheet was delaying first paint on
+     every navigation, which defeated the browser's paint-holding and produced the
+     white flash. Async-loading it means first paint waits only on the same-origin
+     theme CSS, so navigation stays dark. display=optional keeps the font itself
+     from swap-flashing. -->
 <link rel="preload" as="style"
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional">
-<link rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional">
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional"
+  onload="this.onload=null;this.rel='stylesheet'">
+<noscript>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=optional">
+</noscript>
 
 <!-- apply saved theme before paint (no flash); dark is default -->
 <script>
@@ -181,6 +190,23 @@
   /* the LAST item of any nav list gets a big 50px gap below it, so groups
      visibly separate from whatever follows */
   .site-nav .nav-list > .nav-list-item:last-child { margin-bottom: 50px; }
+
+  /* KILL the huge per-row height: the theme gives every nav link min-height 2–3rem
+     and a 2.5rem line-height, which is the real source of the "ton of gap" — the
+     flex gap was invisible against it. Make rows compact. */
+  .site-nav .nav-list .nav-list-item .nav-list-link {
+    min-height: 0;
+    line-height: 1.35;
+    padding-top: 0.24rem;
+    padding-bottom: 0.24rem;
+  }
+  /* the collapse chevron is a 2–3rem absolute box — shrink it to the compact row
+     so it stays vertically centred */
+  .site-nav .nav-list-expander {
+    width: 1.7rem; height: auto; top: 0; bottom: 0; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .site-nav .nav-list-expander svg { width: 0.9rem; height: 0.9rem; }
 
   /* aowlmony "Pipeline" / "Emitters" region labels — non-clickable headers that
      just caption a run of items (injected by the script further down) */
