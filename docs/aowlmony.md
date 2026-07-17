@@ -31,6 +31,23 @@ Repo: **`aoughwl/aowlmony`** (public).
 | **native** `.c.aif` → binary | [aowlc](aowlc) → gcc | ✅ ours |
 | **interpret** `.s.aif` | [aowli](../aowli) (tree-walk + bytecode VM) | ✅ ours |
 | web `.s.aif` → JS | [aowljs](aowljs) | ✅ ours |
+| idiomatic `.s.aif` → TS / Py / JS | [aowlts](aowlts) / [aowlpy](aowlpy) / [aowljs](aowljs) | ✅ ours |
+
+## Idiomatic source export
+
+Beyond native/interpret, the driver emits **readable source** in another language:
+
+```
+aowlmony ts prog.nim [--faithful] [--run]   # → prog.ts (idiomatic TypeScript)
+aowlmony py prog.nim [--run]                # → prog.py (idiomatic Python)
+aowlmony js prog.nim [--faithful] [--run]   # → prog.js (native-JS)
+```
+
+Each lowers `.nim → sem → .s.aif` and hands it to the matching backend. Output is
+hand-written-looking source, not a machine simulation; `--run` executes it and its
+stdout matches `nimony c -r` byte-for-byte (verified end-to-end). `--faithful`
+(ts/js) maps 64-bit ints to `BigInt` for exact int64/uint64 semantics — see the
+per-backend pages for the fast/faithful trade-off.
 
 The self-owned stack now covers **parser + lowering + backend + interpreter** —
 only semantic analysis is still reused from nimony (until [aowlsem](aowlsem)
