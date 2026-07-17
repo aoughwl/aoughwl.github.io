@@ -9,9 +9,9 @@ nav_order: 3
 # Differential testing
 {: .no_toc }
 
-aowlparser has one job — emit the same NIF as native `nifler` — so it is tested by
-running both tools on the same input and comparing their output. There is no
-hand-written expected-output; the classic compiler's `nifler` **is** the oracle.
+aowlparser's job is to emit the same tree as native nifler, so it is tested by
+running both on the same input and comparing output. There is no hand-written
+expected output; nifler is the oracle.
 
 <details open markdown="block">
   <summary>Contents</summary>
@@ -24,71 +24,59 @@ hand-written expected-output; the classic compiler's `nifler` **is** the oracle.
 
 ## Two levels of match
 
-For every input file the harness runs the native `nifler` oracle and `aowlparser`,
-then compares the resulting `.p.nif`:
+For each input the harness runs nifler and aowlparser and compares the `.p.aif`:
 
-- **Structural** — the pass criterion. `tests/canon.py` strips line-info
-  (`@…` / `~…`) and comment suffixes and normalises whitespace; the two token
-  trees must then be identical. String-literal contents are preserved: NIF escapes
-  every marker byte inside strings, so a `@` inside `"a@b"` can never be mistaken
-  for a line-info suffix.
-- **Exact** — no longer a bonus. The `.p.nif` bytes are identical, line-info
-  included. aowlparser now reaches this on **every** corpus file and every file in
-  the whole compiler tree, which is the real proof that its relative line-info
-  model is correct and not merely structurally plausible.
+- **Structural** (the pass criterion) — `tests/canon.py` strips line-info
+  (`@…`/`~…`) and comment suffixes and normalises whitespace; the token trees
+  must then be identical. String contents are preserved: AIF escapes every marker
+  byte inside strings, so a `@` in `"a@b"` is never read as line-info.
+- **Exact** — the `.p.aif` bytes are identical, line-info included. This is the
+  check that the relative line-info model is right, not just structurally
+  plausible.
 
-## The two harnesses
+The only intentional byte difference is the `(.vendor "aowlparser")` header
+(nifler emits `"Nifler"`); both harnesses normalise it before comparing.
+
+## The harnesses
 
 ```sh
 bash tests/diff.sh                    # curated corpus, PASS/FAIL per file
-VERBOSE=1 bash tests/diff.sh          # + a canonical diff for each failure
-bash tests/stress.sh                  # differential over nimony/src/lib
+VERBOSE=1 bash tests/diff.sh          # + a canonical diff per failure
+bash tests/stress.sh                  # differential over nimony/lib
 bash tests/stress.sh /path/dir ...    # differential over any dirs/files
+bash tests/diag.sh                    # check-mode diagnostics
 ```
 
-`diff.sh` runs the small **curated corpus** under `tests/corpus/` — one file per
-construct, chosen so a failure names exactly which grammar rule broke.
+`diff.sh` runs the curated corpus under `tests/corpus/` — one file per construct,
+so a failure names the broken grammar rule.
 
-`stress.sh` points the *same* comparison at **arbitrary real `.nim` files**. With
-no argument it sweeps the whole nimony standard library; given directories it
-sweeps those. Crucially it also reports what the parser could **not** do
-gracefully:
+`stress.sh` points the same comparison at real `.nim` files and reports failure
+modes:
 
 ```
-stress: total=184  pass=184  mismatch=0  our-crash=0  oracle-skip=0
+stress: total=310  pass=310  mismatch=0  our-crash=0  oracle-skip=0  byte-exact=283
 ```
 
-- `our-crash` — aowlparser produced no output (a crash or hang). **This is the
-  number that must stay zero**; a structural mismatch is a wrong tree, but a crash
-  is a broken tool.
-- `oracle-skip` — the *native* nifler itself failed on the file, so it is excluded
-  (nothing to compare against).
+- `our-crash` — aowlparser produced no output (crash or hang). Must stay zero: a
+  mismatch is a wrong tree, a crash is a broken tool.
+- `oracle-skip` — nifler itself failed on the file, so it is excluded.
+- `byte-exact` — of the passing files, how many matched to the byte.
 
 ## Current results
 
-| suite | command | result |
-|:--|:--|:--|
-| curated corpus | `tests/diff.sh` | **76 / 76** pass, 76 byte-exact (apart from the `(.vendor)` header) |
-| standard library | `tests/stress.sh` | **29 / 29** structural, **29 byte-exact**, 0 crash |
-| whole compiler tree | `tests/stress.sh /home/savant/nimony/src` | **184 / 184** structural, **184 byte-exact**, 0 crash / 0 hang |
-| diagnostics | `tests/diag.sh` | `check` mode: multi-error, spans, JSON, clean-file cases |
+| target | command | structural | byte-exact | crash/hang |
+|:--|:--|:--|:--|:--|
+| curated corpus | `tests/diff.sh` | 172 / 172 | 156 | 0 |
+| nimony/src | `stress.sh …/nimony/src` | 184 / 184 | 184 | 0 |
+| nimony/lib | `stress.sh …/nimony/lib` | 105 / 105 | 91 | 0 |
+| upstream Nim/lib | `stress.sh …/Nim/lib` | 310 / 310 | 283 | 0 |
 
-The whole compiler tree passing in full is the headline: every one of the 184
-files under `nimony/src` — the standard library and the compiler's own dense
-internals — round-trips structurally identical to native nifler, with zero
-crashes, and **all 184 are byte-identical** (relative line-info included).
-`tests/stress.sh` now reports that byte-exact count (`byte-exact=N`) alongside the
-structural pass count, so the line-info frontier is a tracked, regression-protected
-number. See [Coverage](known-gaps) for how the line-info model was closed.
+599 valid files round-trip structure-identical to nifler; 558 are byte-identical
+(relative line-info included). See [Coverage](known-gaps).
 
-## Why a differential harness
+## Why differential
 
-A parser that emits a compiler wire-format has an unusually crisp correctness
-oracle: the wire-format is only useful if a *second, independent* implementation
-agrees with it byte-for-byte — save for one line aowlparser owns on purpose, its
-`(.vendor "aowlparser")` header, which both `diff.sh` (byte) and `canon.py`
-(structural) neutralize before comparing so the rest stays strict. That makes the
-reference (`nifler`) both the spec
-and the test suite, and it makes regressions impossible to miss — any construct
-where aowlparser drifts shows up as a concrete NIF diff against the tool the rest
-of the pipeline already trusts.
+A parser that emits a compiler wire format has a sharp oracle: the format is only
+useful if a second, independent implementation agrees byte-for-byte. That makes
+nifler both the spec and the test suite — any drift shows up as a concrete AIF
+diff against the tool the rest of the pipeline already trusts.

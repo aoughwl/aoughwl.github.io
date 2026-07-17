@@ -1,17 +1,17 @@
 ---
 nav_exclude: true
-title: The .p.nif format
+title: The .p.aif format
 parent: Parser — aowlparser
 grand_parent: aowlmony
 nav_order: 6
 ---
 
-# The `.p.nif` format
+# The `.p.aif` format
 {: .no_toc }
 
-What aowlparser actually emits — enough to *read* a parse-dialect NIF by eye. This
-is the untyped wire form the nimony frontend consumes; the later `nimsem` stage
-turns it into the typed `.s.nif`.
+What aowlparser emits — enough to read a parse-dialect AIF by eye. This is the
+untyped wire form the nimony frontend consumes; the semantic pass later turns it
+into the typed `.s.aif`.
 {: .fs-6 .fw-300 }
 
 <details open markdown="block">
@@ -25,103 +25,92 @@ turns it into the typed `.s.nif`.
 
 ## Shape
 
-A `.p.nif` is a whitespace-insignificant tree of parenthesised nodes. Three kinds
-of token appear:
+A `.p.aif` is a whitespace-insignificant tree of parenthesised nodes. Three
+token kinds appear:
 
 - **Trees** — `(tag …children…)`. The tag is the first atom after `(`, glued to
-  its line-info suffix (below).
-- **Atoms** — bare identifiers, integers, floats, strings (`"…"`), and chars.
-  Plain atoms are *not* wrapped in a tag; only typed/decorated literals are (see
-  [`suf`](#literals)).
-- **Empties** — a bare `.` stands for an absent optional slot.
+  its line-info suffix.
+- **Atoms** — identifiers, integers, floats, strings (`"…"`), chars. Plain atoms
+  carry no tag; only typed/decorated literals do (see [`suf`](#literals)).
+- **Empties** — a bare `.` is an absent optional slot.
 
-Inter-token whitespace is meaningless; aowlparser's own indentation is a
-pretty-print, not structure.
+Inter-token whitespace is meaningless; aowlparser's indentation is pretty-print,
+not structure.
 
 ## Header
 
-Every file begins with three directives, one per line, in this order:
+Every file opens with three directives, one per line:
 
 ```
-(.nif27)
+(.aif27)
 (.vendor "aowlparser")
 (.dialect "nim-parsed")
 ```
 
-- `(.nif27)` — the NIF wire-format version (format 27). Fixed by the NIF builder,
-  not chosen by aowlparser.
-- `(.vendor "aowlparser")` — the producer id. aowlparser stamps **its own** name
-  here rather than impersonating classic `nifler` (which emits `"Nifler"`); this
-  one line is the only place a aowlparser file deliberately differs from nifler's
-  bytes. See [Differential testing](testing).
-- `(.dialect "nim-parsed")` — the dialect: untyped, parser-level NIF.
+- `(.aif27)` — wire-format version 27.
+- `(.vendor "aowlparser")` — producer id. aowlparser stamps its own name rather
+  than nifler's `"Nifler"`; this line is the only deliberate byte difference from
+  nifler output. See [Differential testing](testing).
+- `(.dialect "nim-parsed")` — untyped, parser-level dialect.
 
-The header is followed immediately by the root `(stmts …)` tree carrying an
-**absolute** line-info of column 0, line 1, and the source filename.
+The header is followed by the root `(stmts …)` tree carrying an absolute
+line-info of column 0, line 1, and the source filename.
 
 ## Line-info suffixes
 
 Every node can carry a position, encoded as a suffix glued directly onto the
-preceding tag-name or atom with **no whitespace**. This is the densest part of
-the format.
-
-Two forms:
+preceding tag or atom with no whitespace. An all-zero suffix is omitted.
 
 | Form | Introducer | Meaning |
 |:--|:--|:--|
-| **Absolute** | `@` | the node's own `(col, line[, file])` — used at the root |
-| **Relative** | `@` or `~` | a **delta** from the parent node's `(col, line)` — used everywhere else |
+| Absolute | `@` | the node's own `(col, line[, file])` — root only |
+| Relative | `@` or `~` | delta from the parent's `(col, line)` — everywhere else |
 
-Grammar of a suffix (each segment optional; an all-zero suffix is omitted
-entirely):
+Suffix grammar (each segment optional):
 
-- **Column**: `@` then the column; a negative column uses a bare `~` shorthand
-  (no `@`) instead. Column `0` emits `@` with nothing after it.
-- **Line**: `,` then the line delta. A negative delta is written `~`-then-digits;
-  an interior zero collapses to just the comma.
-- **File**: `,` then the filename (control chars escaped). Present only in the
-  absolute root suffix; relative suffixes carry no file.
+- **Column** — `@` then the column; a negative column uses bare `~` (no `@`).
+  Column `0` emits `@` with nothing after it.
+- **Line** — `,` then the line delta; negative is `~`-then-digits; an interior
+  zero collapses to just the comma.
+- **File** — `,` then the filename (control chars escaped). Absolute root only.
 
-Numbers are **base62** — digits `0-9A-Za-z` = values 0–61, most-significant first
-(so `A`=10, `G`=16, `J`=19). Columns are 0-based, lines are 1-based, matching
-nimony's `TLineInfo`. Relative deltas are measured against the parent baseline
-threaded down the recursive descent (nifler's parent-relative scheme).
+Numbers are base62 (`0-9A-Za-z` = 0–61, most-significant first: `A`=10, `G`=16,
+`J`=19). Columns 0-based, lines 1-based. Relative deltas are measured against the
+parent baseline threaded down the descent (nifler's parent-relative scheme).
 
-### Reading a real example
+### Example
 
 `assign.nim` containing `n = 3*n + 1`:
 
 ```
-(stmts@,1,assign.nim     root, ABSOLUTE: @ = col 0, ,1 = line 1, file "assign.nim"
- (asgn@2 n~2             asgn at col +2 (the '='); target n at col −2 (~2)
-  (infix@6 \2B           infix at col +6; operator '+' is the escaped atom \2B
+(stmts@,1,assign.nim     root, absolute: @ = col 0, ,1 = line 1, file "assign.nim"
+ (asgn@2 n~2             asgn at col +2 (the '='); target n at col −2
+  (infix@6 \2B           infix at col +6; operator '+' escaped as \2B
    (infix~3 * 3~1 n@1)   inner infix at col −3; '*' raw; int 3 at −1; n at +1
    1@2)))                literal 1 at col +2
 ```
 
-More: `(call@3 foo~3 1@1 2@4)` is `foo(1, 2)`; `(proc@,2 fib@5 …)` is a proc whose
-`@` (col 0) and `,2` (line +2) place it two lines below its parent; a node with a
-zero delta (e.g. `(cmd echo …)`) carries **no** suffix at all.
+`(call@3 foo~3 1@1 2@4)` is `foo(1, 2)`. `(proc@,2 fib@5 …)` is a proc placed two
+lines below its parent. A zero-delta node (`(cmd echo …)`) carries no suffix.
 
 ## Operator & atom escaping
 
-An atom whose **leading** character is `.`, a digit, `+`, `-`, `~`, or a control
-character is escaped so it can't be mistaken for a suffix or number: the leading
-byte becomes `\HH` (two hex digits). Hence `+` → `\2B`, `-` → `\2D`, `..` →
-`\2E\2E`. Operators that don't collide — `*`, `/`, `<`, `>`, `=` — are emitted
-raw.
+An atom whose leading byte is `.`, a digit, `+`, `-`, `~`, or a control character
+is escaped so it can't be read as a suffix or number: the leading byte becomes
+`\HH`. So `+` → `\2B`, `-` → `\2D`, `..` → `\2E\2E`. Non-colliding operators
+(`*`, `/`, `<`, `>`, `=`) emit raw.
 
 ## Tag vocabulary
 
-The substantially-complete set of tags aowlparser emits, by category. (Plain
-identifiers, ints, floats, strings, chars and `.` empties are atoms, not tags.)
+The tags aowlparser emits, by category. (Plain identifiers, ints, floats,
+strings, chars, and `.` empties are atoms, not tags.)
 
 **Blocks & root**
-: `stmts` (module root and every block body), `block`, `defer`, `staticstmt`
+: `stmts` (root and every block body), `block`, `defer`, `staticstmt`
 
 **Control flow**
-: `if`, `when`, `elif`, `else`, `while`, `for`, `case`, `of`, `ranges`,
-  `try`, `except`, `fin`
+: `if`, `when`, `elif`, `else`, `while`, `for`, `case`, `of`, `ranges`, `try`,
+  `except`, `fin`
 
 **Flow keywords**
 : `ret`, `discard`, `raise`, `yld`, `break`, `continue`, `import`, `include`,
@@ -134,17 +123,17 @@ identifiers, ints, floats, strings, chars and `.` empties are atoms, not tags.)
 
 **Type expressions**
 : `object`, `enum`, `efld`, `fld`, `concept`, `tuple`, `proctype`, `itertype`,
-  and the prefix modifiers `ref`, `ptr`, `out`, `distinct`, and `mut` (nimony's
-  spelling for `var T`)
+  and prefix modifiers `ref`, `ptr`, `out`, `distinct`, `mut` (nimony's spelling
+  for `var T`)
 
 **Expressions**
 : `call`, `cmd`, `infix`, `prefix`, `dot`, `at`, `curlyat`, `bracket`, `par`,
   `tup`, `kv`, `vv`, `cast`, `expr`, `nil`, `quoted`
 
 <a id="literals"></a>**Decorated literals**
-: `suf` (a typed numeric/string literal, e.g. `123u`, `1.0'f32`), `callstrlit`
-  (generalized `ident"…"`)
+: `suf` (typed numeric/string literal, e.g. `123u`, `1.0'f32`), `callstrlit`
+  (`ident"…"`)
 
-For where each is emitted (file:line in `src/`), and the *conceptual* model behind
-the range-splitter that produces `infix`/`prefix` nesting, see
-[Architecture](architecture) and [Grammar coverage](grammar).
+For where each tag is emitted and the range-splitter that produces
+`infix`/`prefix` nesting, see [Architecture](architecture) and
+[Grammar coverage](grammar).

@@ -10,16 +10,17 @@ nav_order: 4
 {: .no_toc }
 
 Every option below is **off / neutral by default**, so a plain
-`aowlparser p in.nim out.p.nif` produces output byte-identical to native `nifler`
-(bar the one-line `(.vendor "aowlparser")` header, which aowlparser always stamps
-as its own).
+`aowlparser p in.nim out.p.aif` produces the same tree as native `nifler` —
+byte-identical across the nimony compiler source, structure-identical everywhere
+tested (bar the one-line `(.vendor "aowlparser")` header, which aowlparser always
+stamps as its own; see [Coverage](known-gaps)).
 The flags exist for editors, linters, pipelines, and non-Nim-standard sources;
 apart from `--curly` (which only *adds* accepted syntax) and the opt-in
-`--doc-comments:off`, none of them can change the NIF a run emits — they gate
+`--doc-comments:off`, none of them can change the AIF a run emits — they gate
 input acceptance, add diagnostics, or move I/O.
 
 ```
-usage: aowlparser [OPTIONS] p <in.nim> [out.p.nif]
+usage: aowlparser [OPTIONS] p <in.nim> [out.p.aif]
 ```
 
 <details open markdown="block">
@@ -61,7 +62,7 @@ brace (not a `{.` pragma) with **no preceding `=`**, so a set-literal expression
 body — `proc empty(): set[int] = {}` — keeps its `=` and is never read as a
 block. A one-line `= body` is left untouched.
 
-Either way the curly form emits the **same NIF** as the `:`/`=` form. This is a
+Either way the curly form emits the **same AIF** as the `:`/`=` form. This is a
 aowlparser extension; native nifler has no equivalent, so output stays
 nifler-compatible only while it is off.
 
@@ -70,7 +71,7 @@ nifler-compatible only while it is off.
 Nim's layout is column-based, and classic Nim is **spaces-only** — its lexer
 hard-errors on a tab in indentation. aowlparser keeps that as the default but can
 relax it for tab-using sources and validate indentation for tooling. None of these
-change the emitted NIF: the off-side rule is a *relative* column comparison, so a
+change the emitted AIF: the off-side rule is a *relative* column comparison, so a
 tab-indented file parses to the same tree as its space-indented equivalent.
 
 | flag | default | effect |
@@ -84,7 +85,7 @@ tab-indented file parses to the same tree as its space-indented equivalent.
 ## Source hygiene (advisory)
 
 Diagnostic-only checks for linting and CI. Each writes warnings to **stderr** and
-leaves both stdout and the emitted NIF untouched.
+leaves both stdout and the emitted AIF untouched.
 
 | flag | default | effect |
 |:--|:--|:--|
@@ -108,8 +109,8 @@ nodes. Trailing doc comments are dropped either way.
 Default off. Exit with a **non-zero status** if any **error-level diagnostic** was
 raised — an unknown/illegal byte, an unterminated string, a rejected BOM, or a
 structural bracket problem. Turns a normal `p` parse into a CI lint gate: a clean
-file exits `0`, a malformed one exits `1` (while still emitting best-effort NIF).
-For lint-only output with no NIF, use the [`check`](#check--lint-mode) command.
+file exits `0`, a malformed one exits `1` (while still emitting best-effort AIF).
+For lint-only output with no AIF, use the [`check`](#check--lint-mode) command.
 
 ### `--max-depth:N`
 
@@ -125,7 +126,7 @@ tripping on real source.
 
 Unlike native `nifler` — which inherits the classic compiler's abort-on-first-error
 behaviour — aowlparser is **recoverable**: it records every problem with a source
-span, keeps parsing, and still emits best-effort NIF. Diagnostics carry a
+span, keeps parsing, and still emits best-effort AIF. Diagnostics carry a
 `severity` (error/warning/hint), a stable `code` slug, a message, and a
 `line:col`–`endCol` span, and — where one exists — a suggested `fix` and a
 `related` location (e.g. the `(` a stray `)` should have matched). The whitespace
@@ -171,19 +172,19 @@ byte-compatible with native `nifler`.
 ### `check` — lint mode
 
 ```
-aowlparser check <in.nim>            # diagnostics to stdout, no NIF; exit 1 on any error
+aowlparser check <in.nim>            # diagnostics to stdout, no AIF; exit 1 on any error
 aowlparser check --diagnostics:json in.nim
 ```
 
 `check` runs the lexer and the structural validator and prints diagnostics **to
-stdout**, emitting no NIF. It exits `1` if any error-level diagnostic was found,
+stdout**, emitting no AIF. It exits `1` if any error-level diagnostic was found,
 `0` otherwise — a drop-in lint gate that reports *every* problem in one pass, not
 just the first.
 
 ### `--diagnostics:text\|json\|off`
 
 Selects how diagnostics are rendered (default `text`). During a normal `p` parse
-they go to **stderr** and never block the NIF on stdout; `check` sends them to
+they go to **stderr** and never block the AIF on stdout; `check` sends them to
 stdout.
 
 - `text` — compiler-style `file:line:col: severity[code]: message` lines.
@@ -200,38 +201,38 @@ relative or absolute path. `off` records the path exactly as given.
 
 ## I/O
 
-By default aowlparser reads a file and writes `<in>.p.nif` (or the given output
+By default aowlparser reads a file and writes `<in>.p.aif` (or the given output
 path). For pipelines and the JS build it can use the standard streams instead:
 
 | flag | effect |
 |:--|:--|
 | `--stdin` (or input arg `-`) | Read source from **stdin**. |
-| `--stdout` (or output arg `-`) | Write the NIF to **stdout**. Stdin with no output target defaults to stdout. |
+| `--stdout` (or output arg `-`) | Write the AIF to **stdout**. Stdin with no output target defaults to stdout. |
 | `--filename:PATH` | The path recorded in line-info when reading stdin (default `stdin`). |
 
 ## Worked examples
 
 ```sh
 # default — nifler-compatible, spaces only
-aowlparser p mod.nim mod.p.nif
+aowlparser p mod.nim mod.p.aif
 
 # accept a tab-indented file (8-column tabs), same tree as the space version
-aowlparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.nif
+aowlparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.aif
 
 # lint a file: require a final newline, LF endings, no trailing spaces
-aowlparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.nif
+aowlparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.aif
 
 # CI gate — fail on any illegal byte
-aowlparser --strict p mod.nim mod.p.nif || echo "rejected"
+aowlparser --strict p mod.nim mod.p.aif || echo "rejected"
 
 # a pipeline: stdin -> stdout, with a recorded filename for line-info
-cat mod.nim | aowlparser --stdin --stdout --filename:mod.nim p > mod.p.nif
+cat mod.nim | aowlparser --stdin --stdout --filename:mod.nim p > mod.p.aif
 
 # guard against pathological nesting
-aowlparser --max-depth:400 p untrusted.nim out.p.nif
+aowlparser --max-depth:400 p untrusted.nim out.p.aif
 
 # brace blocks plus tab indentation, mixed freely
-aowlparser --curly --tabs:both p editor_dialect.nim out.p.nif
+aowlparser --curly --tabs:both p editor_dialect.nim out.p.aif
 ```
 
 ## Design note: the default is always native `nifler`
