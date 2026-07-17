@@ -1,12 +1,12 @@
 ---
-title: Builtin Libraries
+title: Libraries
 nav_order: 12
 has_children: true
 permalink: /libraries
 parent: aowlmony
 ---
 
-# Builtin Libraries
+# Libraries
 
 Standard-library-grade packages written in nimony — the networking stack and the
 declarative web/markup layer. Each page below is the canonical docs for its repo;

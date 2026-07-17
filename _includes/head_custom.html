@@ -3,6 +3,18 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="shortcut icon" href="/favicon.ico">
 
+<!-- CRITICAL, render-blocking, first thing painted: set the page background (and a
+     matching text colour) from the theme BEFORE the main stylesheet loads, so a
+     full-page navigation never flashes white/unstyled between loads. The theme
+     script below runs synchronously first, so [data-theme] is already set here. -->
+<style>
+  html { background: #0a0a0b; color: #ededf0; }
+  html[data-theme="light"] { background: #ffffff; color: #0a0a0b; }
+  /* Smooth cross-document navigation where supported (Chrome): a quick fade
+     instead of a hard white blink. Non-supporting browsers just navigate. */
+  @view-transition { navigation: auto; }
+</style>
+
 <!-- webfonts — display=optional (not swap): once the fonts are cached (after the
      first page), every later navigation renders straight in the real font with NO
      fallback→webfont swap flash. preload the stylesheet so it's fetched at highest
@@ -150,8 +162,9 @@
   .support-recent-note, .support-recent-empty { font-size: 0.85rem; opacity: 0.8; }
 
   /* ---- sidebar nav: flex layout (requested) ---- */
-  /* the <nav> itself: flex + a big 25px gap between its regions */
-  nav.site-nav { display: flex; gap: 25px; }
+  /* the <nav> itself: a flex COLUMN (it was defaulting to row, which broke the
+     layout) with a big 25px gap between its stacked regions */
+  nav.site-nav { display: flex; flex-direction: column; gap: 25px; }
   /* each list stacks vertically with a small 5px gap between items */
   .site-nav .nav-list { display: flex; flex-direction: column; gap: 5px; }
   /* the LAST item of any nav list gets a big 50px gap below it, so groups
@@ -162,18 +175,21 @@
      just caption a run of items (injected by the script further down) */
   .site-nav .nav-region {
     list-style: none;
-    margin: 0.85rem 0 0.1rem;
+    margin: 1.7rem 0 0.4rem;         /* big gap ABOVE each label = the space between groups */
     padding: 0 0.75rem;
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.64rem;
+    font-size: 0.8rem;               /* readable — was too small next to the nav items */
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-dim);
-    opacity: 0.72;
+    opacity: 0.85;
     pointer-events: none;
     user-select: none;
   }
+  /* the first label (Pipeline) sits just under "How this works", so it needs less
+     of a gap above than the later ones */
+  .site-nav .nav-region:first-of-type { margin-top: 0.9rem; }
 
   /* Engineering Notes sits at the very bottom of the top level — give it a big
      gap above so it clearly stands apart from the aowlmony group */
@@ -187,7 +203,9 @@
     font-weight: 600 !important;
     font-size: 0.93rem;
   }
-  .site-nav > .nav-list > .nav-list-item { margin-top: 0.1rem; }
+  /* root items: spacing comes ONLY from the flex `gap` above — no extra margin
+     (they were stacking gap + margin into too-large a space) */
+  .site-nav > .nav-list > .nav-list-item { margin-top: 0; }
 
   /* every nested level gets a vertical guide-rail + step-in, and gets lighter */
   .site-nav .nav-list .nav-list {
@@ -195,6 +213,28 @@
     padding-left: 0.15rem;
     border-left: 1px solid rgba(125, 150, 255, 0.28);
   }
+
+  /* --- aowlmony sub-nav: SEGMENTED rail ---
+     Instead of one unbroken blue line down the whole expanded group, draw the rail
+     as per-item segments so the region-label gaps break it into distinct sections:
+     [How this works] · Pipeline · Emitters · Ecosystem. The host <ul> is tagged by
+     the label script. */
+  .site-nav .nav-list .nav-region-host {
+    border-left: none;            /* drop the single continuous rail on this list */
+    padding-left: 0;
+  }
+  .site-nav .nav-region-host > .nav-list-item {
+    border-left: 1px solid rgba(125, 150, 255, 0.30);
+    margin: 0 !important;         /* flush, so the rail is continuous WITHIN a region */
+    padding-left: 0.15rem;
+  }
+  /* vertical spacing lives on the link (inside the border) so items of one region
+     don't gap apart and break their shared rail segment */
+  .site-nav .nav-region-host > .nav-list-item > .nav-list-link {
+    padding-top: 0.3rem; padding-bottom: 0.3rem;
+  }
+  /* the labels carry no rail — their top margin is the visible break between segments */
+  .site-nav .nav-region-host > .nav-region { border-left: none; padding-left: 0.9rem; }
   .site-nav .nav-list .nav-list .nav-list-link {
     font-weight: 400 !important;
     opacity: 0.9;
@@ -227,7 +267,7 @@
   .nav-repo:hover { opacity: 0.95; }
   .nav-repo svg { width: 11px; height: 11px; flex: 0 0 auto; }
   /* breathing room between nav items */
-  .site-nav .nav-list .nav-list-item { margin: 0.22rem 0; }
+  .site-nav .nav-list .nav-list .nav-list-item { margin: 0.22rem 0; }
   /* split items have TWO <a> children — highlight the whole row, not just the label */
   .site-nav .nav-list-item.has-nav-repo:hover { background: var(--bg-elev-2); }
   .site-nav .has-nav-repo:hover > .nav-list-link { color: var(--text); }
@@ -290,25 +330,34 @@
      Keyed off the item hrefs, so it's independent of the repo-split script. -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    function insertLabel(hrefNeedle, text) {
-      var links = document.querySelectorAll('.site-nav .nav-list-link');
-      var link = null;
-      for (var i = 0; i < links.length; i++) {
-        if ((links[i].getAttribute('href') || '').indexOf(hrefNeedle) !== -1) { link = links[i]; break; }
-      }
-      if (!link) return;
-      var li = link.closest('.nav-list-item');
+    var linksOf = function () { return document.querySelectorAll('.site-nav .nav-list-link'); };
+    function byHref(needle) {
+      var links = linksOf();
+      for (var i = 0; i < links.length; i++)
+        if ((links[i].getAttribute('href') || '').indexOf(needle) !== -1) return links[i].closest('.nav-list-item');
+      return null;
+    }
+    function byText(text) {
+      var links = linksOf();
+      for (var i = 0; i < links.length; i++)
+        if ((links[i].textContent || '').trim() === text) return links[i].closest('.nav-list-item');
+      return null;
+    }
+    function insertLabelBefore(li, text) {
       if (!li || !li.parentNode) return;
+      /* tag the host list so the segmented-rail CSS applies to it */
+      li.parentNode.classList.add('nav-region-host');
       var prev = li.previousElementSibling;
-      if (prev && prev.classList.contains('nav-region')) return;   /* idempotent */
+      if (prev && prev.classList.contains('nav-region') && prev.textContent === text) return;  /* idempotent */
       var lbl = document.createElement('li');
       lbl.className = 'nav-region';
       lbl.setAttribute('aria-hidden', 'true');
       lbl.textContent = text;
       li.parentNode.insertBefore(lbl, li);
     }
-    insertLabel('/docs/aowlparser', 'Pipeline');
-    insertLabel('/docs/aowlc', 'Emitters');
+    insertLabelBefore(byHref('/docs/aowlparser'), 'Pipeline');
+    insertLabelBefore(byHref('/docs/aowlc'), 'Emitters');
+    insertLabelBefore(byText('Tools'), 'Ecosystem');
   });
 </script>
 

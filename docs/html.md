@@ -1,6 +1,6 @@
 ---
 title: html
-parent: "Builtin Libraries"
+parent: Libraries
 nav_order: 11
 grand_parent: aowlmony
 ---

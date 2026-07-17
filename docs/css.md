@@ -1,6 +1,6 @@
 ---
 title: css
-parent: "Builtin Libraries"
+parent: Libraries
 nav_order: 12
 grand_parent: aowlmony
 ---

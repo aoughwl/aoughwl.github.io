@@ -1,6 +1,6 @@
 ---
 title: ws
-parent: "Builtin Libraries"
+parent: Libraries
 grand_parent: aowlmony
 nav_order: 8
 ---
