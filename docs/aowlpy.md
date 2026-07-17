@@ -99,20 +99,20 @@ bin/aowlpy /tmp/nc/<mainhash>.s.nif > prog.py && python3 prog.py
 `tests/run.sh` compiles each `tests/*.nim` natively, transpiles the main
 `.s.nif`, `py_compile`-checks the emitted Python, runs it, and diffs against the
 native output — currently **19/19 byte-identical**. Against the shared differential
-corpus (`aowlhl/corpus`, 52 programs vs native nimony) aowlpy sits at **51/52** (the
+corpus (`aowlhl/corpus`, 54 programs vs native nimony) aowlpy sits at **53/54** (the
 one fail is the by-design unbounded-int case). `ref object` (class instance +
 field mutation, `== nil` → `is None`; ARC/RTTI hooks dropped under GC), inheritance
 (`class Derived(Base)`, identity upcast), custom `iterator`s (Python generator `def`
 + `yield`), closures (nested `def`/lambda with lexical capture), **exceptions**
 (`try`/`except T as e`/`raise` → native `try`/`except`, `Exception`-derived types as
 `class T(Exception)`), **`defer`** (→ `try`/`finally`), **variant objects**
-(flattened dataclass), **`distinct`**, **`set`** algebra, and seq **`filter`/`map`**
-HOFs all lower to native Python.
+(flattened dataclass), **`distinct`**, **`set`** algebra, seq **`filter`/`map`**
+HOFs, and **`HashSet`** → native `set`, all lower to native Python.
 
 ## Limitations / TODO
 
-Deliberately deferred (clearly marked in the source): `Table`/`HashSet` set-literal
-lowering, macros, and `var`-param arguments in *expression*
+Deliberately deferred (clearly marked in the source): `Table` (blocked by nimony's
+effect system), macros, and `var`-param arguments in *expression*
 position (statement-position calls get correct cell write-back; expression
 position is read-only). Emitted names favour readability over global uniqueness,
 so deeply shadowed identifiers across scopes are a known sharp edge.

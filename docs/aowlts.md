@@ -256,8 +256,8 @@ node --experimental-transform-types prog.ts
 The test harness (`tests/run.sh`) compiles each `tests/*.nim` with nimony for the
 reference stdout, transpiles it, runs the emitted `.ts` with node, and diffs.
 Current suite: **18/18 byte-identical** fast + **9/9 faithful**. The shared
-differential corpus (`aowlhl/corpus`, 52 programs vs native nimony) sits at
-**49/52 fast, 52/52 faithful** (faithful is a clean sweep); the remaining fast-mode
+differential corpus (`aowlhl/corpus`, 54 programs vs native nimony) sits at
+**51/54 fast, 54/54 faithful** (faithful is a clean sweep); the remaining fast-mode
 fails are the by-design int64 cases below.
 
 Also lowered to native TS: **exceptions** (`try`/`except T as e`/`raise` →
@@ -265,7 +265,8 @@ Also lowered to native TS: **exceptions** (`try`/`except T as e`/`raise` →
 Error` so `instanceof` works), **`defer`** (→ `try`/`finally`), **variant/case
 objects**, **`distinct`** types, **`set`** algebra (`in`/`+`/`-`/`*`/`^`/`card`),
 and seq **higher-order** funcs (`filter`/`map` with an anonymous proc → native
-`Array.filter`/`.map` + arrow).
+`Array.filter`/`.map` + arrow), and **`HashSet`** → native `Set` (`incl`/`excl`/
+`contains`/`in`/`len`→`.size`).
 
 ## Known limitations / TODO
 
