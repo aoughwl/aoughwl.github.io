@@ -1,25 +1,14 @@
----
-title: "Pipeline Driver — aowlmony"
-parent: aowlmony
-nav_order: 3
----
-
 # aowlmony — the nimony rewrite driver
-{: .no_toc }
 
 `aowlmony` is the driver that unifies the aoughwl self-owned stack into one
 compiler over **AIF** (the aowl intermediate format): give it a `.nim` file and
 it runs parser → sem → lowering → **your choice of native code or
 interpretation**, using aoughwl's own components wherever they exist and reusing
 nimony's only for the parts not yet rebuilt.
-{: .fs-6 .fw-300 }
 
 Repo: **`aoughwl/aowlmony`** (public).
 
-<details open markdown="block"><summary>Contents</summary>{: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -37,14 +26,14 @@ Repo: **`aoughwl/aowlmony`** (public).
 |---|---|---|
 | parse `.nim` → `.p.aif` (user modules) | [aowlparser](aowlparser) | ✅ ours |
 | parse stdlib → `.p.aif` | `nifler` | reused — aowlparser has `concept`/typed-nil gaps |
-| sem `.p.aif` → `.s.aif` | nimony `nimsem` | reused — **[aowlsem](nifsem) not finished yet** |
+| sem `.p.aif` → `.s.aif` | nimony `nimsem` | reused — **[aowlsem](aowlsem) not finished yet** |
 | **lower** `.s.aif` → `.c.aif` (ARC, closures, exceptions, mono) | **[aowlhexer](aowlhexer)** | ✅ **ours** (seeded from Araq's hexer) |
 | **native** `.c.aif` → binary | [aowlc](aowlc) → gcc | ✅ ours |
 | **interpret** `.s.aif` | [aowli](../aowli) (tree-walk + bytecode VM) | ✅ ours |
 | web `.s.aif` → JS | [aowljs](aowljs) | ✅ ours |
 
 The self-owned stack now covers **parser + lowering + backend + interpreter** —
-only semantic analysis is still reused from nimony (until [aowlsem](nifsem)
+only semantic analysis is still reused from nimony (until [aowlsem](aowlsem)
 lands). Lowering moved into our column with [aowlhexer](aowlhexer): the aowlmony
 driver injects `bin/aowlhexer` in place of nimony's `hexer` (via nimony's
 `findTool("hexer")` lookup), so a full build reads
@@ -106,12 +95,12 @@ aowlmony nif    prog.nim  -v                    # paths + which parser/hexer ran
 
 Per the directive to standardise on **AIF (aowl intermediate format)**, the
 self-owned components carry the `aif-` prefix: [aowlparser](aowlparser),
-[aowlsem](nifsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aowllib](aowllib),
+[aowlsem](aowlsem), [aowlhexer](aowlhexer), [aowlc](aowlc), [aowllib](aowllib),
 [aowljs](aowljs), and this driver, aowlmony. [aowli](../aowli) is the interpreter over
 `.s.aif`; [aowlsuggest](aowlsuggest) is the diagnostics / quick-fix / editor layer
 built on the parser's recoverable errors. What remains to finish the rewrite:
 
-- **[aowlsem](nifsem)** — finish it → drop the reused nimony `nimsem`.
+- **[aowlsem](aowlsem)** — finish it → drop the reused nimony `nimsem`.
 - **[aowllib](aowllib)** — the self-owned system module + runtime, so native
   `echo`/strings/seqs link without nimony's `system.c.aif`. The biggest unlock.
 - **[aowlhexer](aowlhexer)** — progressively rewrite the vendored passes onto an

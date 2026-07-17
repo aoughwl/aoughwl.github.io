@@ -1,9 +1,3 @@
----
-title: Projects
-permalink: /projects
-nav_exclude: true
----
-
 # Projects
 
 Every repo in the aoughwl toolchain and its libraries. Each page below is the
@@ -12,7 +6,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | Project | Repo | Status |
 |---|---|---|
 | [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
-| aowlsem — clean-room semcheck: `.p.aif` → typed `.s.aif` | `aoughwl/aowlsem` | private |
+| [aowlsem](docs/aowlsem) — semantic analysis: `.p.aif` → typed `.s.aif` (symbols, overloads, generics) | `aoughwl/aowlsem` | public |
 | [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aowli` | private |
 | [aowljs](docs/aowljs) — `.s.aif` → native-JavaScript backend | `aoughwl/aowljs` | public |
 | [aowljs-js](docs/aowljs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aowljs-js` | public |
