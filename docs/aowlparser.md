@@ -5,100 +5,75 @@ nav_order: 1
 has_children: false
 ---
 
-# aowlparser — Nim → NIF parser
-{: .no_toc }
+# aowlparser — Nim → AIF parser
 
-A pure-**nimony** recursive-descent parser that turns Nim source into the
-parse-dialect NIF (`.p.nif`) the compiler frontend consumes — the same job as the
-compiler's `nifler`, but self-hosted and free of the classic Nim compiler, so it
-can be compiled to JavaScript and run in the browser.
-{: .fs-6 .fw-300 }
+Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.aif`).
+Produces the same output as the classic compiler's `nifler`, but is self-hosted —
+no dependency on the classic Nim compiler, so it compiles through the nimony JS
+backend and runs in the browser. Output is byte-identical to `nifler` except the
+one header line it owns, `(.vendor "aowlparser")`.
 
 [Repo → github.com/aoughwl/aowlparser](https://github.com/aoughwl/aowlparser){: .btn .btn-primary }
 [Playground →](../playground){: .btn }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+## Scope
 
----
+Purely syntactic. No semantic checking, no symbol resolution — every symbol is
+emitted as a bare identifier. The output is the parse dialect of AIF: a
+line-info-annotated s-expression of the Nim parse tree. Name binding, overload
+resolution and generic instantiation run in later phases (`aowlsem` onward) that
+read this file.
 
-## Why it exists
+It exists in nimony so the browser playground can run the compiler frontend
+(`source → aowlparser → aowlsem → aowli`) client-side. `nifler` can't: it is built
+on the Nim-2 classic compiler and does not compile under nimony.
 
-The [playground](../playground) runs [aowli](../aowli) client-side today, but only on
-**precompiled** typed NIF. To recompile edits live in the browser (Tier 2), the
-compiler *frontend* — parse then semcheck — has to run in JS too. Semcheck
-(`nimsem`) already self-hosts under nimony and translates cleanly to JS. The
-parser did not: the stock `nifler` is built on the **classic** Nim compiler
-(`compiler/lexer`, `parser`, `syntaxes`, `ast`), which is Nim 2 and not
-nimony-compilable — so it cannot go to the browser.
+## Conformance
 
-`aowlparser` closes that gap: a from-scratch parser written in nimony, emitting
-the identical `.p.nif` wire format, that compiles through the nimony JS backend.
-The chain `source → aowlparser → nimsem → aowli` is what makes an in-browser,
-recompile-on-edit playground possible.
+Differential-tested against native `nifler`. *Structural* = token trees equal with
+line-info stripped; *byte-exact* = identical `.p.aif` including line-info, modulo
+the `(.vendor)` line.
 
-## What it produces
+| corpus | files | structural | byte-exact |
+|:--|--:|--:|--:|
+| nimony/src (compiler tree) | 184 | 184 | 184 |
+| nimony/lib (stdlib) | 105 | 105 | 91 |
+| upstream Nim/lib | 310 | 310 | 283 |
+| curated | 172 | 172 | 156 |
 
-`nifler` — and therefore `aowlparser` — is a **purely syntactic** transducer. It
-does no semantic checking and no symbol resolution; every symbol comes out as a
-bare identifier. The output is the *parse dialect* of NIF: a faithful, fully
-line-info-annotated s-expression rendering of the Nim parse tree. Everything the
-compiler does next (name binding, overload resolution, generic instantiation)
-happens in later phases that read this file.
+0 crashes and 0 hangs across all four. The upstream Nim/lib pass — reached by
+differential fuzzing — covers term-rewriting template patterns, `Inf`/`NaN`
+hex-bit literals, custom numeric literals (`1'big`), method-chain continuations,
+multi-`do` calls and pragma-decorated lambda sugar. The line-info model was
+reverse-engineered per construct against the oracle; see [Known gaps](aowlparser/known-gaps).
 
-## Status
+## Diagnostics
 
-The bar is output **identical to native `nifler` down to the byte** — with one
-deliberate exception: aowlparser stamps its own `(.vendor "aowlparser")` header
-instead of impersonating `nifler`, so every file differs on exactly that line.
-The [differential harness](aowlparser/testing) neutralizes that single directive
-and holds everything else strict. Two levels: **structural** (token trees equal
-after line-info is stripped — the pass criterion) and **exact** (byte-identical
-`.p.nif`, line-info included, apart from the `(.vendor)` line).
+Recoverable, unlike `nifler`'s abort-on-first-error: records every error with a
+source span, keeps parsing, and still emits best-effort AIF — so one run surfaces
+every problem with no phantom end-of-file cascade. On the Nim compiler test
+corpus, on files where both report errors, `nifler` emits ~2× the error lines.
 
-| test suite | files | result |
-|:--|:--|:--|
-| curated corpus | 76 | **76 pass**, 76 byte-exact\* |
-| nimony standard library (`nimony/src/lib`) | 29 | **29 pass** structurally, **29 byte-exact**, 0 crash |
-| whole nimony compiler tree (`nimony/src`) | 184 | **184 pass**, **184 byte-exact**, 0 crash / 0 hang |
+- Fix-its per error (`help: insert ':'`, `help: did you mean '=='?`).
+- Related locations as structured fields (a mismatched bracket points at both ends).
+- `aowlparser check <file>` lint mode; `--diagnostics:json` emits
+  `{severity, code, message, line, col, endCol, fix, related}` per diagnostic.
+- Full classic-lexer error parity, recovering past each: bad char literals, illegal
+  tabs, unterminated block/triple/raw strings, malformed escapes, malformed numbers,
+  unterminated accent-quoted identifiers.
+- Detections `nifler` lacks: assignment-in-condition (`if x = 5:`), empty conditions
+  (`elif:`), empty comma slots (`foo(a,,b)`), missing-introducer bodies (`proc f()`
+  then an indented line with no `=`; `type Name` with a body but no `= object`),
+  UTF-8 identifiers, and `#? stdtmpl` filter files (recognized as non-Nim).
 
-<small>\* byte-exact apart from the one-line `(.vendor)` header identity.</small>
+## Pages
 
-The **entire nimony compiler tree** — the standard library and the compiler's own
-dense internals — round-trips structurally identical to native nifler, line-info
-stripped: all 184 files, zero mismatches, zero crashes. Beyond that, **every one of
-the 184 files is byte-identical** (line-info included, modulo the vendor line) — not
-just the token tree but the exact relative line-info of every node: full
-byte-for-byte parity across the whole tree. See
-[Coverage](aowlparser/known-gaps) for how the line-info model was reverse-engineered
-node by node.
-
-## Better errors than the reference
-
-`nifler` inherits the classic compiler's **abort-on-first-error** behaviour;
-`aowlparser` does strictly better. It is fully recoverable — it records *every*
-problem with a source span, keeps going, and still emits best-effort NIF — which
-is what an in-browser editor needs (squiggles for all errors at once). A
-`aowlparser check <file>` lint mode emits diagnostics as compiler-style text or, with
-`--diagnostics:json`, a machine-readable array for editors; a normal parse streams
-them to stderr and never blocks. See [Configuration](aowlparser/configuration).
-
-## The documentation set
-
-| Page | What it covers |
+| Page | Covers |
 |:--|:--|
-| [Architecture](aowlparser/architecture) | Fused parse + emit, the range-splitter, the include-file module map, the line-info model, and the classic-compiler oracle. |
-| [Grammar coverage](aowlparser/grammar) | Exactly which lexer, expression, statement, section, and type constructs are reproduced. |
-| [The .p.nif format](aowlparser/output-format) | The emitted wire form itself: header directives, the base62 line-info suffix grammar, operator escaping, and the tag vocabulary — enough to read a `.p.nif` by eye. |
-| [Browser & JavaScript](aowlparser/browser) | Running aowlparser client-side: the `globalThis.__np_*` contract, the `aowlparser.js` build recipe, and the `webdiag` editor-diagnostics layer. |
-| [Differential testing](aowlparser/testing) | The oracle harness, `canon.py`, structural-vs-exact comparison, and how to run it. |
-| [Configuration](aowlparser/configuration) | The optional, off-by-default flags: `--curly` block bodies and the indentation/whitespace policy switches. |
-| [Known gaps](aowlparser/known-gaps) | The catalogued edge cases that still differ on the broader compiler corpus. |
-
----
-
-[Repo → github.com/aoughwl/aowlparser](https://github.com/aoughwl/aowlparser){: .btn .btn-primary }
+| [Architecture](aowlparser/architecture) | fused parse+emit, range-splitter, include-file module map, line-info model, `nifler` oracle |
+| [Grammar coverage](aowlparser/grammar) | lexer / expression / statement / section / type constructs reproduced |
+| [The .p.aif format](aowlparser/output-format) | header directives, base62 line-info suffix, operator escaping, tag vocabulary |
+| [Browser & JS](aowlparser/browser) | client-side build, the `globalThis.__np_*` contract, `webdiag` |
+| [Differential testing](aowlparser/testing) | oracle harness, `canon.py`, structural vs byte-exact |
+| [Configuration](aowlparser/configuration) | `--curly` block bodies, whitespace policy switches |
+| [Known gaps](aowlparser/known-gaps) | remaining corpus edge cases |
