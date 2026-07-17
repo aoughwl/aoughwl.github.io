@@ -98,20 +98,21 @@ bin/aowlpy /tmp/nc/<mainhash>.s.nif > prog.py && python3 prog.py
 
 `tests/run.sh` compiles each `tests/*.nim` natively, transpiles the main
 `.s.nif`, `py_compile`-checks the emitted Python, runs it, and diffs against the
-native output — currently **11/11 byte-identical** (basics, arithmetic/bitwise,
-strings, seq, tuples, `var`-params, `case`, objects/dataclasses, countdown,
-cross-module import). Against the shared differential corpus (`aowlhl/corpus`, 44
-programs vs native nimony) aowlpy sits at **43/44** (the one fail is the by-design
-unbounded-int case). `ref object` (class instance +
+native output — currently **19/19 byte-identical**. Against the shared differential
+corpus (`aowlhl/corpus`, 52 programs vs native nimony) aowlpy sits at **51/52** (the
+one fail is the by-design unbounded-int case). `ref object` (class instance +
 field mutation, `== nil` → `is None`; ARC/RTTI hooks dropped under GC), inheritance
 (`class Derived(Base)`, identity upcast), custom `iterator`s (Python generator `def`
-+ `yield`), and closures (nested `def` with lexical capture) all lower to native
-Python.
++ `yield`), closures (nested `def`/lambda with lexical capture), **exceptions**
+(`try`/`except T as e`/`raise` → native `try`/`except`, `Exception`-derived types as
+`class T(Exception)`), **`defer`** (→ `try`/`finally`), **variant objects**
+(flattened dataclass), **`distinct`**, **`set`** algebra, and seq **`filter`/`map`**
+HOFs all lower to native Python.
 
 ## Limitations / TODO
 
 Deliberately deferred (clearly marked in the source): `Table`/`HashSet` set-literal
-lowering, macros, exceptions (`try`/`raise`), and `var`-param arguments in *expression*
+lowering, macros, and `var`-param arguments in *expression*
 position (statement-position calls get correct cell write-back; expression
 position is read-only). Emitted names favour readability over global uniqueness,
 so deeply shadowed identifiers across scopes are a known sharp edge.

@@ -101,10 +101,13 @@ base fields flattened, upcast = identity), custom `iterator`s → generators
 (`function*`/`yield`/`for..of`), and closures → inline arrow functions (lexical
 capture).
 
-Against the shared differential corpus (`aowlhl/corpus`, 44 programs diffed vs
-native nimony) aowljs sits at **41/44 fast, 44/44 faithful** (faithful is a clean
+Against the shared differential corpus (`aowlhl/corpus`, 52 programs diffed vs
+native nimony) aowljs sits at **49/52 fast, 52/52 faithful** (faithful is a clean
 sweep; the fast-mode fails are the by-design int64 cases); `tests/run_faithful.sh`
-is **5/5**. (Float values print with a trailing `.0` — `echo`/`$` consult a static
+is **5/5**. Also lowered to native JS: **exceptions** (`try`/`except`/`raise` →
+`throw`/`try`/`catch`, `Exception`-derived types as `class … extends Error`),
+**`defer`** (→ `try`/`finally`), **variant objects**, **`distinct`**, **`set`**
+algebra, and seq **`filter`/`map`** HOFs. (Float values print with a trailing `.0` — `echo`/`$` consult a static
 float-type environment, including tuple float elements.)
 
 Plus **enums** (values → ordinals), **const**, fixed-size **arrays**, and a

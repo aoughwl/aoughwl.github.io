@@ -255,10 +255,17 @@ node --experimental-transform-types prog.ts
 
 The test harness (`tests/run.sh`) compiles each `tests/*.nim` with nimony for the
 reference stdout, transpiles it, runs the emitted `.ts` with node, and diffs.
-Current suite: **12/12 byte-identical** fast + **9/9 faithful**. The shared
-differential corpus (`aowlhl/corpus`, 44 programs vs native nimony) sits at
-**41/44 fast, 44/44 faithful** (faithful is a clean sweep); the remaining fast-mode
+Current suite: **18/18 byte-identical** fast + **9/9 faithful**. The shared
+differential corpus (`aowlhl/corpus`, 52 programs vs native nimony) sits at
+**49/52 fast, 52/52 faithful** (faithful is a clean sweep); the remaining fast-mode
 fails are the by-design int64 cases below.
+
+Also lowered to native TS: **exceptions** (`try`/`except T as e`/`raise` →
+`throw`/`try`/`catch`, with `Exception`-derived types emitted as `class … extends
+Error` so `instanceof` works), **`defer`** (→ `try`/`finally`), **variant/case
+objects**, **`distinct`** types, **`set`** algebra (`in`/`+`/`-`/`*`/`^`/`card`),
+and seq **higher-order** funcs (`filter`/`map` with an anonymous proc → native
+`Array.filter`/`.map` + arrow).
 
 ## Known limitations / TODO
 
@@ -269,5 +276,6 @@ fails are the by-design int64 cases below.
   (the corpus's only fast-mode fails are these);
 - **`set[T]`** membership emits an inline `Set`/OR-chain (functional, not typed as
   a nominal set);
-- **macros / compile-time execution**, `try`/`except`/`raise`, and `defer` are
-  future work.
+- **multiple sibling `except` clauses** on one `try` (nimony's single-`except` +
+  `instanceof`-cascade lowering is handled; truly separate clauses are untested);
+- **macros / compile-time execution** are future work.
