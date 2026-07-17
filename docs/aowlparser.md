@@ -61,10 +61,16 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
 - Full classic-lexer error parity, recovering past each: bad char literals, illegal
   tabs, unterminated block/triple/raw strings, malformed escapes, malformed numbers,
   unterminated accent-quoted identifiers.
-- Detections `nifler` lacks: assignment-in-condition (`if x = 5:`), empty conditions
-  (`elif:`), empty comma slots (`foo(a,,b)`), missing-introducer bodies (`proc f()`
-  then an indented line with no `=`; `type Name` with a body but no `= object`),
-  UTF-8 identifiers, and `#? stdtmpl` filter files (recognized as non-Nim).
+- Detections `nifler` lacks: assignment-in-condition (`if`/`elif`/`while`/`when x = 5:`),
+  empty conditions (`elif:`), empty comma slots (`foo(a,,b)`), missing-introducer
+  bodies (`proc f()` then an indented line with no `=`; `type Name` with a body but
+  no `= object`), and precise grammar diagnostics where `nifler` is terse: `func` in
+  a type description, a keyword where an enum member belongs, an empty object-variant
+  branch, `of`/`for` missing their value (`of:`, `for x of xs`).
+- UTF-8 identifiers, and `#? stdtmpl` filter files (recognized as non-Nim).
+
+Every check is proven zero-false-positive against the 599 valid files and never
+changes the emitted AIF.
 
 ## Pages
 
