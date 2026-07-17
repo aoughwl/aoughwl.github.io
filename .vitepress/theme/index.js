@@ -96,50 +96,6 @@ function decorateSidebar() {
   })
 }
 
-// after navigation, make sure the section you landed on is expanded
-function ensureActiveExpanded() {
-  document.querySelectorAll('.VPSidebar .VPSidebarItem.collapsible.collapsed').forEach((sec) => {
-    const link = sec.querySelector(':scope > .item > .link')
-    if (!link) return
-    if (norm(new URL(link.getAttribute('href') || '/', location.origin).pathname) === norm(location.pathname)) {
-      sec.querySelector(':scope > .item > .caret')?.click()
-    }
-  })
-}
-
-// click/double-click behaviour for collapsible rows (delegated, survives re-render)
-let toggleTimer = null
-function bindCollapse(sidebar) {
-  const caretOf = (link) => link.closest('.item')?.querySelector(':scope > .caret')
-  sidebar.addEventListener('click', (e) => {
-    const link = e.target.closest('a.VPLink.link')
-    if (!link) return // caret / badge / non-link → leave to VitePress
-    const sec = link.closest('.VPSidebarItem')
-    if (!sec || !sec.classList.contains('collapsible')) return
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return // allow open-in-new-tab
-    const here = norm(location.pathname)
-    const to = norm(new URL(link.getAttribute('href') || '/', location.origin).pathname)
-    if (here === to) {
-      // already on this page → single click toggles (debounced against dblclick)
-      e.preventDefault()
-      e.stopPropagation()
-      if (toggleTimer) return
-      toggleTimer = setTimeout(() => { toggleTimer = null; caretOf(link)?.click() }, 200)
-    }
-    // navigating to a new page: let it navigate; ensureActiveExpanded() opens it
-  })
-  sidebar.addEventListener('dblclick', (e) => {
-    const link = e.target.closest('a.VPLink.link')
-    if (!link) return
-    const sec = link.closest('.VPSidebarItem')
-    if (!sec || !sec.classList.contains('collapsible')) return
-    e.preventDefault()
-    e.stopPropagation()
-    if (toggleTimer) { clearTimeout(toggleTimer); toggleTimer = null }
-    caretOf(link)?.click()
-  })
-}
-
 // ---- client-only nav extras (renders after mount → no hydration mismatch) --
 const NavExtras = {
   setup() {
@@ -168,7 +124,7 @@ export default {
   },
   enhanceApp({ router }) {
     if (typeof window === 'undefined') return
-    const run = () => requestAnimationFrame(() => { decorateSidebar(); ensureActiveExpanded() })
+    const run = () => requestAnimationFrame(decorateSidebar)
     const orig = router.onAfterRouteChanged
     router.onAfterRouteChanged = (to) => { orig?.(to); run() }
     if (document.readyState !== 'loading') run()
@@ -177,7 +133,6 @@ export default {
     const start = () => {
       const sb = document.querySelector('.VPSidebar')
       if (!sb) return setTimeout(start, 150)
-      bindCollapse(sb)
       let queued = false
       new MutationObserver(() => {
         if (queued) return
