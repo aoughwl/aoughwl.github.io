@@ -1,11 +1,4 @@
----
-title: TypeScript — aowlts
-parent: aowlmony
-nav_order: 9
----
-
 # aowlts — idiomatic TypeScript backend
-{: .no_toc }
 
 An **idiomatic TypeScript** backend for [nimony](../nimony): Nim types become real
 TypeScript types, not byte offsets.

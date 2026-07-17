@@ -1,14 +1,6 @@
----
-title: tls
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 4
----
-
 # tls — TLS 1.3 over OpenSSL 3
-{: .no_toc }
 
-[Repo → aoughwl/tls](https://github.com/aoughwl/tls){: .btn }
+[Repo → aoughwl/tls](https://github.com/aoughwl/tls)
 
 TLS/SSL for the stack, **client and server**, over OpenSSL 3. Wraps a connected
 `net.Socket` into a `TlsSocket`; status-based (`TlsStatus`), no exceptions,

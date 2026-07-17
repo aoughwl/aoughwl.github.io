@@ -1,10 +1,3 @@
----
-title: aowl-lsp
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 2
----
-
 > Verbatim archive of the original `aoughwl/aowl-lsp` README. Curated summary: [aowl-lsp project page](../aowl-lsp).
 
 # aowl-lsp

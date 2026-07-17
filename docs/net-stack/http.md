@@ -1,15 +1,7 @@
----
-title: http
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 5
----
-
 # http — transport-free HTTP
-{: .no_toc }
 
-[Repo → aoughwl/http](https://github.com/aoughwl/http){: .btn }
-[Reference](../reference/http){: .btn }
+[Repo → aoughwl/http](https://github.com/aoughwl/http)
+[Reference](../reference/http)
 
 Headers, URL/query/form codecs, request parsing, typed methods and status codes,
 response building, a chunked-transfer codec, and `Content-Encoding` negotiation —

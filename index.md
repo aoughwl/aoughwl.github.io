@@ -1,22 +1,13 @@
----
-title: aowlmony
-nav_order: 0
-has_children: true
-permalink: /
----
-
 # aoughwl
-{: .fs-9 .no_toc }
 
 A **from-scratch reimplementation of the entire Nimony toolchain** — parser,
 semantic checker, lowering, and code generators — written *in* Nimony,
 self-hosting, and **open at every seam**. It runs Nim/Nimony **identically**, and
 runs where the classic compiler can't: **right in your browser**.
-{: .fs-6 .fw-300 }
 
-[▶ Open the Playground](/playground/){: .btn .btn-primary .mr-2 }
-[How this works](/docs/how-it-works){: .btn .mr-2 }
-[GitHub](https://github.com/aoughwl){: .btn }
+[▶ Open the Playground](/playground/)
+[How this works](/docs/how-it-works)
+[GitHub](https://github.com/aoughwl)
 
 ---
 
@@ -40,7 +31,6 @@ stage on its own**, and the entire pipeline runs **client-side**.
 → **[How this works](/docs/how-it-works)**
 
 ## What you get that stock Nimony doesn't
-{: .no_toc }
 
 - 🌐 **Runs in the browser** — parse → semcheck → run, fully client-side. **[Try it live →](/playground/)**
 - 🎯 **Byte-exact parity** — `aowlparser` is proven against `nifler` by a differential harness over the **entire** standard library.
@@ -55,7 +45,7 @@ stage on its own**, and the entire pipeline runs **client-side**.
 | Stage | Repo | What it is |
 |:--|:--|:--|
 | **parse** | [aowlparser](/docs/aowlparser) | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
-| **semcheck** | aowlsem *(private)* | `.p.aif` → typed `.s.aif`: symbols, overloads, generic instantiation. |
+| **semcheck** | [aowlsem](/docs/aowlsem) | `.p.aif` → typed `.s.aif`: symbols, overloads, generic instantiation. |
 | **lower** | [aowlhexer](/docs/aowlhexer) *(private)* | `.s.aif` → `.c.aif`: ARC, closures, iterators, exceptions, monomorphisation. |
 | **drive** | [Pipeline Driver](/docs/aowlmony) | one command: `.nim` → { native · interpret · web } over the whole stack. |
 | **runtime** | [aowllib](/docs/aowllib) | strings / seqs / ARC / GC the native + JS backends link against. |
@@ -87,7 +77,7 @@ stage on its own**, and the entire pipeline runs **client-side**.
 
 ## The private side
 
-The **semantic checker (aowlsem)** and the **lowering (aowlhexer)**, along with the
+The **lowering (aowlhexer)**, along with the
 JavaScript / TypeScript / WASM / Python backend repos, are **kept private for
 now** — their **docs are public here**, and access is granted on request (just
 ask). The playground moves onto the new sem + hexing shortly.

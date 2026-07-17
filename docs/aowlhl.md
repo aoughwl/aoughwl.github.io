@@ -1,11 +1,4 @@
----
-title: High-Level IR — aowlhl
-parent: aowlmony
-nav_order: 5
----
-
 # aowlhl — shared High-Level IR
-{: .no_toc }
 
 The **shared lowering** for the idiomatic Nim-to-high-level backends: it turns
 nimony's sem'd IR into a small, target-neutral **High-Level IR (HL-IR)** that the

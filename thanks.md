@@ -1,17 +1,8 @@
----
-title: Thanks
-nav_exclude: true
-permalink: /thanks
----
-
 # Thank you for your support
-{: .fs-9 }
 
 Your contribution funds aoughwl's continued development. Here is your access.
-{: .fs-6 .fw-300 }
 
-{% assign sup = site.supporter %}
-<a class="support-btn" href="{{ sup.discord_invite }}" target="_blank" rel="noopener">Join the private Discord →</a>
+<a class="support-btn" href="" target="_blank" rel="noopener">Join the private Discord →</a>
 
 ---
 
@@ -28,4 +19,4 @@ Your contribution funds aoughwl's continued development. Here is your access.
 Support is offered in good faith — not a purchase of the product and not a
 guarantee of any specific feature, timeline, or outcome.
 
-[← Back home](/){: .btn }
+[← Back home](/)

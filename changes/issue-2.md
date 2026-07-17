@@ -1,15 +1,6 @@
----
-title: "Issue #2 — `delay <call>` crashed inside a generic proc"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 2
----
-
 # Issue #2
-{: .no_toc }
 
 ## `delay <call>` crashed inside a generic proc
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** cps suite · [← ledger](../nimony)

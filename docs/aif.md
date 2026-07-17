@@ -1,26 +1,11 @@
----
-title: AIF ≡ NIF
-permalink: /docs/aif
-parent: Engineering Notes
-nav_order: 2
-nav_exclude: true
----
-
 # AIF ≡ NIF — how aoughwl interops with Nimony
-{: .no_toc }
 
 aoughwl is a ground-up reimplementation of the Nimony toolchain. The reason it
 drops straight into the existing nimony world — and the reason **any Nim or
 Nimony program is expected to behave identically in aoughwl** — is one deliberate
 decision about the intermediate format.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

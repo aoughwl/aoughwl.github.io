@@ -1,12 +1,4 @@
----
-title: Safety & diagnostics fixes
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 1
----
-
 # aoughwl compiler fixes
-{: .no_toc }
 
 Compiler fixes that went into [`aoughwl/nimony`](https://github.com/aoughwl/nimony)
 (branch `master`). Each is written against the Nim language and portable to
@@ -14,7 +6,6 @@ Compiler fixes that went into [`aoughwl/nimony`](https://github.com/aoughwl/nimo
 fixed or feature added, and why.
 
 - TOC
-{:toc}
 
 ---
 

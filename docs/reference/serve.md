@@ -1,10 +1,3 @@
----
-title: serve
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 6
----
-
 > Verbatim archive of the original `aoughwl/serve` README. Curated summary: [serve project page](../net-stack).
 
 # serve

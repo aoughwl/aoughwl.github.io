@@ -1,19 +1,11 @@
----
-title: html
-parent: Libraries
-nav_order: 11
-grand_parent: aowlmony
----
-
 # html — typed HTML5 for nimony
-{: .no_toc }
 
 A registry of every HTML5 element and its attributes (void / deprecated /
 experimental markers), plus a document-tree builder and a correct, escaping,
 void-aware renderer. Pure logic, standard library only, **no dependencies**. For
 nimony / Nim 3.0.
 
-[Repo → github.com/aoughwl/html](https://github.com/aoughwl/html){: .btn .btn-primary }
+[Repo → github.com/aoughwl/html](https://github.com/aoughwl/html)
 
 ```nim
 import html

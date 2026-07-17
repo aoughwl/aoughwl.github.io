@@ -1,22 +1,13 @@
----
-title: "Issue #7 — Generic `race[T]` spawned via `delay` failed to link"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 7
----
-
 # Issue #7
-{: .no_toc }
 
 ## Generic `race[T]` spawned via `delay` failed to link
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** `tgenrace` (native + JS) · [← ledger](../nimony)
 </div>
 
 ## Symptom
-A generic `race[T]` spawned as `delay raceW(...)` failed to link on **both** native and JS: `loadForeign`: “Symbol not found: raceW.0.coro.<sfx>”.
+A generic `race[T]` spawned as `delay raceW(...)` failed to link on **both** native and JS: `loadForeign`: “Symbol not found: raceW.0.coro.&lt;sfx>”.
 
 ## Root cause
 `semDelay`'s generic-instantiation branch copied the delayed callee **verbatim**, so a generic callee was never instantiated — its `.coro` frame type was therefore never emitted, and the linker had nothing to bind.

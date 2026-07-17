@@ -1,11 +1,3 @@
----
-nav_exclude: true
-title: Capabilities
-parent: Faithful JS/WASM — aowlweb
-grand_parent: aowlmony
-nav_order: 2
----
-
 # Capabilities & limitations
 
 What each backend does today. Both are experimental. The JavaScript backend is

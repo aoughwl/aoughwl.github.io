@@ -1,11 +1,4 @@
----
-title: Python — aowlpy
-parent: aowlmony
-nav_order: 10
----
-
 # aowlpy — idiomatic Python backend
-{: .no_toc }
 
 An **idiomatic Python** backend for [nimony](../nimony): Nim types become real
 Python objects, not byte offsets.

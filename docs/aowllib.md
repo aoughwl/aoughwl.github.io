@@ -1,17 +1,9 @@
----
-title: Runtime — aowllib
-parent: aowlmony
-nav_order: 4
----
-
 # aowllib — the aowl system module + runtime
-{: .no_toc }
 
 `aowllib` is the standard `system` layer and the C runtime primitives the native
 ([aowlc](aowlc)) and JS ([aowljs](aowljs)) backends link against, so real programs —
 strings, seqs, `echo`, ref objects with ARC — compile through the self-owned
 stack **without** nimony's `system.c.aif`.
-{: .fs-6 .fw-300 }
 
 Repo: **`aoughwl/aowllib`** (public). Status: **working** — `echo "hello"` and
 43 other programs compile to native binaries through [aowlc](aowlc) + aowllib and

@@ -1,16 +1,7 @@
----
-title: How this works
-permalink: /docs/how-it-works
-parent: aowlmony
-nav_order: 0
----
-
 # How this works
-{: .no_toc }
 
 aowlmony is not one compiler binary. It is a **pipeline of separate, open stages**,
 and that is the whole point.
-{: .fs-6 .fw-300 }
 
 ---
 
@@ -47,7 +38,7 @@ things fall out that a sealed binary can't give you:
   `hexer`), or replace it with your own, without touching the rest.
 - **Runs where a packed binary can't** — most notably the **browser**: the
   parser, checker, and interpreter are compiled to JavaScript and run
-  client-side. Try it in the [playground]({{ '/playground' | relative_url }}).
+  client-side. Try it in the [playground](/playground).
 
 Same programs, same output — Nim and Nimony code behaves identically — but the
 machine that produces it is open at every joint instead of sealed shut.
@@ -56,6 +47,6 @@ machine that produces it is open at every joint instead of sealed shut.
 
 All of this rests on one contract: **AIF ≡ NIF**, byte-for-byte, so each stage is
 a genuine drop-in. That's written up in the engineering notes —
-**[AIF ≡ NIF]({{ '/docs/aif' | relative_url }})**.
+**[AIF ≡ NIF](/docs/aif)**.
 
 Then walk the stages themselves, top to bottom, in the nav to the left.

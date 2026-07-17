@@ -1,15 +1,7 @@
----
-title: tcp
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 2
----
-
 # tcp — native blocking sockets
-{: .no_toc }
 
-[Repo → aoughwl/tcp](https://github.com/aoughwl/tcp){: .btn }
-[Reference](../reference/tcp){: .btn }
+[Repo → aoughwl/tcp](https://github.com/aoughwl/tcp)
+[Reference](../reference/tcp)
 
 The bottom layer. Binds directly to the platform socket API (POSIX / Winsock)
 with no C shim, hands you raw `TcpHandle`s and caller-owned buffers, and reports

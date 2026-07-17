@@ -1,26 +1,15 @@
----
-title: Native JS — aowljs
-parent: aowlmony
-nav_order: 7
----
-
 # aowljs — a `.s.nif` → native-JavaScript backend
-{: .no_toc }
 
 `aowljs` transpiles a typed nimony NIF (`.s.nif`) to **real JavaScript** — mapping
 nimony values onto native JS values instead of onto a simulated linear memory —
 so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**
 and its output is **readable**. It's the **Native JS** engine in the
 [playground](/playground/).
-{: .fs-6 .fw-300 }
 
 Repo: **`aoughwl/aowljs`** (public). A single, dependency-free JS file that reads a
 `.s.nif` and emits JavaScript.
 
-<details open markdown="block"><summary>Contents</summary>{: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -155,7 +144,6 @@ why nimony keeps hexer and the faithful backend — the two emitters are
 > **Want the *true faithful* version?** The exact, semantics-preserving compile —
 > `int64`, pointers, ARC, the works — is **done end-to-end for both JavaScript
 > *and* WebAssembly**. If you want access, DM me on Discord: **timbuktu_guy**.
-{: .note }
 
 ## Faithfulness / export modes
 

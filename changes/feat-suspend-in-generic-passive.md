@@ -1,15 +1,6 @@
----
-title: "Feature — `suspend()` in a generic `.passive` proc"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 103
----
-
 # Feature
-{: .no_toc }
 
 ## `suspend()` in a generic `.passive` proc
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Area** compiler / async · **Verified by** cps suite · [← ledger](../nimony)

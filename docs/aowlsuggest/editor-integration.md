@@ -1,25 +1,10 @@
----
-nav_exclude: true
-title: Editor integration
-parent: Suggestions — aowlsuggest
-grand_parent: aowlmony
-nav_order: 4
----
-
 # Editor integration
-{: .no_toc }
 
 The `lsp` command turns diagnostics into an editor-ready payload: LSP
 `Diagnostic` objects and `CodeAction` quick-fixes, derived entirely from the
 parser's output.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

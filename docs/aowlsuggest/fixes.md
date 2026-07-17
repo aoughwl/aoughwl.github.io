@@ -1,24 +1,9 @@
----
-nav_exclude: true
-title: Quick-fixes
-parent: Suggestions — aowlsuggest
-grand_parent: aowlmony
-nav_order: 3
----
-
 # Quick-fixes
-{: .no_toc }
 
 How a diagnostic becomes a source edit — and why an edit can never corrupt valid
 code.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

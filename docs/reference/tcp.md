@@ -1,10 +1,3 @@
----
-title: tcp
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 3
----
-
 > Verbatim archive of the original `aoughwl/tcp` README. Curated summary: [tcp project page](../net-stack).
 
 # tcp

@@ -1,15 +1,6 @@
----
-title: "Feature — Cross-module `.passive`"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 101
----
-
 # Feature
-{: .no_toc }
 
 ## Cross-module `.passive`
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Area** compiler / async · **Verified by** `tsleep3`, `tgather2` · [← ledger](../nimony)

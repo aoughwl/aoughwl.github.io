@@ -1,11 +1,3 @@
----
-nav_exclude: true
-title: JavaScript FFI and DOM
-parent: Faithful JS/WASM — aowlweb
-grand_parent: aowlmony
-nav_order: 4
----
-
 # JavaScript FFI and the DOM
 
 The JS backend lays native Nim data out as byte offsets into one linear

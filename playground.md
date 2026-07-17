@@ -1,29 +1,15 @@
----
-title: Playground
-nav_order: 1
-parent: Tools
-grand_parent: aowlmony
----
-
 # Playground
-{: .no_toc }
 
 A browser playground that runs nimony **entirely client-side** — the whole
 toolchain (parser, semantic checker, interpreter) is compiled to JavaScript and
 runs in your tab. You edit nimony source and it is parsed, type-checked, and
 executed live. No backend, no server round-trip; your code never leaves the page.
-{: .fs-6 .fw-300 }
 
-[Launch the playground →](/playground/){: .btn .btn-primary .fs-5 }
+[Launch the playground →](/playground/)
 
 Live at **[aoughwl.github.io/playground](https://aoughwl.github.io/playground/)**.
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -133,4 +119,4 @@ The playground's source lives in
 [`aoughwl/nimony-playground`](https://github.com/aoughwl/nimony-playground), and
 the deployed copy is served from this site at `/playground/`.
 
-[Repo → github.com/aoughwl/nimony-playground](https://github.com/aoughwl/nimony-playground){: .btn .btn-primary }
+[Repo → github.com/aoughwl/nimony-playground](https://github.com/aoughwl/nimony-playground)

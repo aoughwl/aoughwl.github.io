@@ -1,13 +1,4 @@
----
-nav_exclude: true
-title: Configuration
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 4
----
-
 # Configuration
-{: .no_toc }
 
 Every option below is **off / neutral by default**, so a plain
 `aowlparser p in.nim out.p.aif` produces the same tree as native `nifler` —
@@ -23,12 +14,7 @@ input acceptance, add diagnostics, or move I/O.
 usage: aowlparser [OPTIONS] p <in.nim> [out.p.aif]
 ```
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

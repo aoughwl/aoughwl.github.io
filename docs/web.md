@@ -1,18 +1,10 @@
----
-title: web
-parent: Libraries
-nav_order: 10
-grand_parent: aowlmony
----
-
 # web — HTML + validated CSS in one nimony block
-{: .no_toc }
 
 A declarative DSL for nimony / Nim 3.0 that builds a typed HTML tree and, inline,
 validates every style declaration against the MDN grammar and lowers each `style:`
 block to a single scoped class. It sits on top of [html](html) and [css](css).
 
-[Repo → github.com/aoughwl/web](https://github.com/aoughwl/web){: .btn .btn-primary }
+[Repo → github.com/aoughwl/web](https://github.com/aoughwl/web)
 
 ```nim
 import web

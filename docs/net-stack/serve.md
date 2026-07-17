@@ -1,15 +1,7 @@
----
-title: serve
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 7
----
-
 # serve — HTTP/1.1 + HTTP/2 server
-{: .no_toc }
 
-[Repo → aoughwl/serve](https://github.com/aoughwl/serve){: .btn }
-[Reference](../reference/serve){: .btn }
+[Repo → aoughwl/serve](https://github.com/aoughwl/serve)
+[Reference](../reference/serve)
 
 The top of the stack. Pass a handler `proc(req: Request): Response {.closure.}`
 and return whatever `Response` you like, or drop in `staticHandler(root)`. A

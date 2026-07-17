@@ -1,23 +1,9 @@
----
-nav_exclude: true
-title: Coverage
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 5
----
-
 # Coverage
-{: .no_toc }
 
 Where aowlparser stands against native nifler, and what it deliberately does not
 do.
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

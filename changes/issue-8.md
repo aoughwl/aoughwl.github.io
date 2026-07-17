@@ -1,15 +1,6 @@
----
-title: "Issue #8 — Imported `{.async.}` macros: three cross-target failures"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 8
----
-
 # Issue #8
-{: .no_toc }
 
 ## Imported `{.async.}` macros: three cross-target failures
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** `tasyncsugar` · [← ledger](../nimony)

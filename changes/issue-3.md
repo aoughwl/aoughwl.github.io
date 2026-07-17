@@ -1,15 +1,6 @@
----
-title: "Issue #3 — Macro plugins failed to compile outside the repo"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 3
----
-
 # Issue #3
-{: .no_toc }
 
 ## Macro plugins failed to compile outside the repo
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** macros suite · [← ledger](../nimony)

@@ -1,15 +1,7 @@
----
-title: net
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 3
----
-
 # net — sockets with ergonomics
-{: .no_toc }
 
-[Repo → aoughwl/net](https://github.com/aoughwl/net){: .btn }
-[Reference](../reference/net){: .btn }
+[Repo → aoughwl/net](https://github.com/aoughwl/net)
+[Reference](../reference/net)
 
 The middle layer over `tcp`: a `Socket` value with an `Ipv4Address`/`Endpoint`
 model, string-convenience I/O, a buffered line reader, and family-agnostic

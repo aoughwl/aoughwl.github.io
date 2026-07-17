@@ -1,15 +1,6 @@
----
-title: "Issue #1 — `.passive` helpers didn't resolve across modules"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 1
----
-
 # Issue #1
-{: .no_toc }
 
 ## `.passive` helpers didn't resolve across modules
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** `tsleep3`, `tgather2` · [← ledger](../nimony)

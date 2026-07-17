@@ -1,11 +1,3 @@
----
-nav_exclude: true
-title: Architecture
-parent: Faithful JS/WASM — aowlweb
-grand_parent: aowlmony
-nav_order: 3
----
-
 # Architecture
 
 A WebAssembly module and a fast JavaScript runtime are the *same machine described

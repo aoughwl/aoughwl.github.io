@@ -1,14 +1,6 @@
----
-title: ws
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 8
----
-
 # ws — WebSocket (RFC 6455)
-{: .no_toc }
 
-[Repo → aoughwl/ws](https://github.com/aoughwl/ws){: .btn }
+[Repo → aoughwl/ws](https://github.com/aoughwl/ws)
 
 A pure-nimony WebSocket, **server and client**, over plaintext (`ws://`, a
 `net.Socket`) or TLS (`wss://`, a `tls.TlsSocket`) — one `WebSocket` type over

@@ -1,15 +1,7 @@
----
-title: requests
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 9
----
-
 # requests — browser-identical HTTP client
-{: .no_toc }
 
-[Repo → aoughwl/requests](https://github.com/aoughwl/requests){: .btn }
-[Reference](../reference/requests){: .btn }
+[Repo → aoughwl/requests](https://github.com/aoughwl/requests)
+[Reference](../reference/requests)
 
 An HTTP client that hands the entire TLS/JA3/JA4/HTTP-2 fingerprint off to
 [curl-impersonate](https://github.com/lwthiker/curl-impersonate) — so requests are

@@ -1,12 +1,4 @@
----
-title: net stack
-parent: Libraries
-nav_order: 1
-grand_parent: aowlmony
----
-
 # The net stack
-{: .no_toc }
 
 A Nimony-native networking stack, one concern per repo, layered `tcp → net →
 tls → serve` with transport-free `http`/`compress` helpers and `ws` / `requests`

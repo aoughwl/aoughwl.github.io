@@ -1,19 +1,11 @@
----
-title: css
-parent: Libraries
-nav_order: 12
-grand_parent: aowlmony
----
-
 # css — an MDN-typed CSS engine for nimony
-{: .no_toc }
 
 Parse a whole stylesheet, then validate every value against its official grammar,
 every function against its own signature, and every selector against Selectors-4.
 Pure logic, standard library only, **no dependencies**. Successor to the Nim-2
 [thing-king/css](https://github.com/thing-king/css). For nimony / Nim 3.0.
 
-[Repo → github.com/aoughwl/css](https://github.com/aoughwl/css){: .btn .btn-primary }
+[Repo → github.com/aoughwl/css](https://github.com/aoughwl/css)
 
 ```nim
 import css

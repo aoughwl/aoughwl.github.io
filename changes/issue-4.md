@@ -1,15 +1,6 @@
----
-title: "Issue #4 — `.passive` capturing a `.raises` result crashed hexer"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 4
----
-
 # Issue #4
-{: .no_toc }
 
 ## `.passive` capturing a `.raises` result crashed hexer
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** cps suite · [← ledger](../nimony)

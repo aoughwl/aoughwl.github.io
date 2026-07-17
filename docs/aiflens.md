@@ -1,18 +1,10 @@
----
-title: AIF CLI — aiflens
-parent: Tools
-nav_order: 4
-grand_parent: aowlmony
----
-
 # aiflens — a NIF lens for tooling
-{: .no_toc }
 
 A thin CLI over [Nimony](../nimony)'s own NIF libraries (`nifreader` /
 `nifstreams` / `nifcursors` / `nifindexes`). It reads `nimcache/*.nif` artifacts
 with the **real parser** and emits compact JSON for a host tool to consume.
 
-[Repo → github.com/aoughwl/aiflens](https://github.com/aoughwl/aiflens){: .btn .btn-primary }
+[Repo → github.com/aoughwl/aiflens](https://github.com/aoughwl/aiflens)
 
 ## Why
 

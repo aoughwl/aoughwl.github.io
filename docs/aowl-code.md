@@ -1,19 +1,11 @@
----
-title: Claude Code Plugin & MCP — aowl-code
-parent: Tools
-nav_order: 2
-grand_parent: aowlmony
----
-
 # aowl-code — Nim/Nimony Claude Code plugin & MCP server
-{: .no_toc }
 
 A Claude Code plugin that mediates agent access to the **Nim** and **Nimony**
 toolchains through structured tools, so an agent works from compact diagnostics,
 outlines, and targeted NIF slices instead of raw compiler output and
 multi-hundred-kilobyte S-expression artifacts.
 
-[Repo → github.com/aoughwl/aowl-code](https://github.com/aoughwl/aowl-code){: .btn .btn-primary }
+[Repo → github.com/aoughwl/aowl-code](https://github.com/aoughwl/aowl-code)
 
 > The repo was renamed `nim-code → aowl-code`. The installed plugin's command
 > namespace (`/nim-code:*`) and marketplace slug still read `nim-code` until the
@@ -24,10 +16,7 @@ tools operate on Nim (`nim`, `nimsuggest`, `nimble`) and on
 [Nimony](../nimony) (`nimony`, `nimsem`, `hastur`, and the `nimcache/*.nif`
 artifacts its pipeline emits). Toolchain selection is automatic and overridable.
 
-<details open markdown="block"><summary>Contents</summary>{: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

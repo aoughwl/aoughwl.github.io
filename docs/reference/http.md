@@ -1,10 +1,3 @@
----
-title: http
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 5
----
-
 > Verbatim archive of the original `aoughwl/http` README. Curated summary: [http project page](../net-stack).
 
 # http

@@ -1,20 +1,6 @@
----
-nav_exclude: true
-title: Architecture
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 1
----
-
 # Architecture
-{: .no_toc }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

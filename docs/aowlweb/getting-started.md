@@ -1,11 +1,3 @@
----
-nav_exclude: true
-title: Getting started
-parent: Faithful JS/WASM — aowlweb
-grand_parent: aowlmony
-nav_order: 1
----
-
 # Getting started
 
 aowlweb gives Nim two web targets: **JavaScript** (`nim-js`) and **WebAssembly**

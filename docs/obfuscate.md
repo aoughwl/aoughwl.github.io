@@ -1,12 +1,4 @@
----
-title: Obfuscator — obfuscate
-parent: Tools
-nav_order: 5
-grand_parent: aowlmony
----
-
 # obfuscate — Nimony obfuscators (name + NIF control-flow)
-{: .no_toc }
 
 Two obfuscators for [Nimony](../nimony), built as **test articles**: a
 program-analysis that claims to understand code by its execution *structure*
@@ -26,7 +18,6 @@ adversarial input for that test, at two layers.
    `nifler` / hexer passes, i.e. literally a compiler-pipeline plugin.
 
 - TOC
-{:toc}
 
 ---
 

@@ -1,24 +1,10 @@
----
-nav_exclude: true
-title: IC, aowl-lsp & aiflens
-parent: Tools
-nav_order: 1
-grand_parent: aowlmony
----
-
 # The tooling stack: incremental compilation, aowl-lsp & aiflens
-{: .no_toc }
 
 How editor tooling for [Nimony](../nimony) actually works, end to end — the
 **incremental compiler** at the bottom, the **[aowl-lsp](aowl-lsp)** server
 that rides it, and the **[aiflens](aiflens)** NIF-reading core they share.
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -55,8 +41,6 @@ you hit two *different* cache entries — the second is always cold. Any tool mu
 funnel every invocation of a given file through one canonical path form.
 
 ### 2. `--isMain` vs. dependency artifacts thrash a shared cache
-
-{: .note }
 > nimony writes **different artifacts** for a module
 > compiled as the main module (`--isMain`) versus as a dependency of some other
 > main module. If two different main modules share **one** `nimcache`, checking
@@ -146,4 +130,4 @@ reimplement:
 
 Everything else is polish: per-file cache cleanup for closed files, background
 pre-warming of open files, and the aiflens core extraction.
-</content>
+&lt;/content>

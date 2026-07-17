@@ -1,19 +1,10 @@
----
-nav_exclude: true
-title: Lowering — aowlhexer
-parent: aowlmony
-nav_order: 2
----
-
 # aowlhexer — the aowl lowering pass
-{: .no_toc }
 
 `aowlhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
 `.c.aif` that the native backend prints — injecting ARC, lifting closures,
 inlining iterators, lowering exceptions, and monomorphising generics along the
 way. It is seeded from Andreas Rumpf's `hexer` in nimony and is being
 progressively aowl-owned.
-{: .fs-6 .fw-300 }
 
 Repo: **`aoughwl/aowlhexer`** (public).
 

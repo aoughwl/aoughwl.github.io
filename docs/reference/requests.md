@@ -1,10 +1,3 @@
----
-title: requests
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 7
----
-
 > Verbatim archive of the original `aoughwl/requests` README. Curated summary: [requests project page](../net-stack).
 
 # requests
@@ -332,5 +325,5 @@ MIT. Built on [curl-impersonate] (lwthiker / [lexiforest fork]).
 
 [curl-impersonate]: https://github.com/lwthiker/curl-impersonate
 [lexiforest fork]: https://github.com/lexiforest/curl-impersonate
-</content>
-</invoke>
+&lt;/content>
+&lt;/invoke>

@@ -1,15 +1,6 @@
----
-title: "Issue #6 — `suspend()` in a generic `.passive` proc was mis-typed"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 6
----
-
 # Issue #6
-{: .no_toc }
 
 ## `suspend()` in a generic `.passive` proc was mis-typed
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** cps suite · [← ledger](../nimony)

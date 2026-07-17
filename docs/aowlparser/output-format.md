@@ -1,25 +1,10 @@
----
-nav_exclude: true
-title: The .p.aif format
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 6
----
-
 # The `.p.aif` format
-{: .no_toc }
 
 What aowlparser emits — enough to read a parse-dialect AIF by eye. This is the
 untyped wire form the nimony frontend consumes; the semantic pass later turns it
 into the typed `.s.aif`.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

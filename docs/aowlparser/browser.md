@@ -1,26 +1,11 @@
----
-nav_exclude: true
-title: Browser & JavaScript
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 7
----
-
 # Browser & JavaScript
-{: .no_toc }
 
 aowlparser compiles to JavaScript and runs client-side, which is what lets the
 [playground](../../playground) parse code in the browser tab with no backend. The
 machine contract: the globals the JS bundle reads and writes, how the bundle is
 built, and the editor diagnostics layer.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

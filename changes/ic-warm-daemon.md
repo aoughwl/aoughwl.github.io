@@ -1,15 +1,6 @@
----
-title: IC — Warm-worker daemon (nimsem serve)
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 22
----
-
 # Incremental compilation
-{: .no_toc }
 
 ## `nimsem serve` — persistent warm-worker daemon
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Status** <span class="pill ok">Prototype (Phase 1)</span> · **Consumed by** [aowl-lsp](../docs/aowl-lsp) (opt-in) · [← ledger](../nimony)

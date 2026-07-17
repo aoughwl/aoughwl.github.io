@@ -1,24 +1,10 @@
----
-nav_exclude: true
-title: Grammar coverage
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 2
----
-
 # Grammar coverage
-{: .no_toc }
 
 What aowlparser reproduces, by area. Everything here is verified structurally
 against native nifler (see [Differential testing](testing)); exceptions are on
 [Coverage](known-gaps).
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

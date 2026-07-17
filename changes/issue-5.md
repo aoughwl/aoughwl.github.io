@@ -1,15 +1,6 @@
----
-title: "Issue #5 — Proc-pragma macros silently dropped the routine"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 5
----
-
 # Issue #5
-{: .no_toc }
 
 ## Proc-pragma macros silently dropped the routine
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `issue-fix` · **Status** <span class="pill ok">Fixed</span> · **Verified by** macros suite · [← ledger](../nimony)

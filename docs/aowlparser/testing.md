@@ -1,24 +1,10 @@
----
-nav_exclude: true
-title: Differential testing
-parent: Parser — aowlparser
-grand_parent: aowlmony
-nav_order: 3
----
-
 # Differential testing
-{: .no_toc }
 
 aowlparser's job is to emit the same tree as native nifler, so it is tested by
 running both on the same input and comparing output. There is no hand-written
 expected output; nifler is the oracle.
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

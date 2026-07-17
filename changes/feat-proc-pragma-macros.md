@@ -1,15 +1,6 @@
----
-title: "Feature — Proc-pragma macros (`{.async.}`)"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 104
----
-
 # Feature
-{: .no_toc }
 
 ## Proc-pragma macros (`{.async.}`)
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Area** compiler / async · **Verified by** `tasyncsugar` · [← ledger](../nimony)

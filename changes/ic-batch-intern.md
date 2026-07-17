@@ -1,15 +1,6 @@
----
-title: IC — Batch-intern ceiling + proof
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 23
----
-
 # Incremental compilation
-{: .no_toc }
 
 ## Batch-intern ceiling measurement + proof
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `experiment` · **Status** <span class="pill ok">Measured</span> · **Result** index intern `91.6ms → 8.6ms` (20 modules) · [← ledger](../nimony)

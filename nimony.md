@@ -1,28 +1,13 @@
----
-title: Changes
-has_children: true
-parent: Engineering Notes
-nav_order: 1
-nav_exclude: true
----
-
 # Changes — what we fixed and added
-{: .no_toc }
 
 The single record of the compiler engineering behind the stack: every fix and
 every `.passive`/async feature that make the async story and the live tooling
 work. Two buckets — **Added** and **Fixed** — and every row links to its own
 writeup (symptom, root cause, fix, files, verifying test).
-{: .fs-5 .fw-300 }
 
-[Compiler repo → github.com/aoughwl/nimony](https://github.com/aoughwl/nimony){: .btn .btn-primary }
+[Compiler repo → github.com/aoughwl/nimony](https://github.com/aoughwl/nimony)
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -53,7 +38,6 @@ async library. Each links to its full writeup.
 | [F2](changes/feat-delay-in-generics) | [`delay <call>` inside generics](changes/feat-delay-in-generics) | `sem.nim` | `tgenrace` |
 | [F3](changes/feat-suspend-in-generic-passive) | [`suspend()` in a generic `.passive` proc](changes/feat-suspend-in-generic-passive) | `sem.nim` | cps suite |
 | [F4](changes/feat-proc-pragma-macros) | [Proc-pragma macros (`{.async.}`)](changes/feat-proc-pragma-macros) | `macros_nif.nim` `semcall.nim` `macro_plugin.nim` | `tasyncsugar` |
-{: .ledger}
 
 ### The async runtime — `aoughwl/aowlweb`
 
@@ -69,7 +53,6 @@ event loop — **46/46** under Node. Each row is documented on the
 | Generic `gather` / `all` | await many futures, importable & generic | [async](docs/aowlweb/async) |
 | Generic `race[T]` / `any` | first-to-finish wins, returns the real `T` | [async](docs/aowlweb/async) |
 | `{.async.}` proc sugar | write `{.async.}` instead of `{.passive.}` | [async](docs/aowlweb/async) |
-{: .ledger}
 
 ---
 
@@ -87,7 +70,6 @@ and cheap. These are the concrete wins, most user-visible first.
 | [Incremental cursor traversal](changes/ic-cursor-traversal) | `nimsem` walks the module structure with an incremental cursor instead of re-materializing it (toward #2064). | — |
 | [Warm-worker daemon (`nimsem serve`)](changes/ic-warm-daemon) | Persistent semcheck worker; keeps the interner, interface cache and indexes warm across requests. JSONL protocol with a dirty-buffer seam. Foundation for interactive rebuilds. | `system` interned **1× / session** |
 | [Batch-intern ceiling + proof](changes/ic-batch-intern) | Measured the re-intern cost a daemon removes (`system.s.idx.nif` re-interned **107×** on `tall.nim`) and proved batching 20 modules in one process fixes it. | index intern **91.6ms → 8.6ms** |
-{: .ledger}
 
 **Why this matters for editors.** A whole-project `nimony check` is ~1.1s cold
 but only **~10–25ms** on an incremental warm re-check. That gap is exactly what
@@ -114,7 +96,6 @@ symptom, root cause, the fix, files, and the verifying test.
 | [6](changes/issue-6) | [`suspend()` in a generic `.passive` proc was mis-typed](changes/issue-6) | cps suite |
 | [7](changes/issue-7) | [Generic `race[T]` spawned via `delay` failed to link](changes/issue-7) | `tgenrace` |
 | [8](changes/issue-8) | [Imported `{.async.}` macros: three cross-target failures](changes/issue-8) | `tasyncsugar` |
-{: .ledger}
 
 **Compiler safety & diagnostics.** Four more fixes to the checker and its
 messages — rejecting a captured `var`/`out` parameter in a closure (memory

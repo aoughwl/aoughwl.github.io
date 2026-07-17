@@ -1,15 +1,6 @@
----
-title: IC — Incremental cursor traversal
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 21
----
-
 # Incremental compilation
-{: .no_toc }
 
 ## `nimsem`: incremental structured cursor traversal
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Status** <span class="pill ok">Shipped</span> · **Toward** #2064 · [← ledger](../nimony)

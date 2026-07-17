@@ -1,10 +1,3 @@
----
-title: Parser — aowlparser
-parent: aowlmony
-nav_order: 1
-has_children: false
----
-
 # aowlparser — Nim → AIF parser
 
 Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.aif`).
@@ -13,8 +6,8 @@ no dependency on the classic Nim compiler, so it compiles through the nimony JS
 backend and runs in the browser. Output is byte-identical to `nifler` except the
 one header line it owns, `(.vendor "aowlparser")`.
 
-[Repo → github.com/aoughwl/aowlparser](https://github.com/aoughwl/aowlparser){: .btn .btn-primary }
-[Playground →](../playground){: .btn }
+[Repo → github.com/aoughwl/aowlparser](https://github.com/aoughwl/aowlparser)
+[Playground →](../playground)
 
 ## Scope
 

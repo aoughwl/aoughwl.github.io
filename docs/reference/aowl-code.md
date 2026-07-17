@@ -1,10 +1,3 @@
----
-title: aowl-code
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 1
----
-
 > Verbatim archive of the `aoughwl/aowl-code` README (repo formerly `nim-code`). Curated summary: [aowl-code project page](../aowl-code).
 
 # aowl-code

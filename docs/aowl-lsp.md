@@ -1,17 +1,9 @@
----
-title: LSP — aowl-lsp
-parent: Tools
-nav_order: 3
-grand_parent: aowlmony
----
-
 # aowl-lsp — Language Server + VSCode extension
-{: .no_toc }
 
 A [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)
 implementation for **[Nimony](../nimony)**, together with a full VSCode extension.
 
-[Repo → github.com/aoughwl/aowl-lsp](https://github.com/aoughwl/aowl-lsp){: .btn .btn-primary }
+[Repo → github.com/aoughwl/aowl-lsp](https://github.com/aoughwl/aowl-lsp)
 
 The server is built directly on Nimony's own infrastructure. Navigation is served
 by the compiler's `idetools` backend (`--def` / `--usages`), diagnostics by
@@ -22,12 +14,7 @@ NIF libraries — no re-parsing of the on-disk S-expressions, no shelling out to
 second tool. One statically linked Nim binary speaks JSON-RPC over stdio; the
 VSCode extension is a thin `vscode-languageclient` wrapper.
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -45,8 +32,6 @@ incremental instead of invalidating the main cache. The temp file's diagnostics
 are remapped back onto the real document URI. It runs synchronously on the stdio
 loop (25ms doesn't lag typing) with no background daemon and no threads; `didOpen`
 warms the cache once so even the first edit is fast.
-
-{: .note }
 > The live temp file is a **non-dot** sibling (`nimlsp_live_*`), hidden from the
 > explorer via the extension's `files.exclude`. It must not start with a dot:
 > Nimony derives a module id from the filename and a leading-dot name yields an
@@ -158,8 +143,6 @@ Then **Developer: Reload Window**. Open a Nimony file and you should see a
 `Nimony: running` item in the status bar. The extension auto-resolves the server
 binary from the sibling `server/bin/` directory; override with `nimony.serverPath`
 if you install it elsewhere.
-
-{: .note }
 > The extension **must be bundled** (esbuild inlines `vscode-languageclient`).
 > A plain `tsc` build ships an extension that can't find its dependency at
 > runtime, because `.vscodeignore` excludes `node_modules`. `npm run bundle`

@@ -1,20 +1,6 @@
----
-nav_exclude: true
-title: Commands
-parent: Suggestions — aowlsuggest
-grand_parent: aowlmony
-nav_order: 2
----
-
 # Commands
-{: .no_toc }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

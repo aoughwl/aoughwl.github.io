@@ -1,15 +1,6 @@
----
-title: IC — Parallel dependency discovery
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 20
----
-
 # Incremental compilation
-{: .no_toc }
 
 ## Parallel dependency-discovery pre-pass (`preNifle`)
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Status** <span class="pill ok">Shipped</span> · **Measured** discovery wall `0.43s → 0.24s` (1.77×) · [← ledger](../nimony)

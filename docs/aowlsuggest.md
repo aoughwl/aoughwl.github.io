@@ -1,28 +1,14 @@
----
-title: Suggestions — aowlsuggest
-parent: aowlmony
-nav_order: 11
-has_children: false
----
-
 # aowlsuggest — diagnostics, quick-fixes & editor integration
-{: .no_toc }
 
 The layer that sits **on top of [aowlparser](aowlparser)** and turns its
 recoverable diagnostics into something actionable: verified quick-fixes, batch /
 CI linting, and editor (LSP) payloads. Written in **nimony**, like the parser it
 builds on — so it stays free of the classic Nim toolchain and JS-compilable.
-{: .fs-6 .fw-300 }
 
-[Repo → github.com/aoughwl/aowlsuggest](https://github.com/aoughwl/aowlsuggest){: .btn .btn-primary }
-[Parser → aowlparser](aowlparser){: .btn }
+[Repo → github.com/aoughwl/aowlsuggest](https://github.com/aoughwl/aowlsuggest)
+[Parser → aowlparser](aowlparser)
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

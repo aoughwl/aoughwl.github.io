@@ -1,12 +1,4 @@
----
-title: Faithful JS/WASM — aowlweb
-parent: aowlmony
-nav_order: 8
-has_children: false
----
-
 # aowlweb — JavaScript & WebAssembly backends
-{: .no_toc }
 
 Two backends that take Nim to the web: one emits JavaScript, the other emits
 WebAssembly. Both are plugins for [nimony](../nimony) — they read the lowered IR
@@ -16,10 +8,7 @@ share almost all of their code.
 > **Private repo, public docs.** The code lives at `aoughwl/aowlweb` and is
 > private. Want access? Discord **timbuktu_guy**.
 
-<details open markdown="block"><summary>Contents</summary>{: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 
@@ -37,7 +26,6 @@ mangled. For a **fast, readable** path that maps nimony values onto native JS
 values instead, see the complementary **[aowljs backend](aowljs)** — it trades that
 low-level fidelity for near-native speed and legible output, and powers the
 playground's Native JS engine.
-{: .note }
 
 The two targets are the **same machine described twice**. The memory model is
 identical; only the instruction that touches memory differs:

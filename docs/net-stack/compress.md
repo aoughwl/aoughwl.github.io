@@ -1,14 +1,6 @@
----
-title: compress
-parent: Libraries
-grand_parent: aowlmony
-nav_order: 6
----
-
 # compress — gzip / brotli / zstd codecs
-{: .no_toc }
 
-[Repo → aoughwl/compress](https://github.com/aoughwl/compress){: .btn }
+[Repo → aoughwl/compress](https://github.com/aoughwl/compress)
 
 One-shot, protocol-agnostic compression: `string → string`, no streaming state,
 no HTTP assumptions. Its own repo so a WebSocket (`permessage-deflate`), a blob

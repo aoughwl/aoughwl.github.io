@@ -1,24 +1,9 @@
----
-nav_exclude: true
-title: Testing
-parent: Suggestions — aowlsuggest
-grand_parent: aowlmony
-nav_order: 5
----
-
 # Testing
-{: .no_toc }
 
 The zero-false-positive guarantee is not a claim — it is a gate, proven two ways
 over tens of thousands of real lines.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

@@ -1,10 +1,3 @@
----
-title: net
-nav_exclude: true
-parent: Single Page READMEs
-nav_order: 4
----
-
 > Verbatim archive of the original `aoughwl/net` README. Curated summary: [net project page](../net-stack).
 
 # net

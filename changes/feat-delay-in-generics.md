@@ -1,15 +1,6 @@
----
-title: "Feature — `delay <call>` inside generics"
-grand_parent: Engineering Notes
-parent: Changes
-nav_order: 102
----
-
 # Feature
-{: .no_toc }
 
 ## `delay <call>` inside generics
-{: .no_toc .text-delta }
 
 <div class="entry-meta" markdown="1">
 **Type** `feature` · **Area** compiler / async · **Verified by** `tgenrace` · [← ledger](../nimony)

@@ -1,24 +1,9 @@
----
-nav_exclude: true
-title: The contract
-parent: Suggestions — aowlsuggest
-grand_parent: aowlmony
-nav_order: 1
----
-
 # The contract
-{: .no_toc }
 
 The single seam between aowlsuggest and [aowlparser](../aowlparser). Everything
 aowlsuggest knows about a program comes through it; nothing else does.
-{: .fs-6 .fw-300 }
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

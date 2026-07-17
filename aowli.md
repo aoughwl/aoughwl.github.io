@@ -1,27 +1,14 @@
----
-title: Interpreter — aowli
-parent: aowlmony
-nav_order: 2
----
-
 # aowli
-{: .no_toc }
 
 A standalone interpreter for **typed nimony** — it runs the compiler's
 post-semcheck typed NIF (`.s.nif`), the exact artifact the native backend
 consumes. Two independent engines execute it and produce byte-identical output,
 and they are held honest against native nimony by a differential test harness.
-{: .fs-6 .fw-300 }
 
-[Repo → github.com/aoughwl/aowli](https://github.com/aoughwl/aowli){: .btn .btn-primary }
-[Try it in the browser →](playground){: .btn }
+[Repo → github.com/aoughwl/aowli](https://github.com/aoughwl/aowli)
+[Try it in the browser →](playground)
 
-<details open markdown="block">
-  <summary>Contents</summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
+[[toc]]
 
 ---
 

@@ -1,11 +1,3 @@
----
-nav_exclude: true
-title: Async runtime
-parent: Faithful JS/WASM — aowlweb
-grand_parent: aowlmony
-nav_order: 5
----
-
 # Async on the JS backend
 
 aowlweb ships a cooperative-async runtime for the JavaScript target, built on
@@ -133,4 +125,4 @@ remaining semantic limit is raise-across-await.
   propagation across `await`.
 - **WASM glue**: the runtime core is portable; only the timer/pump seam is
   JS-specific.
-</content>
+&lt;/content>

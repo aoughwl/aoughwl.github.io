@@ -1,11 +1,3 @@
----
-title: Single Page READMEs
-nav_exclude: true
-nav_order: 5
-has_children: true
-permalink: /reference
----
-
 # Single Page READMEs
 
 Full, verbatim documentation archived from each repo's original README — the
