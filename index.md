@@ -7,17 +7,21 @@ runs where the classic compiler can't: **right in your browser**.
 
 <div class="hero-actions">
 <a href="https://aoughwl.github.io/playground/">▶ Open the Playground</a>
-<a href="/docs/how-it-works">Welcome</a>
 <a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>
 </div>
 
 ---
 
-## Why this exists
+## Not one binary — a pipeline you can see through
 
-The classic Nim/Nimony compiler ships as a **sealed binary** — the stages run
-*inside* it, out of reach. aowlmony is the opposite: a **pipeline of separate,
-open tools**, with a stable, inspectable IR flowing between every one.
+The classic Nim / Nimony toolchain reaches you as a **built compiler**: parsing,
+semantic checking, lowering, and code generation all happen *inside* one program.
+Real, well-defined stages — but internal. The intermediate results live in memory,
+the pass boundaries aren't something you can hold, and swapping a stage means
+patching and rebuilding the compiler. It works, but it's a black box.
+
+aowlmony breaks the same job into **independent tools, one per stage**, with a
+stable, textual IR flowing between every one:
 
 ```
  .nim / .aowl ─► aowlparser ─► aowlsem ─► aowlhexer ─┬─ aowlc  → C / native
@@ -26,11 +30,18 @@ open tools**, with a stable, inspectable IR flowing between every one.
                                                       └─ aowlts · aowlpy → TS / Python
 ```
 
-Every seam is **AIF — byte-for-byte Nimony's NIF**. That single fact is the whole
-story: each stage is a genuine **drop-in** beside nimony's own
-(`nifler` / `nimsem` / `hexer`), you can **read the IR** at any point, **run a
-stage on its own**, and the entire pipeline runs **client-side**.
-→ **[Welcome](/docs/how-it-works)**
+The IR at every seam is **AIF — byte-for-byte Nimony's NIF**. Because the seams
+are a real format on disk, not a private in-memory structure, things fall out a
+sealed binary can't give you:
+
+- **Inspect anything** — stop after any stage and read exactly what it produced; the IR is text, nothing hidden between passes.
+- **Run a stage on its own** — `aowlparser` parses, `aowli` interprets; each is a tool you invoke by itself, on its own input.
+- **Swap a stage** — every stage speaks the same AIF (≡ NIF), so drop one of ours in *beside* nimony's own (`nifler` / `nimsem` / `hexer`), or replace it with your own, without touching the rest.
+- **Runs where a packed binary can't** — most notably the **browser**: parser, checker, and interpreter compile to JavaScript and run client-side.
+
+Same programs, same output — Nim and Nimony code behaves identically — but the
+machine that produces it is open at every joint instead of sealed shut. The
+interop contract is written up in **[AIF ≡ NIF](/docs/aif)**.
 
 ## What you get that stock Nimony doesn't
 
@@ -70,8 +81,10 @@ stage on its own**, and the entire pipeline runs **client-side**.
 |:--|:--|
 | **[▶ Playground](https://aoughwl.github.io/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
 | **[aowl-code](/docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain. |
-| **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension, live as-you-type diagnostics. |
+| **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension, live as-you-type diagnostics and type-directed completion. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |
+| **[aowlfmt](/docs/aowlfmt)** | verified layout formatter — proves it changed nothing but whitespace before it touches your file. |
+| **[aowllens](/docs/aiflens)** | NIF lens: reads typed `.s.nif` artifacts and emits JSON (decls, outline, members, type-at-position) that powers the LSP. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |
 

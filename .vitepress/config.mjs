@@ -11,8 +11,7 @@ const sidebar = [
   {
     text: 'OVERVIEW',
     items: [
-      { text: 'aowlmony', link: '/' },
-      { text: 'Welcome', link: '/docs/how-it-works' },
+      { text: 'Welcome', link: '/' },
     ],
   },
   {
