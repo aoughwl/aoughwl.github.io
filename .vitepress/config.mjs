@@ -12,7 +12,14 @@ const sidebar = [
     text: 'OVERVIEW',
     items: [
       { text: 'aowlmony', link: '/' },
-      { text: 'How this works', link: '/docs/how-it-works' },
+      { text: 'Welcome', link: '/docs/how-it-works' },
+    ],
+  },
+  {
+    text: 'INTERFACE',
+    items: [
+      { text: 'Manager — aowlup', link: '/docs/aowlup' },
+      { text: 'Driver — aowlmony', link: '/docs/aowlmony' },
     ],
   },
   {
@@ -37,7 +44,7 @@ const sidebar = [
     ],
   },
   {
-    text: 'RUNTIME & IR',
+    text: 'RUNTIME',
     items: [
       { text: 'Interpreter — aowli', link: '/aowli' },
       {
@@ -48,7 +55,6 @@ const sidebar = [
           { text: 'Overview', link: '/docs/aowllib' },
         ],
       },
-      { text: 'Pipeline Driver — aowlmony', link: '/docs/aowlmony' },
       { text: 'High-Level IR — aowlhl', link: '/docs/aowlhl' },
     ],
   },

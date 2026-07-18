@@ -1,4 +1,4 @@
-# How this works
+# Welcome
 
 aowlmony is not one compiler binary. It is a **pipeline of separate, open stages**,
 and that is the whole point.

@@ -109,8 +109,8 @@ const NavExtras = {
             extLink({ cls: 'nav-pg-link', href: PLAYGROUND_URL, target: '_self', icon: PLAY_SVG, text: 'Playground', rightIcon: REDIRECT_SVG, label: 'Open the playground' }),
             h('div', { class: 'nav-social' }, [
               extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
-              extLink({ cls: 'nav-social-link', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
-              extLink({ cls: 'nav-social-link', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
+              extLink({ cls: 'nav-social-link nav-discord', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
+              extLink({ cls: 'nav-social-link nav-support', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
             ]),
           ])
         : null

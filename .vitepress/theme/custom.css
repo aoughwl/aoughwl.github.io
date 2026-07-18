@@ -111,6 +111,9 @@
 .nav-pg-link { font-weight: 600; color: var(--vp-c-text-1); }
 .nav-pg-link:hover { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
 .nav-social-link:hover { color: var(--vp-c-text-1); background: var(--vp-c-default-soft); }
+/* brand-tinted hovers */
+.nav-social-link.nav-discord:hover { color: #8aa6ff; background: rgba(120, 150, 255, 0.15); }
+.nav-social-link.nav-support:hover { color: #ff9b8a; background: rgba(255, 130, 110, 0.15); }
 .nav-ico { display: inline-flex; align-items: center; }
 .nav-ico-r { opacity: 0.55; }
 .nav-pg-link:hover .nav-ico-r { opacity: 0.9; }
@@ -285,3 +288,7 @@
   line-height: 1.5;
 }
 .vp-doc div[class*='language-'] pre { padding: 16px 0; }
+
+/* a markdown `---` right before a `## heading` doubled up with VitePress's h2
+   border-top → two separators. Drop the h2's own border in that case. */
+.vp-doc hr + h2 { border-top: 0; margin-top: 20px; padding-top: 0; }

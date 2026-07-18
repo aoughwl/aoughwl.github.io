@@ -12,6 +12,27 @@ Repo: **`aoughwl/aowlmony`** (public).
 
 ---
 
+## Manager + driver — `aowlup : aowlmony`
+
+The interface splits into two tools, modelled on **`rustup` : `cargo`**:
+
+- **[aowlup](aowlup)** *manages the toolchain* — installs, versions, and *selects*
+  the components (parser/sem/hexer/backends/LSP), writing its choice to a registry
+  at `~/.aowl`.
+- **`aowlmony`** *compiles your code* — it reads that registry and runs the
+  selected components. It never installs anything.
+
+The seam is one-directional: **aowlup writes the registry, aowlmony reads it.**
+Which implementations run is therefore a property of the active *profile* —
+`aowl` (all ours), `nimony` (all nimony), or `hybrid` (ours parser + nimony sem +
+ours hexer, the default). Switch it with `aowlup profile use <name>`, or override
+one build with rustup-style `+profile` syntax:
+
+```sh
+aowlmony run foo.nim            # compile with whatever aowlup selected
+aowlmony +nimony run foo.nim    # compile once with the all-nimony stack
+```
+
 ## The pipeline
 
 ```
@@ -106,7 +127,11 @@ aowlmony interp prog.nim                        # interpret via aowli
 aowlmony vm     prog.nim                        # interpret via aowli's bytecode VM
 aowlmony parse  prog.nim                        # show OUR aowlparser .p.aif
 aowlmony nif    prog.nim  -v                    # paths + which parser/hexer ran
+aowlmony +nimony run prog.nim                   # one-shot: compile with the nimony profile
 ```
+
+The active profile (and which parser/hexer/sem it selects) is shown by
+`aowlmony help` and managed with [aowlup](aowlup).
 
 ## The AIF family
 

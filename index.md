@@ -7,7 +7,7 @@ runs where the classic compiler can't: **right in your browser**.
 
 <div class="hero-actions">
 <a href="https://aoughwl.github.io/playground/">▶ Open the Playground</a>
-<a href="/docs/how-it-works">How this works</a>
+<a href="/docs/how-it-works">Welcome</a>
 <a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>
 </div>
 
@@ -30,7 +30,7 @@ Every seam is **AIF — byte-for-byte Nimony's NIF**. That single fact is the wh
 story: each stage is a genuine **drop-in** beside nimony's own
 (`nifler` / `nimsem` / `hexer`), you can **read the IR** at any point, **run a
 stage on its own**, and the entire pipeline runs **client-side**.
-→ **[How this works](/docs/how-it-works)**
+→ **[Welcome](/docs/how-it-works)**
 
 ## What you get that stock Nimony doesn't
 
