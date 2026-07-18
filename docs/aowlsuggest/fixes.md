@@ -71,7 +71,9 @@ shape the declaration. `foreign-case-block` (`switch`/`match x { … }`) points 
 `ruby-block-params` (`do |x|`) point at `while` and `do (x):` respectively —
 each a control-flow reshape you finish by hand. `c-block-comment` (a C-style
 `/* … */`) points at Nim's `#[ … ]#` block comment — left as a suggestion because
-rewriting the delimiters means checking the body doesn't itself close the block. `unterminated-backtick`
+rewriting the delimiters means checking the body doesn't itself close the block.
+`foreign-routine-clause` (a Java `throws` or Rust/Swift/C# `where` on a routine
+header) points at Nim's `{.raises.}` pragma and `[T: Constraint]` generics. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
