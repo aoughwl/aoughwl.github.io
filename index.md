@@ -68,7 +68,7 @@ stage on its own**, and the entire pipeline runs **client-side**.
 |:--|:--|
 | **[▶ Playground](https://aoughwl.github.io/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
 | **[aowl-code](/docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain. |
-| **[aowl-lsp](/docs/aowl-lsp)** | Language Server + VSCode extension, live as-you-type diagnostics. |
+| **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension, live as-you-type diagnostics. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |

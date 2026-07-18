@@ -57,7 +57,7 @@ aowlfmt <file>... --check    # exit 1 if anything isn't already formatted (CI)
 aowlfmt --stdin              # format stdin → stdout
 ```
 
-The **[aowl-lsp](aowl-lsp)** server wires `textDocument/formatting` straight to
+The **[aowllsp](aowllsp)** server wires `textDocument/formatting` straight to
 `aowlfmt --stdin`, so "format document" in the editor inherits the same
 can't-corrupt-your-buffer guarantee.
 

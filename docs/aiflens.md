@@ -62,7 +62,7 @@ symId (exact / prefix) or human base name.
 | `serve` | line-oriented stdio daemon (one process across requests) |
 
 **Status & roadmap:** the `serve` daemon and the shared NIF core both exist. The
-remaining convergence step — having **[aowl-lsp](aowl-lsp)** link aiflens's
+remaining convergence step — having **[aowllsp](aowllsp)** link aiflens's
 core directly (instead of its own in-process NIF readers) — is deliberately
 deferred: it wants a real extraction with tests, not a blind cross-repo
 restructure. Next for `serve` itself: cache parsed `TokenBuf`s of hot modules

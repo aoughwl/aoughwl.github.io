@@ -167,7 +167,7 @@ rewrite (`not <expr>`, an epsilon tolerance) needs your eye.
 ## Project config — `.aowlsuggest`
 
 A repo can commit its lint/style defaults once so `lint`, `fix`, and
-`lsp-server` all behave identically — and so an [aowllsp](aowl-lsp) editor
+`lsp-server` all behave identically — and so an [aowllsp](aowllsp) editor
 session inherits the same policy. Discovery walks **up** from the target file's
 directory (or `--filename`) to the filesystem root and uses the first
 `.aowlsuggest` it finds.

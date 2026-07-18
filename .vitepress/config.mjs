@@ -71,7 +71,7 @@ const sidebar = [
     text: 'TOOLS',
     items: [
       { text: 'Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
-      { text: 'LSP — aowl-lsp', link: '/docs/aowl-lsp' },
+      { text: 'LSP — aowllsp', link: '/docs/aowllsp' },
       {
         text: 'Suggestions — aowlsuggest',
         link: '/docs/aowlsuggest',
@@ -110,6 +110,12 @@ const sidebar = [
       { text: 'web', link: '/docs/web' },
       { text: 'html', link: '/docs/html' },
       { text: 'css', link: '/docs/css' },
+    ],
+  },
+  {
+    text: 'DEPRECATED',
+    items: [
+      { text: 'nimony-lsp (Nim 2) — nim2-nimony-lsp', link: '/docs/nim2-nimony-lsp' },
     ],
   },
 ]

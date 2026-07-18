@@ -170,7 +170,7 @@ repaired source.
 ## Editor & CI surfacing
 
 The same verified fixes flow out to every consumer of the tool. In an editor
-(through [aowllsp](aowl-lsp) or the built-in `lsp-server`) each fix is a
+(through [aowllsp](aowllsp) or the built-in `lsp-server`) each fix is a
 `CodeAction`, and a single **`source.fixAll`** action applies all of them at once
 — ideal for fix-on-save. In CI, `lint --format:sarif` emits each fix as a SARIF
 `fix`, so **GitHub code scanning** renders it as a one-click *Apply fix* button in
