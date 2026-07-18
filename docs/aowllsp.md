@@ -23,8 +23,11 @@ Broad coverage — ~36 LSP methods — over the live, unsaved buffer:
   and first-parameter routines (UFCS/methods), following `object of Base` for
   inherited members. Resolution is **position-precise** — **[aowllens](aiflens)**
   `typeat` reads the type of the exact symbol under the receiver, so field chains
-  (`a.b.c.`) and shadowed names resolve correctly; it falls back to by-name
-  resolution, then to plain prefix completion, so nothing is ever lost.
+  (`a.b.c.`), shadowed names, **call results (`make().`)** and **index results
+  (`xs[i].`)** all resolve to the right type (a trailing `)`/`]` is bracket-matched
+  to the callee/container, whose routine or `[]`-operator return type is the
+  receiver's type). It falls back to by-name resolution, then to plain prefix
+  completion, so nothing is ever lost.
 - **codeAction** — quick-fixes delegated to aowlsuggest, plus a `source.fixAll`
   action that applies every verified auto-fix in the buffer at once.
 - **semanticTokens**, **rename** / **prepareRename**, **signatureHelp**,
