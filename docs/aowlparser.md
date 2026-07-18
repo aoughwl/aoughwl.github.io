@@ -55,6 +55,7 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   tabs, unterminated block/triple/raw strings, malformed escapes, malformed numbers,
   unterminated accent-quoted identifiers.
 - Detections `nifler` lacks: assignment-in-condition (`if`/`elif`/`while`/`when x = 5:`),
+  comparison-in-binding (its mirror — `let`/`const x == 5`),
   empty conditions (`elif:`), empty comma slots (`foo(a,,b)`), missing-introducer
   bodies (`proc f()` then an indented line with no `=`; `type Name` with a body but
   no `= object`), and precise grammar diagnostics where `nifler` is terse: `func` in
