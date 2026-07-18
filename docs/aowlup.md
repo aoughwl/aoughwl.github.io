@@ -63,14 +63,28 @@ aowlup rebuild aowlsem --yes  # rebuild from source
 ## Fresh machine — `aowlup setup`
 
 There is no prebuilt nimony binary, so **setup is the build**. `aowlup setup`
-clones the missing component repos and builds them in dependency order —
-**nimony first** (the bootstrap compiler, via `nim c -r src/hastur build all`),
-then the aoughwl components it compiles. Dry-run by default; `--yes` executes.
+clones the missing repos (components, plus the shared source libs
+`aowlkit`/`aowlhl`) and builds them **nimony first** — the bootstrap compiler,
+via `nim c -r src/hastur build all` with a clean Nim — then each component with
+the freshly-built toolchain on `PATH` and `NIM`/`NIMONY`/`NIMONY_SRC`/`AOWLKIT`
+in its environment. Dry-run by default; `--yes` executes.
 
 ```sh
 aowlup setup            # show the plan
 aowlup setup --yes      # clone + build everything
 ```
+
+Verified from a genuinely empty machine: **nimony builds from source**, and the
+tooling (`aowllsp`/`aowlsuggest`/`aowlfmt`/`aowllens`) plus node components build
+cleanly. Two things a fully cold run still needs:
+
+- **git access** for the private component repos (`aowlsem`, `aowli`, `aowlts`,
+  `aowlpy`, `aowlhl`) — any standard credential helper handles it; anonymous
+  clones are skipped with a note.
+- **a matching nimony** — `aowlsem`/`aowlhexer` and the source-emitter backends
+  are pinned to a specific nimony API, so building them against *latest upstream*
+  can mismatch. Pinning nimony to the version the components target is the
+  `mony.toml` / lockfile layer (roadmap), not yet automated here.
 
 ## Editor — `aowlup vscode`
 
