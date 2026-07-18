@@ -59,6 +59,9 @@ symId (exact / prefix) or human base name.
 | `index` | `.s.idx.nif` contents via `nifindexes` (checksum, converters, re-exports) |
 | `outline` | top-level declarations with positions |
 | `query` | subtrees matching a needle → canonical NIF snippet |
+| `calls` | call sites within a module (caller → callee edges) |
+| `types` | object-type declarations + their inheritance parent |
+| `members` | **type-directed members of a receiver** — an identifier's fields, enum values, and first-parameter routines (UFCS/methods), following `object of Base` for inherited members |
 | `serve` | line-oriented stdio daemon (one process across requests) |
 
 **Status & roadmap:** the `serve` daemon and the shared NIF core both exist. The

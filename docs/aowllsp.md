@@ -17,7 +17,13 @@ Broad coverage — ~36 LSP methods — over the live, unsaved buffer:
 - **Navigation** — definition, declaration, typeDefinition, implementation,
   references, documentHighlight, and hover.
 - **Symbols** — documentSymbol + workspaceSymbol, from **[aowllens](aiflens)** `decls`.
-- **Completion** — module symbols filtered by the identifier prefix under the cursor.
+- **Completion** — module symbols filtered by the identifier prefix under the
+  cursor, and **type-directed member completion**: after `receiver.`, aowllsp
+  resolves the receiver's type through **[aowllens](aiflens)** `members` and
+  offers only that type's fields, enum values, and first-parameter routines
+  (UFCS/methods), following `object of Base` for inherited members. When the
+  receiver can't be resolved it falls back to prefix completion, so nothing is
+  lost.
 - **codeAction** — quick-fixes delegated to aowlsuggest, plus a `source.fixAll`
   action that applies every verified auto-fix in the buffer at once.
 - **semanticTokens**, **rename** / **prepareRename**, **signatureHelp**,
