@@ -137,10 +137,15 @@
    off-screen. Hide it — navigation is the hamburger + sidebar there (Playground
    still lives in the sidebar's Tools). */
 @media (max-width: 768px) {
-  /* Zoom the whole thing down a notch on phones — text is rem-based so this
-     scales headings/body/nav together; the px-based layout (sidebar width,
-     breakpoints) is untouched. */
+  /* Zoom the whole thing down a notch on phones. :root scales the rem-based bits
+     (nav, headings); VitePress sizes body copy in fixed px, so shrink the content
+     explicitly too. The px-based layout (sidebar width, breakpoints) is untouched. */
   :root { font-size: 14px; }
+  .vp-doc { font-size: 14px; }
+  .vp-doc p, .vp-doc li, .vp-doc blockquote { font-size: 14px; line-height: 1.6; }
+  .vp-doc h1 { font-size: 1.7rem; }
+  .vp-doc h2 { font-size: 1.35rem; }
+  .vp-doc h3 { font-size: 1.12rem; }
 
   /* Keep the GitHub/Discord/Support icons on mobile — just drop the Playground
      link (it's in the sidebar's Tools) and stop the search box stretching, so the
@@ -228,6 +233,37 @@
 .repo-badge:hover svg { opacity: 1; }
 /* icon-only badge (libraries / playground — label already IS the repo name) */
 .repo-badge.icon-only { padding: 2px 4px; }
+
+/* --- Generic per-page GitHub button (from front-matter `repo:`) ----------- */
+.repo-btn-row {
+  display: flex;
+  margin: 0 0 1.5rem;
+}
+.repo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  text-decoration: none !important;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+}
+.repo-btn:hover {
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+.repo-btn-ico { display: inline-flex; opacity: 0.9; }
+.repo-btn:hover .repo-btn-ico { opacity: 1; }
+.repo-btn-txt { font-family: var(--vp-font-family-mono); font-size: 0.78rem; }
+.repo-btn-arrow { display: inline-flex; opacity: 0.6; }
+.repo-btn:hover .repo-btn-arrow { opacity: 1; }
 
 /* --- Sidebar: tighter than default, region labels as small-caps headers --- */
 .VPSidebar { padding-top: 1.25rem; }
