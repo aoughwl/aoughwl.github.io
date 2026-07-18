@@ -36,7 +36,11 @@
     "nifi.js":      "nifi-b-nifi",
     "nifi_vm.js":   "nifi-b-nifi_vm",
     "nifi_run.js":  "nifi-b-nifi_run",
-    "nifjs.js":     "nifi-b-nifjs"
+    "nifjs.js":     "nifi-b-nifjs",
+    "aowlts.js":    "nifi-b-aowlts",
+    "aowlpy.js":    "nifi-b-aowlpy",
+    "aowlsem.js":   "nifi-b-aowlsem",     // experimental sem checker (worker reads it)
+    "aowlsuggest.js":"nifi-b-aowlsuggest" // quick-fix engine (main thread, via suggest.js)
   };
 
   // assets = {
@@ -86,7 +90,9 @@
       'return{workerText:t("nifi-b-worker"),bundles:{' +
         '"nifparser.js":t("nifi-b-nifparser"),"nimsem.js":t("nifi-b-nimsem"),' +
         '"nifi.js":t("nifi-b-nifi"),"nifi_vm.js":t("nifi-b-nifi_vm"),' +
-        '"nifi_run.js":t("nifi-b-nifi_run"),"nifjs.js":t("nifi-b-nifjs")},' +
+        '"nifi_run.js":t("nifi-b-nifi_run"),"nifjs.js":t("nifi-b-nifjs"),' +
+        '"aowlts.js":t("nifi-b-aowlts"),"aowlpy.js":t("nifi-b-aowlpy"),' +
+        '"aowlsem.js":t("nifi-b-aowlsem"),"aowlsuggest.js":t("nifi-b-aowlsuggest")},' +
       'stdlibB64:t("nifi-b-stdlib")};})();</scr' + 'ipt>\n';
 
     var inject = "<head>" + blocks + boot;   // built once; function replacer avoids $-interpretation
