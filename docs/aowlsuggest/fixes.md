@@ -33,6 +33,7 @@ unambiguous and localized:
 | `missing-final-newline` *(style)* | append a terminating newline | *(adds `\n`)* |
 | `line-ending` *(style)* | rewrite the EOL to the requested LF/CRLF | `x␍␊` → `x␊` |
 | `bom-rejected` *(style)* | strip a leading UTF-8 byte-order mark | *(removes BOM)* |
+| `redundant-semicolon` *(style)* | delete a redundant trailing `;` | `let x = 5;` → `let x = 5` |
 
 The four *(style)* fixes fire only when the matching policy is opted in with
 `--style:` / `--pedantic` (see [Commands](commands#style-lint-policies)); each

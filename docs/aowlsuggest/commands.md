@@ -148,6 +148,7 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:lf` / `--style:crlf` | assert an EOL convention | `line-ending` |
 | `--style:bom` | reject a UTF-8 BOM | `bom-rejected` |
 | `--style:c-operators` | flag `&&` / `\|\|` (use `and` / `or`) | `c-style-operator` *(suggestion only)* |
+| `--style:semicolons` | remove a redundant trailing `;` | `redundant-semicolon` |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
 | `--pedantic` | trailing-whitespace + final-newline + bom | the three above |
