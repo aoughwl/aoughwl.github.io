@@ -10,7 +10,7 @@ hands you raw `TcpHandle`s and caller-owned buffers, and reports failures as
 status codes plus a classified `TcpErrorKind` rather than exceptions. Depends
 only on the nimony toolchain and libc sockets — no third-party packages.
 
-> **Status** — Solid and complete for what it is: IPv4 + IPv6/dual-stack, blocking I/O with a non-blocking + timeout escape hatch, the full common sockopt set, and SIGPIPE-safe writes all ship and are covered by tests. The addressing helpers are IPv4-only (no `parseIpv6Text`/`formatIpv6`), and endpoints carry a `uint32` IPv4 address — an accepted IPv6 peer surfaces no textual address.
+> **Status** — Solid and complete for what it is: IPv4 + IPv6/dual-stack, blocking I/O with a non-blocking + timeout escape hatch, the full common sockopt set, and SIGPIPE-safe writes all ship and are covered by tests. The IPv6 addressing gap is now closed: `formatIpv6`/`parseIpv6Text` give RFC 5952 canonical text (with `::` compression and the `::ffff:a.b.c.d` v4-mapped tail), and `TcpEndpoint` carries an address family — `localTcpEndpoint`/`peerTcpEndpoint`/`acceptTcpWithPeer` read a `sockaddr_storage` and return the real v6 address of an IPv6 peer.
 
 ## Quickstart
 
@@ -53,7 +53,8 @@ umbrella module. Handles are raw platform descriptors (`cint` on POSIX,
 | `InvalidTcpHandle` | `const TcpHandle` | Sentinel for a failed/absent handle (`-1` POSIX, `not 0'u` Windows). |
 | `TcpErrorKind` | `enum` | Portable error class: `tcpErrorNone`, `tcpErrorRetry`, `tcpErrorTimeout`, `tcpErrorInterrupted`, `tcpErrorDisconnected`, `tcpErrorRefused`, `tcpErrorUnreachable`, `tcpErrorUnknown`. |
 | `TcpConnectStatus` | `enum` | `tcpConnectFailed`, `tcpConnectInProgress`, `tcpConnectConnected`. |
-| `TcpEndpoint` | `object` | `address: uint32` (host-order IPv4) + `port: int`. |
+| `TcpAddressFamily` | `enum` | `tcpFamilyV4` / `tcpFamilyV6` — which address a `TcpEndpoint` carries. |
+| `TcpEndpoint` | `object` | `family: TcpAddressFamily`, `address: uint32` (host-order IPv4, v4 only), `v6: array[16, byte]` (network-order, v6 only), `scopeId: uint32`, `port: int`. |
 | `TcpConnectResult` | `object` | `handle: TcpHandle`, `status: TcpConnectStatus`, `errorCode: int`. |
 | `TcpPollRequest` | `object` | `read: bool`, `write: bool` — readiness interest passed to `pollTcp`. |
 | `TcpPollResult` | `object` | `read`, `write`, `error`, `hangup`, `invalid` bools — decoded poll revents. |
@@ -77,12 +78,14 @@ umbrella module. Handles are raw platform descriptors (`cint` on POSIX,
 | `tcpErrorInterrupted` | `proc tcpErrorInterrupted(code: int): bool` | True for EINTR. |
 | `tcpErrorDisconnected` | `proc tcpErrorDisconnected(code: int): bool` | True for disconnect/refused/unreachable classes. |
 
-### Addressing (IPv4)
+### Addressing (IPv4 & IPv6)
 
 | symbol | signature | what it does |
 |---|---|---|
 | `formatIpv4` | `proc formatIpv4(address: uint32): string` | Host-order IPv4 → dotted-decimal `"a.b.c.d"` (high byte first). |
 | `parseIpv4Text` | `proc parseIpv4Text(s: string; dest: var uint32): bool` | Char-walked, range-checked inverse of `formatIpv4`; rejects bad/empty octets and wrong dot counts. |
+| `formatIpv6` | `proc formatIpv6(a: array[16, byte]): string` | 16 network-order bytes → RFC 5952 canonical text: lowercase, no leading zeros, single longest `::` zero-run (leftmost on ties), `::ffff:a.b.c.d` for v4-mapped. |
+| `parseIpv6Text` | `proc parseIpv6Text(s: string): tuple[ok: bool, bytes: array[16, byte]]` | Char-walked inverse of `formatIpv6`: full form, one `::` compression, and a trailing IPv4 dotted quad. `ok == false` (bytes zeroed) on bad input. |
 | `resolveTcp4` | `proc resolveTcp4(host: string; dest: var uint32): bool` | Resolve the first IPv4 (`getaddrinfo`) address for `host` into host order. |
 
 ### Connecting
@@ -105,7 +108,7 @@ umbrella module. Handles are raw platform descriptors (`cint` on POSIX,
 | `listenTcp` | `proc listenTcp(port: int; backlog = 128): TcpHandle` | `listenTcp4(INADDR_ANY, …)` — listen on all IPv4 interfaces. |
 | `listenTcp6` | `proc listenTcp6(port: int; backlog = 128; dualStack = true): TcpHandle` | IPv6 wildcard listener; with `dualStack` clears `IPV6_V6ONLY` so one socket also accepts IPv4-mapped connections. |
 | `acceptTcp` | `proc acceptTcp(listenFd: TcpHandle): TcpHandle` | Accept the next connection. |
-| `acceptTcpWithPeer` | `proc acceptTcpWithPeer(listenFd: TcpHandle; peer: var TcpEndpoint): TcpHandle` | Accept and fill the peer's (IPv4) endpoint. |
+| `acceptTcpWithPeer` | `proc acceptTcpWithPeer(listenFd: TcpHandle; peer: var TcpEndpoint): TcpHandle` | Accept and fill the peer's endpoint (family-aware — v4 or v6). |
 
 ### Reading & writing
 
@@ -153,8 +156,8 @@ umbrella module. Handles are raw platform descriptors (`cint` on POSIX,
 
 | symbol | signature | what it does |
 |---|---|---|
-| `localTcpEndpoint` | `proc localTcpEndpoint(fd: TcpHandle): TcpEndpoint` | The socket's bound IPv4 address + port (`getsockname`), or an invalid endpoint. |
-| `peerTcpEndpoint` | `proc peerTcpEndpoint(fd: TcpHandle): TcpEndpoint` | The connected peer's IPv4 address + port (`getpeername`), or invalid. |
+| `localTcpEndpoint` | `proc localTcpEndpoint(fd: TcpHandle): TcpEndpoint` | The socket's bound address + port (`getsockname` into `sockaddr_storage`, family-aware — v4 or v6), or an invalid endpoint. |
+| `peerTcpEndpoint` | `proc peerTcpEndpoint(fd: TcpHandle): TcpEndpoint` | The connected peer's address + port (`getpeername`, family-aware — v4 or v6), or invalid. |
 | `invalidTcpEndpoint` | `proc invalidTcpEndpoint(): TcpEndpoint` | Sentinel endpoint (`address: 0`, `port: -1`). |
 
 ## Design notes
@@ -175,9 +178,11 @@ umbrella module. Handles are raw platform descriptors (`cint` on POSIX,
 - **SIGPIPE-safe writes.** `writeTcp` sends with `MSG_NOSIGNAL` on Linux/BSD, so
   writing to a broken pipe returns `EPIPE` (→ `tcpErrorDisconnected`) instead of
   killing the process. macOS/Windows lack the flag and fall back to `0`.
-- **IPv4-shaped endpoints.** `TcpEndpoint.address` is a `uint32`; dual-stack /
-  IPv6 peers connect and transfer data fine, but `peerTcpEndpoint` cannot
-  represent their address. Textual IPv6 addressing lives above this layer.
+- **Family-aware endpoints.** `TcpEndpoint` carries a `family` tag: v4 keeps the
+  fast `uint32 address`, v6 fills 16 `v6` bytes plus `scopeId`. The endpoint
+  readers pull `getsockname`/`getpeername` into a `sockaddr_storage` and branch
+  on `AF_INET6`, so an accepted IPv6 peer surfaces its real address — rendered as
+  RFC 5952 text via `formatIpv6` (or the bracketed `[::1]:port` form up in `net`).
 
 ## Requirements
 

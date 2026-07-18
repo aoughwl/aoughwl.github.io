@@ -12,7 +12,7 @@ on it — so the same HTTP layer backs any transport. Standard-library only; the
 optional `http/contentcoding` submodule adds `Content-Encoding` negotiation and
 pulls in the `compress` package.
 
-> **Status** — Production-ready and complete for HTTP/1.x message handling. Everything is status-based (nothing raises) and operates on caller-owned strings; `parseRequest` is tolerant rather than validating (malformed input yields empty fields, not errors). No streaming/incremental parser — the whole message is a `string`.
+> **Status** — Production-ready and complete for HTTP/1.x message handling, one-shot **and** streaming. Everything is status-based (nothing raises) and operates on caller-owned strings; `parseRequest` is tolerant rather than validating (malformed input yields empty fields, not errors). Incremental parsing is now available: `StreamParser` (`http/stream`) resumes across chunk boundaries so a transport can feed bytes as they arrive without buffering the whole message first.
 
 ## Quickstart
 
@@ -31,8 +31,9 @@ else:
 
 ## API
 
-`import http` re-exports the `headers`, `url`, `request`, `response`, and
-`httpmethod` submodules. `import http/contentcoding` is separate and opt-in.
+`import http` re-exports the `headers`, `url`, `request`, `response`,
+`httpmethod`, and `stream` submodules. `import http/contentcoding` is separate
+and opt-in.
 
 ### Types
 
@@ -73,6 +74,54 @@ else:
 | `isMethod` | `proc(req: Request; meth: string): bool` | String method check (case-insensitive). |
 | `headerValue` | `proc(req: Request; name: string): string` | Convenience over `req.headers`. |
 | `hasHeader` | `proc(req: Request; name: string): bool` | Convenience over `req.headers`. |
+
+### Streaming / incremental parsing — `StreamParser`
+
+The one-shot `parseRequest` needs the whole message as a `string`. `StreamParser`
+(from the re-exported `http/stream`) is the resumable counterpart: create one,
+`feed` it received bytes as they arrive — a single byte, a whole message, or any
+chunk in between — and it advances through the request/status line, header block,
+and body, tolerating a split at **any** byte boundary (mid-line, mid-header,
+mid-chunk-size, mid-body). It supports `Content-Length`, `Transfer-Encoding:
+chunked` (de-chunked in place), and read-until-close response bodies. It reuses
+the same header primitives and `Request`/`Response` types as the one-shot API —
+`toRequest` / `toResponse` yield objects identical to `parseRequest`'s.
+
+`feed` returns how many bytes it consumed, so the caller keeps ownership of
+anything past the end of a message (HTTP pipelining) and the parser never
+over-reads. Limits (max line, max header block) surface as a status-based
+`errorStatus`; nothing raises.
+
+```nim
+import http
+
+var p = newRequestParser()
+while p.needMore() and not p.isError():
+  let chunk = transport.recvSome()        # any-size slice off the wire
+  let used = p.feed(chunk)                 # used < chunk.len only at message end
+  process p.takeBody()                     # stream the body out incrementally
+if p.isComplete():
+  let req = p.toRequest()                  # same shape as parseRequest
+```
+
+| symbol | signature | what it does |
+|---|---|---|
+| `StreamParser` | `object` (`state`, parsed head fields, `headers*`, `errorStatus*`…) | Resumable HTTP/1.x parser instance. |
+| `StreamKind` | `enum skRequest, skResponse` | Which grammar the first line follows. |
+| `StreamState` | `enum ssLine, ssHeaders, ssBody, ssChunkSize, …, ssComplete, ssError` | Where the parser currently sits. |
+| `newRequestParser` | `proc(): StreamParser` | Parser expecting a request (method/target/version first). |
+| `newResponseParser` | `proc(): StreamParser` | Parser expecting a response (version/status/reason first). |
+| `withLimits` | `proc(p: var StreamParser; maxLine, maxHeaderBytes: int)` | Override the default 8 KiB line / 64 KiB header-block limits. |
+| `feed` | `proc(p: var StreamParser; data: string): int` | Feed the next bytes; returns bytes consumed (never over-reads past a complete message). |
+| `finish` | `proc(p: var StreamParser)` | Signal end-of-input (connection close); completes a read-until-close body, else records truncation. |
+| `isComplete` | `proc(p: StreamParser): bool` | The whole message has been parsed. |
+| `isError` | `proc(p: StreamParser): bool` | An unrecoverable framing/limit error occurred (see `errorStatus`). |
+| `needMore` | `proc(p: StreamParser): bool` | Healthy but waiting for more bytes. |
+| `takeBody` | `proc(p: var StreamParser): string` | Pull and clear decoded body bytes accumulated so far. |
+| `bodyLength` | `proc(p: StreamParser): int` | Total decoded body bytes seen (including already-taken). |
+| `headerValue` | `proc(p: StreamParser; name: string): string` | First matching header value from the parsed head. |
+| `toRequest` | `proc(p: StreamParser): Request` | Snapshot the parsed request head + un-taken body as a `Request`. |
+| `toResponse` | `proc(p: StreamParser): Response` | Snapshot the parsed response head + un-taken body as a `Response`. |
 
 ### Status codes
 

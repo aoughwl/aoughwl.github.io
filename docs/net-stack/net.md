@@ -6,10 +6,10 @@ repo: aoughwl/net
 
 The middle layer of the `tcp → net → serve` stack. `net` is a thin, blocking,
 stdlib-shaped wrapper over `tcp`: it boxes raw handles in a `Socket` value, adds an
-`Ipv4Address`/`Endpoint` addressing model, string-convenience I/O, and a buffered
-line reader. Depends on `tcp`. Status-based errors, no exceptions.
+`Ipv4Address`/`Ipv6Address`/`Endpoint` addressing model, string-convenience I/O, and a
+buffered line reader. Depends on `tcp`. Status-based errors, no exceptions.
 
-> **Status** — Production-ready. Blocking I/O with a full non-blocking escape hatch (poll, per-op timeouts, non-blocking connect), family-agnostic `connectHost`/`dial` and dual-stack `listen6` all shipped. TLS was extracted into its own `tls` repo, which simply wraps a `net.Socket`.
+> **Status** — Production-ready. Blocking I/O with a full non-blocking escape hatch (poll, per-op timeouts, non-blocking connect), family-agnostic `connectHost`/`dial` and dual-stack `listen6` all shipped. The IPv6 addressing gap is now closed: an `Ipv6Address` type (`$`/`parseIpv6`, RFC 5952) and a family-carrying `Endpoint` mean `localEndpoint`/`peerEndpoint` of a v6 socket return the real address — `$` renders `"[::1]:8080"` for v6 and `"127.0.0.1:8080"` for v4. The IPv4 API is unchanged. TLS was extracted into its own `tls` repo, which simply wraps a `net.Socket`.
 
 ## Quickstart
 
@@ -43,15 +43,25 @@ shutdownNet()
 | symbol | signature | what it does |
 |---|---|---|
 | `Ipv4Address` | `object` with `value*: uint32` | Host-order IPv4 address. |
-| `Endpoint` | `object` with `address*: Ipv4Address`, `port*: int` | An address+port pair. |
+| `Ipv6Address` | `object` with `bytes*: array[16, byte]` | A 128-bit IPv6 address (network-order bytes). |
+| `AddressFamily` | `enum` | `familyV4` / `familyV6` — which address an `Endpoint` carries. |
+| `Endpoint` | `object` with `family*: AddressFamily`, `address*: Ipv4Address`, `v6*: Ipv6Address`, `port*: int` | An address+port pair; `family` selects `address` (v4, default) or `v6`. The v4 fast path is unchanged. |
 | `ipv4` | `proc ipv4(a, b, c, d: int): Ipv4Address` | Build an address from octets; any octet out of `0..255` yields the all-zero address. |
 | `anyIpv4` | `proc anyIpv4(): Ipv4Address` | The wildcard `0.0.0.0`. |
 | `localhostIpv4` | `proc localhostIpv4(): Ipv4Address` | `127.0.0.1`. |
 | `ipv4Value` | `proc ipv4Value(ip: Ipv4Address): uint32` | Extract the raw host-order `uint32`. |
 | `formatIpv4` | `proc formatIpv4(ip: Ipv4Address): string` | Dotted-decimal text `"a.b.c.d"`. Inverse of `parseIpv4`. |
+| `ipv6FromBytes` | `proc ipv6FromBytes(b: array[16, byte]): Ipv6Address` | Wrap 16 network-order bytes as an `Ipv6Address`. |
+| `anyIpv6` | `proc anyIpv6(): Ipv6Address` | The unspecified address `::`. |
+| `localhostIpv6` | `proc localhostIpv6(): Ipv6Address` | The loopback address `::1`. |
+| `ipv6Bytes` | `proc ipv6Bytes(ip: Ipv6Address): array[16, byte]` | Extract the raw 16 bytes. |
+| `formatIpv6` | `proc formatIpv6(ip: Ipv6Address): string` | RFC 5952 canonical text (delegates to `tcp`). |
 | `` `$` `` | ``proc `$`(ip: Ipv4Address): string`` | Dotted-decimal string form. |
-| `` `$` `` | ``proc `$`(endpoint: Endpoint): string`` | Formats as `"a.b.c.d:port"`. |
+| `` `$` `` | ``proc `$`(ip: Ipv6Address): string`` | RFC 5952 canonical text, e.g. `"::1"`. |
+| `` `$` `` | ``proc `$`(endpoint: Endpoint): string`` | `"a.b.c.d:port"` for v4, bracketed `"[::1]:port"` for v6. |
 | `parseIpv4` | `proc parseIpv4(s: string; dest: var Ipv4Address): bool` | Parse dotted-decimal text; `false` on malformed input. |
+| `parseIpv6` | `proc parseIpv6(s: string; dest: var Ipv6Address): bool` | Parse IPv6 text (full / `::`-compressed / v4-mapped tail); `false` on malformed input. |
+| `isIpv6` | `proc isIpv6(endpoint: Endpoint): bool` | True when the endpoint carries an IPv6 address. |
 | `invalidEndpoint` | `proc invalidEndpoint(): Endpoint` | Sentinel endpoint with `port == -1`. |
 | `isValid` | `proc isValid(endpoint: Endpoint): bool` | True when `port >= 0`. |
 
@@ -150,8 +160,8 @@ shutdownNet()
 
 | symbol | signature | what it does |
 |---|---|---|
-| `localEndpoint` | `proc localEndpoint(socket: Socket): Endpoint` | The socket's local address+port. |
-| `peerEndpoint` | `proc peerEndpoint(socket: Socket): Endpoint` | The connected peer's address+port. |
+| `localEndpoint` | `proc localEndpoint(socket: Socket): Endpoint` | The socket's local address+port (family-aware — a v6 socket yields a v6 endpoint). |
+| `peerEndpoint` | `proc peerEndpoint(socket: Socket): Endpoint` | The connected peer's address+port (family-aware — v4 or v6). |
 | `setNoDelay` | `proc setNoDelay(socket: Socket; enabled = true): bool` | Toggle `TCP_NODELAY` (Nagle off). |
 | `setKeepAlive` | `proc setKeepAlive(socket: Socket; enabled = true): bool` | Toggle SO_KEEPALIVE. |
 | `socketErrorCode` | `proc socketErrorCode(socket: Socket; errorCode: var int): bool` | Read `SO_ERROR` into `errorCode`. |
@@ -180,6 +190,11 @@ shutdownNet()
 - **Family-agnostic reach.** `connectHost`/`dial` follow both A and AAAA records via
   `tcp`'s `connectHostTcp`, and `listen6` gives one dual-stack listener for both
   families — so callers rarely branch on address family.
+- **Family-carrying endpoints.** `Endpoint` tags itself `familyV4`/`familyV6`, so
+  `localEndpoint`/`peerEndpoint` of a v6 socket return the real IPv6 address and `$`
+  renders it bracketed (`"[::1]:8080"`). The addition is backward-compatible:
+  `Endpoint(address: someIpv4, port: p)` still builds a `familyV4` endpoint and
+  `.address` keeps working, so the IPv4 fast path is untouched.
 - **Caller-owned buffers underneath, strings on top.** The raw `recvInto`/`sendFrom`
   pair takes your buffer; `recv`/`readAll`/`send` and `BufferedSocket` add
   string-convenience and line framing on top without a per-call cap surprise.

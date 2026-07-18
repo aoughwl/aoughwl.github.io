@@ -6,7 +6,7 @@ repo: aoughwl/requests
 
 A native nimony HTTP client that impersonates real browsers at the byte level — TLS cipher/extension ordering, GREASE, the post-quantum key_share, ALPN/ALPS, HTTP/2 SETTINGS and pseudo-header order, and the exact default header set. It is a C-FFI binding over `libcurl-impersonate` (the lexiforest fork), driving a single `curl_easy_impersonate(target, 1)` call to install the whole fingerprint. Standalone: it does not use the rest of the aoughwl net stack, but the impersonation **requires** the vendored C library. It is a nimony-idiom reimplementation of the Nim2 client under `src/requests/` — status-based returns (no exceptions), top-level `{.cdecl.}`/`{.nimcall.}` callbacks (no closures), and caller-owned lifetimes.
 
-> **Status** — Run-verified against httpbin.org (all verbs, 7 profiles, full header/TLS/proxy/cookie/streaming/multipart/concurrency/hooks/retry paths). Three items are deferred `TODO(nimony)`: cross-thread `CURLSH` lock callbacks (single-thread share works), file-IO cookie-jar auto-save (text dump/seed only), and the `INFO_CERTINFO` chain walker (the struct is bound but unported).
+> **Status** — Run-verified against httpbin.org / example.com (all verbs, 7 profiles, full header/TLS/proxy/cookie/streaming/multipart/concurrency/hooks/retry paths). The three formerly-deferred `TODO(nimony)` items are now **done and live-tested**: the `INFO_CERTINFO` peer certificate-chain walker (`certInfoConfig` + `certChain`), file-IO cookie-jar auto-save/load (`saveCookies`/`loadCookies`/`cookieFile`), and cross-thread `CURLSH` lock callbacks (`newThreadSafeShare`).
 
 ## Quickstart
 
@@ -178,6 +178,9 @@ s.close()
 | `loadCookieLines` | `proc(s: Session, lines: seq[string])` | Seed the jar from Netscape cookie-file lines. |
 | `dumpCookies` | `proc(s: Session): string` | The jar as Netscape cookie-file text. |
 | `parseNetscapeLine` / `toNetscapeLine` | `proc(line: string): (Cookie, bool)` / `proc(c: Cookie): string` | Netscape cookie-file line round-trip. |
+| `saveCookies` | `proc(s: Session, path: string): bool` | Flush the live jar to a Netscape cookie file **now** (non-raising; false if unopenable). |
+| `loadCookies` | `proc(s: Session, path: string): bool` | Seed the live jar from a cookie file **now** (false if unopenable). |
+| `cookieFile` | `proc(s: Session, path: string)` | Bind a file-backed jar: curl reads `path` at request start (`OPT_COOKIEFILE`) and rewrites it on `close` (`OPT_COOKIEJAR`); existing cookies are loaded immediately. |
 
 ### Cookie jar manager (cookiejar)
 
@@ -197,8 +200,9 @@ s.close()
 
 | symbol | signature | what it does |
 | --- | --- | --- |
-| `Share` | `ref object (handle: CURLSH)` | A pool of browser-coherent state for several single-thread sessions. |
-| `newShare` | `proc(cookies = true, dns = true, tlsSessions = true, connections = true): Share` | Create a `CURLSH` sharing cookies/DNS/TLS-session/connection cache. |
+| `Share` | `ref object (handle: CURLSH)` | A pool of browser-coherent state for several sessions. |
+| `newShare` | `proc(cookies = true, dns = true, tlsSessions = true, connections = true): Share` | Create a `CURLSH` sharing cookies/DNS/TLS-session/connection cache (single-thread use). |
+| `newThreadSafeShare` | `proc(cookies = true, dns = true, tlsSessions = true, connections = true): Share` | Like `newShare` but installs `CURLSHOPT_LOCKFUNC`/`UNLOCKFUNC` (top-level `{.cdecl.}` callbacks backed by a per-`curl_lock_data` array of `std/locks` mutexes) so one `CURLSH` is safe across **threads**. |
 | `close` | `proc(sh: Share)` | Tear the share down (after every attached session is closed). |
 
 ### Concurrency (multi)
@@ -209,6 +213,16 @@ s.close()
 | `req` | `proc(url: string, meth = "GET", body = "", headers = @[], cfg = RequestConfig(), nobody = false): Request` | Build a batch request. |
 | `fetchAll` | `proc(s: Session, reqs: seq[Request], maxConcurrent = 8): seq[Response]` | Run `reqs` concurrently over `curl_multi` (order preserved; one failure doesn't sink the batch). |
 | `getAll` | `proc(s: Session, urls: seq[string], maxConcurrent = 8): seq[Response]` | GET a list of URLs concurrently. |
+
+### TLS certificate chain (certinfo)
+
+| symbol | signature | what it does |
+| --- | --- | --- |
+| `CertInfo` | `object (fields: seq[(string, string)])` | One certificate in the peer chain, as ordered `(key, value)` fields exactly as libcurl reports them. |
+| `certInfoConfig` | `proc(base = RequestConfig()): RequestConfig` | A config with `OPT_CERTINFO` enabled — pass it to the request so `certChain` can read the result. |
+| `certChain` | `proc(s: Session): seq[CertInfo]` | The peer certificate chain captured on the session's last request (leaf first); walks `INFO_CERTINFO` (`struct curl_certinfo` + per-cert `curl_slist`). |
+| `field` | `proc(c: CertInfo, key: string): string` | First field whose key matches `key` (case-insensitive; "" if absent). |
+| `subject` / `issuer` | `proc(c: CertInfo): string` | Shortcuts for the `Subject` / `Issuer` fields. |
 
 ### Profiles (profiles)
 
@@ -236,7 +250,7 @@ s.close()
 
 ### FFI (ffi)
 
-The full libcurl-impersonate binding, re-exported by the umbrella. Opaque handle types `CURL`, `CURLM`, `CURLSH`, `curl_mime`, `curl_mimepart`; code types `CURLcode`/`CURLMcode`/`CURLSHcode`; option enums `CURLoption`/`CURLMoption`/`CURLSHoption`; and the `curl_slist`/`CurlSlistNode`/`CURLMsg` structs. Constant families: `OPT_*`, `INFO_*`, `PROXYTYPE_*` (0/2/4/5/6/7 = http/https/socks4/5/4a/5h), `AUTH_*`, `SSLVERSION_*`, `HTTP_VERSION_*` (`_1_0`/`_1_1`/`_2_0`/`_2TLS`/`_3`/`_3ONLY`), `LOCK_DATA_*`, `SHOPT_*`.
+The full libcurl-impersonate binding, re-exported by the umbrella. Opaque handle types `CURL`, `CURLM`, `CURLSH`, `curl_mime`, `curl_mimepart`; code types `CURLcode`/`CURLMcode`/`CURLSHcode`; option enums `CURLoption`/`CURLMoption`/`CURLSHoption`; and the `curl_slist`/`CurlSlistNode`/`CurlCertInfo`/`CURLMsg` structs. Constant families: `OPT_*`, `INFO_*`, `PROXYTYPE_*` (0/2/4/5/6/7 = http/https/socks4/5/4a/5h), `AUTH_*`, `SSLVERSION_*`, `HTTP_VERSION_*` (`_1_0`/`_1_1`/`_2_0`/`_2TLS`/`_3`/`_3ONLY`), `LOCK_DATA_*`, `SHOPT_*`.
 
 | symbol | signature | what it does |
 | --- | --- | --- |
@@ -262,7 +276,7 @@ The full libcurl-impersonate binding, re-exported by the umbrella. Opaque handle
 
 ## Requirements
 
-- **nimony toolchain** (aoughwl `aowl` / nimony). Umbrella `import requests` re-exports every module: `ffi`, `profiles`, `client`, `util`, `headers`, `tls`, `proxy`, `coherence`, `cookies`, `cookiejar`, `share`, `multi`.
+- **nimony toolchain** (aoughwl `aowl` / nimony). Umbrella `import requests` re-exports every module: `ffi`, `profiles`, `client`, `util`, `headers`, `tls`, `proxy`, `coherence`, `cookies`, `cookiejar`, `certinfo`, `share`, `multi`.
 - **`libcurl-impersonate`** (the lexiforest curl-impersonate fork, built with ngtcp2 for HTTP/3) — the impersonation is *not optional*; the browser fingerprint lives in this C library. Vendored under `vendor/curl-impersonate/lib`. Link it and set an rpath at build time (nimony has no compile-time rpath block):
   ```
   nimony c -r \

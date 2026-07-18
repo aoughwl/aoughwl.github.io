@@ -11,7 +11,7 @@ It sits above `tcp`/`net` (transport), `tls` (HTTPS), and `http` (the
 transport-free request/response helpers, all re-exported), and speaks HTTP/2
 through an opt-in `nghttp2` binding.
 
-> **Status** — Production-ready for HTTP/1.1 and HTTP/2. HTTP/1.1 + HTTPS + a bounded worker-thread pool + h2c/h2-over-TLS all ship and are covered by e2e tests. Routing is bring-your-own (a single handler proc — no built-in router/middleware), and HTTP/3 *serving* is infeasible (no QUIC library); the `requests` client already speaks h3.
+> **Status** — Production-ready for HTTP/1.1 and HTTP/2. HTTP/1.1 + HTTPS + a bounded worker-thread pool + h2c/h2-over-TLS all ship and are covered by e2e tests. An opt-in **router + middleware** layer (`serve/router`) now provides method+path routing with `:id` params, a trailing `*` wildcard, and a middleware chain. The remaining gap is HTTP/3 *serving*, which is infeasible (no QUIC library); the `requests` client already speaks h3.
 
 ## Quickstart
 
@@ -67,6 +67,67 @@ per-connection thread churn, no unbounded growth. The pool is process-global
 | `configurePool` | `proc(listenFd: TcpHandle; handler: NimcallHandler; useTls: bool; ctx: TlsContext)` | Install the shared listening socket + handler that workers serve. Lower-level; tests drive it directly. |
 | `spawnWorker` | `proc(t: var RawThread)` | Create one worker thread into caller-owned storage `t`. `t` **must** outlive the thread (`create` passes `addr t` to the OS; a by-value `RawThread` would dangle). Keep it in a long-lived array/global. |
 | `MaxWorkers` | `const = 256` | Upper bound; `runPool` clamps the requested `workers` into `1..MaxWorkers`. |
+
+### Routing + middleware (`serve/router`)
+
+Opt-in `import serve/router`. A `Router` dispatches on **method + path**: `:id`
+segments are path params and a trailing `*` captures the remainder of the path,
+both read back off the request with `param` / `wildcard`. A middleware chain
+wraps the matched handler (and the 404/405 responses). No path match → `404`
+(or your `notFound` handler); path matches but wrong method → `405` with an
+`Allow` header; `HEAD` falls back to a `GET` route.
+
+Handlers and middleware are **`{.nimcall.}`** function pointers, not closures —
+a hard requirement: the current nimony C backend miscompiles a closure stored
+in a `seq`/object field, and cannot pass a closure as a parameter of another
+closure (the classic `next: Handler` middleware shape). Storing bare function
+pointers sidesteps both, and as a bonus makes the router worker-pool compatible.
+The middleware continuation is passed as a plain `Chain` value and advanced with
+`proceed(nxt, req)` — the idiomatic stand-in for `next(req)`.
+
+```nim
+import serve
+import serve/router
+
+proc getUser(req: Request): Response {.nimcall.} =
+  response(200, "text/plain", "user " & param(req, "id") & "\n")
+
+proc logging(req: Request; nxt: Chain): Response {.nimcall.} =
+  let resp = proceed(nxt, req)          # run the rest of the chain + handler
+  echo req.meth, " ", req.path, " -> ", resp.status
+  return resp
+
+var r = newRouter()
+r.use(logging)
+r.get("/users/:id", getUser)
+r.get("/static/*", serveAsset)          # wildcard(req) == the rest of the path
+r.post("/users", createUser)
+serveRouter(8080, r)
+```
+
+| symbol | signature | what it does |
+|---|---|---|
+| `Router` | `object (id: int)` | A handle to a registered router (its route/middleware tables live in a module-global registry, since function pointers can't be captured). |
+| `RouteHandler` | `proc(req: Request): Response {.nimcall.}` | A route handler — same shape as `NimcallHandler`. Reads the request (incl. captured params) and returns the response. |
+| `Middleware` | `proc(req: Request; nxt: Chain): Response {.nimcall.}` | Wraps the downstream chain; run logic before/after `proceed(nxt, req)`, short-circuit by not calling it, or rewrite the response. |
+| `Chain` | `object (rid, idx: int)` | Opaque continuation handed to a middleware; advance with `proceed`. |
+| `newRouter` | `proc(): Router` | Create an empty router (no routes, no middleware, default 404). |
+| `get` / `post` / `put` / `patch` / `delete` / `head` / `options` | `proc(r: Router; pattern: string; h: RouteHandler)` | Register `h` for that method + `pattern`. `:name` = path param, trailing `*` = wildcard. |
+| `use` | `proc(r: Router; mw: Middleware)` | Append a middleware (runs in registration order; first is outermost). |
+| `notFound` | `proc(r: Router; h: RouteHandler)` | Custom handler for unmatched paths (replaces the default 404). |
+| `param` | `proc(req: Request; name: string): string` | Captured value of path param `name` (e.g. `:id`), or `""`. |
+| `hasParam` | `proc(req: Request; name: string): bool` | Whether param `name` was captured (distinguishes empty from absent). |
+| `wildcard` | `proc(req: Request): string` | The remainder captured by a trailing `*` (e.g. `/static/*` on `/static/js/app.js` → `js/app.js`). |
+| `proceed` | `proc(nxt: Chain; req: Request): Response` | From a middleware, run the rest of the chain and the matched handler — the idiomatic `next(req)`. |
+| `dispatch` | `proc(r: Router; req: Request): Response` | Route one request directly (middleware included), bypassing the socket loop — handy for unit tests. |
+| `toHandler` | `proc(r: Router): NimcallHandler` | Install `r` as the active router and return the `{.nimcall.}` handler that `serveConnectionNimcall` / the pool accept. |
+| `serveRouter` | `proc(port: int; r: Router; maxRequests = 0)` | Run `r` on `port` over the single-threaded plaintext loop. |
+
+Params ride as reserved pseudo-headers under a control-character prefix that a
+conforming HTTP client can't inject (and spoofed copies are stripped before
+dispatch), so `param` only ever returns router-populated values. Because the
+`{.nimcall.}` dispatcher carries no state, the most recently installed router is
+the active one — fine for the usual single-server process.
 
 ### Static files (`serve/static`)
 
@@ -164,9 +225,11 @@ The essentials a handler touches:
   timeout, `..` path segments → `403`, static responses carry
   `X-Content-Type-Options: nosniff`, and keep-alive is capped at 100 requests
   per connection.
-- **Bring-your-own routing.** There is no router or middleware layer — a handler
-  is one `proc(req): Response`. Dispatch on `req.path`/`req.meth` yourself, or
-  compose with `staticRoute` / `compressResponse`.
+- **Routing is opt-in.** The core loop still dispatches through one
+  `proc(req): Response`; `import serve/router` layers method+path routing,
+  `:id`/`*` capture, and a middleware chain on top (all `{.nimcall.}`). Without
+  it you dispatch on `req.path`/`req.meth` yourself, or compose with
+  `staticRoute` / `compressResponse`.
 - **No HTTP/3 serving.** Serving h3 needs a QUIC stack, and none is installed;
   this is a hard gap, not a tuning item. (The client side already speaks h3 via
   `requests`.)

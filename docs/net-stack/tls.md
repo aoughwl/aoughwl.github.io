@@ -13,9 +13,12 @@ server context (PEM cert chain + key, ALPN selection).
 
 > **Status** — Production-ready. TLS 1.3 client+server, SNI + hostname
 > verification, ALPN (both directions), configurable cipher/suite and
-> min/max version, and non-blocking handshake/I-O all shipped. Session
-> resumption (tickets/PSK) is not tuned, and server-side ALPN preference is a
-> single process-global (no per-SNI multi-cert virtual hosting).
+> min/max version, and non-blocking handshake/I-O all shipped. Opt-in TLS 1.3
+> session resumption (capture a `TlsSession`, replay it on the next connect,
+> `sessionReused` to confirm) and per-SNI multi-certificate virtual hosting
+> (`addCertificate` + a servername callback, with a default fallback cert) now
+> ship too; server-side ALPN preference is per-context (no longer a single
+> process-global).
 
 ## Quickstart
 
@@ -45,8 +48,9 @@ ctx.freeContext()
 | symbol | signature | what it does |
 | --- | --- | --- |
 | `TlsMode` | `enum tlsClient, tlsServer` | Role a context was built for. |
-| `TlsContext` | `object { handle: pointer; mode: TlsMode }` | Long-lived config wrapping `SSL_CTX`; reuse across connections. `handle` is nil when construction failed. |
+| `TlsContext` | `object { handle: pointer; mode: TlsMode; stateId: int }` | Long-lived config wrapping `SSL_CTX`; reuse across connections. `handle` is nil when construction failed. `stateId` is the 1-based index (0 = unassigned) into the per-context server state registry (SNI certs + ALPN). |
 | `TlsSocket` | `object { socket: Socket; ssl: pointer; handshakeDone: bool }` | One TLS connection over a `Socket`, wrapping `SSL`. |
+| `TlsSession` | `object { handle: pointer }` | A captured, resumable `SSL_SESSION`. Obtain with `getSession`, stash it, replay via `wrapClient`/`connectTls`, free with `freeSession`. |
 | `TlsStatus` | `enum tlsOk, tlsWantRead, tlsWantWrite, tlsClosed, tlsError` | Result of a handshake/read/write. The `tlsWant*` values are the non-blocking retry signals. |
 
 ### Constants (protocol versions)
@@ -57,6 +61,15 @@ ctx.freeContext()
 | `TLS1_1_VERSION` | `0x0302` | " |
 | `TLS1_2_VERSION` | `0x0303` | " |
 | `TLS1_3_VERSION` | `0x0304` | " |
+
+### Constants (session cache modes)
+
+| symbol | value | what it does |
+| --- | --- | --- |
+| `SSL_SESS_CACHE_OFF` | `0x0000` | Mode selector for `setSessionCacheMode`. |
+| `SSL_SESS_CACHE_CLIENT` | `0x0001` | Client-side session cache (used by `enableClientSessionCache`). |
+| `SSL_SESS_CACHE_SERVER` | `0x0002` | Server-side session cache (OpenSSL default). |
+| `SSL_SESS_CACHE_BOTH` | `0x0003` | Both directions. |
 
 ### Context construction
 
@@ -79,14 +92,17 @@ ctx.freeContext()
 | `setMinVersion` | `proc(ctx: TlsContext; version: int): bool` | Floor the negotiated protocol version (e.g. `TLS1_2_VERSION`). |
 | `setMaxVersion` | `proc(ctx: TlsContext; version: int): bool` | Cap the negotiated protocol version. |
 | `setAlpnProtocols` | `proc(ctx: TlsContext; protocols: seq[string]): bool` | (Client) Advertise an ALPN list, e.g. `@["h2", "http/1.1"]`. Encodes the length-prefixed wire form. |
-| `setAlpnServer` | `proc(ctx: TlsContext; protocols: seq[string]): bool` | (Server) Register the selection callback that picks the server's most-preferred protocol from the client offer, so `negotiatedAlpn` reflects the choice. |
+| `setAlpnServer` | `proc(ctx: var TlsContext; protocols: seq[string]): bool` | (Server) Register the selection callback that picks the server's most-preferred protocol from the client offer, so `negotiatedAlpn` reflects the choice. Preference is stored per-context, so multiple servers in one process don't clobber each other. |
+| `addCertificate` | `proc(ctx: var TlsContext; hostname, certChainFile, keyFile: string): bool` | (Server) Register an extra PEM cert + key to present when a client's SNI matches `hostname` (virtual hosting). The `newTlsServerContext` cert stays the default fallback. Wires up the servername callback on first use. |
+| `setSessionCacheMode` | `proc(ctx: TlsContext; mode: int): bool` | Set the `SSL_CTX` session-cache mode (an `SSL_SESS_CACHE_*` value). |
+| `enableClientSessionCache` | `proc(ctx: TlsContext): bool` | Convenience: turn on client-side caching so `getSession` reliably captures a resumable TLS 1.3 session. |
 
 ### Connecting & handshake
 
 | symbol | signature | what it does |
 | --- | --- | --- |
-| `connectTls` | `proc(ctx: TlsContext; host: string; port: int): TlsSocket` | One-call client entry: resolve `host`, open TCP, run the client handshake with SNI + hostname verification set to `host`. Blocking; check `handshakeDone` / `isValid`. |
-| `wrapClient` | `proc(ctx: TlsContext; socket: Socket; serverName: string): TlsSocket` | Start a client session over an already-connected socket; sets SNI + verification hostname to `serverName` and runs the handshake. |
+| `connectTls` | `proc(ctx: TlsContext; host: string; port: int; session = TlsSession(handle: nil)): TlsSocket` | One-call client entry: resolve `host`, open TCP, run the client handshake with SNI + hostname verification set to `host`. Pass a `session` to attempt resumption. Blocking; check `handshakeDone` / `isValid`. |
+| `wrapClient` | `proc(ctx: TlsContext; socket: Socket; serverName: string; session = TlsSession(handle: nil)): TlsSocket` | Start a client session over an already-connected socket; sets SNI + verification hostname to `serverName` and runs the handshake. Pass a `session` to attempt resumption. |
 | `wrapServer` | `proc(ctx: TlsContext; socket: Socket): TlsSocket` | Start a server session over an accepted socket and run the handshake. |
 | `handshake` | `proc(t: var TlsSocket): TlsStatus` | Drive or resume the handshake. Returns `tlsOk` on completion; on a non-blocking socket may return `tlsWantRead`/`tlsWantWrite` — call again when the socket is ready. |
 
@@ -111,6 +127,16 @@ ctx.freeContext()
 | `negotiatedAlpn` | `proc(t: TlsSocket): string` | ALPN protocol the peer selected (e.g. `"h2"`), or `""`. |
 | `verifyOk` | `proc(t: TlsSocket): bool` | True when the peer chain verified (`X509_V_OK`). Meaningful only when the context requested verification. |
 | `verifyResultCode` | `proc(t: TlsSocket): int` | Raw X509 verification result code (0 == `X509_V_OK`). |
+| `peerCertCommonName` | `proc(t: TlsSocket): string` | CommonName (CN) of the peer leaf certificate's subject, or `""`. Handy on a client to confirm which cert an SNI multi-cert server selected. |
+
+### Session resumption
+
+| symbol | signature | what it does |
+| --- | --- | --- |
+| `getSession` | `proc(t: TlsSocket): TlsSession` | Capture the current (resumable) session. Call after the handshake and — for TLS 1.3 — after at least one `recv`, so the server's ticket has been processed. |
+| `sessionReused` | `proc(t: TlsSocket): bool` | True when the just-completed handshake resumed a session supplied via `wrapClient`/`connectTls`. |
+| `isValid` | `proc(s: TlsSession): bool` | Session holds a live `SSL_SESSION`. |
+| `freeSession` | `proc(s: var TlsSession)` | Release a captured session (drops the refcount). |
 
 ### Status, validity & teardown
 
@@ -142,7 +168,19 @@ ctx.freeContext()
   `connectTls` without tearing down live sessions.
 - **ALPN asymmetry.** `setAlpnProtocols` only advertises (client side);
   `setAlpnServer` registers the selection callback. The server preference list
-  is a single process-global wire string — one server config per process.
+  is stored per-context in a small registry keyed by the context's `stateId`
+  (passed to the C callbacks as their `arg`), so two servers in one process keep
+  independent ALPN/SNI state.
+- **SNI virtual hosting.** `addCertificate` builds a child `SSL_CTX` per
+  hostname; a servername callback reads the client's SNI at handshake time
+  (`SSL_get_servername`) and swaps the connection onto the matching child
+  (`SSL_set_SSL_CTX`). Connections whose SNI matches nothing keep the
+  `newTlsServerContext` cert as the default. `close` frees the child contexts.
+- **Session resumption.** Opt-in and non-breaking: `getSession`
+  (`SSL_get1_session`) hands back a refcounted `TlsSession`; replaying it through
+  `wrapClient`/`connectTls` (`SSL_set_session`) attempts a TLS 1.3 resumption,
+  and `sessionReused` (`SSL_session_reused`) confirms it. Server tickets are on
+  by default in OpenSSL 3 and left enabled.
 
 ## Requirements
 
