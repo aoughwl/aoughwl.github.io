@@ -24,6 +24,38 @@ scope need no forward declarations.
 Built on the `nifcore` cursor stack, so tree traversal uses fast `skip` over the
 AIF token buffer rather than materialising nodes.
 
+## Diagnostics
+
+A semantic error does not stop the check. aowlsem records a structured
+diagnostic and continues, so one run reports every independent error in the
+module rather than only the first.
+
+Each diagnostic carries a stable code, the source span from the AIF line info,
+and optional follow-up notes. The rendering shows the offending source line with
+a caret under the exact span, and — where a name is misspelt — the closest
+identifier actually in scope, by edit distance:
+
+```
+error[E0300]: undeclared field `zz` on `Point`
+  --> app.nim:9:8
+   |
+ 9 | echo p.zz
+   |        ^^
+   = did you mean `x`?
+```
+
+Diagnostics are written to stderr after the `.s.aif` is emitted, so they are a
+side channel: the typed output is identical whether or not a diagnostic fired.
+
+Current codes:
+
+| Code | Meaning |
+|---|---|
+| `E0100` | undeclared identifier (with an in-scope suggestion) |
+| `E0101` | undeclared routine (with an in-scope suggestion) |
+| `E0200` | type mismatch — a declared or assigned-to type the value cannot satisfy |
+| `E0300` | undeclared field on a known object type (with a field suggestion) |
+
 ## Build
 
 ```sh
