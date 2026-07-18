@@ -66,7 +66,10 @@ body>` — a multi-span reformat, so it points at `proc` and leaves the edit to 
 `foreign-block-keyword` (a `class`/`struct`/`interface`/`impl`/`trait`/`namespace`/
 `module name { … }` block) is the type/module analogue: it points at `type Name =
 object` (or, for a namespace/module, at Nim's file-is-a-module model) and lets you
-shape the declaration. `unterminated-backtick`
+shape the declaration. `foreign-case-block` (`switch`/`match x { … }`) points at
+`case x:` with `of` branches; `do-while-loop` (`do { } while`) and
+`ruby-block-params` (`do |x|`) point at `while` and `do (x):` respectively —
+each a control-flow reshape you finish by hand. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the

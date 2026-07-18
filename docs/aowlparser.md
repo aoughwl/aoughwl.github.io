@@ -64,7 +64,8 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   routine written with a Rust/JS/Kotlin function keyword and a brace body),
   `class`/`struct`/`interface`/`impl`/`trait`/`namespace`/`module name { … }` (an
   OO/type/module block from another language — Nim types are `type Name = object`
-  and modules are files), a
+  and modules are files), `switch`/`match x { … }` (Nim's is `case x:` with `of`
+  branches), a C/JS `do { } while` loop and Ruby `do |x|` block params, a
   stray `end`
   (Ruby/Pascal/Lua block terminator) and a C-style `{ }` body; `else if` used for
   `elif`, empty conditions (`elif:`), empty comma slots (`foo(a,,b)`),
