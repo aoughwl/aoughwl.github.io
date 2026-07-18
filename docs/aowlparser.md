@@ -56,8 +56,9 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   unterminated accent-quoted identifiers.
 - Detections `nifler` lacks: assignment-in-condition (`if`/`elif`/`while`/`when x = 5:`),
   comparison-in-binding (its mirror — `let`/`const x == 5`),
-  the cross-language habits `let x := 5` (Pascal/Go walrus) and `proc f() -> int`
-  (Rust/Python-3/C++ return arrow), `else if` used for `elif`, empty conditions
+  the cross-language habits `let x := 5` (Pascal/Go walrus), `proc f() -> int`
+  (Rust/Python-3/C++ return arrow) and `std::vector` (C++ scope resolution),
+  `else if` used for `elif`, empty conditions
   (`elif:`), empty comma slots (`foo(a,,b)`), missing-introducer
   bodies (`proc f()` then an indented line with no `=`; `type Name` with a body but
   no `= object`), and precise grammar diagnostics where `nifler` is terse: `func` in
