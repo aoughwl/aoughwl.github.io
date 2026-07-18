@@ -187,6 +187,43 @@ extends (lists) it, so it never weakens any guarantee. `--config:PATH` forces a
 specific file; `--no-config` ignores discovery. Unknown keys degrade to a stderr
 warning; an explicit `--config` that can't be read is a hard error.
 
+### `[rules]` — configure your opinions
+
+Some checks are correct-but-opinionated: whether `x == true` or `not not x` is
+worth flagging is a *house-style* call, not a bug. Rather than bake one answer in,
+a `[rules]` section lets each project set the severity of any code — `off`,
+`hint`, `warning`, or `error`:
+
+```ini
+# .aowlsuggest
+[rules]
+redundant-bool-literal = warning   # we care — and a warning can fail CI
+double-negation        = error     # forbid it outright
+float-equality         = off       # we do exact-value math tests on purpose
+```
+
+Two things happen when you name a code here:
+
+1. **It sets the severity.** `off` drops the diagnostic entirely; `hint` /
+   `warning` / `error` re-stamp it — so you can *promote* an advisory hint into a
+   CI-failing error, or *demote* one you disagree with.
+2. **It turns the check on.** Naming a code that is gated behind an opt-in check
+   (any idiom lint, a style policy) implicitly enables that check — so `[rules]`
+   is the single dial for a project's opinions; you don't also have to remember
+   the matching `--style:` flag.
+
+This is why the zero-false-positive promise is never at risk: opinionated checks
+ship **off by default**, and a `[rules]` entry is a project *explicitly asking*
+for one — its own stated preference, which by definition can't be a false alarm.
+
+The same override is available per-invocation on the CLI for one-off or CI use —
+`--rule:CODE=LEVEL` (repeatable), applied after the config so it wins:
+
+```sh
+aowlsuggest lint --rule:redundant-bool-literal=error src/   # gate one code in CI
+aowlsuggest check --rule:float-equality=off app.nim         # silence one locally
+```
+
 ## Inline suppression
 
 A project can silence an accepted diagnostic with a comment. This is a **source
