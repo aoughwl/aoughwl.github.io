@@ -69,7 +69,8 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   and modules are files), `switch`/`match x { … }` (Nim's is `case x:` with `of`
   branches), a C/JS `do { } while` loop and Ruby `do |x|` block params, a C-style
   `/* … */` block comment (Nim's is `#[ … ]#`), a Java `throws` or Rust/Swift/C#
-  `where` routine clause (Nim uses a `{.raises.}` pragma and `[T: Constraint]`), a
+  `where`/`override`/`noexcept` routine clause (Nim uses a `{.raises.}` pragma,
+  `[T: Constraint]` and `method`), a
   Java/TS `type Foo extends Bar` inheritance clause (Nim's is `object of Bar`),
   `yield from xs` (Nim iterates and yields: `for x in xs: yield x`), an `async proc`
   prefix (Nim marks async with a `{.async.}` pragma), a

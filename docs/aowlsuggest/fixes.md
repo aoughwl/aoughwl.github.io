@@ -73,8 +73,9 @@ shape the declaration. `foreign-case-block` (`switch`/`match x { … }`) points 
 each a control-flow reshape you finish by hand. `c-block-comment` (a C-style
 `/* … */`) points at Nim's `#[ … ]#` block comment — left as a suggestion because
 rewriting the delimiters means checking the body doesn't itself close the block.
-`foreign-routine-clause` (a Java `throws` or Rust/Swift/C# `where` on a routine
-header) points at Nim's `{.raises.}` pragma and `[T: Constraint]` generics.
+`foreign-routine-clause` (a Java `throws`, Rust/Swift/C# `where`, C++/Java/C#
+`override` or C++ `noexcept` on a routine header) points at Nim's `{.raises.}`
+pragma, `[T: Constraint]` generics and `method` dispatch.
 `extends-inheritance` (a Java/TS `type Foo extends Bar`) points at Nim's
 `type Foo = object of Bar`. `yield-from` (Python's `yield from xs`) points at the
 explicit loop `for x in xs: yield x`, and `async-routine-prefix` (an `async proc`)
