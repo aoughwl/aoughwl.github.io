@@ -137,7 +137,17 @@
    off-screen. Hide it — navigation is the hamburger + sidebar there (Playground
    still lives in the sidebar's Tools). */
 @media (max-width: 768px) {
-  .nav-right { display: none !important; }
+  /* Keep the GitHub/Discord/Support icons on mobile — just drop the Playground
+     link (it's in the sidebar's Tools) and stop the search box stretching, so the
+     icons + VitePress hamburger all fit without pushing it off-screen. */
+  .nav-pg-link { display: none !important; }
+  .VPNavBarSearch { flex-grow: 0 !important; padding-left: 8px !important; }
+  .nav-social { margin-left: 2px; padding-left: 0; border-left: 0; }
+
+  /* Big tables were cramped and ugly — smaller type + tighter cells, and they
+     still scroll horizontally (VitePress makes the table a scroll container). */
+  .vp-doc table { font-size: 0.82em; }
+  .vp-doc th, .vp-doc td { padding: 6px 10px; white-space: nowrap; }
 }
 
 /* ---- Search: stretch it wide instead of a tiny pill ---- */
