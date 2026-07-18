@@ -1,4 +1,4 @@
-# Coverage
+# Parity & gaps
 
 Where aowlparser stands against native nifler, and what it deliberately does not
 do.

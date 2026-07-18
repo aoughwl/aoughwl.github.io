@@ -19,6 +19,7 @@ unambiguous and localized:
 | `assignment-in-condition` | replace the `=` with `==` | `if x = 5:` → `if x == 5:` |
 | `comparison-in-binding` | replace the `==` with `=` | `let x == 5` → `let x = 5` |
 | `else-if-not-elif` | collapse `else if` to `elif` | `else if b:` → `elif b:` |
+| `stray-end` | delete a stray `end` keyword (Nim uses indentation) | `end` → *(removed)* |
 | `walrus-in-binding` | replace `:=` with `=` | `let x := 5` → `let x = 5` |
 | `arrow-return-type` | rewrite `-> T` return to `: T` | `proc f() -> int` → `proc f(): int` |
 | `angle-bracket-generics` | rewrite `<T>` generics to `[T]` | `proc f<T>()` → `proc f[T]()` |

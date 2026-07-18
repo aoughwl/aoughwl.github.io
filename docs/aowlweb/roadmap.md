@@ -11,7 +11,7 @@ breadth of the passing test suites.
 
 | Backend | Coverage | Distance to 100% is mostly… |
 |---|---|---|
-| JavaScript | **~90%** | threads (frontend-gated) + stdlib breadth — async now shipped |
+| JavaScript | **~85%** | threads (frontend-gated) + stdlib breadth — async now shipped |
 | WebAssembly | **~30%** | heap allocator → indirect calls → exceptions → `case` |
 
 ## JavaScript backend — ~85%

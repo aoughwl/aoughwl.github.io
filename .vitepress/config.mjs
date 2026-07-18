@@ -27,7 +27,7 @@ const sidebar = [
           { text: 'Grammar coverage', link: '/docs/aowlparser/grammar' },
           { text: 'Differential testing', link: '/docs/aowlparser/testing' },
           { text: 'Configuration', link: '/docs/aowlparser/configuration' },
-          { text: 'Coverage', link: '/docs/aowlparser/known-gaps' },
+          { text: 'Parity & gaps', link: '/docs/aowlparser/known-gaps' },
           { text: 'The .p.aif format', link: '/docs/aowlparser/output-format' },
           { text: 'Browser & JavaScript', link: '/docs/aowlparser/browser' },
         ],

@@ -125,4 +125,3 @@ remaining semantic limit is raise-across-await.
   propagation across `await`.
 - **WASM glue**: the runtime core is portable; only the timer/pump seam is
   JS-specific.
-&lt;/content>
