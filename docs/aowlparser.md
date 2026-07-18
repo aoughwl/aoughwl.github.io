@@ -58,7 +58,8 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   comparison-in-binding (its mirror — `let`/`const x == 5`),
   the cross-language habits `let x := 5` (Pascal/Go walrus), `proc f() -> int`
   (Rust/Python-3/C++ return arrow), `std::vector` (C++ scope resolution),
-  `proc f<T>()` (C++/Java/Rust/TS angle-bracket generics), a stray `end`
+  `proc f<T>()` (C++/Java/Rust/TS angle-bracket generics), `let mut x` (the Rust
+  mutable-binding habit — Nim's is `var`), a stray `end`
   (Ruby/Pascal/Lua block terminator) and a C-style `{ }` body; `else if` used for
   `elif`, empty conditions (`elif:`), empty comma slots (`foo(a,,b)`),
   missing-introducer

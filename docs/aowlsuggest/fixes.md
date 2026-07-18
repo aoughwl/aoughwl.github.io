@@ -22,6 +22,7 @@ unambiguous and localized:
 | `walrus-in-binding` | replace `:=` with `=` | `let x := 5` → `let x = 5` |
 | `arrow-return-type` | rewrite `-> T` return to `: T` | `proc f() -> int` → `proc f(): int` |
 | `angle-bracket-generics` | rewrite `<T>` generics to `[T]` | `proc f<T>()` → `proc f[T]()` |
+| `mut-not-a-keyword` | rewrite `let/var/const mut x` to `var x` | `let mut x = 5` → `var x = 5` |
 | `mismatched-bracket` | swap the wrong close for the one its opener wants | `(1 + 2]` → `(1 + 2)` |
 | `expected-colon` | insert `:` at the end of the header | `if c` → `if c:` |
 | `missing-routine-equals` | insert `=` after the signature | `proc f()` → `proc f() =` |
