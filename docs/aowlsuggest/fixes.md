@@ -49,9 +49,22 @@ because of the verify loop below: `unclosed-bracket`'s "append a closer on this
 line" is correct for a single-line bracket and simply *rejected* when the bracket
 legitimately spans lines (the edit wouldn't reduce errors there).
 
-Everything else with a repair hint is surfaced as a **suggestion** — reported,
-never applied. `expected-condition` ("add a condition") is a good example: the
-repair is real but there is no single unambiguous character to insert.
+Everything else is surfaced as a **suggestion** — reported, never applied.
+`expected-condition` ("add a condition") is a good example: the repair is real
+but there is no single unambiguous character to insert. `unterminated-backtick`
+is another: a backtick identifier may hold spaces and operators, so where the
+closer belongs is ambiguous (appending it at the line's end would turn
+`` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
+syntax-only checker accepts, a fix that verifies yet means something the author
+never wrote). The lesson: the checker oracle is *necessary but not sufficient*;
+an auto-fix also has to be **unambiguous**, or it stays a suggestion.
+
+**No diagnostic is ever bare.** A suggestion's text is aowlparser's own `fix`
+hint when it attached one (context-specific, authoritative); otherwise a crisp
+fallback from aowlsuggest's knowledge base — so even a lexer value error (a bad
+escape, an out-of-range number, an illegal byte) tells you what to do. A tested
+completeness invariant asserts every known code carries guidance, so a newly
+added parser code that lacks advice is caught immediately.
 
 ## The zero-false-positive loop
 
