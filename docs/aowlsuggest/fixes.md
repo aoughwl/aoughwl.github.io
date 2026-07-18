@@ -75,7 +75,9 @@ rewriting the delimiters means checking the body doesn't itself close the block.
 `foreign-routine-clause` (a Java `throws` or Rust/Swift/C# `where` on a routine
 header) points at Nim's `{.raises.}` pragma and `[T: Constraint]` generics.
 `extends-inheritance` (a Java/TS `type Foo extends Bar`) points at Nim's
-`type Foo = object of Bar`. `unterminated-backtick`
+`type Foo = object of Bar`. `yield-from` (Python's `yield from xs`) points at the
+explicit loop `for x in xs: yield x`, and `async-routine-prefix` (an `async proc`)
+points at Nim's `{.async.}` pragma. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
