@@ -114,9 +114,15 @@ const sidebar = [
           { text: 'requests', link: '/docs/net-stack/requests' },
         ],
       },
-      { text: 'web', link: '/docs/web' },
-      { text: 'html', link: '/docs/html' },
-      { text: 'css', link: '/docs/css' },
+      {
+        text: 'web stack',
+        collapsed: true,
+        items: [
+          { text: 'web', link: '/docs/web' },
+          { text: 'html', link: '/docs/html' },
+          { text: 'css', link: '/docs/css' },
+        ],
+      },
     ],
   },
   {
