@@ -68,21 +68,25 @@
 /* logo + "docs" centered within the title column (not left-aligned) */
 .VPNavBarTitle .title { justify-content: center; }
 
-/* ---- Theme toggle: pulled OUT of the bar to a fixed bottom-right corner ---- */
-.VPNavBarAppearance,
-.VPNavBar .VPNavBarAppearance {
-  display: flex !important;
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 60;
-  padding: 5px;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 999px;
-  background: var(--vp-c-bg-elv);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+/* ---- Theme toggle: fixed bottom-right corner on DESKTOP only. On mobile it
+   stays in VitePress's hamburger menu — forcing a floating fixed toggle there
+   overlapped the mobile nav and pushed things off-screen. ---- */
+@media (min-width: 769px) {
+  .VPNavBarAppearance,
+  .VPNavBar .VPNavBarAppearance {
+    display: flex !important;
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 60;
+    padding: 5px;
+    border: 1px solid var(--vp-c-border);
+    border-radius: 999px;
+    background: var(--vp-c-bg-elv);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+  .VPNavBarAppearance::before { display: none !important; } /* kill its separator */
 }
-.VPNavBarAppearance::before { display: none !important; } /* kill its separator */
 
 /* ---- Custom nav links: right cluster — Playground | GitHub·Discord·Support - */
 .nav-right { display: inline-flex; align-items: center; gap: 2px; }
@@ -120,6 +124,12 @@
 @media (max-width: 860px) {
   .nav-pg-link .nav-txt,
   .nav-social-link .nav-txt { display: none; } /* icon-only when cramped */
+}
+/* Mobile: the custom top-bar cluster overflowed and shoved VitePress's hamburger
+   off-screen. Hide it — navigation is the hamburger + sidebar there (Playground
+   still lives in the sidebar's Tools). */
+@media (max-width: 768px) {
+  .nav-right { display: none !important; }
 }
 
 /* ---- Search: stretch it wide instead of a tiny pill ---- */
