@@ -55,6 +55,7 @@ Current codes:
 | `E0101` | undeclared routine (with an in-scope suggestion) |
 | `E0200` | type mismatch — a declared or assigned-to type the value cannot satisfy |
 | `E0300` | undeclared field on a known object type (with a field suggestion) |
+| `E0400` | assignment to an immutable `let`/`const` binding (points back at the declaration) |
 
 ## Build
 

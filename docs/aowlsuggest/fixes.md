@@ -23,6 +23,7 @@ unambiguous and localized:
 | `arrow-return-type` | rewrite `-> T` return to `: T` | `proc f() -> int` → `proc f(): int` |
 | `angle-bracket-generics` | rewrite `<T>` generics to `[T]` | `proc f<T>()` → `proc f[T]()` |
 | `mut-not-a-keyword` | rewrite `let/var/const mut x` to `var x` | `let mut x = 5` → `var x = 5` |
+| `go-var-notype` | insert the `:` in a `name type` binding | `var x int` → `var x: int` |
 | `mismatched-bracket` | swap the wrong close for the one its opener wants | `(1 + 2]` → `(1 + 2)` |
 | `expected-colon` | insert `:` at the end of the header | `if c` → `if c:` |
 | `missing-routine-equals` | insert `=` after the signature | `proc f()` → `proc f() =` |
@@ -58,7 +59,10 @@ legitimately spans lines (the edit wouldn't reduce errors there).
 
 Everything else is surfaced as a **suggestion** — reported, never applied.
 `expected-condition` ("add a condition") is a good example: the repair is real
-but there is no single unambiguous character to insert. `unterminated-backtick`
+but there is no single unambiguous character to insert. `foreign-function-keyword`
+(a routine written `fn`/`function`/`fun name() { … }`) is another: fixing it means
+replacing both the keyword and the whole `{ }` body with `proc name() = <indented
+body>` — a multi-span reformat, so it points at `proc` and leaves the edit to you. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
