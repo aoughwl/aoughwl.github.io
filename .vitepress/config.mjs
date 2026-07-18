@@ -71,9 +71,7 @@ const sidebar = [
     text: 'TOOLS',
     items: [
       { text: 'Playground', link: 'https://aoughwl.github.io/playground/', target: '_self' },
-      { text: 'Claude Code Plugin & MCP — aowl-code', link: '/docs/aowl-code' },
       { text: 'LSP — aowl-lsp', link: '/docs/aowl-lsp' },
-      { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
       {
         text: 'Suggestions — aowlsuggest',
         link: '/docs/aowlsuggest',
@@ -86,6 +84,8 @@ const sidebar = [
           { text: 'Testing', link: '/docs/aowlsuggest/testing' },
         ],
       },
+      { text: 'Claude Code — aowl-code', link: '/docs/aowl-code' },
+      { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
       { text: 'Obfuscator — obfuscate', link: '/docs/obfuscate' },
     ],
   },
