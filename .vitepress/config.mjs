@@ -96,6 +96,7 @@ const sidebar = [
           { text: 'Testing', link: '/docs/aowlsuggest/testing' },
         ],
       },
+      { text: 'Formatter — aowlfmt', link: '/docs/aowlfmt' },
       { text: 'Claude Code — aowl-code', link: '/docs/aowl-code' },
       { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
       { text: 'Obfuscator — obfuscate', link: '/docs/obfuscate' },
