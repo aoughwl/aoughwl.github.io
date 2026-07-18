@@ -384,29 +384,33 @@
   }
   /* phone: keep the logo, shrink the whole bar to fit one row */
   @media(max-width:600px){
-    header{min-height:40px}
-    .brand{padding-left:11px;gap:8px}
-    .brand .logo{width:76px;height:18px}
+    header{min-height:40px;flex-wrap:nowrap;align-items:center}
+    .brand{padding-left:11px;gap:8px;flex:0 0 auto}      /* natural size — never grow or squish */
+    .brand .logo{width:76px;height:18px;flex:0 0 auto}   /* the wordmark keeps its width */
     .brand h1{font-size:13px}
     .statusline{display:none}           /* declutter — status lives in the panes */
-    .actions button{padding:0 11px}
-    .actions button svg{width:15px;height:15px}
-    .actions button.run{padding:0 13px}
-    .actions button.run kbd{display:none}
     .pane .label{padding:7px 12px}
     footer{padding:8px 12px;font-size:11px}
     footer > span:not(.badge):not(#perf){display:none}
-    /* toolbar can't fit one row on a phone — let the header wrap the controls to a
-       second row, but keep every control its NATURAL size: square icon buttons, a
-       normal-width Run (not stretched full-width), no extra separator bar. */
-    header{flex-wrap:wrap;align-items:center}
-    .brand{flex:1 1 auto}
-    .actions{flex:1 1 100%;flex-wrap:wrap;justify-content:flex-start;align-items:center;
-             gap:0;padding:2px 6px}
-    .actions > *{flex:0 0 auto;height:38px}                         /* natural width, uniform height */
-    .actions button:not(.run){width:38px;padding:0;justify-content:center;border-left:0}  /* square icons */
-    #semSel,#engineSel{min-width:0;padding:0 8px}
-    .actions button.run{padding:0 18px;border-left:0}               /* normal size, own natural width */
+    /* header stays ONE clean row: brand · [sem][vm][Run]. The four icon buttons
+       (curly / share / offline / theme) are relocated by JS to the tab row below,
+       which is otherwise empty — see .mobile-actions-tray. */
+    .actions{flex:0 0 auto;align-items:center;gap:6px;padding-right:8px}
+    .actions button svg{width:15px;height:15px}
+    #semSel,#engineSel{border-left:0;min-width:0;flex:0 1 auto;height:34px;font-size:12px;
+             padding:0 22px 0 9px;background-position:right 7px center;border-radius:7px}
+    .actions button.run{height:34px;border-left:0;border-radius:8px;padding:0 15px;margin-left:2px}
+    .actions button.run kbd{display:none}
+    /* the relocated icon buttons, right-aligned on the source-pane tab row */
+    .pane.src>.label{align-items:center}
+    .mobile-actions-tray{margin-left:auto;display:flex;align-items:center;gap:2px;flex:0 0 auto}
+    .mobile-actions-tray button{width:34px;height:34px;padding:0;margin:0;border:0;border-radius:7px;
+             background:transparent;color:var(--fg);cursor:pointer;
+             display:inline-flex;align-items:center;justify-content:center}
+    .mobile-actions-tray button svg{width:16px;height:16px;display:block}
+    .mobile-actions-tray button:hover{background:var(--panel2)}
+    .mobile-actions-tray button.curly.on{color:var(--brace);background:var(--brace-bg)}
+    .mobile-actions-tray button.copied{color:var(--accent2)}
     /* segmented control (Source·Parsed·Typed·Run and the Export targets): wrap and
        drop the .aif/meta line onto its OWN row instead of truncating it. */
     .exportbar{flex-wrap:wrap;gap:6px 8px}
@@ -591,12 +595,64 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
 <script src="parser.js?v=9"></script>
 <script src="sem.js?v=9"></script>
 <script src="suggest.js?v=1"></script>
-<script src="editor.js?v=8"></script>
+<script src="editor.js?v=9"></script>
 <script src="lsp.js?v=9"></script>
 <script src="curlyconvert.js?v=7"></script>
 <script src="exporters.js?v=2"></script>
 <script src="assemble.js?v=2"></script>
 <script src="offline.js?v=2"></script>
+<script>
+/* Mobile toolbar layout: on phones, move the four icon buttons (curly / share /
+   offline / theme) out of the crowded header and onto the source-pane tab row —
+   which is otherwise empty — right-aligned. The header keeps just brand + the two
+   dropdowns + Run on one row, and the dropdown labels shrink to fit. Reverses
+   cleanly when the viewport grows back to desktop width. */
+(function(){
+  try{
+    var mq = window.matchMedia("(max-width:600px)");
+    var actions = document.querySelector(".actions");
+    var label   = document.querySelector(".pane.src > .label");
+    var semExp  = document.getElementById("semExp");
+    var ids = ["curlyBtn","shareBtn","offlineBtn","themeBtn"];
+    var btns = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if(!actions || !label || !btns.length) return;
+    var tray = document.createElement("div");
+    tray.className = "mobile-actions-tray";
+    var sels = [
+      { el: document.getElementById("semSel"),    short: ["nim","aowl"] },
+      { el: document.getElementById("engineSel"), short: ["VM","Tree","JS"] },
+    ];
+    sels.forEach(function(s){
+      if(!s.el) return;
+      [].forEach.call(s.el.options, function(o){ o.dataset.full = o.textContent; });
+    });
+    function setLabels(mobile){
+      sels.forEach(function(s){
+        if(!s.el) return;
+        [].forEach.call(s.el.options, function(o,i){
+          o.textContent = mobile ? (s.short[i] || o.dataset.full) : o.dataset.full;
+        });
+      });
+    }
+    function apply(){
+      if(mq.matches){
+        if(!tray.parentNode) label.appendChild(tray);
+        btns.forEach(function(b){ if(b.parentNode !== tray) tray.appendChild(b); });
+        setLabels(true);
+      } else {
+        // restore the icon buttons ahead of the experimental tag / dropdowns
+        var anchor = semExp || document.getElementById("semSel");
+        btns.forEach(function(b){ if(b.parentNode !== actions) actions.insertBefore(b, anchor); });
+        if(tray.parentNode) tray.parentNode.removeChild(tray);
+        setLabels(false);
+      }
+    }
+    apply();
+    if(mq.addEventListener) mq.addEventListener("change", apply);
+    else if(mq.addListener) mq.addListener(apply);
+  }catch(_){}
+})();
+</script>
 <script>
 (function(){
   const $ = s => document.querySelector(s);
