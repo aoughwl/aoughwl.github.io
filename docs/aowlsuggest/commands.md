@@ -28,7 +28,7 @@ fixed cascade.nim: applied 2 change(s)
   - change '=' to '==' (was assignment-in-condition at 2:8)
 ```
 
-Only the four codes with an unambiguous, localized repair are auto-applied (see
+Only the codes with an unambiguous, localized repair are auto-applied (see
 [Quick-fixes](fixes)); any other diagnostic that carries a repair hint is
 reported as a **suggestion** that needs human judgement, never applied
 automatically:
@@ -45,7 +45,8 @@ suggestions (need human judgement — not auto-applied):
 ## `lint`
 
 ```sh
-aowlsuggest lint <paths...> [--format:text|json|sarif] [--stats] [--exclude:GLOB]
+aowlsuggest lint <paths...> [--format:text|json|sarif] [--stats]
+                            [--max-warnings:N] [--quiet] [--exclude:GLOB]
 ```
 
 Batch-lints files and directories. Human-readable by default; `--format:json`
@@ -53,7 +54,9 @@ emits a per-file breakdown with a summary; `--format:sarif` emits SARIF 2.1.0 fo
 GitHub code scanning and other dashboards (see [Editor
 integration](editor-integration#ci-formats-sarif)). `--stats` adds a per-code
 count. Exits non-zero if any file has an error-severity diagnostic or fails to
-run — CI-friendly.
+run — CI-friendly. `--max-warnings:N` also fails the run when the warning count
+exceeds `N` (the eslint-style adoption gate); `--quiet` shows only errors in text
+output (warnings are still counted toward the gate).
 
 ```console
 $ aowlsuggest lint src --exclude:'*/vendor/*' --stats
@@ -121,6 +124,57 @@ than compares — almost always a typo for '=='.
 
 auto-fixable: yes
 ```
+
+## Style lint policies
+
+aowlparser owns diagnostic *emission*, and several of its stylistic checks are
+**off by default** — which is exactly what keeps the zero-false-positive corpus
+clean. aowlsuggest turns them on **on request** and makes each actionable with a
+verified fix. Nothing changes in the default pipeline; these are strictly opt-in.
+
+```sh
+aowlsuggest lint --pedantic          <paths...>   # trailing-ws + final-newline + bom
+aowlsuggest fix  --style:lf  --write <paths...>   # normalize CRLF → LF
+aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style set
+```
+
+| flag | policy enabled | code surfaced |
+|------|----------------|---------------|
+| `--style:trailing-whitespace` | trailing whitespace | `trailing-whitespace` |
+| `--style:final-newline` | require a final newline | `missing-final-newline` |
+| `--style:lf` / `--style:crlf` | assert an EOL convention | `line-ending` |
+| `--style:bom` | reject a UTF-8 BOM | `bom-rejected` |
+| `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
+| `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
+| `--pedantic` | trailing-whitespace + final-newline + bom | the three above |
+
+`--style:` is repeatable. The flags flow through the same verify loop as every
+other fix, so a style edit is kept only if re-checking under the *same* policy
+strictly improves it — and each style fix touches nothing but whitespace/BOM, so
+it can never change what the program means.
+
+## Project config — `.aowlsuggest`
+
+A repo can commit its lint/style defaults once so `lint`, `fix`, and
+`lsp-server` all behave identically — and so an [aowllsp](aowl-lsp) editor
+session inherits the same policy. Discovery walks **up** from the target file's
+directory (or `--filename`) to the filesystem root and uses the first
+`.aowlsuggest` it finds.
+
+```ini
+# .aowlsuggest
+pedantic     = true
+style        = trailing-whitespace, final-newline, lf
+indent-width = 2
+exclude      = tests/fixtures/*, vendor/*
+suppress     = true
+parser       = /opt/aowlparser/bin/aowlparser
+```
+
+The config sets **defaults**; a command-line flag always overrides (scalars) or
+extends (lists) it, so it never weakens any guarantee. `--config:PATH` forces a
+specific file; `--no-config` ignores discovery. Unknown keys degrade to a stderr
+warning; an explicit `--config` that can't be read is a hard error.
 
 ## Inline suppression
 

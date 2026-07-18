@@ -24,6 +24,18 @@ unambiguous and localized:
 | `unmatched-close` | delete a surplus close bracket | `x)` → `x` |
 | `unclosed-bracket` | add the matching close (single-line) | `(1 + 2` → `(1 + 2)` |
 | `tabs-not-allowed` | replace a **mid-line** tab with a space | `let⇥x` → `let x` |
+| `unterminated-string` | append the missing closing `"` | `echo "hi` → `echo "hi"` |
+| `unterminated-comment` | append the missing `]#` at EOF | `#[ todo` → `#[ todo ]#` |
+| `invalid-int-literal` | lower-case an upper-case base prefix | `0O17` → `0o17` |
+| `trailing-whitespace` *(style)* | delete the spaces/tabs before the newline | `x = 1␠␠` → `x = 1` |
+| `missing-final-newline` *(style)* | append a terminating newline | *(adds `\n`)* |
+| `line-ending` *(style)* | rewrite the EOL to the requested LF/CRLF | `x␍␊` → `x␊` |
+| `bom-rejected` *(style)* | strip a leading UTF-8 byte-order mark | *(removes BOM)* |
+
+The four *(style)* fixes fire only when the matching policy is opted in with
+`--style:` / `--pedantic` (see [Commands](commands#style-lint-policies)); each
+touches nothing but insignificant whitespace/BOM, so it can never change what the
+program means.
 
 Each carries a **guard** so a surprising span degrades to "no auto-fix" rather
 than a bad splice: the assignment fix checks the span really is a single `=`; the
@@ -51,15 +63,17 @@ kept:
 2. Pick the first source-ordered diagnostic with an untried auto-fix.
 3. Apply its edit to a candidate copy.
 4. Run the checker on the candidate.
-5. **Accept** the edit only if the candidate has *strictly fewer* errors **and**
-   introduces *no new error code*. Otherwise discard it and mark that diagnostic
+5. **Accept** the edit only if it is a strict improvement and introduces *no new
+   error code*. Two branches: an **error** fix must make the error count *strictly
+   drop*; a **style/warning** fix (there are no errors to remove) must leave the
+   error count unchanged, make the *total* diagnostic count strictly drop, and add
+   *no new code of any severity*. Otherwise discard it and mark that diagnostic
    tried.
 6. On an accepted edit, positions have shifted — reconsider everything and loop.
 
 The checker itself is the oracle. An edit that would break valid code cannot make
-the error count go down without adding a new error, so it is rejected. The loop
-terminates because every accepted edit strictly lowers the error count, which
-bounds the number of iterations.
+the count go down without adding a new code, so it is rejected. The loop
+terminates because every accepted edit strictly lowers a bounded count.
 
 ```
 apply candidate ─► re-check ─► fewer errors AND no new code? ─► keep ─┐
@@ -92,11 +106,22 @@ in a single left-to-right pass so no splice shifts another's offsets, and the
 `--dry-run` diff is a standard LCS-based unified diff between the original and the
 repaired source.
 
+## Editor & CI surfacing
+
+The same verified fixes flow out to every consumer of the tool. In an editor
+(through [aowllsp](aowl-lsp) or the built-in `lsp-server`) each fix is a
+`CodeAction`, and a single **`source.fixAll`** action applies all of them at once
+— ideal for fix-on-save. In CI, `lint --format:sarif` emits each fix as a SARIF
+`fix`, so **GitHub code scanning** renders it as a one-click *Apply fix* button in
+the PR, with a stable per-alert fingerprint so it tracks across commits.
+
 ## Extending the set
 
-The four-code limit is a *consequence of the contract*, not a design ceiling:
-because the `fix` hint is prose, each new code needs a hand-written mapping here.
-The open [parser API request](the-contract#when-the-json-isnt-enough) asks
-aowlparser to emit a structured `edit` instead — at which point `fix` becomes
-"apply the edit if present", the verify loop is unchanged, and repairs extend to
-every code the parser can fix, with no per-code logic in aowlsuggest.
+The set covers every repair that is *mechanically unambiguous*; anything that
+needs human judgement (which condition to add, object-vs-enum for a missing type
+`=`) stays a **suggestion**. Because aowlparser's `fix` hint is prose, each code
+needs a hand-written mapping here. The open
+[parser API request](the-contract#when-the-json-isnt-enough) asks aowlparser to
+emit a structured `edit` instead — at which point `fix` becomes "apply the edit
+if present", the verify loop is unchanged, and repairs extend to every code the
+parser can fix, with no per-code logic in aowlsuggest.

@@ -107,14 +107,32 @@ Each `didOpen`/`didChange` runs aowlparser on the current buffer and pushes a
 For batch use, `lint --format:sarif` emits **SARIF 2.1.0** — the format GitHub
 code scanning ingests to annotate pull requests. Rules are the distinct codes
 seen, described from the [explain](commands#explain) knowledge base; regions use
-SARIF's 1-based line and column convention.
+SARIF's 1-based line and column convention. Two things make the SARIF
+production-grade:
+
+- **`fixes`.** Every diagnostic with a verified auto-fix (and its "did you mean"
+  alternatives) carries a SARIF `fix` — a precise `deletedRegion` plus
+  `insertedContent` — so GitHub renders it as a one-click *Apply fix* button in
+  the PR, applying the exact edit `fix --write` would make.
+- **`partialFingerprints`.** Each result carries a `primaryLocationLineHash`
+  derived from the rule id and the diagnostic's *line content* (not its line
+  number), so GitHub tracks the same alert across commits instead of churning it
+  when an unrelated edit shifts the line. An `automationDetails.id` keeps several
+  uploads from colliding.
 
 ```yaml
-# a CI step
-- run: aowlsuggest lint src --format:sarif > aowlsuggest.sarif
+# a CI step (needs permissions: security-events: write)
+- run: aowlsuggest lint . --format:sarif > aowlsuggest.sarif
 - uses: github/codeql-action/upload-sarif@v3
   with: { sarif_file: aowlsuggest.sarif }
 ```
 
-`lint` also offers `--format:json` (a per-file breakdown plus a summary) and a
-non-zero exit on any error, so it slots into any CI without SARIF too.
+Prefer a hard pass/fail gate? `lint` returns non-zero on any error, on any run
+failure, and — with `--max-warnings:N` — when warnings exceed `N`:
+
+```sh
+aowlsuggest lint --pedantic --max-warnings:0 .    # fail on any error OR warning
+```
+
+`--format:json` (a per-file breakdown plus a summary) is available too, so `lint`
+slots into any CI without SARIF.
