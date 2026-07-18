@@ -69,7 +69,9 @@ object` (or, for a namespace/module, at Nim's file-is-a-module model) and lets y
 shape the declaration. `foreign-case-block` (`switch`/`match x { … }`) points at
 `case x:` with `of` branches; `do-while-loop` (`do { } while`) and
 `ruby-block-params` (`do |x|`) point at `while` and `do (x):` respectively —
-each a control-flow reshape you finish by hand. `unterminated-backtick`
+each a control-flow reshape you finish by hand. `c-block-comment` (a C-style
+`/* … */`) points at Nim's `#[ … ]#` block comment — left as a suggestion because
+rewriting the delimiters means checking the body doesn't itself close the block. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
