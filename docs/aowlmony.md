@@ -33,6 +33,15 @@ aowlmony run foo.nim            # compile with whatever aowlup selected
 aowlmony +nimony run foo.nim    # compile once with the all-nimony stack
 ```
 
+The **parser** (`aowlparser` vs `nifler`) and **lowering** (`aowlhexer` vs nimony
+`hexer`) are swapped in through nimony's tool-resolution seam, so the active
+profile genuinely controls them — `aowlmony +aowl run f.nim -v` reports *parsed by
+aowlparser · lowering via aowlhexer*, `+nimony` reports *nifler · nimony hexer*.
+Backends resolve from the registry. The one slot still pending is **sem**:
+`aowlsem` can't yet semcheck `std/system` inside this build, so `sem=aowlsem`
+falls back to nimony's `nimsem` with a note (and adopts `aowlsem` automatically
+once it covers `system`).
+
 ## The pipeline
 
 ```
