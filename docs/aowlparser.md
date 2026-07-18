@@ -94,7 +94,10 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `result =` and bool-swapped variants and stays silent on any richer branch);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
-  (`float-equality`). These are `hint`s — the code compiles, it just isn't how a
+  (`float-equality`). Two further **opinion** checks are off by default and meant
+  to be turned on per project (via aowlsuggest's `[rules]`): `--nil-comparison:warn`
+  flags `x == nil` (a project may prefer `isNil`), and `--yoda:warn` flags a
+  literal on the left of a compare (`0 == x`). These are `hint`s — the code compiles, it just isn't how a
   Nim programmer would write it — and each is exactly the pattern it names (184
   bool compares and 91 float compares surface across the 599-file corpus; the
   `not … in` trap and `not not` are absent from valid code but caught when they

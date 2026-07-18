@@ -151,6 +151,8 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:semicolons` | remove a redundant trailing `;` | `redundant-semicolon` |
 | `--style:idioms` | flag `x == true` / `not not x` / `not x in y` / `not x == y` / `if c: return true else: return false` | `redundant-bool-literal`, `double-negation`, `not-in-precedence`, `not-compare-precedence`, `simplify-boolean-return` *(suggestion only)* |
 | `--style:float-equality` | flag exact `==` / `!=` on a float literal | `float-equality` *(suggestion only)* |
+| `--style:nil-comparison` | flag `x == nil` (prefer `isNil`) | `nil-comparison` *(opinion; suggestion only)* |
+| `--style:yoda` | flag a literal on the left of `==` (`0 == x`) | `yoda-condition` *(opinion; suggestion only)* |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
 | `--pedantic` | trailing-whitespace + final-newline + bom + float-equality | those four |
@@ -189,10 +191,12 @@ warning; an explicit `--config` that can't be read is a hard error.
 
 ### `[rules]` — configure your opinions
 
-Some checks are correct-but-opinionated: whether `x == true` or `not not x` is
-worth flagging is a *house-style* call, not a bug. Rather than bake one answer in,
-a `[rules]` section lets each project set the severity of any code — `off`,
-`hint`, `warning`, or `error`:
+Some checks are correct-but-opinionated: whether `x == nil` should be `x.isNil`,
+or a `0 == x` yoda compare rewritten, is a *house-style* call, not a bug. Those
+pure-opinion checks (`nil-comparison`, `yoda-condition`) ship **off by default**
+and exist precisely to be turned on here. Rather than bake one answer in, a
+`[rules]` section lets each project set the severity of any code — `off`, `hint`,
+`warning`, or `error`:
 
 ```ini
 # .aowlsuggest
