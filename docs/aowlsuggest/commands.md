@@ -14,12 +14,15 @@ colorizes human output; `--no-suppress` ignores inline suppression markers.
 ## `fix`
 
 ```sh
-aowlsuggest fix <file> [--write] [--dry-run]
+aowlsuggest fix <file> [--write] [--dry-run] [--check]
 ```
 
 Applies the diagnostics' repairs to the source. By default (`--dry-run`) it
 prints a unified diff and applies nothing; `--write` writes the corrected file.
-Independent errors are all repaired in one pass, cascades included.
+`--check` (gofmt -l / prettier --check style) writes nothing and **exits
+non-zero if any fix is available** — the CI gate for "this code is already
+clean" (pair it with `--pedantic` to enforce style too). Independent errors are
+all repaired in one pass, cascades included.
 
 ```console
 $ aowlsuggest fix cascade.nim --write
