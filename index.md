@@ -1,8 +1,8 @@
 # aoughwl
 
-A **from-scratch, AI-built reimplementation of the entire Nim / Nimony
-toolchain** — parser, semantic checker, lowering, code generators — with one
-audacious goal: **byte-for-byte identical output** to the originals. Not a fork,
+A **from-scratch reimplementation of the entire Nim / Nimony toolchain** —
+parser, semantic checker, lowering, code generators — with one audacious goal:
+**byte-for-byte identical output** to the originals. Not a fork,
 not a wrapper; every stage is rewritten and held to the real compiler's exact
 bytes by a differential harness. It's written *in* Nimony, self-hosting, **open at
 every seam**, and runs where the classic compiler can't — **right in your

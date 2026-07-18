@@ -5,8 +5,10 @@ recoverable diagnostics into something actionable: verified quick-fixes, batch /
 CI linting, and editor (LSP) payloads. Written in **nimony**, like the parser it
 builds on — so it stays free of the classic Nim toolchain and JS-compilable.
 
-[Repo → github.com/aoughwl/aowlsuggest](https://github.com/aoughwl/aowlsuggest)
-[Parser → aowlparser](aowlparser)
+<div class="hero-actions">
+<a href="https://github.com/aoughwl/aowlsuggest" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowlsuggest</a>
+<a href="/docs/aowlparser">Parser → aowlparser</a>
+</div>
 
 [[toc]]
 

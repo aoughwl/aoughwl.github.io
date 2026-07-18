@@ -1,11 +1,10 @@
 # Parity — byte-for-byte, from scratch
 
-The goal is blunt: an **AI-built, from-scratch reimplementation of the entire
-Nim / Nimony toolchain** whose output is **byte-for-byte identical** to the
-originals — the same parse tree, the same typed IR, the same generated code, down
-to the byte. Not a fork, not a wrapper around Araq's binaries: each stage is
-rewritten and then held to the real compiler's exact output by a differential
-harness.
+The goal is blunt: a **from-scratch reimplementation of the entire Nim / Nimony
+toolchain** whose output is **byte-for-byte identical** to the originals — the
+same parse tree, the same typed IR, the same generated code, down to the byte.
+Not a fork, not a wrapper around Araq's binaries: each stage is rewritten and
+then held to the real compiler's exact output by a differential harness.
 
 We are not all the way there yet — and that's the point of this page. It's the
 honest scoreboard.
@@ -55,10 +54,3 @@ through both the reference tool and ours, normalize nothing that matters, and di
 the bytes. A green diff is the only thing that counts as "done" for a construct;
 everything else is a punch-list item. That's how the parser got to byte-exact,
 and it's how each remaining stage closes the gap.
-
-## Built with AI
-
-The whole stack is written from scratch **with AI** — the reimplementation, the
-test harnesses, the byte-diff grind. That's the experiment: can a full,
-production-grade compiler toolchain be rebuilt to byte-for-byte fidelity this way?
-The scoreboard above is the running answer.

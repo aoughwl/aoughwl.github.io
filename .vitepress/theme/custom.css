@@ -29,6 +29,14 @@
 /* slightly wider sidebar than the 272px default */
 :root {
   --vp-sidebar-width: 300px;
+
+  /* System font stack — no web-font download (the bundled Inter woff2 was ~142KB
+     and its preload competed with the render-blocking CSS on first load). Paired
+     with the `vitepress/theme-without-fonts` entry in theme/index.js. */
+  --vp-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --vp-font-family-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Fira Code',
+    Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 /* brand accent — soft violet, works on both themes */

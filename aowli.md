@@ -5,8 +5,10 @@ post-semcheck typed NIF (`.s.nif`), the exact artifact the native backend
 consumes. Two independent engines execute it and produce byte-identical output,
 and they are held honest against native nimony by a differential test harness.
 
-[Repo → github.com/aoughwl/aowli](https://github.com/aoughwl/aowli)
-[Try it in the browser →](playground)
+<div class="hero-actions">
+<a href="https://github.com/aoughwl/aowli" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowli</a>
+<a href="https://aoughwl.github.io/playground/">Try it in the browser →</a>
+</div>
 
 [[toc]]
 

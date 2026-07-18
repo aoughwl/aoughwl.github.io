@@ -1,5 +1,5 @@
 import { h, ref, onMounted } from 'vue'
-import DefaultTheme from 'vitepress/theme'
+import DefaultTheme from 'vitepress/theme-without-fonts'
 import './custom.css'
 
 // ---- icons ----------------------------------------------------------------
