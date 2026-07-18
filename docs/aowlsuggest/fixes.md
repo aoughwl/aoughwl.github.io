@@ -19,6 +19,8 @@ unambiguous and localized:
 | `assignment-in-condition` | replace the `=` with `==` | `if x = 5:` → `if x == 5:` |
 | `comparison-in-binding` | replace the `==` with `=` | `let x == 5` → `let x = 5` |
 | `else-if-not-elif` | collapse `else if` to `elif` | `else if b:` → `elif b:` |
+| `walrus-in-binding` | replace `:=` with `=` | `let x := 5` → `let x = 5` |
+| `arrow-return-type` | rewrite `-> T` return to `: T` | `proc f() -> int` → `proc f(): int` |
 | `mismatched-bracket` | swap the wrong close for the one its opener wants | `(1 + 2]` → `(1 + 2)` |
 | `expected-colon` | insert `:` at the end of the header | `if c` → `if c:` |
 | `missing-routine-equals` | insert `=` after the signature | `proc f()` → `proc f() =` |
