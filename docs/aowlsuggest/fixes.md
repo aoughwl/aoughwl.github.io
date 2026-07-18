@@ -62,7 +62,11 @@ Everything else is surfaced as a **suggestion** — reported, never applied.
 but there is no single unambiguous character to insert. `foreign-function-keyword`
 (a routine written `fn`/`function`/`fun name() { … }`) is another: fixing it means
 replacing both the keyword and the whole `{ }` body with `proc name() = <indented
-body>` — a multi-span reformat, so it points at `proc` and leaves the edit to you. `unterminated-backtick`
+body>` — a multi-span reformat, so it points at `proc` and leaves the edit to you.
+`foreign-block-keyword` (a `class`/`struct`/`interface`/`impl`/`trait`/`namespace`/
+`module name { … }` block) is the type/module analogue: it points at `type Name =
+object` (or, for a namespace/module, at Nim's file-is-a-module model) and lets you
+shape the declaration. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the

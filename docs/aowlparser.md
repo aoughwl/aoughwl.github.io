@@ -61,7 +61,10 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `proc f<T>()` (C++/Java/Rust/TS angle-bracket generics), `let mut x` (the Rust
   mutable-binding habit — Nim's is `var`), `var x int` (the Go/Java/C#/Swift
   `name type` binding, missing Nim's `:`), `fn`/`function`/`fun name() { … }` (a
-  routine written with a Rust/JS/Kotlin function keyword and a brace body), a
+  routine written with a Rust/JS/Kotlin function keyword and a brace body),
+  `class`/`struct`/`interface`/`impl`/`trait`/`namespace`/`module name { … }` (an
+  OO/type/module block from another language — Nim types are `type Name = object`
+  and modules are files), a
   stray `end`
   (Ruby/Pascal/Lua block terminator) and a C-style `{ }` body; `else if` used for
   `elif`, empty conditions (`elif:`), empty comma slots (`foo(a,,b)`),
