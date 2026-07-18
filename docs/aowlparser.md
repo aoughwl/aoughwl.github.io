@@ -96,7 +96,7 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `result =` and bool-swapped variants and stays silent on any richer branch);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
-  (`float-equality`). Ten further **opinion** checks are off by default and
+  (`float-equality`). Twelve further **opinion** checks are off by default and
   meant to be turned on per project (via aowlsuggest's `[rules]`), each with its
   own flag: `--nil-comparison:warn` flags `x == nil` (a project may prefer
   `isNil`); `--yoda:warn` flags a literal on the left of a compare (`0 == x`);
@@ -112,12 +112,14 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   a bare `except:` (catches everything, Defects included); `--cast:warn` flags
   `cast[T](x)` (an unchecked reinterpret a project may want to audit); and
   `--converter:warn` flags a `converter` definition (implicit conversions surprise
-  overload resolution). These are `hint`s — the
+  overload resolution); `--addr:warn` flags `addr`/`unsafeAddr` (a raw address-of
+  that escapes memory safety); and `--asm:warn` flags an inline `asm` block
+  (non-portable and unchecked). These are `hint`s — the
   code compiles, it just isn't how a Nim programmer would write it — and each is
   exactly the pattern it names (184 bool compares and 91 float compares surface
   across the 599-file corpus, alongside 1012 nil compares, 200 `.. n - 1` ranges,
-  20 fully-wrapped conditions, 9 broad + 93 bare `Exception`s and 2233 casts; the
-  `not … in` trap,
+  20 fully-wrapped conditions, 9 broad + 93 bare `Exception`s, 2233 casts and 1212
+  address-of ops; the `not … in` trap,
   `not not` and `s & ""` are absent from valid code but caught when they appear —
   with zero error-level diagnostics).
 

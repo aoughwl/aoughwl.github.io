@@ -161,6 +161,8 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:bare-except` | flag a bare `except:` (catches everything) | `bare-except` *(opinion; suggestion only)* |
 | `--style:cast` | flag `cast[T](x)` (unchecked reinterpret) | `cast-used` *(opinion; suggestion only)* |
 | `--style:converter` | flag a `converter` definition (implicit conversion) | `converter-defined` *(opinion; suggestion only)* |
+| `--style:addr` | flag `addr`/`unsafeAddr` (raw address-of) | `addr-of` *(opinion; suggestion only)* |
+| `--style:asm` | flag an inline `asm` block (non-portable) | `asm-block` *(opinion; suggestion only)* |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
 | `--pedantic` | trailing-whitespace + final-newline + bom + float-equality | those four |
@@ -203,7 +205,7 @@ Some checks are correct-but-opinionated: whether `x == nil` should be `x.isNil`,
 or a `0 == x` yoda compare rewritten, is a *house-style* call, not a bug. Those
 pure-opinion checks — `nil-comparison`, `yoda-condition`, `redundant-parens-condition`,
 `empty-string-concat`, `debug-echo`, `manual-range-index`, `broad-exception`,
-`bare-except`, `cast-used`, `converter-defined` —
+`bare-except`, `cast-used`, `converter-defined`, `addr-of`, `asm-block` —
 ship **off by default** and exist precisely to be turned on here. Rather than bake one answer in, a
 `[rules]` section lets each project set the severity of any code — `off`, `hint`,
 `warning`, or `error`:
