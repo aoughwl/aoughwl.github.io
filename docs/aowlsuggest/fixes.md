@@ -24,6 +24,7 @@ unambiguous and localized:
 | `angle-bracket-generics` | rewrite `<T>` generics to `[T]` | `proc f<T>()` → `proc f[T]()` |
 | `mut-not-a-keyword` | rewrite `let/var/const mut x` to `var x` | `let mut x = 5` → `var x = 5` |
 | `go-var-notype` | insert the `:` in a `name type` binding | `var x int` → `var x: int` |
+| `c-block-comment` | swap `/* … */` for Nim's `#[ … ]#` | `/* c */` → `#[ c ]#` |
 | `mismatched-bracket` | swap the wrong close for the one its opener wants | `(1 + 2]` → `(1 + 2)` |
 | `expected-colon` | insert `:` at the end of the header | `if c` → `if c:` |
 | `missing-routine-equals` | insert `=` after the signature | `proc f()` → `proc f() =` |
@@ -77,7 +78,11 @@ header) points at Nim's `{.raises.}` pragma and `[T: Constraint]` generics.
 `extends-inheritance` (a Java/TS `type Foo extends Bar`) points at Nim's
 `type Foo = object of Bar`. `yield-from` (Python's `yield from xs`) points at the
 explicit loop `for x in xs: yield x`, and `async-routine-prefix` (an `async proc`)
-points at Nim's `{.async.}` pragma. `unterminated-backtick`
+points at Nim's `{.async.}` pragma.
+
+The C block comment `c-block-comment` is the exception in this group that *is*
+auto-fixed — swapping `/* … */` for `#[ … ]#` is a mechanical delimiter change, and
+the verify loop still discards it in the rare case the body itself holds a `]#`. `unterminated-backtick`
 is another: a backtick identifier may hold spaces and operators, so where the
 closer belongs is ambiguous (appending it at the line's end would turn
 `` let `a = 1 `` into the nonsense identifier `` `a = 1` `` — which the
