@@ -96,7 +96,7 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `result =` and bool-swapped variants and stays silent on any richer branch);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
-  (`float-equality`). Seven further **opinion** checks are off by default and
+  (`float-equality`). Ten further **opinion** checks are off by default and
   meant to be turned on per project (via aowlsuggest's `[rules]`), each with its
   own flag: `--nil-comparison:warn` flags `x == nil` (a project may prefer
   `isNil`); `--yoda:warn` flags a literal on the left of a compare (`0 == x`);
@@ -106,13 +106,18 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   flags `s & ""` (concatenating an empty string is a no-op); `--debug-echo:warn`
   flags a statement-position `echo` (a debug print a project may want out of
   committed code); `--range-index:warn` flags `0 .. n - 1` (Nim's half-open
-  `0 ..< n` says the same with no off-by-one); and `--broad-exception:warn` flags
+  `0 ..< n` says the same with no off-by-one); `--broad-exception:warn` flags
   `except Exception` / `newException(Exception, …)` (too broad — it also catches
-  Defects; prefer `CatchableError` or a specific type). These are `hint`s — the
+  Defects; prefer `CatchableError` or a specific type); `--bare-except:warn` flags
+  a bare `except:` (catches everything, Defects included); `--cast:warn` flags
+  `cast[T](x)` (an unchecked reinterpret a project may want to audit); and
+  `--converter:warn` flags a `converter` definition (implicit conversions surprise
+  overload resolution). These are `hint`s — the
   code compiles, it just isn't how a Nim programmer would write it — and each is
   exactly the pattern it names (184 bool compares and 91 float compares surface
   across the 599-file corpus, alongside 1012 nil compares, 200 `.. n - 1` ranges,
-  20 fully-wrapped conditions and 9 broad `Exception`s; the `not … in` trap,
+  20 fully-wrapped conditions, 9 broad + 93 bare `Exception`s and 2233 casts; the
+  `not … in` trap,
   `not not` and `s & ""` are absent from valid code but caught when they appear —
   with zero error-level diagnostics).
 
