@@ -86,8 +86,9 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
 - Opt-in **idiomatic lints** on *valid* code (off by default, so the zero-FP
   corpus stays clean): `--idioms:warn` flags a redundant bool compare
   `x == true` / `x != false` (`redundant-bool-literal`), a `not not x` double
-  negation (`double-negation`), and the `not x in y` precedence trap that parses
-  as `(not x) in y` when `x notin y` was meant (`not-in-precedence`);
+  negation (`double-negation`), and the precedence traps `not x in y` → parses as
+  `(not x) in y` when `x notin y` was meant (`not-in-precedence`) and `not x == y`
+  → parses as `(not x) == y` when `x != y` was meant (`not-compare-precedence`);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
   (`float-equality`). These are `hint`s — the code compiles, it just isn't how a

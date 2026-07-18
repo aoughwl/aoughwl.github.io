@@ -87,7 +87,9 @@ A distinct group are the **idiom lints** — opt-in hints on code that is perfec
 [Commands](commands#style-lint-policies)). `redundant-bool-literal` (`x == true`,
 `x != false`, and the `not`-needing `x == false` / `x != true`) points at the bare
 expression; `double-negation` (`not not x`) points at `x`; `not-in-precedence` (`not x in y`,
-which parses as `(not x) in y`) points at `x notin y`; `float-equality`
+which parses as `(not x) in y`) points at `x notin y`; `not-compare-precedence`
+(`not x == y`, which parses as `(not x) == y`) points at the opposite comparison
+`x != y`; `float-equality`
 (`x == 3.14`) points at a tolerance compare (`abs(a - b) < 1e-9`) or `almostEqual`.
 All three stay **suggestions** — the identity rewrite is trivial but the `not`
 forms turn on operator precedence and the right float epsilon is domain-specific,
