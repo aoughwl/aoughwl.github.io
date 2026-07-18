@@ -96,14 +96,25 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `result =` and bool-swapped variants and stays silent on any richer branch);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
-  (`float-equality`). Two further **opinion** checks are off by default and meant
-  to be turned on per project (via aowlsuggest's `[rules]`): `--nil-comparison:warn`
-  flags `x == nil` (a project may prefer `isNil`), and `--yoda:warn` flags a
-  literal on the left of a compare (`0 == x`). These are `hint`s — the code compiles, it just isn't how a
-  Nim programmer would write it — and each is exactly the pattern it names (184
-  bool compares and 91 float compares surface across the 599-file corpus; the
-  `not … in` trap and `not not` are absent from valid code but caught when they
-  appear — with zero error-level diagnostics).
+  (`float-equality`). Seven further **opinion** checks are off by default and
+  meant to be turned on per project (via aowlsuggest's `[rules]`), each with its
+  own flag: `--nil-comparison:warn` flags `x == nil` (a project may prefer
+  `isNil`); `--yoda:warn` flags a literal on the left of a compare (`0 == x`);
+  `--redundant-parens:warn` flags `if (cond):` — a condition wrapped entirely in
+  parentheses Nim doesn't need (never a load-bearing group like
+  `(let y = f(); …)` or a sub-expression `(a or b) and c`); `--empty-string:warn`
+  flags `s & ""` (concatenating an empty string is a no-op); `--debug-echo:warn`
+  flags a statement-position `echo` (a debug print a project may want out of
+  committed code); `--range-index:warn` flags `0 .. n - 1` (Nim's half-open
+  `0 ..< n` says the same with no off-by-one); and `--broad-exception:warn` flags
+  `except Exception` / `newException(Exception, …)` (too broad — it also catches
+  Defects; prefer `CatchableError` or a specific type). These are `hint`s — the
+  code compiles, it just isn't how a Nim programmer would write it — and each is
+  exactly the pattern it names (184 bool compares and 91 float compares surface
+  across the 599-file corpus, alongside 1012 nil compares, 200 `.. n - 1` ranges,
+  20 fully-wrapped conditions and 9 broad `Exception`s; the `not … in` trap,
+  `not not` and `s & ""` are absent from valid code but caught when they appear —
+  with zero error-level diagnostics).
 
 The error-level checks are proven zero-false-positive against the 599 valid files;
 the opt-in idiom hints fire only on the precise construct they name. No check ever

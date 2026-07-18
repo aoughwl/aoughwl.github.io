@@ -153,6 +153,11 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:float-equality` | flag exact `==` / `!=` on a float literal | `float-equality` *(suggestion only)* |
 | `--style:nil-comparison` | flag `x == nil` (prefer `isNil`) | `nil-comparison` *(opinion; suggestion only)* |
 | `--style:yoda` | flag a literal on the left of `==` (`0 == x`) | `yoda-condition` *(opinion; suggestion only)* |
+| `--style:redundant-parens` | flag `if (cond):` (Nim needs no parens) | `redundant-parens-condition` *(opinion; suggestion only)* |
+| `--style:empty-string` | flag `s & ""` (concat with `""` is a no-op) | `empty-string-concat` *(opinion; suggestion only)* |
+| `--style:debug-echo` | flag a bare `echo` statement | `debug-echo` *(opinion; suggestion only)* |
+| `--style:range-index` | flag `0 .. n - 1` (prefer half-open `0 ..< n`) | `manual-range-index` *(opinion; suggestion only)* |
+| `--style:broad-exception` | flag `except Exception` / `newException(Exception, …)` | `broad-exception` *(opinion; suggestion only)* |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
 | `--pedantic` | trailing-whitespace + final-newline + bom + float-equality | those four |
@@ -193,8 +198,9 @@ warning; an explicit `--config` that can't be read is a hard error.
 
 Some checks are correct-but-opinionated: whether `x == nil` should be `x.isNil`,
 or a `0 == x` yoda compare rewritten, is a *house-style* call, not a bug. Those
-pure-opinion checks (`nil-comparison`, `yoda-condition`) ship **off by default**
-and exist precisely to be turned on here. Rather than bake one answer in, a
+pure-opinion checks — `nil-comparison`, `yoda-condition`, `redundant-parens-condition`,
+`empty-string-concat`, `debug-echo`, `manual-range-index`, `broad-exception` —
+ship **off by default** and exist precisely to be turned on here. Rather than bake one answer in, a
 `[rules]` section lets each project set the severity of any code — `off`, `hint`,
 `warning`, or `error`:
 
