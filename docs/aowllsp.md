@@ -19,11 +19,12 @@ Broad coverage — ~36 LSP methods — over the live, unsaved buffer:
 - **Symbols** — documentSymbol + workspaceSymbol, from **[aowllens](aiflens)** `decls`.
 - **Completion** — module symbols filtered by the identifier prefix under the
   cursor, and **type-directed member completion**: after `receiver.`, aowllsp
-  resolves the receiver's type through **[aowllens](aiflens)** `members` and
-  offers only that type's fields, enum values, and first-parameter routines
-  (UFCS/methods), following `object of Base` for inherited members. When the
-  receiver can't be resolved it falls back to prefix completion, so nothing is
-  lost.
+  resolves the receiver's type and offers only that type's fields, enum values,
+  and first-parameter routines (UFCS/methods), following `object of Base` for
+  inherited members. Resolution is **position-precise** — **[aowllens](aiflens)**
+  `typeat` reads the type of the exact symbol under the receiver, so field chains
+  (`a.b.c.`) and shadowed names resolve correctly; it falls back to by-name
+  resolution, then to plain prefix completion, so nothing is ever lost.
 - **codeAction** — quick-fixes delegated to aowlsuggest, plus a `source.fixAll`
   action that applies every verified auto-fix in the buffer at once.
 - **semanticTokens**, **rename** / **prepareRename**, **signatureHelp**,

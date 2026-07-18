@@ -62,6 +62,7 @@ symId (exact / prefix) or human base name.
 | `calls` | call sites within a module (caller → callee edges) |
 | `types` | object-type declarations + their inheritance parent |
 | `members` | **type-directed members of a receiver** — an identifier's fields, enum values, and first-parameter routines (UFCS/methods), following `object of Base` for inherited members |
+| `typeat` | **type at a source position** — resolves the symbol at `<line> <col>` to its type base name; the primitive that makes member completion work for *expressions* (`a.b.c.` field chains, shadowed names) not just bare identifiers |
 | `serve` | line-oriented stdio daemon (one process across requests) |
 
 **Status & roadmap:** the `serve` daemon and the shared NIF core both exist. The
