@@ -1,11 +1,13 @@
+---
+repo: aoughwl/aowllsp
+---
+
 # aowllsp — the Language Server, written in Nimony
 
 **[aowllsp](https://github.com/aoughwl/aowllsp)** is a Language Server for Nimony
 that is itself **written in Nimony** — a ground-up rewrite of the old (Nim 2)
 `nimony-lsp`, so the whole editor stack is self-owned and, the end goal,
 **JS-compilable for an in-browser IDE**.
-
-[Repo → github.com/aoughwl/aowllsp](https://github.com/aoughwl/aowllsp)
 
 ## What it does
 

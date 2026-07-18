@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowljs
+---
+
 # aowljs — a `.s.nif` → native-JavaScript backend
 
 `aowljs` transpiles a typed nimony NIF (`.s.nif`) to **real JavaScript** — mapping
@@ -6,7 +10,6 @@ so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**
 and its output is **readable**. It's the **Native JS** engine in the
 [playground](https://aoughwl.github.io/playground/).
 
-Repo: **`aoughwl/aowljs`** (public). A single, dependency-free JS file that reads a
 `.s.nif` and emits JavaScript.
 
 [[toc]]

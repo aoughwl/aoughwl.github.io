@@ -1,11 +1,13 @@
+---
+repo: aoughwl/aowlup
+---
+
 # aowlup — the toolchain manager
 
 `aowlup` is **`rustup` for the aowl/nimony stack**. It installs, versions, and
 *selects* the components of the compilation pipeline; the driver,
 [aowlmony](aowlmony), compiles your code against whatever `aowlup` has selected.
 One provisions the toolchain, the other runs it.
-
-Repo: **`aoughwl/aowlup`** (public).
 
 ```
 aowlup  ── manages the toolchain ──►  ~/.aowl/registry.json  ◄── reads ──  aowlmony

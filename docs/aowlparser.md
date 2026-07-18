@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlparser
+---
+
 # aowlparser — Nim → AIF parser
 
 Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.aif`).
@@ -7,7 +11,6 @@ backend and runs in the browser. Output is byte-identical to `nifler` except the
 one header line it owns, `(.vendor "aowlparser")`.
 
 <div class="hero-actions">
-<a href="https://github.com/aoughwl/aowlparser" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowlparser</a>
 <a href="https://aoughwl.github.io/playground/">Playground →</a>
 </div>
 

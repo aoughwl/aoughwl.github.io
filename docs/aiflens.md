@@ -1,10 +1,12 @@
+---
+repo: aoughwl/aiflens
+---
+
 # aiflens — a NIF lens for tooling
 
 A thin CLI over [Nimony](../nimony)'s own NIF libraries (`nifreader` /
 `nifstreams` / `nifcursors` / `nifindexes`). It reads `nimcache/*.nif` artifacts
 with the **real parser** and emits compact JSON for a host tool to consume.
-
-[Repo → github.com/aoughwl/aiflens](https://github.com/aoughwl/aiflens)
 
 ## Why
 

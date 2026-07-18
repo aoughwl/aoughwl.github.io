@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlhexer
+---
+
 # aowlhexer — the aowl lowering pass
 
 `aowlhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
@@ -5,8 +9,6 @@
 inlining iterators, lowering exceptions, and monomorphising generics along the
 way. It is seeded from Andreas Rumpf's `hexer` in nimony and is being
 progressively aowl-owned.
-
-Repo: **`aoughwl/aowlhexer`** (public).
 
 ## The hard part of the compiler
 

@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlweb
+---
+
 # aowlweb — JavaScript & WebAssembly backends
 
 Two backends that take Nim to the web: one emits JavaScript, the other emits

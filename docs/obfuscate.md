@@ -1,3 +1,7 @@
+---
+repo: aoughwl/obfuscate
+---
+
 # obfuscate — Nimony obfuscators (name + NIF control-flow)
 
 Two obfuscators for [Nimony](../nimony), built as **test articles**: a

@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlfmt
+---
+
 # aowlfmt — verified layout formatter
 
 A source formatter for Nim / aowl that **proves it changed nothing but layout**
@@ -6,7 +10,6 @@ stack, and built on **[aowlparser](aowlparser)** — it never reimplements the
 lexer or parser, it uses the parser as an oracle.
 
 <div class="hero-actions">
-<a href="https://github.com/aoughwl/aowlfmt" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowlfmt</a>
 <a href="/docs/aowlparser">Parser → aowlparser</a>
 </div>
 

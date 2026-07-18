@@ -44,6 +44,4 @@ sockets — so any transport can reuse them. `tls` sits beside `net` (it wraps a
 | [ws](net-stack/ws) | WebSocket (RFC 6455), server + client, ws:// + wss:// | [aoughwl/ws](https://github.com/aoughwl/ws) |
 | [requests](net-stack/requests) | Browser-identical HTTP client (curl-impersonate) | [aoughwl/requests](https://github.com/aoughwl/requests) |
 
-Verbatim API symbol tables for the older libraries are archived under
-**Reference**: [tcp](reference/tcp) · [net](reference/net) · [http](reference/http) ·
-[serve](reference/serve) · [requests](reference/requests).
+Each library page above is a self-contained API reference for that repo.

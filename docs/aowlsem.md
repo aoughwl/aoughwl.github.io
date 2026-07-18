@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlsem
+---
+
 # aowlsem — the semantic-analysis stage
 
 `aowlsem` is the semantic checker of the aoughwl toolchain. It reads the parse
@@ -5,8 +9,6 @@ dialect of AIF (`.p.aif`, as produced by [aowlparser](aowlparser)) and writes
 typed, symbol-resolved AIF (`.s.aif`) ready for the lowering stage
 ([aowlhexer](aowlhexer)). It resolves names, checks types, picks overloads, and
 instantiates generics.
-
-Source: **[github.com/aoughwl/aowlsem](https://github.com/aoughwl/aowlsem)**
 
 ```
  .p.aif ──► aowlsem ──► .s.aif

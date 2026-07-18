@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlc
+---
+
 # aowlc — a `.c.nif` → C native backend
 
 `aowlc` compiles nimony's **post-`hexer`** IR (`.c.nif`) to **real C** and links it
@@ -5,7 +9,6 @@ with `gcc` to a native binary. It's the self-owned native counterpart to
 [aowljs](aowljs) (the JavaScript backend) — same architecture (NIF reader +
 emitter), retargeted from JS to C.
 
-Repo: **`aoughwl/aowlc`** (public). A single dependency-free JS file that reads a
 `.c.nif` and emits C, plus a CLI driver that shells `gcc`.
 
 [[toc]]

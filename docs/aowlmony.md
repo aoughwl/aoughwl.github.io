@@ -1,3 +1,7 @@
+---
+repo: aoughwl/aowlmony
+---
+
 # aowlmony — the nimony rewrite driver
 
 `aowlmony` is the driver that unifies the aoughwl self-owned stack into one
@@ -5,8 +9,6 @@ compiler over **AIF** (the aowl intermediate format): give it a `.nim` file and
 it runs parser → sem → lowering → **your choice of native code or
 interpretation**, using aoughwl's own components wherever they exist and reusing
 nimony's only for the parts not yet rebuilt.
-
-Repo: **`aoughwl/aowlmony`** (public).
 
 [[toc]]
 

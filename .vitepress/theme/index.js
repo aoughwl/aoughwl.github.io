@@ -1,4 +1,5 @@
 import { h, ref, onMounted } from 'vue'
+import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import './custom.css'
 
@@ -98,6 +99,30 @@ function decorateSidebar() {
   })
 }
 
+// ---- generic per-page GitHub button --------------------------------------
+// Every doc page gets its repo button for free: just add `repo: aoughwl/<name>`
+// (or a full URL) to the page's YAML front-matter. No per-page markup, no
+// hand-written links. Rendered at the top of the doc via the `doc-before` slot.
+const RepoButton = {
+  setup() {
+    const { frontmatter } = useData()
+    return () => {
+      const repo = frontmatter.value.repo
+      if (!repo) return null
+      // front-matter carries `owner/repo` (e.g. aoughwl/requests) or a full URL.
+      const label = repo.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '')
+      const href = /^https?:\/\//.test(repo) ? repo : 'https://github.com/' + label
+      return h('div', { class: 'repo-btn-row' }, [
+        h('a', { class: 'repo-btn', href, target: '_blank', rel: 'noopener', 'aria-label': 'GitHub — ' + label }, [
+          h('span', { class: 'repo-btn-ico', innerHTML: GITHUB_SVG }),
+          h('span', { class: 'repo-btn-txt' }, label),
+          h('span', { class: 'repo-btn-arrow', innerHTML: REDIRECT_SM }),
+        ]),
+      ])
+    }
+  },
+}
+
 // ---- client-only nav extras (renders after mount → no hydration mismatch) --
 const NavExtras = {
   setup() {
@@ -122,6 +147,7 @@ export default {
   Layout() {
     return h(DefaultTheme.Layout, null, {
       'nav-bar-content-after': () => h(NavExtras),
+      'doc-before': () => h(RepoButton),
     })
   },
   enhanceApp({ router }) {
