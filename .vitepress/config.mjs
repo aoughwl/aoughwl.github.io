@@ -12,6 +12,7 @@ const sidebar = [
     text: 'OVERVIEW',
     items: [
       { text: 'Welcome', link: '/' },
+      { text: 'Parity', link: '/docs/parity' },
     ],
   },
   {
