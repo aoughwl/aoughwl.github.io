@@ -52,8 +52,10 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
 - `aowlparser check <file>` lint mode; `--diagnostics:json` emits
   `{severity, code, message, line, col, endCol, fix, related}` per diagnostic.
 - Full classic-lexer error parity, recovering past each: bad char literals, illegal
-  tabs, unterminated block/triple/raw strings, malformed escapes, malformed numbers,
-  unterminated accent-quoted identifiers.
+  tabs, unterminated block/triple/raw strings, malformed escapes, malformed numbers
+  (including an exponent with no digits like `1e`, and a C/Java/JS suffix or stray
+  letter glued to a number like `100L`/`100n` — Nim's typed literal uses an
+  apostrophe, `100'i64`), unterminated accent-quoted identifiers.
 - Detections `nifler` lacks: assignment-in-condition (`if`/`elif`/`while`/`when x = 5:`),
   comparison-in-binding (its mirror — `let`/`const x == 5`),
   the cross-language habits `let x := 5` (Pascal/Go walrus), `proc f() -> int`
