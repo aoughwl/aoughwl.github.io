@@ -81,6 +81,17 @@ pragma, `[T: Constraint]` generics and `method` dispatch.
 explicit loop `for x in xs: yield x`, and `async-routine-prefix` (an `async proc`)
 points at Nim's `{.async.}` pragma.
 
+A distinct group are the **idiom lints** — opt-in hints on code that is perfectly
+*valid* but not how a Nim programmer would write it (enabled with `--style:idioms`
+/ `--style:float-equality` / `--pedantic`, see
+[Commands](commands#style-lint-policies)). `redundant-bool-literal` (`x == true`,
+`x != false`, and the `not`-needing `x == false` / `x != true`) points at the bare
+expression; `double-negation` (`not not x`) points at `x`; `float-equality`
+(`x == 3.14`) points at a tolerance compare (`abs(a - b) < 1e-9`) or `almostEqual`.
+All three stay **suggestions** — the identity rewrite is trivial but the `not`
+forms turn on operator precedence and the right float epsilon is domain-specific,
+so the edit is yours to make.
+
 The C block comment `c-block-comment` is the exception in this group that *is*
 auto-fixed — swapping `/* … */` for `#[ … ]#` is a mechanical delimiter change, and
 the verify loop still discards it in the rare case the body itself holds a `]#`. `unterminated-backtick`

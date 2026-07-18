@@ -83,8 +83,18 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   a type description, a keyword where an enum member belongs, an empty object-variant
   branch, `of`/`for` missing their value (`of:`, `for x of xs`).
 - UTF-8 identifiers, and `#? stdtmpl` filter files (recognized as non-Nim).
+- Opt-in **idiomatic lints** on *valid* code (off by default, so the zero-FP
+  corpus stays clean): `--idioms:warn` flags a redundant bool compare
+  `x == true` / `x != false` (`redundant-bool-literal`) and a `not not x` double
+  negation (`double-negation`); `--float-equality:warn` (also folded into
+  aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
+  (`float-equality`). These are `hint`s — the code compiles, it just isn't how a
+  Nim programmer would write it — and each is exactly the pattern it names (184
+  bool compares and 91 float compares surface across the 599-file corpus, with
+  zero error-level diagnostics).
 
-Every check is proven zero-false-positive against the 599 valid files and never
+The error-level checks are proven zero-false-positive against the 599 valid files;
+the opt-in idiom hints fire only on the precise construct they name. No check ever
 changes the emitted AIF.
 
 ## Pages

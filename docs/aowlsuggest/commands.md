@@ -149,14 +149,20 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:bom` | reject a UTF-8 BOM | `bom-rejected` |
 | `--style:c-operators` | flag `&&` / `\|\|` (use `and` / `or`) | `c-style-operator` *(suggestion only)* |
 | `--style:semicolons` | remove a redundant trailing `;` | `redundant-semicolon` |
+| `--style:idioms` | flag `x == true` / `not not x` | `redundant-bool-literal`, `double-negation` *(suggestion only)* |
+| `--style:float-equality` | flag exact `==` / `!=` on a float literal | `float-equality` *(suggestion only)* |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |
-| `--pedantic` | trailing-whitespace + final-newline + bom | the three above |
+| `--pedantic` | trailing-whitespace + final-newline + bom + float-equality | those four |
 
-`--style:` is repeatable. The flags flow through the same verify loop as every
-other fix, so a style edit is kept only if re-checking under the *same* policy
-strictly improves it — and each style fix touches nothing but whitespace/BOM, so
-it can never change what the program means.
+`--style:` is repeatable. The whitespace/BOM flags flow through the same verify
+loop as every other fix, so a style edit is kept only if re-checking under the
+*same* policy strictly improves it — and each touches nothing but
+whitespace/BOM, so it can never change what the program means. The **idiom** and
+**float-equality** lints are different: they fire on *valid* code (a redundant
+bool compare, a double negation, fragile exact-float equality), so they stay
+**suggestions** — reported with concrete guidance, never auto-applied, since the
+rewrite (`not <expr>`, an epsilon tolerance) needs your eye.
 
 ## Project config — `.aowlsuggest`
 
