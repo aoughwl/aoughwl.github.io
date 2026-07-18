@@ -70,6 +70,7 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   branches), a C/JS `do { } while` loop and Ruby `do |x|` block params, a C-style
   `/* … */` block comment (Nim's is `#[ … ]#`), a Java `throws` or Rust/Swift/C#
   `where` routine clause (Nim uses a `{.raises.}` pragma and `[T: Constraint]`), a
+  Java/TS `type Foo extends Bar` inheritance clause (Nim's is `object of Bar`), a
   stray `end`
   (Ruby/Pascal/Lua block terminator) and a C-style `{ }` body; `else if` used for
   `elif`, empty conditions (`elif:`), empty comma slots (`foo(a,,b)`),
