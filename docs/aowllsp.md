@@ -26,8 +26,11 @@ Broad coverage — ~36 LSP methods — over the live, unsaved buffer:
   (`a.b.c.`), shadowed names, **call results (`make().`)** and **index results
   (`xs[i].`)** all resolve to the right type (a trailing `)`/`]` is bracket-matched
   to the callee/container, whose routine or `[]`-operator return type is the
-  receiver's type). It falls back to by-name resolution, then to plain prefix
-  completion, so nothing is ever lost.
+  receiver's type). Because a buffer you are mid-typing (a dangling `o.inner.`)
+  does not parse, completion first **massages** the incomplete access away and
+  live-compiles that copy, so the receiver's type still resolves on the in-flight
+  edit. It falls back to by-name resolution, then to plain prefix completion, so
+  nothing is ever lost.
 - **codeAction** — quick-fixes delegated to aowlsuggest, plus a `source.fixAll`
   action that applies every verified auto-fix in the buffer at once.
 - **semanticTokens**, **rename** / **prepareRename**, **signatureHelp**,
