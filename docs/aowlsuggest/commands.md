@@ -149,7 +149,7 @@ aowlsuggest fix  --pedantic  --write <paths...>   # apply the whole safe style s
 | `--style:bom` | reject a UTF-8 BOM | `bom-rejected` |
 | `--style:c-operators` | flag `&&` / `\|\|` (use `and` / `or`) | `c-style-operator` *(suggestion only)* |
 | `--style:semicolons` | remove a redundant trailing `;` | `redundant-semicolon` |
-| `--style:idioms` | flag `x == true` / `not not x` / `not x in y` / `not x == y` | `redundant-bool-literal`, `double-negation`, `not-in-precedence`, `not-compare-precedence` *(suggestion only)* |
+| `--style:idioms` | flag `x == true` / `not not x` / `not x in y` / `not x == y` / `if c: return true else: return false` | `redundant-bool-literal`, `double-negation`, `not-in-precedence`, `not-compare-precedence`, `simplify-boolean-return` *(suggestion only)* |
 | `--style:float-equality` | flag exact `==` / `!=` on a float literal | `float-equality` *(suggestion only)* |
 | `--style:indent-consistency` | derive & check the indent step | `indent-consistency` *(advisory)* |
 | `--indent-width:N` | warn when indent isn't a multiple of `N` | `indent-width` *(advisory)* |

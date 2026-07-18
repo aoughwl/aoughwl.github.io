@@ -89,7 +89,9 @@ A distinct group are the **idiom lints** — opt-in hints on code that is perfec
 expression; `double-negation` (`not not x`) points at `x`; `not-in-precedence` (`not x in y`,
 which parses as `(not x) in y`) points at `x notin y`; `not-compare-precedence`
 (`not x == y`, which parses as `(not x) == y`) points at the opposite comparison
-`x != y`; `float-equality`
+`x != y`; `simplify-boolean-return` (an `if c: return true else: return false`,
+including the `result =` and bool-swapped variants) points at `return c` (or
+`return not (c)`); `float-equality`
 (`x == 3.14`) points at a tolerance compare (`abs(a - b) < 1e-9`) or `almostEqual`.
 All three stay **suggestions** — the identity rewrite is trivial but the `not`
 forms turn on operator precedence and the right float epsilon is domain-specific,

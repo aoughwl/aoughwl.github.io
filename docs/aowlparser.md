@@ -88,7 +88,10 @@ corpus, on files where both report errors, `nifler` emits ~2× the error lines.
   `x == true` / `x != false` (`redundant-bool-literal`), a `not not x` double
   negation (`double-negation`), and the precedence traps `not x in y` → parses as
   `(not x) in y` when `x notin y` was meant (`not-in-precedence`) and `not x == y`
-  → parses as `(not x) == y` when `x != y` was meant (`not-compare-precedence`);
+  → parses as `(not x) == y` when `x != y` was meant (`not-compare-precedence`),
+  and an `if c: return true else: return false` that just returns the condition
+  (`simplify-boolean-return`, the one structural check — it also matches the
+  `result =` and bool-swapped variants and stays silent on any richer branch);
   `--float-equality:warn` (also folded into
   aowlsuggest's `--pedantic`) flags an exact `==` / `!=` against a float literal
   (`float-equality`). These are `hint`s — the code compiles, it just isn't how a
