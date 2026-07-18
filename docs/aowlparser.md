@@ -6,8 +6,10 @@ no dependency on the classic Nim compiler, so it compiles through the nimony JS
 backend and runs in the browser. Output is byte-identical to `nifler` except the
 one header line it owns, `(.vendor "aowlparser")`.
 
-[Repo → github.com/aoughwl/aowlparser](https://github.com/aoughwl/aowlparser)
-[Playground →](../playground)
+<div class="hero-actions">
+<a href="https://github.com/aoughwl/aowlparser" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowlparser</a>
+<a href="https://aoughwl.github.io/playground/">Playground →</a>
+</div>
 
 ## Scope
 

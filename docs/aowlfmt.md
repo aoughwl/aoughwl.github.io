@@ -5,8 +5,10 @@ before it will touch your file. Written in **nimony**, like the rest of the
 stack, and built on **[aowlparser](aowlparser)** — it never reimplements the
 lexer or parser, it uses the parser as an oracle.
 
-[Repo → github.com/aoughwl/aowlfmt](https://github.com/aoughwl/aowlfmt)
-[Parser → aowlparser](aowlparser)
+<div class="hero-actions">
+<a href="https://github.com/aoughwl/aowlfmt" target="_blank" rel="noopener">Repo → github.com/aoughwl/aowlfmt</a>
+<a href="/docs/aowlparser">Parser → aowlparser</a>
+</div>
 
 [[toc]]
 

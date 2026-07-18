@@ -16,7 +16,7 @@ const sidebar = [
     ],
   },
   {
-    text: 'PIPELINE',
+    text: 'COMPILER',
     items: [
       {
         text: 'Parser — aowlparser',
@@ -32,8 +32,14 @@ const sidebar = [
           { text: 'Browser & JavaScript', link: '/docs/aowlparser/browser' },
         ],
       },
+      { text: 'Sem — aowlsem', link: '/docs/aowlsem' },
+      { text: 'Hexer — aowlhexer', link: '/docs/aowlhexer' },
+    ],
+  },
+  {
+    text: 'RUNTIME & IR',
+    items: [
       { text: 'Interpreter — aowli', link: '/aowli' },
-      { text: 'Pipeline Driver — aowlmony', link: '/docs/aowlmony' },
       {
         text: 'Runtime — aowllib',
         link: '/docs/aowllib',
@@ -42,6 +48,7 @@ const sidebar = [
           { text: 'Overview', link: '/docs/aowllib' },
         ],
       },
+      { text: 'Pipeline Driver — aowlmony', link: '/docs/aowlmony' },
       { text: 'High-Level IR — aowlhl', link: '/docs/aowlhl' },
     ],
   },

@@ -5,9 +5,11 @@ semantic checker, lowering, and code generators — written *in* Nimony,
 self-hosting, and **open at every seam**. It runs Nim/Nimony **identically**, and
 runs where the classic compiler can't: **right in your browser**.
 
-[▶ Open the Playground](https://aoughwl.github.io/playground/)
-[How this works](/docs/how-it-works)
-[GitHub](https://github.com/aoughwl)
+<div class="hero-actions">
+<a href="https://aoughwl.github.io/playground/">▶ Open the Playground</a>
+<a href="/docs/how-it-works">How this works</a>
+<a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>
+</div>
 
 ---
 

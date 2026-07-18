@@ -252,3 +252,36 @@
 /* --- Content polish --- */
 .vp-doc h1 { letter-spacing: -0.02em; }
 .vp-doc a { text-underline-offset: 3px; }
+
+/* hero CTA row — space the action links so they read as separate buttons,
+   not one smashed-together link */
+.vp-doc .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.4rem 0;
+}
+.vp-doc .hero-actions a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+.vp-doc .hero-actions a:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+/* ASCII flow-graph / wide code blocks were overflowing horizontally — smaller
+   font so the pipeline diagrams fit without a scrollbar */
+.vp-doc div[class*='language-'] code {
+  font-size: 0.8em;
+  line-height: 1.5;
+}
+.vp-doc div[class*='language-'] pre { padding: 16px 0; }

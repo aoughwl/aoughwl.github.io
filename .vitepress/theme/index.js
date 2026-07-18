@@ -34,7 +34,6 @@ const REPO_BY_PATH = {
   '/docs/net-stack/ws': 'ws',
   '/docs/net-stack/requests': 'requests',
 }
-const PLAYGROUND_REPO = 'nimony-playground'
 
 const norm = (p) => (p || '').replace(/index$/, '').replace(/\.html$/, '').replace(/\/$/, '') || '/'
 
@@ -69,10 +68,13 @@ function decorateSidebar() {
       withText = true
       if (p.textContent !== name) p.textContent = name
     } else if (REPO_BY_PATH[linkPath]) {
-      repo = REPO_BY_PATH[linkPath] // icon-only badge
-    } else if ((link.getAttribute('href') || '') === PLAYGROUND_URL) {
-      repo = PLAYGROUND_REPO // icon-only badge for the playground app
+      // libraries etc. — label already IS the repo name, but show the name on
+      // the badge too (with the ↗) so it reads as a real repo link.
+      repo = REPO_BY_PATH[linkPath]
+      withText = true
     }
+    // NOTE: Playground intentionally gets NO repo badge — it already has its own
+    // natural link to the app; a second redirect looked wrong.
     if (!repo) return
 
     let badge = item.querySelector(':scope > .repo-badge')
