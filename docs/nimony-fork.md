@@ -190,3 +190,47 @@ carrying managed (`string`/`seq`/`ref`) fields.
 branch, the other outer branch, triple nesting, ref-wrapped, and a managed-string
 branch) all compile and emit the expected constructor; `tests/nimony/object`
 (20 cases) and `tests/nimony/casestmt` (4 cases) stay green.
+
+### `syncio.readLine` corrupted every line longer than 79 characters
+
+*Commit [`b7ba4975`](https://github.com/aoughwl/nimony/commit/b7ba4975).*
+
+**What.** `addReadLine` in `lib/std/syncio.nim` reads a line in 80-byte chunks
+via C `fgets`. `fgets` stores at most `bufsize - 1` characters and *always*
+NUL-terminates, so the NUL marks the end of **that chunk**, not the end of the
+line. The copy loop ran the full `bufsize` and appended the terminator as if it
+were data:
+
+```nim
+for i in 0 ..< bufsize:
+  if buf[i] == '\n':
+    done = true
+    break
+  s.add buf[i]        # copies the NUL terminator too
+```
+
+Any line past the first chunk came back with a stray `'\0'` every 79 characters
+and a length inflated by one per chunk. A 224-character line read back as 226
+bytes, with NULs at indices 79 and 159.
+
+**Why it matters.** This is silent. Nothing raises, nothing truncates, and short
+lines — nearly all lines in nearly all test files — are perfectly fine, so the
+bug hides until a file happens to carry a long line. Every nimony program using
+`readLine`, `lines`, or `readAll`-by-line on real-world text was affected.
+
+**Fix.** Stop the copy at the NUL and let the enclosing `while` fetch the next
+chunk:
+
+```nim
+if buf[i] == '\0': break
+```
+
+Verified at 5, 79, 80, 158 and 224 characters, and on a file whose last line has
+no trailing newline.
+
+**How it surfaced.** A rewrite-rule file in `aoughwl` whose rule was 224
+characters long simply stopped matching. The pattern hole `?d2` had been read as
+`?d\0 2`, so the rule bound a hole named `"d 2"` that nothing on the right-hand
+side referenced — and a rule that matches nothing produces no error, just no
+results. Worth noting as a general hazard: a corrupted *pattern* fails silently,
+where corrupted *data* usually announces itself.
