@@ -151,6 +151,7 @@ const sidebar = [
           { text: 'css', link: '/docs/css' },
         ],
       },
+      { text: 'JSON — aowljson', link: '/docs/aowljson' },
       { text: 'MCP servers — aowlmcp', link: '/docs/aowlmcp' },
     ],
   },

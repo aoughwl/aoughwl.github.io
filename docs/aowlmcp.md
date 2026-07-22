@@ -25,13 +25,13 @@ with a small fixed method vocabulary — `initialize`, `tools/list`, `tools/call
 `ping`. Nimony already had the pieces to speak it (`std/syncio` for stdio,
 `std/strutils`, `std/tables`) — everything except an ergonomic JSON value type.
 
-So `aowlmcp` is two things:
+So `aowlmcp` builds on two pieces:
 
-1. **`aowlmcp/json`** — a plain reference `JsonValue` tree with a
-   recursive-descent parser, a compact serializer, and safe nested access. This
-   fills the one real gap: Nimony's own `std/json` is NIF-backed, move-only, and
-   only indexes the document root, which is awkward to thread through a
-   tool-handler API.
+1. **[aowljson](/docs/aowljson)** — a plain reference `JsonValue` tree with a
+   recursive-descent parser, a compact serializer, and safe nested access. It
+   fills the one real gap (Nimony's own `std/json` is NIF-backed, move-only, and
+   only indexes the document root) and lives in its own repo so any project can
+   depend on it. `aowlmcp` imports and re-exports it.
 2. **`aowlmcp/server`** — the JSON-RPC + MCP loop over stdio: a tool registry,
    method dispatch, and the read-parse-dispatch-write cycle.
 
@@ -76,7 +76,8 @@ cd aowlmcp
 
 ## The JSON value type
 
-`aowlmcp/json` deliberately owns its own value type so tool code reads cleanly:
+Provided by [aowljson](/docs/aowljson) (re-exported from `aowlmcp`), so tool code
+reads cleanly:
 
 | Verb | API |
 |---|---|
@@ -156,10 +157,10 @@ Nimony program, compiled by Nimony, serving tools *about* Nimony to an LLM agent
 ## Layout
 
 ```
-src/aowlmcp.nim          umbrella module (import this)
-src/aowlmcp/json.nim     JsonValue: parser, serializer, accessors, builders
+src/aowlmcp.nim          umbrella module (import this); re-exports aowljson
 src/aowlmcp/server.nim   Server: registry, JSON-RPC dispatch, stdio run loop
 examples/                echo_server, nimtools_server
-tests/tjson.nim          JSON unit tests
 tests/e2e.sh             build + drive servers over stdio, assert on responses
 ```
+
+The `JsonValue` type comes from the [aowljson](/docs/aowljson) dependency.
