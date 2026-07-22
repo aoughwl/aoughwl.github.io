@@ -98,7 +98,7 @@ document symbols, hover signatures, member/UFCS completion, semantic tokens,
 inlay types — comes from **reading the `.s.nif` artifact**. That reading is
 exactly what [aiflens](aiflens) does: a thin library over Nimony's own NIF
 libraries that emits structured facts (the flat symbol table, outlines, types),
-and which also backs the `aowl-code` MCP plugin via its CLI.
+and which also backs the `aowlcode` MCP plugin via its CLI.
 
 Today aowl-lsp's `nifindex.nim` carries its own copy of that NIF-walk. The
 **convergence plan**: extract aiflens's core as a linkable library, have the LSP

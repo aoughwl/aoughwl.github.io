@@ -8,6 +8,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
 | [aowlsem](docs/aowlsem) — semantic analysis: `.p.aif` → typed `.s.aif` (symbols, overloads, generics) | `aoughwl/aowlsem` | public |
 | [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aowli` | private |
+| [aowli-release](docs/aowli-release) — prebuilt, binary-only distribution of aowli (`aowli-interp`, `aowli-dbg`) | `aoughwl/aowli-release` | public |
 | [aowljs](docs/aowljs) — `.s.aif` → native-JavaScript backend | `aoughwl/aowljs` | public |
 | [aowljs-js](docs/aowljs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aowljs-js` | public |
 | [aowlc](docs/aowlc) — `.c.aif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |
@@ -16,7 +17,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowllib](docs/aowllib) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aowllib` | public · scaffolding |
 | [nimony-playground](playground) — browser playground, `aowli` compiled to JS | `aoughwl/nimony-playground` | public |
 | [aowlweb](docs/aowlweb) — JS + WASM backends & async runtime | `aoughwl/aowlweb` | private repo · public docs |
-| [aowl-code](docs/aowl-code) — Claude Code plugin + MCP server | `aoughwl/aowl-code` | public |
+| [aowlcode](docs/aowlcode) — Claude Code plugin + MCP server (renamed from `nim-code`) | `aoughwl/aowlcode` | public |
 | [aowllsp](docs/aowllsp) — Language Server (nimony rewrite): diagnostics + type-directed completion | `aoughwl/aowllsp` | public |
 | [aowlsuggest](docs/aowlsuggest) — diagnostics, quick-fixes & lint layer over `aowlparser`'s `check` | `aoughwl/aowlsuggest` | public |
 | [aowlfmt](docs/aowlfmt) — verified layout formatter (proves it changed nothing but whitespace) | `aoughwl/aowlfmt` | public |

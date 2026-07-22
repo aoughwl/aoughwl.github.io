@@ -7,7 +7,7 @@ the repo READMEs slim down to stubs.
 
 | Library | Reference |
 |---|---|
-| aowl-code | [full README](docs/reference/aowl-code) |
+| aowlcode | [full README](docs/reference/aowlcode) |
 | aowl-lsp | [full README](docs/reference/aowl-lsp) |
 | tcp | [full README](docs/reference/tcp) |
 | net | [full README](docs/reference/net) |

@@ -1,6 +1,8 @@
-> Verbatim archive of the `aoughwl/aowl-code` README (repo formerly `nim-code`). Curated summary: [aowl-code project page](../aowl-code).
+> Verbatim archive of the `aoughwl/aowlcode` README (repo formerly `nim-code`,
+> then briefly `aowl-code`; now `aowlcode`, v0.6.0). Curated summary:
+> [aowlcode project page](../aowlcode).
 
-# aowl-code
+# aowlcode
 
 A Claude Code plugin that mediates agent access to the **Nim** and **Nimony**
 toolchains through structured tools, so an agent works from compact diagnostics,
@@ -48,29 +50,22 @@ The plugin targets six recurring sources of token waste:
 
 ## Installation
 
-The plugin is loaded from this directory; nothing is published to a registry.
-
-Per session:
-
-```bash
-claude --plugin-dir /home/savant/nimony-code
-```
-
 From the GitHub marketplace (the repo is its own marketplace):
 
 ```text
-/plugin marketplace add aoughwl/aowl-code
-/plugin install nim-code@nim-code
+/plugin marketplace add aoughwl/aowlcode
+/plugin install aowlcode@aowlcode
 ```
 
-`nim-code@nim-code` is `<plugin>@<marketplace>`; both are named `nim-code`. A
+`aowlcode@aowlcode` is `<plugin>@<marketplace>`; both are named `aowlcode`. A
 local checkout works as a marketplace too — `/plugin marketplace add
-/home/savant/nimony-code`.
+/path/to/aowlcode`.
 
 Enabling the plugin auto‑registers the `nimlang` MCP server and activates all
 hooks. Run `/reload-plugins` after editing plugin files to reload without
-restarting. Commands are namespaced under the plugin — `/nim-code:check`,
-`/nim-code:nif`, and so on — and listed by `/help`.
+restarting. Commands are namespaced under the plugin — `/aowlcode:check`,
+`/aowlcode:trace`, `/aowlcode:debug`, `/aowlcode:nif`, and so on — and listed by
+`/help`.
 
 ## Configuration
 
@@ -96,7 +91,7 @@ argument overrides it per call.
 ## Components
 
 ```
-nim-code/                         ${CLAUDE_PLUGIN_ROOT}
+aowlcode/                         ${CLAUDE_PLUGIN_ROOT}
 ├── .claude-plugin/plugin.json    manifest
 ├── .mcp.json                     registers the `nimlang` MCP server
 ├── .lsp.json                     optional LSP; routes through scripts/lsp-dispatch.py — see LSP
@@ -111,15 +106,40 @@ nim-code/                         ${CLAUDE_PLUGIN_ROOT}
 │   ├── hooks.json                hook wiring
 │   ├── guard-nif-read.py         PreToolUse(Read)  — intercept large .nif reads
 │   ├── guard-nif-bash.py         PreToolUse(Bash)  — intercept .nif dumps
-│   └── trim-build-output.py      PostToolUse(Bash) — strip build noise
-├── commands/                     11 slash commands (see Commands)
-├── skills/                       6 skills (see Skills and subagents)
-└── agents/                       2 subagents (see Skills and subagents)
+│   ├── trim-build-output.py      PostToolUse(Bash) — strip build noise
+│   └── precompact-land.py        PreCompact         — nudge to run /land before compaction
+├── workflows/
+│   └── fanout-apply.md           parallel cheap-applier fan-out (see below)
+├── commands/                     slash commands, including /trace, /debug, /land (see Commands)
+├── skills/                       skills (see Skills and subagents)
+└── agents/                       subagents, including nim-applier (see Skills and subagents)
 ```
 
 The `nimlang` MCP server is the core. It speaks JSON‑RPC 2.0 over stdio, shells
 out to the appropriate toolchain, and returns one compact structured block per
 call. It never returns a whole NIF file.
+
+## trace and debug
+
+`trace` (`/trace`) runs a program and returns its execution call-tree; `debug`
+(`/debug`) runs it with batch breakpoints (`--break:LINE` / `--break-func:NAME`)
+and captures every hit frame's variables. Both shell out to a **released**
+aowli binary, resolved `$AOWLI_BIN_DIR` → `~/.aowl/bin` → dev `~/aowli/bin` — a
+public install runs entirely off [aoughwl/aowli-release](../aowli-release),
+never a private aowli source tree.
+
+## /land and the fan-out workflow
+
+`/land` is a memory-flush checkpoint: it flushes session learnings to memory,
+commits, and reports "safe to clear". A `PreCompact` hook
+(`precompact-land.py`) nudges the agent to run it before a context compaction
+discards those learnings.
+
+`workflows/fanout-apply` pairs with the new `nim-applier` subagent
+(`model: haiku`): an expensive model produces exact, fully-specified edit-specs
+and concurrent `nim-applier` agents apply them mechanically in parallel — a
+cheap fan-out for large batches of already-decided edits, distinct from
+`nim-fixer`'s own reasoning loop.
 
 ## MCP tool reference
 
@@ -220,7 +240,7 @@ So `.lsp.json` ships a **single** entry whose command is a dispatcher,
 
 ```json
 {
-  "nim-code": {
+  "aowlcode": {
     "command": "python3",
     "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/lsp-dispatch.py"],
     "extensionToLanguage": { ".nim": "nim", ".nims": "nim" },
@@ -285,6 +305,9 @@ response.
 | `/phase-diff <file.nim>` | `nif_diff` | Diff a file's NIF phase artifacts. |
 | `/nimony-bug [file]` | — | Run the Nimony compiler debug loop and report only diagnostics. |
 | `/aggressive [on\|off]` | — | Explain and toggle terse mode. |
+| `/trace [file] [args]` | `trace` | Run a program and return its execution call-tree (released `aowli-interp`). |
+| `/debug [file] --break:LINE...` | `debug` | Batch breakpoints: run and capture every hit frame's variables (released `aowli-dbg`). |
+| `/land` | — | Memory-flush checkpoint: flush session learnings, commit, report "safe to clear". |
 
 ## Skills and subagents
 
@@ -304,6 +327,7 @@ conclusion.
 |----------|-------|---------|
 | `nif-inspector` | default | Heavy NIF and phase‑artifact reading in an isolated context; returns only the conclusion. |
 | `nim-fixer` | `haiku` | Runs the compile → shrink → explain → edit → recompile loop in its own context and returns only the final diff and a verdict. |
+| `nim-applier` | `haiku` | Cheap mechanical-edit applier for parallel fan-out; applies edit-specs an expensive model already decided, in `workflows/fanout-apply`. |
 
 ## Examples
 
@@ -400,6 +424,14 @@ required for any MCP tool, hook, command, or skill.
 
 ## Changelog
 
+- **0.6.0** — Repo and plugin renamed `nim-code → aowlcode` (marketplace slug
+  and command namespace now `aowlcode`; the `nimlang` MCP server name is
+  unchanged). New `trace`/`/trace` and `debug`/`/debug` tools, backed by the
+  now-public [aoughwl/aowli-release](../aowli-release) binaries, resolved via
+  `$AOWLI_BIN_DIR` → `~/.aowl/bin` → dev `~/aowli/bin`. New `/land` checkpoint
+  command and a `PreCompact` hook that nudges toward it. New `nim-applier`
+  (`haiku`) subagent and `workflows/fanout-apply` for parallel cheap-applier
+  fan-out.
 - **0.6** — `nif_outline`, `nif_query`, and `nif_render` now also prefer the
   [`aiflens`](https://github.com/aoughwl/aiflens) helper (the compiler's own NIF
   libraries) with the in‑Python parser as fallback — completing the migration of

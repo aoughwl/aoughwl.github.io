@@ -71,7 +71,7 @@ interop contract is written up in **[AIF ≡ NIF](/docs/aif)**.
 
 | Target | Repo | Notes |
 |:--|:--|:--|
-| **interpret / VM** | [aowli](/aowli) | tree-walker **+ bytecode VM**, differentially tested against native. |
+| **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(public binaries)* | tree-walker **+ bytecode VM**, differentially tested against native; the binaries are public even though the source stays private. |
 | **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc` — **GC-free**, ARC baked in. |
 | **JavaScript** | [aowljs](/docs/aowljs) | typed IR → native JS; near-native speed, readable output. |
 | **JS / WASM** | [aowlweb](/docs/aowlweb) | the faithful browser runtime, with an async runtime. |
@@ -83,7 +83,7 @@ interop contract is written up in **[AIF ≡ NIF](/docs/aif)**.
 | Project | What it is |
 |:--|:--|
 | **[▶ Playground](https://aoughwl.github.io/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
-| **[aowl-code](/docs/aowl-code)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain. |
+| **[aowlcode](/docs/aowlcode)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain (`trace`/`debug` backed by the public [aowli-release](/aowli-release)). |
 | **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension, live as-you-type diagnostics and type-directed completion. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |
 | **[aowlfmt](/docs/aowlfmt)** | verified layout formatter — proves it changed nothing but whitespace before it touches your file. |

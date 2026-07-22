@@ -46,7 +46,14 @@ const sidebar = [
   {
     text: 'RUNTIME',
     items: [
-      { text: 'Interpreter — aowli', link: '/aowli' },
+      {
+        text: 'Interpreter — aowli',
+        link: '/aowli',
+        collapsed: true,
+        items: [
+          { text: 'aowli-release (public binaries)', link: '/docs/aowli-release' },
+        ],
+      },
       {
         text: 'Runtime — aowllib',
         link: '/docs/aowllib',
@@ -98,7 +105,7 @@ const sidebar = [
         ],
       },
       { text: 'Formatter — aowlfmt', link: '/docs/aowlfmt' },
-      { text: 'Claude Code — aowl-code', link: '/docs/aowl-code' },
+      { text: 'Claude Code — aowlcode', link: '/docs/aowlcode' },
       { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
       { text: 'Obfuscator — obfuscate', link: '/docs/obfuscate' },
     ],

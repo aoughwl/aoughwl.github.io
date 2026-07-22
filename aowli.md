@@ -10,6 +10,11 @@ and they are held honest against native nimony by a differential test harness.
 <a href="https://aoughwl.github.io/playground/">Try it in the browser →</a>
 </div>
 
+> The source above is private. A prebuilt, binary-only distribution —
+> **[aowli-release](docs/aowli-release)** — is public: download `aowli-interp`
+> and `aowli-dbg` and run typed NIF with no build step. It's also what the
+> [aowlcode](docs/aowlcode) plugin's `trace`/`debug` tools run on.
+
 [[toc]]
 
 ---
