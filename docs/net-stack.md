@@ -6,7 +6,9 @@ alongside. Common stance throughout: nimony-native, no framework runtime,
 **status-based errors instead of exceptions**, blocking I/O by default with a
 non-blocking escape hatch on every handle. **TLS 1.3**, **dual-stack IPv6**, a
 **concurrent worker pool**, **HTTP/2**, **WebSocket**, and **HTTP/3** (client)
-are all first-class.
+are all first-class — and a **single-threaded async [reactor](/docs/net-stack/reactor)**
+(epoll + passive-proc coroutines) multiplexes async HTTP/1.1 and WebSocket on one
+thread as an alternative to the worker pool.
 
 ---
 

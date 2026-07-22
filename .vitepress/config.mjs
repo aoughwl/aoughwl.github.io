@@ -138,6 +138,7 @@ const sidebar = [
           { text: 'http', link: '/docs/net-stack/http' },
           { text: 'compress', link: '/docs/net-stack/compress' },
           { text: 'serve', link: '/docs/net-stack/serve' },
+          { text: 'reactor (async)', link: '/docs/net-stack/reactor' },
           { text: 'ws', link: '/docs/net-stack/ws' },
           { text: 'requests', link: '/docs/net-stack/requests' },
         ],
