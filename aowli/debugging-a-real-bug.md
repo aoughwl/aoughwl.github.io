@@ -5,88 +5,90 @@
 ---
 
 A real session: a subtle bug injected into a real nimony library, found with
-aowlidbg, fixed. One bug, not a benchmark — presented as it actually happened.
+aowlidbg, fixed. The kind that's hard to find *without* a debugger — because it
+produces a wrong answer with **no error message at all**.
 
 ## The library
 
 [`aoughwl/css`](../docs/css), a nimony MDN-typed CSS engine. A harness module
-runs `validateValue(prop, value)` over 15 cases and prints
-`prop | value | VALID/INVALID | error`.
+calls `validateValue(prop, value)` and prints `prop | value | VALID/INVALID | error`.
 
-## The bug
+## The bug — one character
 
-One line, `css/value_lex.nim`, the value tokenizer — the unit-accumulation loop
-for a dimension token:
+`css/validator.nim`, in `valueMatchesToks` — the gate that decides whether a
+value *fully* matched its grammar:
 
 ```nim
-# correct
-while i < n and isIdentCont(s[i]): u.add s[i]; inc i
+# correct: a full match must consume EVERY token
+for e in matchNode(root, 0):
+  if e == toks.len: return true
+false
 
-# injected off-by-one
-while i+1 < n and isIdentCont(s[i]): u.add s[i]; inc i
+# injected:  ==  →  <=
+for e in matchNode(root, 0):
+  if e <= toks.len: return true
+false
 ```
 
-`i+1 < n` stops one character early whenever the dimension ends the string, so
-the unit string `u` silently drops its last character.
+`matchNode` returns the token positions a match can reach. A full match must
+reach the last token — `e == toks.len`. With `<=`, **any partial match** — one
+that consumed a valid prefix and stopped — is accepted, and the trailing tokens
+are silently ignored.
 
-## Symptom
-
-Real `aowli-interp` output with the bug in place:
-
-```
-width | 10px | INVALID | at token 1: expected 'auto' | a length | a percentage | … , got '10p'
-width | calc(100% - 10px) | INVALID | calc(): unexpected 'x' in argument 1
-font-size | 12pt | INVALID | … , got '12p'
-```
-
-All three are `VALID` in the correct library. The error text even hints at
-it — `got '10p'`, a stray `'x'` — but that's a guess, not a diagnosis.
-
-## The debug session
-
-**First attempt — the wrong move.** `aowli-dbg --break:69` (the line emitting
-`vtDimension`) fired **271 times**: line 69 exists in several modules, so the
-breakpoint fired mostly inside the unrelated color-keyword matcher, dumping
-frames like `s = aliceblue`, `s = aquamarine`, … — noise. Line breakpoints are
-file-agnostic; that's the honest lesson.
-
-**Second attempt — scoped to the routine.** `aowli-dbg --break-func:lexValue`
-captured every statement inside the tokenizer itself. The real frame capture
-for the `10px` input:
+## Symptom — a wrong answer, and nothing to go on
 
 ```
-num = 10
-u =
-num = 10
-u = p          ← should be "px"
+color | red       | VALID   |
+color | red green | VALID    ← wrong: `color` takes ONE color
 ```
 
-`num = 10` is correct on both hits. The unit `u` finalizes as `p`, not `px` —
-the loop dropped the trailing `x`. That one wrong local is the whole diagnosis:
-an off-by-one in the loop bound, found with **no print statements added**.
+`red green` should be `INVALID`. Instead it is `VALID`, with an **empty error
+string**. There is nothing to grep for, no farthest-failure message pointing
+anywhere — and the buggy line reads perfectly plausibly ("the end position is
+within bounds" is exactly what a bounds check *should* say). Reading the source
+gives you nothing.
+
+## The debug session — one breakpoint
+
+Break inside the gate and look at what it actually decided:
+
+```sh
+aowli-dbg --break-func:valueMatchesToks  <harness.s.nif>
+```
+
+The real frame capture at the `return true` for `red green`:
+
+```
+prop = color
+toks = @[VTok(kind: vtIdent, text: red, …), VTok(kind: vtIdent, text: green, …)]
+e    = 1
+```
+
+`toks` holds **two** tokens; `e = 1`. The matcher consumed a single token and
+the gate returned `true` anyway — the second token (`green`) was never required.
+There is the bug, in one frame: a partial match (`e` < `toks.len`) accepted as a
+full one. No prints added, no guessing.
+
+> Prefer `--break-func:<routine>` over `--break:<line>`: a line number exists in
+> many modules and the capture fires in all of them; a routine name scopes the
+> capture to the code you actually suspect.
 
 ## The fix
 
 ```nim
-while i+1 < n and isIdentCont(s[i]): u.add s[i]; inc i
-                ↓
-while i < n and isIdentCont(s[i]): u.add s[i]; inc i
+if e <= toks.len: return true
+        ↓
+if e == toks.len: return true
 ```
 
-Re-run:
+Re-run → `color | red green | INVALID` again.
 
-```
-width | 10px | VALID
-font-size | 12pt | VALID
-width | calc(100% - 10px) | VALID
-```
+## Why this one is the point
 
-## Takeaway
-
-aowlidbg inspects live frame state at a point in the program without
-instrumenting the source. `--break-func` is what makes that inspection usable
-on a real codebase — it scopes the capture to the routine you actually
-suspect, instead of every routine that happens to share a line number. The
-wrong value (`u = p` where `"px"` was expected) *is* the diagnosis, once you're
-looking at the right frame. This is one real bug, found once, not a claim
-about debugging in general.
+An off-by-one that mangles *output* at least leaves a breadcrumb in the error
+text. This bug leaves **nothing** — a valid-looking answer, an empty error, a
+line that reads correctly. The only way in is to inspect what the code actually
+decided, on the actual input, at the moment it decided it. aowlidbg does that
+without touching the source: `e = 1` sitting next to a two-token value *is* the
+diagnosis. One real bug, found once — but exactly the shape a debugger earns its
+keep on.
