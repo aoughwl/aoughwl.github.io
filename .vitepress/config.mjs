@@ -151,6 +151,7 @@ const sidebar = [
           { text: 'css', link: '/docs/css' },
         ],
       },
+      { text: 'MCP servers — aowlmcp', link: '/docs/aowlmcp' },
     ],
   },
   {
