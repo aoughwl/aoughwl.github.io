@@ -112,22 +112,26 @@ aowlcode plugin ships.
 
 ---
 
-## Transports: stdio and HTTP
+## Transports: stdio, HTTP, and HTTP/3
 
 The protocol dispatch is transport-agnostic — one `handleMessage(srv, text)`
-turns an incoming JSON-RPC message into the reply text — so aowlmcp offers two
+turns an incoming JSON-RPC message into the reply text — so aowlmcp offers three
 transports over the same server and tools:
 
 - **stdio** — `srv.run()`. Line-delimited JSON-RPC on stdin/stdout, for local
   clients (Claude Code, editors). No networking dependency; `import aowlmcp`
   alone pulls nothing from the net stack.
-- **HTTP** — `import aowlmcp/http`; `srv.serveHttp(port)`. The modern MCP
-  **Streamable-HTTP** transport, for *remote* clients: a client POSTs a JSON-RPC
-  message to `/mcp` and receives the response as `application/json` (a
-  notification gets `202`, an unknown path `404`). It is served over the
-  [aoughwl net stack](/docs/net-stack) — the same HTTP/1.1 server that backs the
-  rest of the stack — and is **opt-in**, so stdio-only servers stay
-  dependency-free.
+- **HTTP** — `import aowlmcp/http`; `srv.serveHttp(port)` (or `serveHttpAsync`
+  on the single-thread reactor). The modern MCP **Streamable-HTTP** transport,
+  for *remote* clients: a client POSTs a JSON-RPC message to `/mcp` and receives
+  the response as `application/json` (a notification gets `202`, an unknown path
+  `404`). It is served over the [aoughwl net stack](/docs/net-stack) and is
+  **opt-in**, so stdio-only servers stay dependency-free.
+- **HTTP/3 (QUIC)** — `import aowlmcp/h3`; `srv.serveH3(port, cert, key)`. The
+  same Streamable-HTTP contract carried over QUIC/TLS-1.3 on the net stack's
+  single-thread [HTTP/3 reactor](/docs/net-stack/reactor). Requires the
+  ngtcp2/nghttp3/GnuTLS glue shim and a PEM cert/key. Verified e2e (initialize +
+  tools/list + tools/call over QUIC, one thread).
 
 ```nim
 import aowlmcp
@@ -142,9 +146,10 @@ srv.serveHttp(8130)          # POST JSON-RPC to http://host:8130/mcp
 curl -s localhost:8130/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-The same `Server` and the same registered tools work under either transport —
-you pick `run()` or `serveHttp()` at the edge. Server-initiated SSE streaming is
-intentionally omitted (a pure tools server never pushes); a `GET` returns 405.
+The same `Server` and the same registered tools work under any transport — you
+pick `run()`, `serveHttp()`, or `serveH3()` at the edge. Server-initiated SSE
+streaming is intentionally omitted (a pure tools server never pushes); a `GET`
+returns 405.
 
 ---
 
@@ -196,6 +201,7 @@ Nimony program, compiled by Nimony, serving tools *about* Nimony to an LLM agent
 src/aowlmcp.nim          umbrella module (import this); re-exports aowljson
 src/aowlmcp/server.nim   Server: registry, JSON-RPC dispatch, handleMessage, stdio run
 src/aowlmcp/http.nim     opt-in HTTP (Streamable-HTTP) transport over the net stack
+src/aowlmcp/h3.nim       opt-in HTTP/3 (QUIC) transport over the net stack's H3 reactor
 examples/                echo_server, http_server, nimtools_server
 tests/e2e.sh             stdio: build + drive servers, assert on responses
 tests/http_e2e.sh        HTTP: build http_server + drive it with curl
