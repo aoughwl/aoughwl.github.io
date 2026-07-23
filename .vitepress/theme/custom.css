@@ -504,8 +504,15 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
 @media (min-width: 961px) {
   html.aowl-sb-collapsed .aowl-sb-expand { display: inline-flex; }
 
-  .VPSidebar { transition: transform .28s ease, opacity .22s ease; }
-  .VPContent.has-sidebar { transition: padding-left .28s ease, padding-right .28s ease; }
+  .VPSidebar {
+    transition: transform .28s ease, opacity .22s ease, margin-left .12s ease;
+    margin-left: var(--aowl-sb-x, 0px);   /* drag the handle to move it */
+  }
+  /* content follows the sidebar's width AND its position offset, staying clear */
+  .VPContent.has-sidebar {
+    transition: padding-left .12s ease, padding-right .28s ease;
+    padding-left: calc(var(--aowl-gutter, 0px) + var(--vp-sidebar-width) + var(--aowl-sb-x, 0px)) !important;
+  }
 
   html.aowl-sb-collapsed .VPSidebar {
     transform: translateX(-100%);

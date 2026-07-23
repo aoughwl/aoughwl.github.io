@@ -33,6 +33,8 @@ export function initTooltips(opts = {}) {
 
   document.addEventListener('mouseover', (e) => {
     const el = e.target.closest('[data-tip]')
+    // suppress the browser's native title tooltip so ours isn't doubled
+    if (el && el.hasAttribute('title')) el.removeAttribute('title')
     if (el === cur) return
     cur = el; clearTimeout(timer)
     if (el) timer = setTimeout(() => show(el), delay); else hide()

@@ -196,14 +196,18 @@ export default {
     }
     if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sb-collapsed')
 
-    // persisted, drag-adjustable sidebar width (VitePress reads --vp-sidebar-width,
-    // so the sidebar + content reflow live as it changes).
-    const WKEY = 'aowl-sb-width'
-    const WMIN = 220, WMAX = 520
+    // Persisted sidebar geometry: POSITION offset (drag the handle) and WIDTH
+    // (hold the handle + scroll wheel). VitePress reads --vp-sidebar-width;
+    // --aowl-sb-x nudges the whole sidebar horizontally.
+    const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x'
+    const WMIN = 220, WMAX = 520, XMIN = 0, XMAX = 360
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
     const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
-    const savedW = parseInt(localStorage.getItem(WKEY))
-    if (savedW >= WMIN && savedW <= WMAX) applyWidth(savedW)
+    const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
     const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
+    const curX = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
+    const savedW = parseInt(localStorage.getItem(WKEY)); if (savedW >= WMIN && savedW <= WMAX) applyWidth(savedW)
+    const savedX = parseInt(localStorage.getItem(XKEY)); if (savedX >= XMIN && savedX <= XMAX) applyX(savedX)
 
     const PANEL_CLOSE =
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
@@ -221,38 +225,45 @@ export default {
       const b = document.createElement('button')
       b.className = 'aowl-sb-collapse'
       b.type = 'button'
-      b.title = 'Click to hide · drag to resize'
-      b.setAttribute('data-tip', 'Click to hide · drag to resize')
-      b.setAttribute('aria-label', 'Hide or resize sidebar')
+      b.setAttribute('data-tip', 'Click to hide · drag to move · hold + scroll to resize')
+      b.setAttribute('aria-label', 'Hide, move, or resize sidebar')
       b.innerHTML = PANEL_CLOSE
 
-      // Click = collapse; horizontal drag = resize. Discriminated by movement.
-      let dragging = false, moved = false, startX = 0, startW = 0
+      // Plain click = hide. Horizontal drag = move the sidebar's position. Hold
+      // the handle and scroll the wheel = resize its width.
+      let dragging = false, acted = false, startX = 0, startXOff = 0
       const onMove = (e) => {
         const dx = e.clientX - startX
-        if (!moved && Math.abs(dx) > 3) { moved = true; root.classList.add('aowl-sb-resizing') }
-        if (!moved) return
-        const w = Math.max(WMIN, Math.min(WMAX, startW + dx))
-        applyWidth(w)
+        if (!acted && Math.abs(dx) > 3) { acted = true; root.classList.add('aowl-sb-resizing') }
+        if (!acted) return
+        applyX(clamp(startXOff + dx, XMIN, XMAX))
       }
-      const onUp = (e) => {
+      const onUp = () => {
         window.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
         root.classList.remove('aowl-sb-resizing')
-        if (moved) { localStorage.setItem(WKEY, String(curWidth())); }
+        if (acted) localStorage.setItem(XKEY, String(curX()))
         dragging = false
-        setTimeout(() => { moved = false }, 0)   // let click fire after a real click only
+        setTimeout(() => { acted = false }, 0)   // let a real click through, block a drag's click
       }
       b.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return
-        dragging = true; moved = false; startX = e.clientX; startW = curWidth()
+        dragging = true; acted = false; startX = e.clientX; startXOff = curX()
         window.addEventListener('pointermove', onMove)
         window.addEventListener('pointerup', onUp)
         e.preventDefault()
       })
+      // hold the handle (pointer down) and scroll to grow/shrink the width
+      b.addEventListener('wheel', (e) => {
+        if (!dragging) return
+        e.preventDefault()
+        const w = clamp(curWidth() + (e.deltaY < 0 ? 14 : -14), WMIN, WMAX)
+        applyWidth(w); localStorage.setItem(WKEY, String(w))
+        acted = true
+      }, { passive: false })
       b.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation()
-        if (moved) return          // it was a drag-resize, not a collapse
+        if (acted) return          // it was a drag/resize, not a collapse
         setCollapsed(true)
       })
       host.appendChild(b)
@@ -266,7 +277,6 @@ export default {
     const expand = document.createElement('button')
     expand.className = 'aowl-sb-expand'
     expand.type = 'button'
-    expand.title = 'Show sidebar'
     expand.setAttribute('data-tip', 'Show sidebar')
     expand.setAttribute('aria-label', 'Show sidebar')
     expand.innerHTML = PANEL_OPEN
