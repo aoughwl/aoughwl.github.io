@@ -528,15 +528,9 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
     margin-left: auto !important;
     margin-right: auto !important;
   }
-  /* The navbar does NOT change when the sidebar is collapsed — it stays exactly
-     as it is open (the logo keeps its column). The ONLY navbar movement is when
-     the sidebar itself is moved/scaled: the logo column follows so the logo stays
-     centered above the sidebar. VitePress already sizes .title to
-     --vp-sidebar-width; we just add the horizontal offset. */
-  .VPNavBar.has-sidebar .title {
-    transform: translateX(var(--aowl-sb-x, 0px));
-    transition: transform .12s ease;
-  }
+  /* The navbar is left entirely to VitePress — no overrides on collapse and no
+     logo-follow transform (that reacted to VitePress re-deriving its own
+     has-sidebar/home-top classes on scroll and jumped around). Stable > fancy. */
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
@@ -549,7 +543,6 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
    it plays once and never on SPA navigation. Respects reduced-motion.
    =========================================================================== */
 @media (prefers-reduced-motion: no-preference) {
-  html.aowl-boot .VPNavBar { animation: aowl-in-down .5s ease both; }
   html.aowl-boot .VPContent { animation: aowl-in-up .55s .04s ease both; }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 961px) {
