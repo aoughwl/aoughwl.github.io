@@ -170,5 +170,41 @@ export default {
       run()
     }
     start()
+
+    // --- scroll state: lets the top bar declutter as you leave the top ---
+    const root = document.documentElement
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        root.classList.toggle('aowl-scrolled', window.scrollY > 12)
+        ticking = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+
+    // --- desktop-only sidebar collapse toggle ---
+    // Persisted across navigations/sessions; a floating pill toggles a class on
+    // <html> that the CSS uses to slide the sidebar out and widen the content.
+    const KEY = 'aowl-sidebar-collapsed'
+    if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sidebar-collapsed')
+    const mountToggle = () => {
+      if (document.querySelector('.aowl-sb-toggle')) return
+      const btn = document.createElement('button')
+      btn.className = 'aowl-sb-toggle'
+      btn.type = 'button'
+      btn.setAttribute('aria-label', 'Toggle sidebar')
+      btn.title = 'Toggle sidebar'
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>'
+      btn.addEventListener('click', () => {
+        const on = root.classList.toggle('aowl-sidebar-collapsed')
+        localStorage.setItem(KEY, on ? '1' : '0')
+      })
+      document.body.appendChild(btn)
+    }
+    mountToggle()
   },
 }

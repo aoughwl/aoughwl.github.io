@@ -365,3 +365,84 @@
 /* a markdown `---` right before a `## heading` doubled up with VitePress's h2
    border-top → two separators. Drop the h2's own border in that case. */
 .vp-doc hr + h2 { border-top: 0; margin-top: 20px; padding-top: 0; }
+
+/* ===========================================================================
+   Text selection — brand violet, legible on both themes.
+   =========================================================================== */
+::selection {
+  background: rgba(124, 92, 255, 0.30);
+  color: var(--vp-c-text-1);
+  text-shadow: none;
+}
+.dark ::selection {
+  background: rgba(150, 130, 255, 0.34);
+  color: #ffffff;
+}
+/* code keeps its mono look but takes the same accent wash */
+.vp-doc div[class*='language-'] ::selection,
+code ::selection { background: rgba(124, 92, 255, 0.28); }
+.dark .vp-doc div[class*='language-'] ::selection,
+.dark code ::selection { background: rgba(150, 130, 255, 0.30); }
+
+/* ===========================================================================
+   Top bar — stays pinned (VitePress default) but declutters once you scroll
+   off the top: a hairline shadow appears to lift it off the content, and the
+   full-width divider fades so it reads cleaner mid-page.
+   =========================================================================== */
+.VPNav .VPNavBar { transition: box-shadow .22s ease, border-color .22s ease; }
+html.aowl-scrolled .VPNav .VPNavBar {
+  box-shadow: 0 1px 0 var(--vp-c-divider), 0 6px 22px -14px rgba(0, 0, 0, 0.55);
+}
+html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !important; }
+
+/* ===========================================================================
+   Desktop sidebar collapse — a floating pill toggles a class on <html> that
+   slides the sidebar out and hands its width back to the content. Desktop only;
+   on mobile VitePress already has its own hamburger drawer.
+   =========================================================================== */
+.aowl-sb-toggle { display: none; }
+
+@media (min-width: 961px) {
+  .aowl-sb-toggle {
+    position: fixed;
+    left: 14px;
+    bottom: 16px;
+    z-index: 61;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 9px;
+    color: var(--vp-c-text-2);
+    background: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-border);
+    cursor: pointer;
+    transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .aowl-sb-toggle:hover {
+    color: var(--vp-c-brand-1);
+    border-color: var(--vp-c-brand-1);
+    background: var(--vp-c-brand-soft);
+  }
+  .aowl-sb-toggle:active { transform: scale(0.94); }
+
+  /* the slide-out itself */
+  .VPSidebar { transition: transform .26s ease, opacity .2s ease; }
+  html.aowl-sidebar-collapsed .VPSidebar {
+    transform: translateX(calc(-1 * var(--vp-sidebar-width)));
+    opacity: 0;
+    pointer-events: none;
+  }
+  html.aowl-sidebar-collapsed .VPContent.has-sidebar {
+    padding-left: 0 !important;
+  }
+  /* center the freed content like an ordinary no-sidebar page */
+  html.aowl-sidebar-collapsed .VPDoc.has-sidebar .content { margin: 0 auto; }
+  /* pull the pinned navbar content back over the reclaimed sidebar column */
+  html.aowl-sidebar-collapsed .VPNavBar.has-sidebar .content { padding-left: 24px !important; }
+  html.aowl-sidebar-collapsed .VPNavBar.has-sidebar .title {
+    border-bottom-color: transparent !important;
+  }
+}
