@@ -11,7 +11,7 @@ implementations of one semantics, not two features.
 
 | | |
 |---|---|
-| Input | The compiler's post-semcheck typed NIF (`.s.nif`) — the exact artifact the native backend consumes. No separate parser, no separate type system. |
+| Input | The compiler's post-semcheck typed AIF (`.s.aif`) — the exact artifact the native backend consumes. No separate parser, no separate type system. |
 | `seq`/`string`/`Table` | Library types built on raw `alloc` in native nimony. aowli **intercepts** the procs that implement them as "natives" and substitutes its own boxed value model (seq, string, array, set, object) instead of running the pointer code. |
 | Memory | The interpreter never touches raw memory — every aggregate is a boxed value the engines share. |
 | I/O | Shared primitive layer for stdout/stdin so both engines produce identical program output, not just identical control flow. |
@@ -20,8 +20,8 @@ implementations of one semantics, not two features.
 
 | Engine | Binary | Mechanism | Role |
 |---|---|---|---|
-| Tree-walker | `bin/aowli-interp` | Walks the typed NIF directly, node by node | Correctness oracle: simple, source-line accurate, easy to reason about |
-| Bytecode VM | `bin/aowli-vm` | Compiles the NIF into a register/stack instruction chunk, then executes that chunk | Speed path; already supports dynamic method dispatch |
+| Tree-walker | `bin/aowli-interp` | Walks the typed AIF directly, node by node | Correctness oracle: simple, source-line accurate, easy to reason about |
+| Bytecode VM | `bin/aowli-vm` | Compiles the AIF into a register/stack instruction chunk, then executes that chunk | Speed path; already supports dynamic method dispatch |
 
 Work in progress: retargeting the VM onto a "partial-hexer" lowering to gain
 custom iterators, closures, and exceptions.
@@ -47,15 +47,15 @@ aowli reproduces **100% of the runnable nimony test corpus** byte-for-byte on
 both engines, and runs a real pure-nimony program end-to-end — the MDN CSS
 validator ([css](../docs/css)) — byte-identical to native.
 
-## The run rung — a run is a NIF
+## The run rung — a run is an AIF
 
-`--emit-run` (env `NIFI_EMIT_RUN=PATH`) serializes an *execution* back into
-NIF: a **run rung** token stream recording every binding, loop iteration, and
+`--emit-run` (env `AIFI_EMIT_RUN=PATH`) serializes an *execution* back into
+AIF: a **run rung** token stream recording every binding, loop iteration, and
 value the program produced, each atom carrying an `(at …)` back-pointer to the
-`.s.nif` node it evaluated.
+`.s.aif` node it evaluated.
 
 ```
-source NIF (.p.nif) → typed NIF (.s.nif) → the run (run rung)
+source AIF (.p.aif) → typed AIF (.s.aif) → the run (run rung)
 ```
 
 The value walker underneath walks each runtime value off its cell/object
@@ -64,8 +64,8 @@ structure rather than stringifying it — aggregates keep their real fields
 ref/ptr identity is deduped, so sharing is explicit and cycles terminate.
 Emission is gated behind an off-by-default flag; a normal run's stdout stays
 byte-identical. The browser [playground](https://aoughwl.github.io/playground/)
-surfaces this in its **Run** tab, alongside the Parsed (`.p.nif`) and Typed
-(`.s.nif`) rungs.
+surfaces this in its **Run** tab, alongside the Parsed (`.p.aif`) and Typed
+(`.s.aif`) rungs.
 
 ## Tracing
 

@@ -53,7 +53,7 @@ gives you nothing.
 Break inside the gate and look at what it actually decided:
 
 ```sh
-aowli-dbg --break-func:valueMatchesToks  <harness.s.nif>
+aowli-dbg --break-func:valueMatchesToks  <harness.s.aif>
 ```
 
 The real frame capture at the `return true` for `red green`:

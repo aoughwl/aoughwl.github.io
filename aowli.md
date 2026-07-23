@@ -5,7 +5,7 @@ repo: aoughwl/aowli
 # aowli — the nimony interpreter
 
 A standalone interpreter for **typed nimony**: it executes the compiler's
-post-semcheck typed NIF (`.s.nif`) — the exact artifact the native backend
+post-semcheck typed AIF (`.s.aif`) — the exact artifact the native backend
 consumes — on a real runtime substrate (not a per-shape stdlib re-impl). Two
 independent engines run it and agree byte-for-byte.
 
@@ -16,7 +16,7 @@ independent engines run it and agree byte-for-byte.
 
 > The source above is private. A prebuilt, binary-only distribution —
 > **[aowli-release](docs/aowli-release)** (v0.2.0, obfuscated + licence-gated +
-> stripped) — is public: download `aowli-interp`/`aowli-dbg` and run typed NIF
+> stripped) — is public: download `aowli-interp`/`aowli-dbg` and run typed AIF
 > with no build step. It's also what the [aowlcode](docs/aowlcode) plugin's
 > `trace`/`debug` tools run on.
 
@@ -28,10 +28,10 @@ independent engines run it and agree byte-for-byte.
 
 | Engine | Binary | How | Role |
 |---|---|---|---|
-| Tree-walker | `aowli-interp` | Walks the typed NIF directly | Correctness oracle — simple, source-line accurate |
-| Bytecode VM | `aowli-vm` | Compiles NIF into a register/stack instruction chunk, then executes it | Speed path, held honest against the tree-walker |
+| Tree-walker | `aowli-interp` | Walks the typed AIF directly | Correctness oracle — simple, source-line accurate |
+| Bytecode VM | `aowli-vm` | Compiles AIF into a register/stack instruction chunk, then executes it | Speed path, held honest against the tree-walker |
 
-Both consume nimony's post-semcheck `.s.nif` — no separate parser, no separate
+Both consume nimony's post-semcheck `.s.aif` — no separate parser, no separate
 type system. See [Engines](aowli/engines) for the shared value layer and the
 differential harness that keeps the two honest.
 
@@ -65,7 +65,7 @@ frame captures.
 
 | Page | Covers |
 |---|---|
-| [Engines](aowli/engines) | Tree-walker vs VM, the shared value/primitive/IO layer, `.s.nif` input, differential testing, corpus parity. |
+| [Engines](aowli/engines) | Tree-walker vs VM, the shared value/primitive/IO layer, `.s.aif` input, differential testing, corpus parity. |
 | [Debugging](aowli/debugging) | aowlidbg reference: `--break` vs `--break-func`, `--trace` vs `--trace-depth` vs `--trace-profile`, when to use which. |
 | [Debugging a real bug](aowli/debugging-a-real-bug) | Case study — a real off-by-one in `aoughwl/css`, found via `--break-func` frame captures, no print statements. |
 | [aowli-release](docs/aowli-release) | Public binaries: hardening, distribution, usage. |

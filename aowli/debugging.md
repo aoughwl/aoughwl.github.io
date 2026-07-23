@@ -6,7 +6,7 @@
 
 aowlidbg is aowli's trace/debug layer: the `aowli-dbg` binary, plus the
 `trace`/`debug` tools the [aowlcode](../docs/aowlcode/execution) Claude Code
-plugin exposes over it. Both inspect a live typed-NIF execution — call tree or
+plugin exposes over it. Both inspect a live typed-AIF execution — call tree or
 frame locals — without adding a single `echo`/`write` to the source.
 
 ## Flags
@@ -54,7 +54,7 @@ statement runs. Break on the following line to see a post-assignment value.
 ## Via aowlcode
 
 The `trace`/`debug` MCP tools wrap this exact binary pipeline (compile → locate
-`.s.nif` → run `aowli-interp`/`aowli-dbg`) with structured JSON returns and
+`.s.aif` → run `aowli-interp`/`aowli-dbg`) with structured JSON returns and
 binary resolution through `$AOWLI_BIN_DIR` → `~/.aowl/bin` → `~/aowli/bin` →
 `PATH`. Full args/returns/failure-mode reference:
 [aowlcode → Execution](../docs/aowlcode/execution).

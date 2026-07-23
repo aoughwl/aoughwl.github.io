@@ -4,7 +4,7 @@ repo: aoughwl/aowli-release
 
 # aowli-release — public binaries for the aowli interpreter
 
-A prebuilt, **binary-only** distribution of [aowli](../aowli), the typed-NIF
+A prebuilt, **binary-only** distribution of [aowli](../aowli), the typed-AIF
 interpreter for Nimony. The source stays private in `aoughwl/aowli`; this repo
 ships only the built binaries, hardened for public distribution.
 
@@ -17,8 +17,8 @@ ships only the built binaries, hardened for public distribution.
 
 ## What's in it
 
-Two binaries, each a fully self-contained interpreter over a `.s.nif` (a
-Nimony program's typed, post-semcheck NIF):
+Two binaries, each a fully self-contained interpreter over a `.s.aif` (a
+Nimony program's typed, post-semcheck AIF):
 
 - **`aowli-interp`** — run a program, or `--trace` it for its execution
   call-tree.
@@ -51,9 +51,9 @@ link so the asset can be verified independently of trusting the download host.
 
 ```sh
 chmod +x bin/aowli-interp
-./bin/aowli-interp <module.s.nif>          # run
-./bin/aowli-interp --trace <module.s.nif>  # execution call-tree
-./bin/aowli-dbg  --break:29 <module.s.nif> # batch breakpoint, dumps frame vars
+./bin/aowli-interp <module.s.aif>          # run
+./bin/aowli-interp --trace <module.s.aif>  # execution call-tree
+./bin/aowli-dbg  --break:29 <module.s.aif> # batch breakpoint, dumps frame vars
 ```
 
 ## Resolution order
