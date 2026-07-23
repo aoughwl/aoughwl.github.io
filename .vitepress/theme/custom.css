@@ -433,7 +433,13 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
   background: var(--vp-c-brand-soft);
   border-color: var(--vp-c-brand-1);
 }
-.aowl-sb-collapse:active { transform: scale(0.93); }
+.aowl-sb-collapse:active { transform: none; }
+.aowl-sb-collapse { touch-action: none; }
+/* while dragging the handle: resize cursor everywhere, no text selection, and
+   kill the collapse transitions so the sidebar tracks the pointer 1:1 */
+html.aowl-sb-resizing, html.aowl-sb-resizing * { cursor: ew-resize !important; user-select: none !important; }
+html.aowl-sb-resizing .VPSidebar,
+html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
 
 /* floating "show sidebar" handle — only while collapsed, desktop only */
 .aowl-sb-expand {

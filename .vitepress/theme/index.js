@@ -194,6 +194,15 @@ export default {
     }
     if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sb-collapsed')
 
+    // persisted, drag-adjustable sidebar width (VitePress reads --vp-sidebar-width,
+    // so the sidebar + content reflow live as it changes).
+    const WKEY = 'aowl-sb-width'
+    const WMIN = 220, WMAX = 520
+    const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
+    const savedW = parseInt(localStorage.getItem(WKEY))
+    if (savedW >= WMIN && savedW <= WMAX) applyWidth(savedW)
+    const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
+
     const PANEL_CLOSE =
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
     const PANEL_OPEN =
@@ -210,10 +219,39 @@ export default {
       const b = document.createElement('button')
       b.className = 'aowl-sb-collapse'
       b.type = 'button'
-      b.title = 'Hide sidebar'
-      b.setAttribute('aria-label', 'Hide sidebar')
+      b.title = 'Click to hide · drag to resize'
+      b.setAttribute('aria-label', 'Hide or resize sidebar')
       b.innerHTML = PANEL_CLOSE
-      b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setCollapsed(true) })
+
+      // Click = collapse; horizontal drag = resize. Discriminated by movement.
+      let dragging = false, moved = false, startX = 0, startW = 0
+      const onMove = (e) => {
+        const dx = e.clientX - startX
+        if (!moved && Math.abs(dx) > 3) { moved = true; root.classList.add('aowl-sb-resizing') }
+        if (!moved) return
+        const w = Math.max(WMIN, Math.min(WMAX, startW + dx))
+        applyWidth(w)
+      }
+      const onUp = (e) => {
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('pointerup', onUp)
+        root.classList.remove('aowl-sb-resizing')
+        if (moved) { localStorage.setItem(WKEY, String(curWidth())); }
+        dragging = false
+        setTimeout(() => { moved = false }, 0)   // let click fire after a real click only
+      }
+      b.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return
+        dragging = true; moved = false; startX = e.clientX; startW = curWidth()
+        window.addEventListener('pointermove', onMove)
+        window.addEventListener('pointerup', onUp)
+        e.preventDefault()
+      })
+      b.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation()
+        if (moved) return          // it was a drag-resize, not a collapse
+        setCollapsed(true)
+      })
       host.appendChild(b)
     }
     mountCollapse()
