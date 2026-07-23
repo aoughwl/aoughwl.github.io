@@ -37,6 +37,8 @@ cooperatively multiplexed.
 | **HTTP/1.1** (`serve/reactorhttp.nim`) | `serveHttpReactor(port, handler)` | 60 keep-alive conns × 5 reqs = 300/300, one thread |
 | **WebSocket** RFC 6455 (`serve/reactorws.nim`) | `serveWsReactor(port, handler)` | Autobahn-grade, 40 clients = 160/160, one thread |
 | **HTTP/3 (QUIC)** (`serve/reactorh3.nim`) | `serveH3Reactor(port, cert, key, handler)` | 20 independent QUIC clients = 20/20, one thread |
+| **QUIC datagrams** (RFC 9221) | `sendDatagram` / `takeDatagram` | round-trip echo, ASan-clean |
+| **WebTransport** (extended CONNECT + WT datagrams) | `clientWtConnect` / `wtSendDatagram` | session + datagram round-trip (needs vendored nghttp3 ≥ 1.x) |
 
 Each TCP connection is a **single flat coroutine**: HTTP reads a full request
 (Content-Length or chunked), runs the handler, writes the response, loops for

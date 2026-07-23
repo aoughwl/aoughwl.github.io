@@ -16,6 +16,12 @@ const sidebar = [
     ],
   },
   {
+    text: 'BLOG',
+    items: [
+      { text: 'Net stack, JSON & MCP (Jul 23)', link: '/blog/2026-07-23-net-stack-and-mcp' },
+    ],
+  },
+  {
     text: 'INTERFACE',
     items: [
       { text: 'Manager — aowlup', link: '/docs/aowlup' },
