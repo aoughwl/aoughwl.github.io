@@ -257,12 +257,20 @@ export default {
     const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
     const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
     const curX = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
-    // Horizontal-offset limits depend on the viewport: you can pull the sidebar
-    // LEFT until it's flush with the screen edge (cancel the centering gutter +
-    // the 32px inner pad) and push it RIGHT a bounded amount into the content.
+    // Horizontal-offset limits from the sidebar's ACTUAL rendered inset — its
+    // computed padding-left already encodes VitePress's per-breakpoint centering
+    // gutter, so we don't re-derive (or overshoot) it. Content-left = inset + x,
+    // so the min offset leaves LEFT_MARGIN of space (never off-screen) and the
+    // max is a small bounded rightward push. Falls back to the gutter estimate
+    // before the sidebar DOM exists.
+    const LEFT_MARGIN = 18, RIGHT_MAX = 90
     const xBounds = () => {
-      const g = parseInt(getComputedStyle(root).getPropertyValue('--aowl-gutter')) || 0
-      return { min: -(g + 32), max: 180 }
+      const sb = document.querySelector('.VPSidebar')
+      const padL = sb ? parseFloat(getComputedStyle(sb).paddingLeft) : NaN
+      const inset = Number.isFinite(padL) && padL > 0
+        ? padL
+        : (parseInt(getComputedStyle(root).getPropertyValue('--aowl-gutter')) || 0) + 32
+      return { min: LEFT_MARGIN - inset, max: RIGHT_MAX }
     }
     const clampX = (x) => { const b = xBounds(); return clamp(x, b.min, b.max) }
     const savedW = parseInt(localStorage.getItem(WKEY)); if (savedW >= WMIN && savedW <= WMAX) applyWidth(savedW)
@@ -298,9 +306,8 @@ export default {
       let dragging = false, acted = false, startX = 0, startXOff = 0
       const onMove = (e) => {
         const dx = e.clientX - startX
-        if (!acted && Math.abs(dx) > 3) { acted = true; root.classList.add('aowl-sb-resizing') }
-        if (!acted) return
-        applyX(clampX(startXOff + dx))
+        if (Math.abs(dx) > 3) acted = true      // it's a drag, not a plain click
+        if (acted) applyX(clampX(startXOff + dx))
       }
       // while held, scroll ANYWHERE resizes width — the handle moves as the width
       // changes, so a button-scoped wheel listener falls out from under the cursor
@@ -322,6 +329,11 @@ export default {
       b.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return
         dragging = true; acted = false; startX = e.clientX; startXOff = curX()
+        // Freeze transitions for the WHOLE hold so move + wheel are instant in
+        // ANY order — adding this only after motion left a wheel-then-move
+        // sequence animating each step (the "jumping" glitch). Removed on pointerup
+        // (before the click event), so a plain click still animates the collapse.
+        root.classList.add('aowl-sb-resizing')
         window.addEventListener('pointermove', onMove)
         window.addEventListener('pointerup', onUp)
         window.addEventListener('wheel', onWheel, { passive: false })   // hold + scroll

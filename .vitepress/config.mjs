@@ -192,11 +192,29 @@ export default defineConfig({
   ],
 
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    // --- Favicons: ICO for legacy, crisp PNGs for modern browsers ---
+    ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' }],
+    // --- iOS home-screen icon (fixes the fallback "A") + PWA manifest ---
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
+    ['link', { rel: 'manifest', href: '/site.webmanifest' }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: 'aoughwl' }],
+    ['meta', { name: 'application-name', content: 'aoughwl' }],
     ['meta', { name: 'theme-color', content: '#0a0a0b' }],
+    // --- Open Graph / Twitter (link previews on Discord, Slack, X, iMessage) ---
     ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'aoughwl' }],
     ['meta', { property: 'og:title', content: 'aoughwl' }],
     ['meta', { property: 'og:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
+    ['meta', { property: 'og:url', content: 'https://aoughwl.github.io/' }],
+    ['meta', { property: 'og:image', content: 'https://aoughwl.github.io/og-image.png' }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'aoughwl' }],
+    ['meta', { name: 'twitter:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
+    ['meta', { name: 'twitter:image', content: 'https://aoughwl.github.io/og-image.png' }],
     // Apply the saved sidebar width/offset BEFORE first paint (no flash), and
     // stamp `aowl-boot` for the one-time entrance animation.
     ['script', {}, `(function(){try{var r=document.documentElement;
