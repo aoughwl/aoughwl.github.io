@@ -570,6 +570,23 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
   }
   /* NOTE: nothing here touches the navbar — collapsing leaves the top bar
      exactly where the width + x rules above put it. */
+
+  /* ---- Make the sidebar actually DRIVE the page margins ----
+     VitePress centers the reading column (content-container margin:0 auto, and
+     at >=1280 the container is justify-content:center), so widening/moving the
+     sidebar just re-centered the text and the change was absorbed. Left-anchor
+     the reading column to the sidebar instead: now its left margin === the
+     sidebar's right edge, so resizing (Ctrl/hold + scroll) and moving (drag)
+     both push the content 1:1. The TOC is pinned to the far right so the freed
+     space becomes a balanced gap, not a dead gutter. Collapsed re-centers above,
+     so this only applies while the sidebar is open. */
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { margin: 0 !important; }
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content-container { margin: 0 !important; }
+}
+@media (min-width: 1280px) {
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .container { justify-content: flex-start !important; }
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { flex: 0 1 auto !important; width: auto !important; }
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar.has-aside .aside { flex-grow: 0 !important; margin-left: auto !important; }
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme

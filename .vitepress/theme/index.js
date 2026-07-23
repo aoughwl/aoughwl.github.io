@@ -297,7 +297,7 @@ export default {
       const b = document.createElement('button')
       b.className = 'aowl-sb-collapse'
       b.type = 'button'
-      b.setAttribute('data-tip', 'Click to hide · drag to move · hold + scroll to resize')
+      b.setAttribute('data-tip', 'Click to hide · drag to move · Ctrl + scroll (or hold + scroll) to resize')
       b.setAttribute('aria-label', 'Hide, move, or resize sidebar')
       b.innerHTML = PANEL_CLOSE
 
@@ -346,10 +346,26 @@ export default {
       })
       host.appendChild(b)
     }
-    mountCollapse()
-    new MutationObserver(raf(mountCollapse)).observe(document.body, { childList: true, subtree: true })
+    // Ctrl/Cmd + scroll anywhere over the sidebar resizes its width — the
+    // discoverable gesture (no need to grab the handle). With the reading column
+    // left-anchored, this also drives the page's left margin. preventDefault
+    // suppresses the browser's ctrl-scroll zoom.
+    const attachSidebarWheel = () => {
+      const sb = document.querySelector('.VPSidebar')
+      if (!sb || sb.dataset.aowlWheel) return
+      sb.dataset.aowlWheel = '1'
+      sb.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey && !e.metaKey) return
+        e.preventDefault()
+        const w = clamp(curWidth() + (e.deltaY < 0 ? 22 : -22), WMIN, WMAX)
+        applyWidth(w); localStorage.setItem(WKEY, String(w))
+      }, { passive: false })
+    }
+    const setupSidebar = () => { mountCollapse(); attachSidebarWheel() }
+    setupSidebar()
+    new MutationObserver(raf(setupSidebar)).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
-    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(mountCollapse) }
+    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(setupSidebar) }
 
     // Floating "show sidebar" handle — only visible while collapsed.
     const expand = document.createElement('button')
