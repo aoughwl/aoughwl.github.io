@@ -369,24 +369,31 @@
 /* ===========================================================================
    Text selection — brand violet, legible on both themes.
    =========================================================================== */
-/* (Native ::selection only accepts background/color/text-shadow — rounded
-   corners aren't possible without a JS overlay, so we lean on a refined,
-   intentional fill instead.) */
-::selection {
-  background: #e3ddff;              /* soft, solid violet — reads as designed */
-  color: #241a4d;
-  text-shadow: none;
+/* Native ::selection can't be rounded, so we hide it and paint our own rounded
+   pills (one per line) over the selection rects — see theme/index.js. A faint
+   native fill stays as a fallback before JS paints / where the overlay can't
+   reach (inputs). */
+::selection { background: rgba(124, 92, 255, 0.14); }
+.dark ::selection { background: rgba(150, 130, 255, 0.16); }
+
+.aowl-sel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
 }
-.dark ::selection {
-  background: rgba(150, 130, 255, 0.32);
-  color: #ffffff;
-  text-shadow: none;
+.aowl-sel-layer span {
+  position: fixed;
+  border-radius: 5px;
+  background: rgba(124, 92, 255, 0.20);
+  box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.16);
+  mix-blend-mode: multiply;
 }
-/* code blocks: a touch deeper so the wash stays visible on the dark editor */
-.vp-doc div[class*='language-'] ::selection,
-code ::selection { background: rgba(124, 92, 255, 0.26); color: inherit; }
-.dark .vp-doc div[class*='language-'] ::selection,
-.dark code ::selection { background: rgba(150, 130, 255, 0.30); color: #fff; }
+.dark .aowl-sel-layer span {
+  background: rgba(150, 130, 255, 0.26);
+  box-shadow: inset 0 0 0 1px rgba(160, 143, 255, 0.22);
+  mix-blend-mode: screen;
+}
 
 /* ===========================================================================
    Top bar — stays pinned (VitePress default) but declutters once you scroll
@@ -400,63 +407,50 @@ html.aowl-scrolled .VPNav .VPNavBar {
 html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !important; }
 
 /* ===========================================================================
-   Desktop sidebar collapse — a floating pill toggles a class on <html> that
-   slides the sidebar out and hands its width back to the content. Desktop only;
-   on mobile VitePress already has its own hamburger drawer.
+   Sidebar — progressive, scroll-linked collapse. One CSS var (--aowl-p, 0..1,
+   set from scroll in theme/index.js) fades+slides the sidebar and eases the
+   content back to center. A manual collapse control is docked in the OVERVIEW
+   heading. Desktop only; mobile keeps VitePress's hamburger drawer.
    =========================================================================== */
-.aowl-sb-toggle { display: none; }
+.aowl-sb-collapse {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--vp-c-text-3);
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: color .15s ease, background .15s ease, border-color .15s ease;
+}
+.aowl-sb-collapse:hover {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  border-color: var(--vp-c-border);
+}
+/* let the OVERVIEW heading row flex so the button sits hard-right */
+.VPSidebar .group:first-of-type .VPSidebarItem.level-0 > .item { display: flex; align-items: center; }
 
 @media (min-width: 961px) {
-  /* A slim drawer handle riding the sidebar's right edge. It slides to the far
-     left when the sidebar is collapsed, and its chevron flips to point the way
-     it will move next. */
-  /* `left` is set inline by JS from the sidebar's real geometry (see theme/
-     index.js) so the tab always sits on the sidebar's edge, not in the gutter. */
-  .aowl-sb-toggle {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 61;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 48px;
-    padding: 0;
-    border: 1px solid var(--vp-c-border);
-    border-radius: 0 9px 9px 0;
-    color: var(--vp-c-text-3);
-    background: var(--vp-c-bg-soft);
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity .18s ease, color .18s ease, background .18s ease,
-                left .26s ease, box-shadow .18s ease;
+  .VPSidebar {
+    transform: translateX(calc(var(--aowl-p, 0) * -1 * var(--vp-sidebar-width)));
+    opacity: calc(1 - var(--aowl-p, 0));
+    will-change: transform, opacity;
   }
-  .aowl-sb-toggle:hover {
-    opacity: 1;
-    color: var(--vp-c-brand-1);
-    background: var(--vp-c-brand-soft);
-    box-shadow: 2px 0 14px -6px rgba(0, 0, 0, 0.5);
-  }
-  .aowl-sb-toggle svg { transition: transform .26s ease; }
-  html.aowl-sidebar-collapsed .aowl-sb-toggle svg { transform: rotate(180deg); }
+  html.aowl-sb-gone .VPSidebar { pointer-events: none; }
 
-  /* the slide-out itself */
-  .VPSidebar { transition: transform .26s ease, opacity .2s ease; }
-  html.aowl-sidebar-collapsed .VPSidebar {
-    transform: translateX(calc(-1 * var(--vp-sidebar-width)));
-    opacity: 0;
-    pointer-events: none;
+  /* Content follows the sidebar: padding-left eases from (gutter + sidebar-width)
+     down to the gutter alone while padding-right stays the gutter, so the reading
+     column stays centered the whole way instead of shifting left. --aowl-gutter =
+     (100vw - max-width)/2, computed in JS. */
+  .VPContent.has-sidebar {
+    padding-left: calc(var(--aowl-gutter, 0px) + (1 - var(--aowl-p, 0)) * var(--vp-sidebar-width)) !important;
+    padding-right: var(--aowl-gutter, 0px) !important;
   }
-
-  /* Reclaim the sidebar's width AND genuinely re-center the reading column
-     (VitePress's own has-sidebar rules are media-query-scoped, so !important is
-     needed to beat them). The whole content+aside block centers, so the right
-     margin grows to match the left instead of the page hugging the left edge. */
-  html.aowl-sidebar-collapsed .VPContent.has-sidebar { padding-left: 0 !important; }
-  html.aowl-sidebar-collapsed .VPDoc.has-sidebar .container {
-    max-width: 1104px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
+  .VPDoc.has-sidebar .container { margin-left: auto !important; margin-right: auto !important; }
 }

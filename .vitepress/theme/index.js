@@ -173,58 +173,101 @@ export default {
 
     // --- scroll state: lets the top bar declutter as you leave the top ---
     const root = document.documentElement
-    let ticking = false
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        root.classList.toggle('aowl-scrolled', window.scrollY > 12)
-        ticking = false
-      })
+
+    // ===== scroll-linked sidebar collapse ==================================
+    // The sidebar fades/slides out *progressively* as you scroll down, and the
+    // content re-centers to match (all driven by one CSS var, --aowl-p ∈ [0,1]).
+    // Past COLLAPSE_DISTANCE it latches fully collapsed until you scroll back to
+    // the very top — then it eases open again.
+    const COLLAPSE_DISTANCE = 260   // px of scroll to fully collapse — TWEAK ME
+    const TOP_RELEASE = 4           // px from top that re-opens a latched sidebar
+
+    const raf = (fn) => { let q = false; return () => { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn() }) } }
+
+    // The centering gutter VitePress uses on wide viewports: (100vw − max)/2.
+    let layoutMax = 1440
+    const readMax = () => {
+      const v = parseInt(getComputedStyle(root).getPropertyValue('--vp-layout-max-width'))
+      if (v) layoutMax = v
     }
+    const setGutter = () => {
+      readMax()
+      root.style.setProperty('--aowl-gutter', Math.max(0, (window.innerWidth - layoutMax) / 2) + 'px')
+    }
+
+    let latched = false
+    const applyScroll = () => {
+      if (window.innerWidth < 961) { root.style.setProperty('--aowl-p', '0'); return }
+      const y = window.scrollY
+      let p
+      if (latched) {
+        if (y <= TOP_RELEASE) { latched = false; p = 0 }
+        else p = 1
+      } else {
+        p = Math.min(1, Math.max(0, y / COLLAPSE_DISTANCE))
+        if (p >= 1) latched = true
+      }
+      root.style.setProperty('--aowl-p', String(p))
+      root.classList.toggle('aowl-sb-gone', p > 0.985)
+      root.classList.toggle('aowl-scrolled', y > 12)
+    }
+    const onScroll = raf(applyScroll)
     window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
+    window.addEventListener('resize', raf(() => { setGutter(); applyScroll() }), { passive: true })
+    setGutter(); applyScroll()
 
-    // --- desktop-only sidebar collapse toggle ---
-    // Persisted across navigations/sessions; a floating pill toggles a class on
-    // <html> that the CSS uses to slide the sidebar out and widen the content.
-    const KEY = 'aowl-sidebar-collapsed'
-    if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sidebar-collapsed')
-
-    // The tab must ride the sidebar's *real* right edge — VitePress offsets the
-    // sidebar inside a centered max-width layout, so a screen-fixed `left` lands
-    // in the gutter on wide viewports. offsetLeft/offsetWidth ignore the collapse
-    // transform, so they give the stable expanded edge to anchor against.
-    const positionToggle = () => {
-      const btn = document.querySelector('.aowl-sb-toggle')
-      if (!btn) return
-      if (window.innerWidth < 961) { btn.style.left = ''; return }
-      if (root.classList.contains('aowl-sidebar-collapsed')) { btn.style.left = '0px'; return }
+    // ===== manual collapse control, docked in the "OVERVIEW" heading ========
+    const mountCollapseBtn = () => {
       const sb = document.querySelector('.VPSidebar')
-      if (!sb) return
-      btn.style.left = (sb.offsetLeft + sb.offsetWidth - 11) + 'px'
-    }
-
-    const mountToggle = () => {
-      if (document.querySelector('.aowl-sb-toggle')) return
+      if (!sb || sb.querySelector('.aowl-sb-collapse')) return
+      const firstLabel = sb.querySelector('.group .VPSidebarItem.level-0 > .item .text')
+        || sb.querySelector('.VPSidebarItem.level-0 .text')
+      if (!firstLabel) return
+      const host = firstLabel.closest('.item') || firstLabel.parentElement
       const btn = document.createElement('button')
-      btn.className = 'aowl-sb-toggle'
+      btn.className = 'aowl-sb-collapse'
       btn.type = 'button'
-      btn.setAttribute('aria-label', 'Toggle sidebar')
-      btn.title = 'Toggle sidebar'
+      btn.title = 'Collapse sidebar (scroll to top to restore)'
+      btn.setAttribute('aria-label', 'Collapse sidebar')
       btn.innerHTML =
         '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>'
-      btn.addEventListener('click', () => {
-        const on = root.classList.toggle('aowl-sidebar-collapsed')
-        localStorage.setItem(KEY, on ? '1' : '0')
-        positionToggle()
+      btn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation()
+        latched = true
+        root.style.setProperty('--aowl-p', '1')
+        root.classList.add('aowl-sb-gone')
       })
-      document.body.appendChild(btn)
-      positionToggle()
+      host.appendChild(btn)
     }
-    mountToggle()
-    window.addEventListener('resize', positionToggle, { passive: true })
+    const remountBtn = raf(mountCollapseBtn)
+    mountCollapseBtn()
+    new MutationObserver(remountBtn).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
-    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(positionToggle) }
+    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(mountCollapseBtn) }
+
+    // ===== rounded text-selection overlay ==================================
+    // Native ::selection can't have rounded corners, so we hide it and paint our
+    // own rounded pills over the selection's client rects — one per line.
+    const selLayer = document.createElement('div')
+    selLayer.className = 'aowl-sel-layer'
+    document.body.appendChild(selLayer)
+    const drawSel = () => {
+      const sel = window.getSelection()
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) { selLayer.textContent = ''; return }
+      const rects = sel.getRangeAt(0).getClientRects()
+      if (!rects.length) { selLayer.textContent = ''; return }
+      let html = ''
+      const n = Math.min(rects.length, 600)
+      for (let i = 0; i < n; i++) {
+        const r = rects[i]
+        if (r.width < 1 || r.height < 1) continue
+        html += `<span style="left:${r.left}px;top:${r.top - 1}px;width:${r.width}px;height:${r.height + 2}px"></span>`
+      }
+      selLayer.innerHTML = html
+    }
+    const schedSel = raf(drawSel)
+    document.addEventListener('selectionchange', schedSel)
+    window.addEventListener('scroll', schedSel, { passive: true })
+    window.addEventListener('resize', schedSel, { passive: true })
   },
 }
