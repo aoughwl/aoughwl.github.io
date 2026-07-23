@@ -201,7 +201,7 @@ export default defineConfig({
     // stamp `aowl-boot` for the one-time entrance animation.
     ['script', {}, `(function(){try{var r=document.documentElement;
       var w=parseInt(localStorage.getItem('aowl-sb-width'));if(w>=220&&w<=520)r.style.setProperty('--vp-sidebar-width',w+'px');
-      var x=parseInt(localStorage.getItem('aowl-sb-x'));if(x>=-200&&x<=360)r.style.setProperty('--aowl-sb-x',x+'px');
+      var x=parseInt(localStorage.getItem('aowl-sb-x'));if(x>=-1400&&x<=400)r.style.setProperty('--aowl-sb-x',x+'px');
       r.classList.add('aowl-boot');}catch(e){}})();`],
   ],
 

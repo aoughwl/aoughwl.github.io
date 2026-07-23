@@ -251,14 +251,27 @@ export default {
     // (hold the handle + scroll wheel). VitePress reads --vp-sidebar-width;
     // --aowl-sb-x nudges the whole sidebar horizontally.
     const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x'
-    const WMIN = 220, WMAX = 520, XMIN = -200, XMAX = 360
+    const WMIN = 220, WMAX = 520
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
     const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
     const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
     const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
     const curX = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
+    // Horizontal-offset limits depend on the viewport: you can pull the sidebar
+    // LEFT until it's flush with the screen edge (cancel the centering gutter +
+    // the 32px inner pad) and push it RIGHT a bounded amount into the content.
+    const xBounds = () => {
+      const g = parseInt(getComputedStyle(root).getPropertyValue('--aowl-gutter')) || 0
+      return { min: -(g + 32), max: 180 }
+    }
+    const clampX = (x) => { const b = xBounds(); return clamp(x, b.min, b.max) }
     const savedW = parseInt(localStorage.getItem(WKEY)); if (savedW >= WMIN && savedW <= WMAX) applyWidth(savedW)
-    const savedX = parseInt(localStorage.getItem(XKEY)); if (savedX >= XMIN && savedX <= XMAX) applyX(savedX)
+    // remember the user's intended offset; re-clamp it to the live viewport (so a
+    // flush-left drag on a wide screen still resolves sensibly after a resize)
+    const savedX = parseInt(localStorage.getItem(XKEY))
+    let xIntent = Number.isFinite(savedX) ? savedX : 0
+    applyX(clampX(xIntent))
+    window.addEventListener('resize', raf(() => applyX(clampX(xIntent))), { passive: true })
 
     const PANEL_CLOSE =
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
@@ -287,7 +300,7 @@ export default {
         const dx = e.clientX - startX
         if (!acted && Math.abs(dx) > 3) { acted = true; root.classList.add('aowl-sb-resizing') }
         if (!acted) return
-        applyX(clamp(startXOff + dx, XMIN, XMAX))
+        applyX(clampX(startXOff + dx))
       }
       // while held, scroll ANYWHERE resizes width — the handle moves as the width
       // changes, so a button-scoped wheel listener falls out from under the cursor
@@ -302,7 +315,7 @@ export default {
         window.removeEventListener('pointerup', onUp)
         window.removeEventListener('wheel', onWheel)
         root.classList.remove('aowl-sb-resizing')
-        if (acted) localStorage.setItem(XKEY, String(curX()))
+        if (acted) { xIntent = curX(); localStorage.setItem(XKEY, String(xIntent)) }
         dragging = false
         setTimeout(() => { acted = false }, 0)   // let a real click through, block a drag's click
       }
