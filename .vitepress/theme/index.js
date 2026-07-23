@@ -198,7 +198,7 @@ export default {
       btn.setAttribute('aria-label', 'Toggle sidebar')
       btn.title = 'Toggle sidebar'
       btn.innerHTML =
-        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>'
+        '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>'
       btn.addEventListener('click', () => {
         const on = root.classList.toggle('aowl-sidebar-collapsed')
         localStorage.setItem(KEY, on ? '1' : '0')
