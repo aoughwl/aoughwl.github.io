@@ -278,14 +278,33 @@ export default {
     const drawSel = () => {
       const sel = window.getSelection()
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) { selLayer.textContent = ''; return }
-      const rects = sel.getRangeAt(0).getClientRects()
-      if (!rects.length) { selLayer.textContent = ''; return }
+      const raw = sel.getRangeAt(0).getClientRects()
+      if (!raw.length) { selLayer.textContent = ''; return }
+
+      // getClientRects() emits a separate rect per inline element (bold, code,
+      // links…), so a selection spanning them fragments into many pills. Merge
+      // rects that share a line into one continuous band so each visual line is a
+      // single rounded highlight.
+      const rects = [...raw].filter((r) => r.width > 0.5 && r.height > 0.5)
+        .sort((a, b) => a.top - b.top || a.left - b.left)
+      const lines = []
+      for (const r of rects) {
+        const last = lines[lines.length - 1]
+        // same line ⇒ vertical overlap of >60% with the current band
+        if (last && Math.min(last.bottom, r.bottom) - Math.max(last.top, r.top) > Math.min(last.bottom - last.top, r.height) * 0.6) {
+          last.left = Math.min(last.left, r.left)
+          last.right = Math.max(last.right, r.right)
+          last.top = Math.min(last.top, r.top)
+          last.bottom = Math.max(last.bottom, r.bottom)
+        } else {
+          lines.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom })
+        }
+      }
       let html = ''
-      const n = Math.min(rects.length, 600)
-      for (let i = 0; i < n; i++) {
-        const r = rects[i]
-        if (r.width < 1 || r.height < 1) continue
-        html += `<span style="left:${r.left}px;top:${r.top - 1}px;width:${r.width}px;height:${r.height + 2}px"></span>`
+      for (const b of lines.slice(0, 400)) {
+        const w = b.right - b.left, h = b.bottom - b.top
+        if (w < 1 || h < 1) continue
+        html += `<span style="left:${b.left}px;top:${b.top - 1}px;width:${w}px;height:${h + 2}px"></span>`
       }
       selLayer.innerHTML = html
     }

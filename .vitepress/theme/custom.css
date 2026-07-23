@@ -207,6 +207,21 @@
 /* wider search modal input */
 .VPLocalSearchBox .search-bar { max-width: none; }
 
+/* Mobile search must OVERRIDE the wide-search rule above (same specificity, so it
+   has to come later in the file to win): shrink the collapsed search to its icon
+   and right-align it beside the theme toggle instead of a centered 460px box. */
+@media (max-width: 768px) {
+  .VPNavBarSearch {
+    flex-grow: 0 !important;
+    margin-left: auto !important;
+    justify-content: flex-end !important;
+    padding-left: 0 !important;
+  }
+  .VPNavBarSearch #local-search { width: auto !important; }
+  .VPNavBarSearch #local-search > button,
+  .VPNavBarSearch .DocSearch-Button { width: auto !important; max-width: none !important; }
+}
+
 /* ---- Sidebar rows: names left, badges in one right column, caret in a
    reserved right gutter (absolute, so it never pushes/indents content) ---- */
 .VPSidebarItem .item {
@@ -398,8 +413,8 @@
    pills (one per line) over the selection rects — see theme/index.js. A faint
    native fill stays as a fallback before JS paints / where the overlay can't
    reach (inputs). */
-::selection { background: rgba(124, 92, 255, 0.14); }
-.dark ::selection { background: rgba(150, 130, 255, 0.16); }
+::selection { background: transparent !important; }
+.dark ::selection { background: transparent !important; }
 
 .aowl-sel-layer {
   position: fixed;
