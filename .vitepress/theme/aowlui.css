@@ -1,0 +1,54 @@
+/* aowlui — styles for the shared tooltips + context menu. Colors come from CSS
+   variables with fallbacks: set --aui-* to theme it, or it will pick up
+   VitePress's --vp-* vars automatically, or fall back to a dark default. */
+
+#aui-tooltip {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 280px;
+  padding: 5px 9px;
+  font-size: 12px;
+  line-height: 1.35;
+  border-radius: 7px;
+  color: var(--aui-fg, var(--vp-c-text-1, #ededf0));
+  background: var(--aui-panel, var(--vp-c-bg-elv, #1b1b1f));
+  border: 1px solid var(--aui-border, var(--vp-c-border, #333));
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+#aui-tooltip.show { opacity: 1; transform: translateY(0); }
+
+#aui-ctxmenu {
+  position: fixed;
+  z-index: 1100;
+  min-width: 184px;
+  padding: 4px;
+  font-size: 13px;
+  border-radius: 9px;
+  color: var(--aui-fg, var(--vp-c-text-1, #ededf0));
+  background: var(--aui-panel, var(--vp-c-bg-elv, #1b1b1f));
+  border: 1px solid var(--aui-border, var(--vp-c-border, #333));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  -webkit-user-select: none;
+  user-select: none;
+  display: none;
+}
+#aui-ctxmenu.show { display: block; }
+#aui-ctxmenu .item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--aui-fg, var(--vp-c-text-1, #ededf0));
+  cursor: pointer;
+  white-space: nowrap;
+}
+#aui-ctxmenu .item:hover { background: var(--aui-accent, var(--vp-c-brand-1, #7c5cff)); color: #fff; }
+#aui-ctxmenu .item.disabled { color: var(--aui-muted, var(--vp-c-text-3, #888)); cursor: default; pointer-events: none; opacity: 0.6; }
+#aui-ctxmenu .item .kb { margin-left: auto; font-size: 11px; color: var(--aui-muted, var(--vp-c-text-3, #888)); }
+#aui-ctxmenu .item:hover .kb { color: rgba(255, 255, 255, 0.75); }
+#aui-ctxmenu .sep { height: 1px; margin: 4px 6px; background: var(--aui-border, var(--vp-c-border, #333)); }
