@@ -521,9 +521,17 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
     margin-left: auto !important;
     margin-right: auto !important;
   }
-  /* collapse the navbar's reserved sidebar-width title column so nothing hangs */
-  html.aowl-sb-collapsed .VPNavBar.has-sidebar .title { width: auto !important; }
-  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content { padding-left: var(--aowl-gutter, 24px) !important; }
+  /* Navbar when collapsed: VitePress absolutely-positions the logo/"docs" title
+     over the left sidebar strip and clears it with content padding-left =
+     sidebar-width. Shrinking that padding slid the search UNDER the logo — so
+     put the title back in normal flow (logo at the gutter) and let the content
+     follow it, no overlap. */
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .title {
+    position: static !important;
+    width: auto !important;
+    padding-left: var(--aowl-gutter, 0px) !important;
+  }
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content { padding-left: 16px !important; }
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
