@@ -41,12 +41,14 @@ const REPO_BY_PATH = {
 const norm = (p) => (p || '').replace(/index$/, '').replace(/\.html$/, '').replace(/\/$/, '') || '/'
 
 // external icon+text link builder (used by the nav)
-function extLink({ cls, href, target, icon, text, rightIcon, label }) {
+function extLink({ cls, href, target, icon, text, rightIcon, label, tip }) {
   const kids = []
   if (icon) kids.push(h('span', { class: 'nav-ico', innerHTML: icon }))
   if (text) kids.push(h('span', { class: 'nav-txt' }, text))
   if (rightIcon) kids.push(h('span', { class: 'nav-ico nav-ico-r', innerHTML: rightIcon }))
-  return h('a', { class: cls, href, target: target || '_blank', rel: 'noopener', 'aria-label': label || text }, kids)
+  const attrs = { class: cls, href, target: target || '_blank', rel: 'noopener', 'aria-label': label || text }
+  if (tip) attrs['data-tip'] = tip
+  return h('a', attrs, kids)
 }
 
 // ---- sidebar repo badges --------------------------------------------------
@@ -95,7 +97,7 @@ function decorateSidebar() {
     }
     const href = REPO_BASE + repo
     if (badge.getAttribute('href') !== href) badge.setAttribute('href', href)
-    badge.title = 'github.com/aoughwl/' + repo
+    badge.setAttribute('data-tip', 'github.com/aoughwl/' + repo + ' ↗')
     badge.classList.toggle('icon-only', !withText)
     badge.innerHTML = withText ? `<span class="repo-badge-name">${repo}</span>${REDIRECT_SM}` : REDIRECT_SM
   })
@@ -115,7 +117,7 @@ const RepoButton = {
       const label = repo.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '')
       const href = /^https?:\/\//.test(repo) ? repo : 'https://github.com/' + label
       return h('div', { class: 'repo-btn-row' }, [
-        h('a', { class: 'repo-btn', href, target: '_blank', rel: 'noopener', 'aria-label': 'GitHub — ' + label }, [
+        h('a', { class: 'repo-btn', href, target: '_blank', rel: 'noopener', 'aria-label': 'GitHub — ' + label, 'data-tip': 'View ' + label + ' on GitHub ↗' }, [
           h('span', { class: 'repo-btn-ico', innerHTML: GITHUB_SVG }),
           h('span', { class: 'repo-btn-txt' }, label),
           h('span', { class: 'repo-btn-arrow', innerHTML: REDIRECT_SM }),
@@ -133,11 +135,11 @@ const NavExtras = {
     return () =>
       mounted.value
         ? h('div', { class: 'nav-right' }, [
-            extLink({ cls: 'nav-pg-link', href: PLAYGROUND_URL, target: '_self', icon: PLAY_SVG, text: 'Playground', rightIcon: REDIRECT_SVG, label: 'Open the playground' }),
+            extLink({ cls: 'nav-pg-link', href: PLAYGROUND_URL, target: '_self', icon: PLAY_SVG, text: 'Playground', rightIcon: REDIRECT_SVG, label: 'Open the playground', tip: 'Run nimony in your browser ↗' }),
             h('div', { class: 'nav-social' }, [
-              extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl' }),
-              extLink({ cls: 'nav-social-link nav-discord', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord' }),
-              extLink({ cls: 'nav-social-link nav-support', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us' }),
+              extLink({ cls: 'nav-social-link', href: GITHUB_URL, icon: GITHUB_SVG, text: 'GitHub', label: 'GitHub · aoughwl', tip: 'aoughwl on GitHub ↗' }),
+              extLink({ cls: 'nav-social-link nav-discord', href: DISCORD_URL, icon: DISCORD_SVG, text: 'Discord', label: 'Discord', tip: 'Join the Discord ↗' }),
+              extLink({ cls: 'nav-social-link nav-support', href: SUPPORT_URL, icon: HEART_SVG, text: 'Support', label: 'Support us', tip: 'Support the project ↗' }),
             ]),
           ])
         : null
@@ -200,7 +202,7 @@ export default {
     // (hold the handle + scroll wheel). VitePress reads --vp-sidebar-width;
     // --aowl-sb-x nudges the whole sidebar horizontally.
     const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x'
-    const WMIN = 220, WMAX = 520, XMIN = 0, XMAX = 360
+    const WMIN = 220, WMAX = 520, XMIN = -200, XMAX = 360
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
     const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
     const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
@@ -238,9 +240,18 @@ export default {
         if (!acted) return
         applyX(clamp(startXOff + dx, XMIN, XMAX))
       }
+      // while held, scroll ANYWHERE resizes width — the handle moves as the width
+      // changes, so a button-scoped wheel listener falls out from under the cursor
+      const onWheel = (e) => {
+        e.preventDefault()
+        const w = clamp(curWidth() + (e.deltaY < 0 ? 14 : -14), WMIN, WMAX)
+        applyWidth(w); localStorage.setItem(WKEY, String(w))
+        acted = true
+      }
       const onUp = () => {
         window.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
+        window.removeEventListener('wheel', onWheel)
         root.classList.remove('aowl-sb-resizing')
         if (acted) localStorage.setItem(XKEY, String(curX()))
         dragging = false
@@ -251,16 +262,9 @@ export default {
         dragging = true; acted = false; startX = e.clientX; startXOff = curX()
         window.addEventListener('pointermove', onMove)
         window.addEventListener('pointerup', onUp)
+        window.addEventListener('wheel', onWheel, { passive: false })   // hold + scroll
         e.preventDefault()
       })
-      // hold the handle (pointer down) and scroll to grow/shrink the width
-      b.addEventListener('wheel', (e) => {
-        if (!dragging) return
-        e.preventDefault()
-        const w = clamp(curWidth() + (e.deltaY < 0 ? 14 : -14), WMIN, WMAX)
-        applyWidth(w); localStorage.setItem(WKEY, String(w))
-        acted = true
-      }, { passive: false })
       b.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation()
         if (acted) return          // it was a drag/resize, not a collapse
