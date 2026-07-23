@@ -11,6 +11,13 @@
 // overflow the bottom.
 // ---------------------------------------------------------------------------
 export function initTooltips(opts = {}) {
+  // Tooltips are a hover affordance. On touch devices a tap fires a synthetic
+  // mouseover (shows) with no matching mouseout (so it sticks) — so skip them
+  // entirely unless the device can actually hover.
+  if (typeof window === 'undefined' || !window.matchMedia ||
+      !window.matchMedia('(hover: hover)').matches) {
+    return { hide() {} }
+  }
   const delay = opts.delay == null ? 350 : opts.delay
   let tipEl = null, timer = null, cur = null
 
