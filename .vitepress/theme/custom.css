@@ -528,19 +528,33 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
     margin-left: auto !important;
     margin-right: auto !important;
   }
-  /* Navbar when collapsed: VitePress absolutely-positions the logo/"docs" title
-     over the left sidebar strip and clears it with content padding-left =
-     sidebar-width. Shrinking that padding slid the search UNDER the logo — so
-     put the title back in normal flow (logo at the gutter) and let the content
-     follow it, no overlap. */
-  html.aowl-sb-collapsed .VPNavBar.has-sidebar .title {
-    position: static !important;
-    width: auto !important;
-    padding-left: var(--aowl-gutter, 0px) !important;
+  /* The navbar does NOT change when the sidebar is collapsed — it stays exactly
+     as it is open (the logo keeps its column). The ONLY navbar movement is when
+     the sidebar itself is moved/scaled: the logo column follows so the logo stays
+     centered above the sidebar. VitePress already sizes .title to
+     --vp-sidebar-width; we just add the horizontal offset. */
+  .VPNavBar.has-sidebar .title {
+    transform: translateX(var(--aowl-sb-x, 0px));
+    transition: transform .12s ease;
   }
-  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content { padding-left: 16px !important; }
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
    keeps its darker line. */
 .dark .VPLocalNav { border-bottom-color: var(--vp-c-border) !important; }
+
+/* ===========================================================================
+   First-load entrance — the shell eases in once. `aowl-boot` is stamped on
+   <html> before first paint (head script) and removed after ~1s (theme JS), so
+   it plays once and never on SPA navigation. Respects reduced-motion.
+   =========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  html.aowl-boot .VPNavBar { animation: aowl-in-down .5s ease both; }
+  html.aowl-boot .VPContent { animation: aowl-in-up .55s .04s ease both; }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 961px) {
+  html.aowl-boot .VPSidebar { animation: aowl-in-fade .6s .06s ease both; }
+}
+@keyframes aowl-in-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes aowl-in-up   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes aowl-in-fade { from { opacity: 0; } to { opacity: 1; } }

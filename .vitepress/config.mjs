@@ -197,6 +197,12 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'aoughwl' }],
     ['meta', { property: 'og:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
+    // Apply the saved sidebar width/offset BEFORE first paint (no flash), and
+    // stamp `aowl-boot` for the one-time entrance animation.
+    ['script', {}, `(function(){try{var r=document.documentElement;
+      var w=parseInt(localStorage.getItem('aowl-sb-width'));if(w>=220&&w<=520)r.style.setProperty('--vp-sidebar-width',w+'px');
+      var x=parseInt(localStorage.getItem('aowl-sb-x'));if(x>=-200&&x<=360)r.style.setProperty('--aowl-sb-x',x+'px');
+      r.classList.add('aowl-boot');}catch(e){}})();`],
   ],
 
   themeConfig: {

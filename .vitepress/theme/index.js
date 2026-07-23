@@ -40,6 +40,47 @@ const REPO_BY_PATH = {
 
 const norm = (p) => (p || '').replace(/index$/, '').replace(/\.html$/, '').replace(/\/$/, '') || '/'
 
+// Brief, plain-English descriptions shown as hover tooltips on sidebar items —
+// so you can learn what each stage is just by moving the mouse over it.
+const DESC_BY_PATH = {
+  '/docs/parity': 'How close the rebuild is to upstream Nimony, feature by feature',
+  '/docs/aowlup': 'Version manager — installs and switches between toolchain pieces (like rustup)',
+  '/docs/aowlmony': 'The driver that runs your code through the whole compiler pipeline',
+  '/docs/aowlparser': 'Parser — turns source text into a structured syntax tree',
+  '/docs/aowlsem': 'Semantic checker — resolves types, overloads, and reports errors',
+  '/docs/aowlhexer': 'Lowering pass — simplifies typed code down toward the backends',
+  '/aowli': 'Interpreter — runs your program directly, with no separate compile step',
+  '/docs/aowllib': 'The native runtime library that compiled programs link against',
+  '/docs/aowlhl': 'Shared high-level IR that the interpreter and JS backend both read',
+  '/docs/aowlc': 'C backend — emits C source you can compile to a native binary',
+  '/docs/aowljs': 'JavaScript backend — transpiles straight to fast native JS',
+  '/docs/aowlweb': 'Faithful JS/WASM build for running the language in the browser',
+  '/docs/aowlts': 'TypeScript backend — idiomatic, fully-typed output',
+  '/docs/aowlpy': 'Python backend — idiomatic Python output',
+  '/docs/aowllsp': 'Language Server — editor smarts: go-to-definition, hover, rename',
+  '/docs/aowlsuggest': 'Quick-fixes and lints layered over the parser’s diagnostics',
+  '/docs/aowlfmt': 'Formatter — canonical layout without ever changing meaning',
+  '/docs/aowlcode': 'Claude Code plugin + MCP server wired into the toolchain',
+  '/docs/aiflens': 'Command-line tool to inspect and query NIF/AIF artifacts',
+  '/docs/obfuscate': 'IR-level obfuscator used for the binary-only public releases',
+  '/docs/aowljson': 'Standalone JSON value library — parse, build, and serialize',
+  '/docs/aowlmcp': 'Model Context Protocol server library (stdio, HTTP, HTTP/3)',
+  '/docs/net-stack': 'From-scratch networking stack, one concern per library (TCP → HTTP/3)',
+  '/docs/net-stack/tcp': 'Raw TCP sockets — the bottom of the networking stack',
+  '/docs/net-stack/net': 'Socket ergonomics, dual-stack IPv6, buffered reads',
+  '/docs/net-stack/tls': 'TLS 1.3 over OpenSSL — encrypted connections, client and server',
+  '/docs/net-stack/http': 'Transport-free HTTP: headers, URLs, parsing, status codes',
+  '/docs/net-stack/compress': 'gzip / brotli / zstd compression codecs',
+  '/docs/net-stack/serve': 'HTTP/1.1 + HTTP/2 server with HTTPS and concurrency',
+  '/docs/net-stack/reactor': 'Single-thread async engine: HTTP/1.1, WebSocket, HTTP/3 on one thread',
+  '/docs/net-stack/ws': 'WebSocket (RFC 6455) — real-time two-way messaging',
+  '/docs/net-stack/requests': 'Browser-identical HTTP client (curl-impersonate)',
+  '/docs/web': 'Typed HTML5 builder for web pages',
+  '/docs/html': 'HTML5 parser and document model',
+  '/docs/css': 'CSS engine and styling DSL',
+  '/docs/aowlhl-shared': 'Shared high-level IR',
+}
+
 // external icon+text link builder (used by the nav)
 function extLink({ cls, href, target, icon, text, rightIcon, label, tip }) {
   const kids = []
@@ -64,6 +105,10 @@ function decorateSidebar() {
     const full = p.dataset.full || p.textContent
     const idx = full.indexOf(SEP)
     const linkPath = norm(new URL(link.getAttribute('href') || '/', location.origin).pathname)
+
+    // plain-English hover description for the row (independent of the repo badge)
+    const desc = DESC_BY_PATH[linkPath]
+    if (desc && link.getAttribute('data-tip') !== desc) link.setAttribute('data-tip', desc)
 
     if (idx !== -1) {
       // "Native JS — aowljs" → name + "aowljs ↗"
@@ -178,6 +223,10 @@ export default {
     // --- scroll state: lets the top bar declutter as you leave the top ---
     const root = document.documentElement
     const raf = (fn) => { let q = false; return () => { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn() }) } }
+
+    // the one-time entrance animation (class stamped pre-paint in the head script)
+    // plays once, then we drop the class so it never replays on SPA navigation.
+    setTimeout(() => root.classList.remove('aowl-boot'), 1000)
 
     // ===== sidebar collapse (manual, binary) ================================
     // The centering gutter VitePress uses on wide viewports, (100vw − max)/2,
