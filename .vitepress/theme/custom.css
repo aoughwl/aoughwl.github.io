@@ -470,11 +470,13 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
 .aowl-sb-collapse:hover { color: var(--vp-c-brand-1); }
 .aowl-sb-collapse:active { transform: none; }
 .aowl-sb-collapse { touch-action: none; }
-/* while dragging the handle: resize cursor everywhere, no text selection, and
-   kill the collapse transitions so the sidebar tracks the pointer 1:1 */
-html.aowl-sb-resizing, html.aowl-sb-resizing * { cursor: ew-resize !important; user-select: none !important; }
+/* while dragging the handle: grab cursor everywhere, no text selection, and
+   kill every transition on the moving pieces so they track the pointer 1:1 */
+html.aowl-sb-resizing, html.aowl-sb-resizing * { cursor: grabbing !important; user-select: none !important; }
 html.aowl-sb-resizing .VPSidebar,
-html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
+html.aowl-sb-resizing .VPContent.has-sidebar,
+html.aowl-sb-resizing .VPNavBar.has-sidebar .title,
+html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !important; }
 /* collapse/resize is a desktop feature — hide the control below 961px */
 @media (max-width: 960px) { .aowl-sb-collapse, .aowl-sb-expand { display: none !important; } }
 
@@ -501,26 +503,60 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
 .aowl-sb-expand:hover { color: var(--vp-c-brand-1); border-color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
 .aowl-sb-expand:active { transform: scale(0.94); }
 
-@media (min-width: 961px) {
+/* ---------------------------------------------------------------------------
+   The sidebar has exactly two degrees of freedom:
+
+     WIDTH    → --vp-sidebar-width   (hold the handle + scroll wheel)
+     POSITION → --aowl-sb-x          (drag the handle left/right)
+
+   VitePress ALREADY keys its sidebar box, the navbar logo column (`.title`),
+   the navbar content, and the page content all off --vp-sidebar-width — so
+   changing the WIDTH reflows every one of them (logo included) for free; we
+   touch nothing for that.
+
+   VitePress knows nothing about POSITION, so we layer --aowl-sb-x on top of the
+   SAME four elements, additively, so the logo, the sidebar, and both content
+   starts all move together as one column:
+     • sidebar + logo box  → translateX(x)         (they're position-based)
+     • page + navbar content → margin-left: x       (they're padding-based; a
+       margin STACKS on VitePress's own sidebar-width padding, so it stays
+       correct at every breakpoint without us re-deriving their centering math)
+
+   Uses VitePress's own 960px breakpoint so there's no seam where it's in
+   sidebar-mode but our offsets aren't.
+   --------------------------------------------------------------------------- */
+@media (min-width: 960px) {
   html.aowl-sb-collapsed .aowl-sb-expand { display: inline-flex; }
 
-  .VPSidebar {
-    transition: transform .28s ease, opacity .22s ease, margin-left .12s ease;
-    margin-left: var(--aowl-sb-x, 0px);   /* drag the handle to move it */
+  .VPSidebar { transition: transform .25s ease, opacity .22s ease; }
+
+  /* --- open: shift the whole sidebar column (and its logo) by x --- */
+  html:not(.aowl-sb-collapsed) .VPSidebar {
+    transform: translateX(var(--aowl-sb-x, 0px));
   }
-  /* content follows the sidebar's width AND its position offset, staying clear */
-  .VPContent.has-sidebar {
-    transition: padding-left .12s ease, padding-right .28s ease;
-    padding-left: calc(var(--aowl-gutter, 0px) + var(--vp-sidebar-width) + var(--aowl-sb-x, 0px)) !important;
+  html:not(.aowl-sb-collapsed) .VPNavBar.has-sidebar .title {
+    transform: translateX(var(--aowl-sb-x, 0px));
+    transition: transform .25s ease;
+  }
+  /* push the content starts (page body + navbar cluster) past the shifted
+     sidebar; margin stacks on VitePress's sidebar-width padding-left */
+  html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
+    margin-left: var(--aowl-sb-x, 0px);
+    transition: margin-left .25s ease;
+  }
+  html:not(.aowl-sb-collapsed) .VPNavBar.has-sidebar .content {
+    margin-left: var(--aowl-sb-x, 0px);
+    transition: margin-left .25s ease;
   }
 
+  /* --- collapsed: sidebar slides off, content reclaims + re-centers --- */
   html.aowl-sb-collapsed .VPSidebar {
     transform: translateX(-100%);
     opacity: 0;
     pointer-events: none;
   }
-  /* content re-centers: both paddings become the centering gutter */
   html.aowl-sb-collapsed .VPContent.has-sidebar {
+    margin-left: 0 !important;
     padding-left: var(--aowl-gutter, 0px) !important;
     padding-right: var(--aowl-gutter, 0px) !important;
   }
@@ -528,9 +564,8 @@ html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
     margin-left: auto !important;
     margin-right: auto !important;
   }
-  /* The navbar is left entirely to VitePress — no overrides on collapse and no
-     logo-follow transform (that reacted to VitePress re-deriving its own
-     has-sidebar/home-top classes on scroll and jumped around). Stable > fancy. */
+  /* Collapsed: no sidebar to sit above, so the logo box keeps VitePress's own
+     top-left position — no transform means it can't drift. */
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
