@@ -410,10 +410,11 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
   /* A slim drawer handle riding the sidebar's right edge. It slides to the far
      left when the sidebar is collapsed, and its chevron flips to point the way
      it will move next. */
+  /* `left` is set inline by JS from the sidebar's real geometry (see theme/
+     index.js) so the tab always sits on the sidebar's edge, not in the gutter. */
   .aowl-sb-toggle {
     position: fixed;
     top: 50%;
-    left: calc(var(--vp-sidebar-width) - 11px);
     transform: translateY(-50%);
     z-index: 61;
     display: inline-flex;
@@ -438,7 +439,6 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
     box-shadow: 2px 0 14px -6px rgba(0, 0, 0, 0.5);
   }
   .aowl-sb-toggle svg { transition: transform .26s ease; }
-  html.aowl-sidebar-collapsed .aowl-sb-toggle { left: 0; }
   html.aowl-sidebar-collapsed .aowl-sb-toggle svg { transform: rotate(180deg); }
 
   /* the slide-out itself */
@@ -449,24 +449,14 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
     pointer-events: none;
   }
 
-  /* Reclaim the sidebar's width AND re-center the reading column so the page
-     reads like a balanced no-sidebar layout instead of hugging the left. */
+  /* Reclaim the sidebar's width AND genuinely re-center the reading column
+     (VitePress's own has-sidebar rules are media-query-scoped, so !important is
+     needed to beat them). The whole content+aside block centers, so the right
+     margin grows to match the left instead of the page hugging the left edge. */
   html.aowl-sidebar-collapsed .VPContent.has-sidebar { padding-left: 0 !important; }
   html.aowl-sidebar-collapsed .VPDoc.has-sidebar .container {
-    max-width: 1104px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  html.aowl-sidebar-collapsed .VPDoc.has-sidebar .content {
-    max-width: 752px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  /* pull the pinned navbar content back over the reclaimed sidebar column */
-  html.aowl-sidebar-collapsed .VPNavBar.has-sidebar .content { padding-left: 24px !important; }
-  html.aowl-sidebar-collapsed .VPNavBar.has-sidebar .title {
-    border-bottom-color: transparent !important;
+    max-width: 1104px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }

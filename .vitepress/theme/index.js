@@ -190,6 +190,21 @@ export default {
     // <html> that the CSS uses to slide the sidebar out and widen the content.
     const KEY = 'aowl-sidebar-collapsed'
     if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sidebar-collapsed')
+
+    // The tab must ride the sidebar's *real* right edge — VitePress offsets the
+    // sidebar inside a centered max-width layout, so a screen-fixed `left` lands
+    // in the gutter on wide viewports. offsetLeft/offsetWidth ignore the collapse
+    // transform, so they give the stable expanded edge to anchor against.
+    const positionToggle = () => {
+      const btn = document.querySelector('.aowl-sb-toggle')
+      if (!btn) return
+      if (window.innerWidth < 961) { btn.style.left = ''; return }
+      if (root.classList.contains('aowl-sidebar-collapsed')) { btn.style.left = '0px'; return }
+      const sb = document.querySelector('.VPSidebar')
+      if (!sb) return
+      btn.style.left = (sb.offsetLeft + sb.offsetWidth - 11) + 'px'
+    }
+
     const mountToggle = () => {
       if (document.querySelector('.aowl-sb-toggle')) return
       const btn = document.createElement('button')
@@ -202,9 +217,14 @@ export default {
       btn.addEventListener('click', () => {
         const on = root.classList.toggle('aowl-sidebar-collapsed')
         localStorage.setItem(KEY, on ? '1' : '0')
+        positionToggle()
       })
       document.body.appendChild(btn)
+      positionToggle()
     }
     mountToggle()
+    window.addEventListener('resize', positionToggle, { passive: true })
+    const origRC = router.onAfterRouteChanged
+    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(positionToggle) }
   },
 }
