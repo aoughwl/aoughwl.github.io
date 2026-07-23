@@ -407,50 +407,78 @@ html.aowl-scrolled .VPNav .VPNavBar {
 html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !important; }
 
 /* ===========================================================================
-   Sidebar — progressive, scroll-linked collapse. One CSS var (--aowl-p, 0..1,
-   set from scroll in theme/index.js) fades+slides the sidebar and eases the
-   content back to center. A manual collapse control is docked in the OVERVIEW
-   heading. Desktop only; mobile keeps VitePress's hamburger drawer.
+   Sidebar collapse (manual). A control docked at the right of the OVERVIEW
+   heading hides the sidebar; a floating handle brings it back. The collapsed
+   layout re-centers via --aowl-gutter = (100vw − max-width)/2 (set in JS), and
+   the navbar's reserved sidebar column collapses too. Desktop only.
    =========================================================================== */
 .aowl-sb-collapse {
   margin-left: auto;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 24px;
   padding: 0;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  color: var(--vp-c-text-3);
-  background: transparent;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 7px;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
   cursor: pointer;
-  flex: 0 0 auto;
   transition: color .15s ease, background .15s ease, border-color .15s ease;
 }
 .aowl-sb-collapse:hover {
   color: var(--vp-c-brand-1);
   background: var(--vp-c-brand-soft);
-  border-color: var(--vp-c-border);
+  border-color: var(--vp-c-brand-1);
 }
-/* let the OVERVIEW heading row flex so the button sits hard-right */
-.VPSidebar .group:first-of-type .VPSidebarItem.level-0 > .item { display: flex; align-items: center; }
+.aowl-sb-collapse:active { transform: scale(0.93); }
+
+/* floating "show sidebar" handle — only while collapsed, desktop only */
+.aowl-sb-expand {
+  position: fixed;
+  top: calc(var(--vp-nav-height, 64px) + 12px);
+  left: 14px;
+  z-index: 45;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 9px;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-elv);
+  cursor: pointer;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.5);
+  transition: color .15s ease, background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.aowl-sb-expand:hover { color: var(--vp-c-brand-1); border-color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
+.aowl-sb-expand:active { transform: scale(0.94); }
 
 @media (min-width: 961px) {
-  .VPSidebar {
-    transform: translateX(calc(var(--aowl-p, 0) * -1 * var(--vp-sidebar-width)));
-    opacity: calc(1 - var(--aowl-p, 0));
-    will-change: transform, opacity;
-  }
-  html.aowl-sb-gone .VPSidebar { pointer-events: none; }
+  html.aowl-sb-collapsed .aowl-sb-expand { display: inline-flex; }
 
-  /* Content follows the sidebar: padding-left eases from (gutter + sidebar-width)
-     down to the gutter alone while padding-right stays the gutter, so the reading
-     column stays centered the whole way instead of shifting left. --aowl-gutter =
-     (100vw - max-width)/2, computed in JS. */
-  .VPContent.has-sidebar {
-    padding-left: calc(var(--aowl-gutter, 0px) + (1 - var(--aowl-p, 0)) * var(--vp-sidebar-width)) !important;
+  .VPSidebar { transition: transform .28s ease, opacity .22s ease; }
+  .VPContent.has-sidebar { transition: padding-left .28s ease, padding-right .28s ease; }
+
+  html.aowl-sb-collapsed .VPSidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* content re-centers: both paddings become the centering gutter */
+  html.aowl-sb-collapsed .VPContent.has-sidebar {
+    padding-left: var(--aowl-gutter, 0px) !important;
     padding-right: var(--aowl-gutter, 0px) !important;
   }
-  .VPDoc.has-sidebar .container { margin-left: auto !important; margin-right: auto !important; }
+  html.aowl-sb-collapsed .VPDoc.has-sidebar .container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  /* collapse the navbar's reserved sidebar-width title column so nothing hangs */
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .title { width: auto !important; }
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content { padding-left: var(--aowl-gutter, 24px) !important; }
 }

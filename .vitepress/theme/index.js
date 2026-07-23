@@ -173,77 +173,63 @@ export default {
 
     // --- scroll state: lets the top bar declutter as you leave the top ---
     const root = document.documentElement
-
-    // ===== scroll-linked sidebar collapse ==================================
-    // The sidebar fades/slides out *progressively* as you scroll down, and the
-    // content re-centers to match (all driven by one CSS var, --aowl-p ∈ [0,1]).
-    // Past COLLAPSE_DISTANCE it latches fully collapsed until you scroll back to
-    // the very top — then it eases open again.
-    const COLLAPSE_DISTANCE = 260   // px of scroll to fully collapse — TWEAK ME
-    const TOP_RELEASE = 4           // px from top that re-opens a latched sidebar
-
     const raf = (fn) => { let q = false; return () => { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn() }) } }
 
-    // The centering gutter VitePress uses on wide viewports: (100vw − max)/2.
+    // ===== sidebar collapse (manual, binary) ================================
+    // The centering gutter VitePress uses on wide viewports, (100vw − max)/2,
+    // so the collapsed layout stays centered instead of hugging a side.
     let layoutMax = 1440
-    const readMax = () => {
+    const setGutter = () => {
       const v = parseInt(getComputedStyle(root).getPropertyValue('--vp-layout-max-width'))
       if (v) layoutMax = v
-    }
-    const setGutter = () => {
-      readMax()
       root.style.setProperty('--aowl-gutter', Math.max(0, (window.innerWidth - layoutMax) / 2) + 'px')
     }
+    setGutter()
+    window.addEventListener('resize', raf(setGutter), { passive: true })
 
-    let latched = false
-    const applyScroll = () => {
-      if (window.innerWidth < 961) { root.style.setProperty('--aowl-p', '0'); return }
-      const y = window.scrollY
-      let p
-      if (latched) {
-        if (y <= TOP_RELEASE) { latched = false; p = 0 }
-        else p = 1
-      } else {
-        p = Math.min(1, Math.max(0, y / COLLAPSE_DISTANCE))
-        if (p >= 1) latched = true
-      }
-      root.style.setProperty('--aowl-p', String(p))
-      root.classList.toggle('aowl-sb-gone', p > 0.985)
-      root.classList.toggle('aowl-scrolled', y > 12)
+    const KEY = 'aowl-sb-collapsed'
+    const setCollapsed = (on) => {
+      root.classList.toggle('aowl-sb-collapsed', on)
+      localStorage.setItem(KEY, on ? '1' : '0')
     }
-    const onScroll = raf(applyScroll)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', raf(() => { setGutter(); applyScroll() }), { passive: true })
-    setGutter(); applyScroll()
+    if (localStorage.getItem(KEY) === '1') root.classList.add('aowl-sb-collapsed')
 
-    // ===== manual collapse control, docked in the "OVERVIEW" heading ========
-    const mountCollapseBtn = () => {
+    const PANEL_CLOSE =
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
+    const PANEL_OPEN =
+      '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="11.5 9 14.5 12 11.5 15"/></svg>'
+
+    // Collapse control docked at the right of the OVERVIEW heading.
+    const mountCollapse = () => {
       const sb = document.querySelector('.VPSidebar')
       if (!sb || sb.querySelector('.aowl-sb-collapse')) return
-      const firstLabel = sb.querySelector('.group .VPSidebarItem.level-0 > .item .text')
+      const label = sb.querySelector('.group .VPSidebarItem.level-0 > .item .text')
         || sb.querySelector('.VPSidebarItem.level-0 .text')
-      if (!firstLabel) return
-      const host = firstLabel.closest('.item') || firstLabel.parentElement
-      const btn = document.createElement('button')
-      btn.className = 'aowl-sb-collapse'
-      btn.type = 'button'
-      btn.title = 'Collapse sidebar (scroll to top to restore)'
-      btn.setAttribute('aria-label', 'Collapse sidebar')
-      btn.innerHTML =
-        '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>'
-      btn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation()
-        latched = true
-        root.style.setProperty('--aowl-p', '1')
-        root.classList.add('aowl-sb-gone')
-      })
-      host.appendChild(btn)
+      if (!label) return
+      const host = label.closest('.item') || label.parentElement
+      const b = document.createElement('button')
+      b.className = 'aowl-sb-collapse'
+      b.type = 'button'
+      b.title = 'Hide sidebar'
+      b.setAttribute('aria-label', 'Hide sidebar')
+      b.innerHTML = PANEL_CLOSE
+      b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setCollapsed(true) })
+      host.appendChild(b)
     }
-    const remountBtn = raf(mountCollapseBtn)
-    mountCollapseBtn()
-    new MutationObserver(remountBtn).observe(document.body, { childList: true, subtree: true })
+    mountCollapse()
+    new MutationObserver(raf(mountCollapse)).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
-    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(mountCollapseBtn) }
+    router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(mountCollapse) }
+
+    // Floating "show sidebar" handle — only visible while collapsed.
+    const expand = document.createElement('button')
+    expand.className = 'aowl-sb-expand'
+    expand.type = 'button'
+    expand.title = 'Show sidebar'
+    expand.setAttribute('aria-label', 'Show sidebar')
+    expand.innerHTML = PANEL_OPEN
+    expand.addEventListener('click', () => setCollapsed(false))
+    document.body.appendChild(expand)
 
     // ===== rounded text-selection overlay ==================================
     // Native ::selection can't have rounded corners, so we hide it and paint our
