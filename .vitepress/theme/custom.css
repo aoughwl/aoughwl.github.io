@@ -147,16 +147,41 @@
   .vp-doc h2 { font-size: 1.35rem; }
   .vp-doc h3 { font-size: 1.12rem; }
 
-  /* Keep the GitHub/Discord/Support icons on mobile — just drop the Playground
-     link (it's in the sidebar's Tools) and stop the search box stretching, so the
-     icons + VitePress hamburger all fit without pushing it off-screen. */
+  /* Keep the GitHub/Discord/Support icons on mobile; drop the Playground link
+     (it's in the sidebar's Tools). */
   .nav-pg-link { display: none !important; }
-  .VPNavBarSearch { flex-grow: 0 !important; padding-left: 8px !important; }
-  .nav-social { margin-left: 0; padding-left: 0; border-left: 0; gap: 0; }
-  /* the icons + hamburger had too much whitespace, overflowing the bar below
-     ~370px (which cut the header divider short). Tighten them. */
+
+  /* Collapsed search → a right-aligned icon (margin-left:auto pushes the whole
+     right cluster over; flex-end right-aligns the icon within its own box). */
+  .VPNavBarSearch {
+    flex-grow: 0 !important;
+    margin-left: auto !important;
+    justify-content: flex-end !important;
+    padding-left: 0 !important;
+  }
+  .nav-social { margin-left: 4px; padding-left: 0; border-left: 0; gap: 0; }
   .nav-social-link { padding: 0 5px !important; }
-  .VPNavBarHamburger { width: 40px !important; }
+
+  /* Replace the hamburger (it only popped a panel to reveal the theme toggle)
+     with the theme toggle shown directly in the bar as an icon control. */
+  .VPNavBarHamburger { display: none !important; }
+  .VPNavBarMenu { display: none !important; }
+  .VPNavBarAppearance,
+  .VPNavBar .VPNavBarAppearance {
+    display: flex !important;
+    position: static !important;
+    right: auto;
+    bottom: auto;
+    margin-left: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .VPNavBarAppearance::before { display: none !important; }
+
+  /* the sidebar-collapse control is a desktop-only affordance */
+  .aowl-sb-collapse { display: none !important; }
 
   /* Big tables were cramped and ugly — smaller type + tighter cells, and they
      still scroll horizontally (VitePress makes the table a scroll container). */
@@ -440,6 +465,8 @@ html.aowl-scrolled .VPNavBar .divider-line { background-color: transparent !impo
 html.aowl-sb-resizing, html.aowl-sb-resizing * { cursor: ew-resize !important; user-select: none !important; }
 html.aowl-sb-resizing .VPSidebar,
 html.aowl-sb-resizing .VPContent.has-sidebar { transition: none !important; }
+/* collapse/resize is a desktop feature — hide the control below 961px */
+@media (max-width: 960px) { .aowl-sb-collapse, .aowl-sb-expand { display: none !important; } }
 
 /* floating "show sidebar" handle — only while collapsed, desktop only */
 .aowl-sb-expand {
