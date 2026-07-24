@@ -29,3 +29,4 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlts](docs/aowlts) — idiomatic TypeScript backend | `aoughwl/aowlts` | early scaffold · private |
 | [aowlpy](docs/aowlpy) — idiomatic Python backend | `aoughwl/aowlpy` | early scaffold · private |
 | [aowlhl](docs/aowlhl) — shared High-Level IR | `aoughwl/aowlhl` | early scaffold · private |
+| [aowlabi](docs/aowlabi) — shared value-representation / ABI truth (layout, heap-block spec, marshal matrix) | `aoughwl/aowlabi` | private |

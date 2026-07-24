@@ -51,6 +51,40 @@ Six primitive layers the ordinary stdlib runs on — not one intercept per proc:
 Flat memory / OS / finalization / loud-dispatch hold on **both** engines; async +
 threads are **tree-walker-only** (the VM has no coroutine frame model).
 
+## Runtime layer — one spine for every boundary crossing
+
+Those layers used to be scattered — host natives here, flat memory there,
+syscalls somewhere else, a miss policy hardcoded per call site. They're now
+unified into **one spine** with three pieces:
+
+| Piece | What it is |
+|---|---|
+| Provider registry | who services a crossing: `interpret` · `host-native` · `syscall` · `hybrid-native` |
+| Codec | how a value crosses: `identity` · flat C-ABI · JS value |
+| Policy | what happens on a miss — never silently wrong: an unsupported crossing either **fails loud** or **falls back to interpret**, never returns a bogus value |
+
+The point is that there's no fourth outcome. Every foreign leaf is either
+serviced by a registered provider or refused by name; the interpreter never
+guesses.
+
+## Hybrid mode — interpret one file, run the rest native
+
+Interpret only the file(s) you name; run every *other* module as
+natively-compiled code at full speed. aowli auto-generates C-callable shims for
+the calls that cross the boundary, marshals the arguments across using
+[aowlabi](docs/aowlabi)'s layout — scalars, POD objects and tuples, strings,
+seqs — and dispatches at the call site. The native side is **byte-identical to a
+fully-native build**; anything that can't cross honestly (refs, closures) falls
+back to interpret, so a hybrid run is never *wrong*, only sometimes slower.
+
+```sh
+aowli --hybrid --interpret:mymod prog
+```
+
+The motivating use: debug one file slowly, with full frame-level observability,
+while its libraries run at native speed instead of being walked. The layout that
+keeps the two sides in agreement lives in [aowlabi](docs/aowlabi).
+
 ## aowlidbg — debug without instrumenting the source
 
 `aowli-dbg` adds batch breakpoints (`--break:LINE`, `--break-func:NAME`) that
