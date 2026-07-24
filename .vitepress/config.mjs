@@ -66,6 +66,7 @@ const sidebar = [
         ],
       },
       { text: 'High-Level IR — aowlhl', link: '/docs/aowlhl' },
+      { text: 'Value layout & ABI — aowlabi', link: '/docs/aowlabi' },
     ],
   },
   {
