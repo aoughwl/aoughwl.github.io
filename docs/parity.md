@@ -26,7 +26,7 @@ it. That's what makes each stage a genuine **drop-in** beside nimony's own.
 | **semcheck** | [aowlsem](aowlsem) | `nimsem` | ✅ | construct-by-construct; the 166-module corpus is diff-green, the byte-level diff is closing |
 | **lower** | [aowlhexer](aowlhexer) | `hexer` | ⏳ | currently runs Araq's own 25 passes, so its `.c.aif` is **identical by construction**; a from-scratch rewrite is the target |
 | **C codegen** | [aowlc](aowlc) | `lengc` | ✅ | end-to-end correct today (runs, ASan-clean); text byte-parity with `lengc` is the active push |
-| **interpret / VM** | [aowli](/aowli) | *(new)* | ✅ | two independent engines, byte-identical to each other, held honest against native nimony execution |
+| **interpret / VM** | [aowli](/aowli) | *(new)* | ✅ | two independent engines that now agree with each other **and** with native across a 423-program differential corpus — **zero in-scope divergence** (aowli **v0.3.0**, correctness-complete) |
 | **emit → TS / Py / JS / WASM** | [aowlts](aowlts) · [aowlpy](aowlpy) · [aowljs](aowljs) · [aowlweb](aowlweb) | *(nimony backends)* | ✅ | idiomatic, readable output; behaviour-verified against native, run-for-run |
 
 ✅ = written from scratch · ⏳ = reuses the reference implementation for now

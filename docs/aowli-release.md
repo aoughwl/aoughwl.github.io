@@ -15,6 +15,31 @@ ships only the built binaries, hardened for public distribution.
 
 ---
 
+## v0.3.0 — correctness-complete
+
+The current release is **v0.3.0**, the correctness-complete build of aowli. Both
+engines — the tree-walker behind `aowli-interp` / `aowli-dbg` and the internal
+bytecode VM — now reach **zero in-scope divergence across a 423-program
+differential corpus** run against the nimony compiler. The engines agree with
+each other and with native execution, program for program.
+
+What v0.3.0 closes:
+
+- **Value-copy (`=copy`) semantics** — assigning or binding a value object,
+  tuple, or value-array copies the envelope (refs stay shared). `var x = a;
+  x.a = 999` no longer mutates `a`.
+- **The last OS-boundary gaps** — real host `stat` / `lstat` (correct
+  `fileExists` / `dirExists`), pointer identity in `==` / `!=`, `cast[int](ptr)`
+  round-tripping through flat memory, and VM argv / stdin seeding.
+- **Broad fixes** — float→int conversion, block-expression values,
+  cyclic-import init order, a self-nested-iterator hang, and `Table` element
+  write-back.
+
+One boundary is **documented, not a gap**: `{.emit.}` literal-C and C FFI are
+out of scope for a value interpreter — there is no C to execute, by design.
+
+---
+
 ## What's in it
 
 Two binaries, each a fully self-contained interpreter over a `.s.aif` (a
@@ -43,7 +68,7 @@ aowli source paths and no internal proc/type names.
 ## Distribution
 
 Shipped as a **GitHub Release**,
-[v0.1.0](https://github.com/aoughwl/aowli-release/releases/tag/v0.1.0), with the
+[v0.3.0](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.0), with the
 binaries as release assets. Each build lists a SHA256 and a VirusTotal-by-hash
 link so the asset can be verified independently of trusting the download host.
 

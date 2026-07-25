@@ -43,9 +43,14 @@ wrong, there is nothing to compare it against.
 
 ## Corpus parity
 
-aowli reproduces **100% of the runnable nimony test corpus** byte-for-byte on
-both engines, and runs a real pure-nimony program end-to-end — the MDN CSS
-validator ([css](../docs/css)) — byte-identical to native.
+As of aowli **v0.3.0** (correctness-complete), both engines agree with each
+other **and** with native nimony across a **423-program differential corpus**,
+with **zero in-scope divergence**. aowli also runs a real pure-nimony program
+end-to-end — the MDN CSS validator ([css](../docs/css)) — byte-identical to
+native.
+
+The one documented boundary, not a gap: `{.emit.}` literal-C and C FFI are out
+of scope for a value interpreter.
 
 ## The run rung — a run is an AIF
 
