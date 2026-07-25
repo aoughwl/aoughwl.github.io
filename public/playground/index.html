@@ -243,8 +243,10 @@
      toggle — visually distinct from the subtle sub-tabs it controls, so it reads
      as "this picks what everything to my right shows". */
   #srcTabs{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:2px;gap:2px}
-  #srcTabs button{border-radius:6px;padding:4px 11px;font-weight:600}
-  #srcTabs button.active{background:var(--accent);color:#fff;border-color:transparent}
+  #srcTabs button{border-radius:6px;padding:4px 11px;font-weight:600;color:var(--muted)}
+  /* active = a muted RAISED pill against the panel2 track (secondary selection),
+     not the bright accent CTA. fg text + weight makes the selection clear. */
+  #srcTabs button.active{background:var(--border);color:var(--fg);border-color:transparent}
   .barsep{width:1px;height:18px;background:var(--border);flex:none;margin:0 4px}
   .subbar{display:none;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
   .subbar.active{display:flex}
@@ -549,7 +551,7 @@
       <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.4" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.6a5.4 5.4 0 000 10.8z" fill="currentColor"/></svg>
     </button>
     <button id="configBtn" data-tip="Configuration — pipeline, engine, formatting &amp; lints">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V15z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
     <button class="run" id="runBtn" disabled data-tip="Compile & run — Ctrl/Cmd + Enter">
       <svg viewBox="0 0 16 16"><path d="M4.5 3.2l8 4.8-8 4.8z" fill="currentColor"/></svg> Run <kbd>⌃⏎</kbd>
