@@ -570,6 +570,7 @@
           <button class="active" data-stage="edit" data-tip="Source — your nimony program (.nim / .aowl)">Source</button>
           <button data-stage="pnif" data-tip="Parsed — the untyped .p.aif from the parser">Parsed</button>
           <button data-stage="snif" data-tip="Typed — the .s.aif from the semchecker (types &amp; symbols resolved)">Typed</button>
+          <button data-stage="cnif" data-tip="Lowered — the .c.aif from aowlhexer: ARC, closures, exceptions and generics lowered in — the form the C backend consumes (loads a ~6 MB bundle on first view)">Lowered</button>
           <button data-stage="rnif" data-tip="Run rung — the execution serialized as .run.aif (from aowli)">Run</button>
         </div>
         <span id="stageMeta" class="exmeta"></span>
@@ -599,6 +600,7 @@
           </div>
           <div class="stg" id="stgPnif"><pre id="pnif" class="nifview"><span class="sys">The parsed NIF (<code>.p.aif</code>) appears here live as you type — the parser turns your source into nimony's untyped intermediate form.</span></pre></div>
           <div class="stg" id="stgSnif"><pre id="snif" class="nifview"><span class="sys">The typed NIF (<code>.s.aif</code>) appears here after type-checking — the semchecker resolves every symbol, overload and type on top of the parsed form.</span></pre></div>
+          <div class="stg" id="stgCnif"><pre id="cnif" class="nifview"><span class="sys">The lowered NIF (<code>.c.aif</code>) from <strong>aowlhexer</strong> — ARC, closures, exceptions and generics lowered in, the form the C backend consumes. Select this stage to run the lowering (loads a ~6 MB bundle on first view).</span></pre></div>
           <div class="stg" id="stgRnif"><pre id="rnif" class="nifview"><span class="sys">Press Run to see the program's execution serialized as NIF — the <em>run rung</em> (<code>.run.aif</code>): source → parsed → typed → <strong>run</strong>, the bottom of aowli's content-addressed compilation tower.</span></pre></div>
         </div>
       </div>
@@ -857,7 +859,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   const $ = s => document.querySelector(s);
   const outEl=$("#out"), runBtn=$("#runBtn");
   // the three NIF rungs now live in the SOURCE pane's tabs (Parsed/Typed/Run).
-  const pnifEl=$("#pnif"), snifEl=$("#snif"), rnifEl=$("#rnif");
+  const pnifEl=$("#pnif"), snifEl=$("#snif"), cnifEl=$("#cnif"), rnifEl=$("#rnif");
   const exOutEl=$("#exOut"), exMetaEl=$("#exMeta");
   const statusLine=$("#statusLine"), statusText=$("#statusText");
   const outStatus=$("#outStatus"), perf=$("#perf");
@@ -1005,12 +1007,13 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     edit: { label:"source", aif:()=> ".aowl" },
     pnif: { label:"parsed", aif:()=>".p.aif" },
     snif: { label:"typed",  aif:()=>".s.aif" },
+    cnif: { label:"lowered", aif:()=>".c.aif" },
     rnif: { label:"run rung", aif:()=>".run.aif" },
   };
-  const STAGES = ["edit","pnif","snif","rnif"];
+  const STAGES = ["edit","pnif","snif","cnif","rnif"];
   // byte counts of the produced NIF/AIF for each stage (null ⇒ not available yet);
   // the live source length is read on demand.
-  const stageBytes = { edit:null, pnif:null, snif:null, rnif:null };
+  const stageBytes = { edit:null, pnif:null, snif:null, cnif:null, rnif:null };
   let curStage = "edit";
   try{ const s = localStorage.getItem("np-stage"); if(STAGES.indexOf(s)>=0) curStage = s; }catch(_){}
   function updateStageMeta(){
@@ -1024,6 +1027,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   }
   function applyStage(){
     if(curStage==="edit" && window.AowliEditor.relayout) window.AowliEditor.relayout();
+    if(curStage==="cnif") ensureLowered();
     if(curStage==="rnif") ensureRunRung();
     updateStageMeta();
   }
@@ -1477,6 +1481,42 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   //      tab, or a Run while it's active), never on live edit since it executes the
   //      program. Cached by source+stdin so re-opening the tab is free. ----
   let runRungKey=null, runRungBusy=false;
+  // ---- Lowered stage: run aowlhexer on the typed .s.nif → the .c.aif it feeds
+  //      the C backend. Lazy (loads the ~6 MB hexer/C bundle on first view) and
+  //      cached on the buffer text, mirroring the Run rung. ----
+  let loweredKey=null, loweredBusy=false;
+  async function ensureLowered(force){
+    if(!window.AowliExport || typeof window.AowliExport.toCNif!=="function"){
+      cnifEl.innerHTML='<span class="err">lowering unavailable in this build.</span>'; return; }
+    if(!(window.AowliParser && window.AowliParser.ready)){ cnifEl.innerHTML='<span class="sys">parser still loading…</span>'; return; }
+    if(!(window.AowliSem && window.AowliSem.ready)){ cnifEl.innerHTML='<span class="sys">type-checker still loading…</span>'; return; }
+    if(syntaxDiags.some(d=>(d.severity||"error")==="error")){ cnifEl.innerHTML='<span class="err">fix the errors first — lowering needs a program that type-checks.</span>'; return; }
+    const src=window.AowliEditor.getValue();
+    if(!force && src===loweredKey && cnifEl.dataset.ok==="1") return;   // cached, unchanged
+    if(loweredBusy) return;
+    loweredBusy=true; cnifEl.dataset.ok="";
+    cnifEl.innerHTML='<span class="sys">● lowering via aowlhexer…</span>';
+    try{
+      const { nif, diags:syn } = window.AowliParser.parseFull(src, "in.nim");
+      if(syn && syn.length){ cnifEl.innerHTML='<span class="err">syntax error — cannot lower.</span>'; return; }
+      const { snif, diags } = await window.AowliSem.compile(nif);
+      if(window.AowliEditor.getValue()!==src) return;   // buffer moved on
+      if(!snif){
+        cnifEl.innerHTML='<span class="err">the program did not type-check — nothing to lower.</span>';
+        stageBytes.cnif=null; return;
+      }
+      const cnif = await window.AowliExport.toCNif(snif);
+      if(window.AowliEditor.getValue()!==src) return;
+      loweredKey=src; cnifEl.dataset.ok="1";
+      cnifEl.innerHTML = renderNif(cnif) + "\n" +
+        nifMeta('lowered .c.aif · '+cnif.length+' bytes · aowlhexer (ARC / closures / exceptions / generics)');
+      stageBytes.cnif = cnif.length;
+      if(curSrcView==="stages" && curStage==="cnif") updateStageMeta();
+    }catch(e){
+      cnifEl.innerHTML='<span class="err">lowering failed: '+esc(e&&e.message||e)+'</span>';
+      stageBytes.cnif=null;
+    }finally{ loweredBusy=false; }
+  }
   async function ensureRunRung(force){
     if(!(window.AowliPipe && window.AowliPipe.ready)){ rnifEl.innerHTML='<span class="sys">engine still loading…</span>'; return; }
     if(syntaxDiags.length){ rnifEl.innerHTML='<span class="err">fix the syntax errors first — the run rung needs a program that parses.</span>'; return; }
