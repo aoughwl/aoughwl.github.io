@@ -281,6 +281,8 @@
   /* live problems list in the output pane */
   .prob{display:flex;gap:8px;padding:2px 0;cursor:pointer} .prob:hover{background:var(--panel2);border-radius:4px}
   .prob .loc{color:var(--muted);min-width:52px} .prob.warn .loc{color:var(--warn)}
+  .prob .probbody{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .prob .fixhint{color:var(--muted);font-size:.92em}
   /* themed scrollbars for the panels */
   #out,.nifview,#symList,#editor{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   #out::-webkit-scrollbar,.nifview::-webkit-scrollbar,#symList::-webkit-scrollbar{width:10px;height:10px}
@@ -1207,9 +1209,18 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   function showProblems(problems){
     if(problems.length){
       outShowingProblems = true;
-      outEl.innerHTML = '<span class="err">● '+problems.length+' problem'+(problems.length>1?'s':'')+'</span>\n' +
-        problems.map(p=>'<span class="prob'+(p.severity==="warning"?" warn":"")+'" data-l="'+p.line+'" data-c="'+p.col+'">'+
-          '<span class="loc">'+(p.line>0 ? p.line+':'+p.col : '⚠')+'</span>'+esc(p.message)+'</span>').join("\n");
+      // Match the Parsed tab's richer rendering: an accurate errors-vs-hints header
+      // and the aowlsuggest quick-fix (💡) inline under each problem, with the
+      // command-to-fix where the fix carries one.
+      const nErr = problems.filter(p=>(p.severity||"error")==="error").length;
+      const head = nErr
+        ? '<span class="err">● '+nErr+' problem'+(nErr>1?'s':'')+'</span>'
+        : '<span class="warn">● '+problems.length+' hint'+(problems.length>1?'s':'')+'</span>';
+      outEl.innerHTML = head + '\n' +
+        problems.map(p=>'<span class="prob'+((p.severity==="warning"||p.severity==="hint")?" warn":"")+'" data-l="'+p.line+'" data-c="'+p.col+'">'+
+          '<span class="loc">'+(p.line>0 ? p.line+':'+p.col : '⚠')+'</span>'+
+          '<span class="probbody">'+esc(p.message)+
+          (p.fix?'<span class="fixhint">💡 '+esc(p.fix)+'</span>':'')+'</span></span>').join("\n");
     } else if(outShowingProblems){
       outShowingProblems = false;
       outEl.innerHTML = '<span class="ok">● no errors</span>  <span class="sys">— press Run to execute.</span>';
