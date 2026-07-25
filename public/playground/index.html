@@ -239,14 +239,12 @@
   .exportbar .exmeta,.subbar .exmeta{margin-left:8px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34cqw}
   /* merged source-pane bar: [Stages|Export] │ active sub-selector … status(right).
      The two sub-bars occupy the same slot; only the active view's shows. */
-  /* the PRIMARY view switch (Compile Stages ↔ Export Code) is a filled segmented
-     toggle — visually distinct from the subtle sub-tabs it controls, so it reads
-     as "this picks what everything to my right shows". */
-  #srcTabs{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:2px;gap:2px}
-  #srcTabs button{border-radius:6px;padding:4px 11px;font-weight:600;color:var(--muted)}
-  /* active = a muted RAISED pill against the panel2 track (secondary selection),
-     not the bright accent CTA. fg text + weight makes the selection clear. */
-  #srcTabs button.active{background:var(--border);color:var(--fg);border-color:transparent}
+  /* the PRIMARY view switch (Compile Stages ↔ Translate Code) — square buttons
+     (not a rounded pill), kept distinct from the sub-tabs it controls via bold
+     weight + a muted filled active state (secondary selection, not accent). */
+  #srcTabs{gap:4px}
+  #srcTabs button{border-radius:4px;padding:4px 11px;font-weight:600;color:var(--muted);border:1px solid transparent}
+  #srcTabs button.active{background:var(--border);color:var(--fg);border-color:var(--border)}
   .barsep{width:1px;height:18px;background:var(--border);flex:none;margin:0 4px}
   .subbar{display:none;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
   .subbar.active{display:flex}
@@ -564,7 +562,7 @@
     <div class="label">
       <div class="tabs" id="srcTabs">
         <button id="stabStages" class="active" data-sview="stages" data-tip="Compile Stages — watch your code become each intermediate form: Source → Parsed → Typed → Run. Picks what the panel below shows.">Compile Stages</button>
-        <button id="stabExport" data-sview="export" data-tip="Export Code — translate your program to another language (JavaScript / TypeScript / Python / C), transpiled in-browser. Picks what the panel below shows.">Export Code</button>
+        <button id="stabExport" data-sview="export" data-tip="Translate Code — translate your program to another language (JavaScript / TypeScript / Python / C), transpiled in-browser. Picks what the panel below shows.">Translate Code</button>
       </div>
       <span class="barsep"></span>
       <div class="subbar active" id="subStages">
