@@ -49,8 +49,10 @@ with **zero in-scope divergence**. aowli also runs a real pure-nimony program
 end-to-end — the MDN CSS validator ([css](../docs/css)) — byte-identical to
 native.
 
-The one documented boundary, not a gap: `{.emit.}` literal-C and C FFI are out
-of scope for a value interpreter.
+The one documented boundary, not a gap: `{.emit.}` literal-C and C FFI aren't
+handled by the pure value model — they're **hybrid-native** territory (that
+module runs through the real C toolchain as a shared object via the provider
+layer, the rest stays interpreted), on the roadmap rather than a correctness gap.
 
 ## The run rung — a run is an AIF
 

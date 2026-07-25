@@ -35,8 +35,12 @@ What v0.3.0 closes:
   cyclic-import init order, a self-nested-iterator hang, and `Table` element
   write-back.
 
-One boundary is **documented, not a gap**: `{.emit.}` literal-C and C FFI are
-out of scope for a value interpreter — there is no C to execute, by design.
+One boundary is **documented, not a gap**: `{.emit.}` literal-C and C FFI aren't
+handled by the pure value interpreter — there's no C to execute in the value
+model. That's precisely what the **hybrid-native provider** absorbs: the module
+in question runs through the real C toolchain as a shared object, while the rest
+of the program stays interpreted. It's on the roadmap — not a correctness gap in
+the interpreter.
 
 ---
 
