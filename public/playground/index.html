@@ -103,6 +103,11 @@
   .actions button:hover{background:var(--panel2)}
   .actions button:disabled{opacity:.5;cursor:progress}
   .actions button.curly.on{color:var(--brace);background:var(--brace-bg)}
+  /* Config = the SECONDARY action (Run is primary): a filled, tinted box so it
+     reads as a distinct button, not a bare icon like share/theme. */
+  .actions button#configBtn{background:var(--panel2);color:var(--accent2)}
+  .actions button#configBtn:hover{background:var(--panel);filter:brightness(1.12)}
+  .actions button#configBtn.cfg-open{background:var(--accent2);color:#fff}
   /* engine + semantics pickers: sit in the segmented action bar, matching its buttons */
   #engineSel,#semSel{appearance:none;-webkit-appearance:none;border:0;border-left:1px solid var(--border);
     background:var(--panel);color:var(--fg);font:inherit;font-size:12.5px;cursor:pointer;
@@ -414,7 +419,10 @@
     border-radius:5px;border:1px solid var(--border);border-left:1px solid var(--border)}
   /* selects reused from the toolbar — give them a self-contained box in the panel */
   .cfg-ctl #semSel,.cfg-ctl #engineSel,.cfg-ctl select,.lintPreset{height:32px;border:1px solid var(--border);
-    border-radius:8px;background:var(--panel2);min-width:150px}
+    border-radius:8px;background:var(--panel2);color:var(--fg);min-width:150px}
+  /* option lists render in the OS default colours otherwise — theme them so the
+     preset / picker text isn't black-on-dark. */
+  .cfg-ctl select option,.lintPreset option{background:var(--panel);color:var(--fg)}
   .cfg-num{width:64px;height:32px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);
     color:var(--fg);font:inherit;font-size:13px;text-align:center;padding:0 6px;outline:none}
   .cfg-num:focus{border-color:var(--accent)}
@@ -423,6 +431,10 @@
   .cfg-iconbtn svg{width:16px;height:16px}
   .cfg-iconbtn:hover{background:var(--panel);border-color:var(--muted)}
   .cfg-iconbtn.curly.on{color:var(--brace);border-color:var(--brace);background:var(--brace-bg)}
+  /* two distinct curly controls (toggle + convert) — labelled text buttons */
+  .cfg-ctl.cfg-ctl-2{gap:8px}
+  .cfg-textbtn{width:auto;padding:0 11px;gap:6px;font:inherit;font-size:12.5px;font-weight:600;white-space:nowrap}
+  .cfg-textbtn svg{width:14px;height:14px;flex:none}
   /* toggle switch */
   .cfg-sw{position:relative;display:inline-block;width:38px;height:22px;cursor:pointer;flex:none}
   .cfg-sw input{position:absolute;opacity:0;width:0;height:0}
@@ -514,8 +526,8 @@
     <button id="themeBtn" data-tip="Toggle light / dark theme">
       <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.4" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.6a5.4 5.4 0 000 10.8z" fill="currentColor"/></svg>
     </button>
-    <button id="configBtn" data-tip="Configuration — checker, engine, formatting &amp; lints">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.1"/><path d="M8 1.6v1.5M8 12.9v1.5M14.4 8h-1.5M3.1 8H1.6M12.5 3.5l-1.05 1.05M4.55 11.45 3.5 12.5M12.5 12.5l-1.05-1.05M4.55 4.55 3.5 3.5"/></svg>
+    <button id="configBtn" data-tip="Configuration — pipeline, engine, formatting &amp; lints">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.3"/><path d="M8 1.3l.95 1.7 1.9-.55.35 1.95 1.95.35-.55 1.9L15.7 8l-1.75.95.55 1.9-1.95.35-.35 1.95-1.9-.55L8 15.7l-.95-1.75-1.9.55-.35-1.95-1.95-.35.55-1.9L1.3 8l1.75-.95-.55-1.9 1.95-.35.35-1.95 1.9.55z"/></svg>
     </button>
     <button class="run" id="runBtn" disabled data-tip="Compile & run — Ctrl/Cmd + Enter">
       <svg viewBox="0 0 16 16"><path d="M4.5 3.2l8 4.8-8 4.8z" fill="currentColor"/></svg> Run <kbd>⌃⏎</kbd>
@@ -624,9 +636,21 @@
     <div class="cfg-body">
 
       <section class="cfg-sec">
-        <div class="cfg-sec-h">Semantic checker</div>
+        <div class="cfg-sec-h">Pipeline</div>
+        <p class="cfg-note"><code>source → parse → check → lower → run</code> — every stage of the
+          compile pipeline. Swap any stage that has more than one in-browser build; a single-build
+          stage shows what's active (its native-only alternative is greyed).</p>
         <div class="cfg-row">
-          <div class="cfg-lbl">Checker<span class="cfg-hint">type-checks your program</span></div>
+          <div class="cfg-lbl">Parser<span class="cfg-hint">.nim → .p.aif</span></div>
+          <div class="cfg-ctl">
+            <select id="parserSel" aria-label="Parser">
+              <option value="aowl">aowl · aowlparser</option>
+              <option value="nifler" disabled>nim · nifler (native only)</option>
+            </select>
+          </div>
+        </div>
+        <div class="cfg-row">
+          <div class="cfg-lbl">Checker<span class="cfg-hint">.p.aif → .s.aif (types &amp; symbols)</span></div>
           <div class="cfg-ctl">
             <select id="semSel" aria-label="Semantic checker">
               <option value="nim">nim · nimsem</option>
@@ -634,15 +658,17 @@
             </select>
           </div>
         </div>
-        <p class="cfg-note" id="semExpNote" hidden><span id="semExp" class="expTag">experimental</span>
-          aowlsem is system-less: it checks builtin arithmetic / if / case / while, but has no
-          std <code>system</code>, so string / seq / echo programs report honest “undeclared” diagnostics.</p>
-      </section>
-
-      <section class="cfg-sec">
-        <div class="cfg-sec-h">Execution engine</div>
         <div class="cfg-row">
-          <div class="cfg-lbl">Engine<span class="cfg-hint">how your program runs on Run</span></div>
+          <div class="cfg-lbl">Lowering<span class="cfg-hint">.s.aif → .c.aif (native / C export)</span></div>
+          <div class="cfg-ctl">
+            <select id="hexerSel" aria-label="Lowering">
+              <option value="aowl">aowl · aowlhexer</option>
+              <option value="nim" disabled>nim · nimony hexer (native only)</option>
+            </select>
+          </div>
+        </div>
+        <div class="cfg-row">
+          <div class="cfg-lbl">Engine<span class="cfg-hint">runs the .s.aif on Run</span></div>
           <div class="cfg-ctl">
             <select id="engineSel" aria-label="Execution engine">
               <option value="vm">Bytecode VM</option>
@@ -651,15 +677,24 @@
             </select>
           </div>
         </div>
+        <p class="cfg-note" id="semExpNote" hidden><span id="semExp" class="expTag">experimental</span>
+          aowlsem is the from-scratch checker (rebuilt from latest). It's still evolving — some
+          std-heavy programs may report honest “undeclared” diagnostics where its
+          <code>system</code> coverage is incomplete.</p>
       </section>
 
       <section class="cfg-sec">
         <div class="cfg-sec-h">Editor</div>
         <div class="cfg-row">
           <div class="cfg-lbl">Curly-brace block mode<span class="cfg-hint">accept <code>{ … }</code> blocks (experimental)</span></div>
-          <div class="cfg-ctl">
-            <button id="curlyBtn" class="curly cfg-iconbtn" data-tip="Toggle curly-brace block mode — Ctrl/Cmd-click to convert the buffer">
+          <div class="cfg-ctl cfg-ctl-2">
+            <button id="curlyBtn" class="curly cfg-iconbtn cfg-textbtn" data-tip="Toggle curly-brace block mode on/off">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.3 2.5c-1.6 0-1.6 1.5-1.6 2.7 0 1.2-.5 1.8-1.5 2.8 1 1 1.5 1.6 1.5 2.8 0 1.2 0 2.7 1.6 2.7"/><path d="M9.7 2.5c1.6 0 1.6 1.5 1.6 2.7 0 1.2.5 1.8 1.5 2.8-1 1-1.5 1.6-1.5 2.8 0 1.2 0 2.7-1.6 2.7"/></svg>
+              <span id="curlyLbl">Off</span>
+            </button>
+            <button id="curlyConvertBtn" class="cfg-iconbtn cfg-textbtn" data-tip="Rewrite the whole buffer between colon/indent and { … } style">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5h8.5"/><path d="M9 3l2.5 2.5L9 8"/><path d="M13 10.5H4.5"/><path d="M7 8l-2.5 2.5L7 13"/></svg>
+              Convert
             </button>
           </div>
         </div>
@@ -674,7 +709,7 @@
           <div class="cfg-ctl"><input type="number" id="fmtMaxBlank" class="cfg-num" min="0" max="9" value="1"></div>
         </div>
         <div class="cfg-row">
-          <div class="cfg-lbl">Tab width<span class="cfg-hint">0 = leave tabs as-is</span></div>
+          <div class="cfg-lbl">Indent width<span class="cfg-hint">spaces per level · 0 = leave as-is</span></div>
           <div class="cfg-ctl"><input type="number" id="fmtTabWidth" class="cfg-num" min="0" max="8" value="0"></div>
         </div>
         <div class="cfg-row">
@@ -1438,14 +1473,14 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   paintTheme();
 
   // ---- curly-brace mode toggle (experimental nifparser feature) ----
-  const curlyBtn=$("#curlyBtn");
+  const curlyBtn=$("#curlyBtn"), curlyConvertBtn=$("#curlyConvertBtn"), curlyLbl=$("#curlyLbl");
   try{ if(localStorage.getItem("np-curly")==="1") window.AowliOpts.curly=true; }catch(_){}
   function paintCurly(){
     const on=!!window.AowliOpts.curly;
     curlyBtn.classList.toggle("on", on);
+    if(curlyLbl) curlyLbl.textContent = on ? "On" : "Off";
     curlyBtn.setAttribute("data-tip",
-      (on?"Curly-brace mode ON":"Curly-brace mode off")+
-      " — accept { … } blocks (experimental) · ⌃/⌘-click to convert the code");
+      "Curly-brace mode is "+(on?"ON":"off")+" — accept { … } blocks (experimental)");
   }
   // Ctrl/⌘-click rewrites the WHOLE buffer between colon/indent and curly style.
   // Direction is inferred: if there's colon-style control flow to brace, go to
@@ -1465,12 +1500,12 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     try{localStorage.setItem("np-curly", toCurly?"1":"0");}catch(_){}
     paintCurly(); runParse(); runSemCheck();
   }
-  curlyBtn.addEventListener("click",(e)=>{
-    if(e.ctrlKey || e.metaKey){ e.preventDefault(); convertBuffer(); return; }
+  curlyBtn.addEventListener("click",()=>{
     window.AowliOpts.curly=!window.AowliOpts.curly;
     try{localStorage.setItem("np-curly", window.AowliOpts.curly?"1":"0");}catch(_){}
     paintCurly(); runParse(); runSemCheck();
   });
+  if(curlyConvertBtn) curlyConvertBtn.addEventListener("click",()=>{ convertBuffer(); });
   paintCurly();
 
   // ---- word-wrap toggle for the output / NIF panes ----
@@ -1739,8 +1774,8 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   (function(){
     const overlay=$("#cfgOverlay"), openBtn=$("#configBtn"),
           closeBtn=$("#cfgClose"), backdrop=$("#cfgBackdrop");
-    function openCfg(){ overlay.classList.add("show"); overlay.setAttribute("aria-hidden","false"); }
-    function closeCfg(){ overlay.classList.remove("show"); overlay.setAttribute("aria-hidden","true"); }
+    function openCfg(){ overlay.classList.add("show"); overlay.setAttribute("aria-hidden","false"); openBtn.classList.add("cfg-open"); }
+    function closeCfg(){ overlay.classList.remove("show"); overlay.setAttribute("aria-hidden","true"); openBtn.classList.remove("cfg-open"); }
     openBtn.addEventListener("click", openCfg);
     closeBtn.addEventListener("click", closeCfg);
     backdrop.addEventListener("click", closeCfg);
