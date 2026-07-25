@@ -105,9 +105,9 @@
   .actions button.curly.on{color:var(--brace);background:var(--brace-bg)}
   /* Config = the SECONDARY action (Run is primary): a filled, tinted box so it
      reads as a distinct button, not a bare icon like share/theme. */
-  .actions button#configBtn{background:var(--panel2);color:var(--accent2)}
-  .actions button#configBtn:hover{background:var(--panel);filter:brightness(1.12)}
-  .actions button#configBtn.cfg-open{background:var(--accent2);color:#fff}
+  .actions button#configBtn{background:var(--panel2);color:var(--fg)}
+  .actions button#configBtn:hover{background:var(--panel)}
+  .actions button#configBtn.cfg-open{background:var(--panel);color:var(--fg)}
   /* engine + semantics pickers: sit in the segmented action bar, matching its buttons */
   #engineSel,#semSel{appearance:none;-webkit-appearance:none;border:0;border-left:1px solid var(--border);
     background:var(--panel);color:var(--fg);font:inherit;font-size:12.5px;cursor:pointer;
@@ -232,11 +232,16 @@
   .exportbar .exchk{display:inline-flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer;user-select:none}
   .exportbar .exchk input{margin:0;cursor:pointer}
   .exportbar .exchk code{background:var(--panel2);border-radius:4px;padding:0 4px}
-  .exportbar .exbtn{font-size:12px;padding:3px 10px;border:1px solid var(--border)}
-  .exportbar .exbtn.copied{color:var(--accent2);border-color:var(--accent2)}
+  .exportbar .exbtn,.subbar .exbtn{font-size:12px;padding:3px 10px;border:1px solid var(--border)}
+  .exportbar .exbtn.copied,.subbar .exbtn.copied{color:var(--accent2);border-color:var(--accent2)}
   /* export target segmented control + read-only Monaco viewer (feat: export) */
-  .exportbar .exseg{flex-wrap:wrap}
-  .exportbar .exmeta{margin-left:10px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40cqw}
+  .exportbar .exseg,.subbar .exseg{flex-wrap:wrap}
+  .exportbar .exmeta,.subbar .exmeta{margin-left:8px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34cqw}
+  /* merged source-pane bar: [Stages|Export] │ active sub-selector … status(right).
+     The two sub-bars occupy the same slot; only the active view's shows. */
+  .barsep{width:1px;height:18px;background:var(--border);flex:none;margin:0 3px}
+  .subbar{display:none;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
+  .subbar.active{display:flex}
   .exporteditor{flex:1;min-height:0;display:none}
   #sviewExport #exOut{flex:1}
   .paneBtn{background:transparent;border:0;padding:4px 6px;border-radius:6px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center}
@@ -291,6 +296,15 @@
   footer a{color:var(--fg);text-decoration:none;border-bottom:1px dotted var(--border)}
   footer a:hover{color:var(--accent);border-bottom-color:var(--accent)}
   footer a code{font-family:var(--mono)}
+  footer .fdim{color:var(--muted)}
+  /* engine picker that reads as plain text until you interact with it */
+  .footsel-wrap{position:relative;display:inline-flex;align-items:center}
+  .footsel{appearance:none;-webkit-appearance:none;border:0;background:transparent;
+    color:var(--fg);font:inherit;font-weight:600;cursor:pointer;padding:1px 15px 1px 2px;border-radius:5px}
+  .footsel:hover{background:var(--panel2)}
+  .footsel:focus{outline:1px solid var(--border)}
+  .footsel-wrap::after{content:"▾";position:absolute;right:3px;pointer-events:none;color:var(--muted);font-size:10px}
+  footer .footsel option{background:var(--panel);color:var(--fg);font-weight:400}
   kbd{font-family:var(--mono);font-size:11px;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 5px}
 
   /* ---- custom tooltips (for nav buttons + non-Monaco chrome) ---- */
@@ -419,7 +433,7 @@
     border-radius:5px;border:1px solid var(--border);border-left:1px solid var(--border)}
   /* selects reused from the toolbar — give them a self-contained box in the panel */
   .cfg-ctl #semSel,.cfg-ctl #engineSel,.cfg-ctl select,.lintPreset{height:32px;border:1px solid var(--border);
-    border-radius:8px;background:var(--panel2);color:var(--fg);min-width:150px}
+    border-radius:8px;background:var(--panel2);color:var(--fg);width:200px;min-width:200px}
   /* option lists render in the OS default colours otherwise — theme them so the
      preset / picker text isn't black-on-dark. */
   .cfg-ctl select option,.lintPreset option{background:var(--panel);color:var(--fg)}
@@ -481,7 +495,7 @@
     .statusline{display:none}           /* declutter — status lives in the panes */
     .pane .label{padding:7px 12px}
     footer{padding:8px 12px;font-size:11px}
-    footer > span:not(.badge):not(#perf){display:none}
+    footer > span:not(.badge):not(#perf):not(.fkeep){display:none}
     /* header stays ONE clean row: brand · [share][theme][config][Run]. Every
        other control moved into the Config panel, so the bar is roomy now. */
     .actions{flex:0 0 auto;align-items:center;gap:4px;padding-right:6px}
@@ -542,20 +556,34 @@
         <button id="stabStages" class="active" data-sview="stages" data-tip="Stages — Source · Parsed (.p.aif) · Typed (.s.aif) · Run (.run.aif): the compilation tower for the current buffer">Stages</button>
         <button id="stabExport" data-sview="export" data-tip="Export — idiomatic JavaScript / TypeScript / Python / C, transpiled in-browser">Export</button>
       </div>
+      <span class="barsep"></span>
+      <div class="subbar active" id="subStages">
+        <div class="tabs exseg" id="stageSeg">
+          <button class="active" data-stage="edit" data-tip="Source — your nimony program (.nim / .aowl)">Source</button>
+          <button data-stage="pnif" data-tip="Parsed — the untyped .p.aif from the parser">Parsed</button>
+          <button data-stage="snif" data-tip="Typed — the .s.aif from the semchecker (types &amp; symbols resolved)">Typed</button>
+          <button data-stage="rnif" data-tip="Run rung — the execution serialized as .run.aif (from aowli)">Run</button>
+        </div>
+        <span id="stageMeta" class="exmeta"></span>
+      </div>
+      <div class="subbar" id="subExport">
+        <div class="tabs exseg" id="exportTargets">
+          <button class="active" data-exp="js"  data-tip="Idiomatic JavaScript via aowljs (fast Number path)">JS</button>
+          <button data-exp="jsn" data-tip="Faithful JavaScript via aowljs — 64-bit ints become BigInt (exact, slower)">JS native</button>
+          <button data-exp="ts"  data-tip="Idiomatic TypeScript via aowlts">TS</button>
+          <button data-exp="tsn" data-tip="Faithful TypeScript via aowlts — 64-bit ints become BigInt (exact, slower)">TS native</button>
+          <button data-exp="py"  data-tip="Idiomatic Python 3 via aowlpy">Py</button>
+          <button data-exp="c"   data-tip="C via aowlc — .s.nif → aowlhexer → C (loads a 6 MB bundle on first use)">C</button>
+        </div>
+        <span id="exMeta" class="exmeta"></span>
+        <button id="exCopy" class="paneBtn exbtn" data-tip="Copy the export">Copy</button>
+        <button id="exDl" class="paneBtn exbtn" data-tip="Download the export">Download</button>
+      </div>
       <div class="statusline" id="statusLine" data-tip="Engine · live diagnostics · in-browser code intelligence"><span class="sdot"></span><span id="statusText">engine loading…</span></div>
       <span class="status" id="semStatus"></span>
     </div>
     <div class="srcbody">
       <div class="sview active" id="sviewStages">
-        <div class="exportbar">
-          <div class="tabs exseg" id="stageSeg">
-            <button class="active" data-stage="edit" data-tip="Source — your nimony program (.nim / .aowl)">Source</button>
-            <button data-stage="pnif" data-tip="Parsed — the untyped .p.aif from the parser">Parsed</button>
-            <button data-stage="snif" data-tip="Typed — the .s.aif from the semchecker (types &amp; symbols resolved)">Typed</button>
-            <button data-stage="rnif" data-tip="Run rung — the execution serialized as .run.aif (from aowli)">Run</button>
-          </div>
-          <span id="stageMeta" class="exmeta"></span>
-        </div>
         <div class="stagebody">
           <div class="stg active" id="stgEdit">
             <div id="editor"></div>
@@ -567,20 +595,6 @@
         </div>
       </div>
       <div class="sview" id="sviewExport">
-        <div class="exportbar">
-          <div class="tabs exseg" id="exportTargets">
-            <button class="active" data-exp="js"  data-tip="Idiomatic JavaScript via aowljs (fast Number path)">JS</button>
-            <button data-exp="jsn" data-tip="Faithful JavaScript via aowljs — 64-bit ints become BigInt (exact, slower)">JS native</button>
-            <button data-exp="ts"  data-tip="Idiomatic TypeScript via aowlts">TS</button>
-            <button data-exp="tsn" data-tip="Faithful TypeScript via aowlts — 64-bit ints become BigInt (exact, slower)">TS native</button>
-            <button data-exp="py"  data-tip="Idiomatic Python 3 via aowlpy">Py</button>
-            <button data-exp="c"   data-tip="C via aowlc — .s.nif → aowlhexer → C (loads a 6 MB bundle on first use)">C</button>
-          </div>
-          <span id="exMeta" class="exmeta"></span>
-          <span class="exspacer"></span>
-          <button id="exCopy" class="paneBtn exbtn" data-tip="Copy the export">Copy</button>
-          <button id="exDl" class="paneBtn exbtn" data-tip="Download the export">Download</button>
-        </div>
         <div id="exportEditor" class="exporteditor"></div>
         <pre id="exOut" class="nifview codeview"><span class="sys">Export your program to another language — transpiled entirely in your browser by the nimony toolchain compiled to JavaScript. Type-check first (the program must be valid); the selected target's source appears here with syntax highlighting.</span></pre>
       </div>
@@ -644,8 +658,8 @@
           <div class="cfg-lbl">Parser<span class="cfg-hint">.nim → .p.aif</span></div>
           <div class="cfg-ctl">
             <select id="parserSel" aria-label="Parser">
-              <option value="aowl">aowl · aowlparser</option>
-              <option value="nifler" disabled>nim · nifler (native only)</option>
+              <option value="aowl">aowlparser</option>
+              <option value="nifler" disabled>nifler — native only</option>
             </select>
           </div>
         </div>
@@ -653,8 +667,8 @@
           <div class="cfg-lbl">Checker<span class="cfg-hint">.p.aif → .s.aif (types &amp; symbols)</span></div>
           <div class="cfg-ctl">
             <select id="semSel" aria-label="Semantic checker">
-              <option value="nim">nim · nimsem</option>
-              <option value="aowl">aowl · aowlsem</option>
+              <option value="nim">nimsem</option>
+              <option value="aowl">aowlsem — WIP, avoid</option>
             </select>
           </div>
         </div>
@@ -662,8 +676,8 @@
           <div class="cfg-lbl">Lowering<span class="cfg-hint">.s.aif → .c.aif (native / C export)</span></div>
           <div class="cfg-ctl">
             <select id="hexerSel" aria-label="Lowering">
-              <option value="aowl">aowl · aowlhexer</option>
-              <option value="nim" disabled>nim · nimony hexer (native only)</option>
+              <option value="aowl">aowlhexer</option>
+              <option value="nim" disabled>nimony hexer — native only</option>
             </select>
           </div>
         </div>
@@ -677,10 +691,10 @@
             </select>
           </div>
         </div>
-        <p class="cfg-note" id="semExpNote" hidden><span id="semExp" class="expTag">experimental</span>
-          aowlsem is the from-scratch checker (rebuilt from latest). It's still evolving — some
-          std-heavy programs may report honest “undeclared” diagnostics where its
-          <code>system</code> coverage is incomplete.</p>
+        <p class="cfg-note" id="semExpNote" hidden><span id="semExp" class="expTag">avoid</span>
+          <strong>aowlsem is a work in progress — don't rely on it.</strong> The from-scratch
+          checker is incomplete: many programs won't type-check or will report spurious
+          “undeclared” diagnostics. Keep <code>nimsem</code> selected for real use.</p>
       </section>
 
       <section class="cfg-sec">
@@ -765,9 +779,20 @@
 </div>
 
 <footer>
-  <span class="badge">● 100% client-side</span>
-  <span class="ftxt"><a href="https://github.com/aoughwl/nifparser" target="_blank" rel="noopener"><code>nifparser</code></a> · <a href="https://github.com/nim-lang/nimony" target="_blank" rel="noopener"><code>nimsem</code></a> · <a href="https://github.com/aoughwl/aowli" target="_blank" rel="noopener"><code>aowli</code></a> → JS in this tab, no backend</span>
+  <span class="badge">● runs 100% in your browser</span>
+  <span class="ftxt">The whole nimony toolchain — parser, checker, and interpreter — is
+    compiled to JavaScript and runs in this tab. Nothing is sent to a server.</span>
+  <span class="ftxt fdim fkeep">Engine:
+    <span class="footsel-wrap">
+      <select id="footEngineSel" class="footsel" aria-label="Execution engine">
+        <option value="vm">Bytecode VM</option>
+        <option value="tree">Tree Walker</option>
+        <option value="nifjs">Native JS</option>
+      </select>
+    </span>
+  </span>
   <div style="flex:1"></div>
+  <span class="ftxt fdim"><a href="https://github.com/aoughwl/aowlparser" target="_blank" rel="noopener">aowlparser</a> · <a href="https://github.com/aoughwl/aowlsem" target="_blank" rel="noopener">aowlsem</a> · <a href="https://github.com/aoughwl/aowli-release" target="_blank" rel="noopener">aowli</a></span>
   <span id="perf"></span>
 </footer>
 
@@ -953,8 +978,10 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   function selectSrcView(v){
     curSrcView = v;
     ["stages","export"].forEach(k=>{
-      $("#stab"+k[0].toUpperCase()+k.slice(1)).classList.toggle("active", k===v);
-      $("#sview"+k[0].toUpperCase()+k.slice(1)).classList.toggle("active", k===v);
+      const Cap = k[0].toUpperCase()+k.slice(1);
+      $("#stab"+Cap).classList.toggle("active", k===v);
+      $("#sview"+Cap).classList.toggle("active", k===v);
+      $("#sub"+Cap).classList.toggle("active", k===v);   // the merged bar's sub-selector
     });
     if(v==="stages") applyStage();
     if(v==="export"){ layoutExportEditor(); ensureExport(); }
@@ -1380,12 +1407,19 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     tree: "Tree-walk — the reference interpreter; it walks the typed program node by node. Slowest, most faithful.",
     nifjs:"Native JS — transpiles your program to JavaScript (nifjs) so the browser JIT-compiles it: near-native speed, no fixed heap. A program using something nifjs doesn't support yet falls back to the interpreter automatically."
   };
-  function paintEngine(){ engineSel.classList.toggle("nifjs", engineMode==="nifjs"); }
-  engineSel.addEventListener("change",()=>{
-    engineMode = engineSel.value; paintEngine();
+  const footEngineSel = $("#footEngineSel");
+  function paintEngine(){
+    engineSel.classList.toggle("nifjs", engineMode==="nifjs");
+    if(engineSel.value !== engineMode) engineSel.value = engineMode;
+    if(footEngineSel && footEngineSel.value !== engineMode) footEngineSel.value = engineMode;
+  }
+  function setEngine(mode, describe){
+    engineMode = mode; paintEngine();
     try{ localStorage.setItem("np-engine", engineMode); }catch(_){}
-    print('<span class="sys">'+ENGINE_DESC[engineMode]+'</span>');
-  });
+    if(describe) print('<span class="sys">'+ENGINE_DESC[engineMode]+'</span>');
+  }
+  engineSel.addEventListener("change",()=> setEngine(engineSel.value, true));
+  if(footEngineSel) footEngineSel.addEventListener("change",()=> setEngine(footEngineSel.value, true));
   paintEngine();
 
   // ---- semantic-checker picker: "nim" (nimsem, default) | "aowl" (aowlsem,
