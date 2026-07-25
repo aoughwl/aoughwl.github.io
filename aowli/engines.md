@@ -49,10 +49,18 @@ with **zero in-scope divergence**. aowli also runs a real pure-nimony program
 end-to-end — the MDN CSS validator ([css](../docs/css)) — byte-identical to
 native.
 
-The one documented boundary, not a gap: `{.emit.}` literal-C and C FFI aren't
-handled by the pure value model — they're **hybrid-native** territory (that
-module runs through the real C toolchain as a shared object via the provider
-layer, the rest stays interpreted), on the roadmap rather than a correctness gap.
+The one boundary the pure value model can't cross by itself is literal-C:
+`{.emit.}` and C FFI have no C to execute inside the value world. That's
+**hybrid-native** territory — interpret most modules, run selected ones as native
+code through the real C toolchain as a shared object via the provider layer.
+
+As of 2026-07-25 hybrid-native runs **real foreign C**: a header-backed
+`{.importc.}` proc is offloaded to a compiled shim (`--app:lib`), dlopen'd, and
+called for real, its result marshaled back into the interpreter byte-identical to
+native. This is interpreter-development progress (not part of the public v0.3.0
+binary). The remaining piece — top-level `{.emit.}` / importc-var in the *main*
+module (the shape `configtest2` uses) — is the last design item, not a
+correctness gap in the interpreter.
 
 ## The run rung — a run is an AIF
 
