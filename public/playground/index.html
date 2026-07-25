@@ -239,7 +239,13 @@
   .exportbar .exmeta,.subbar .exmeta{margin-left:8px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34cqw}
   /* merged source-pane bar: [Stages|Export] │ active sub-selector … status(right).
      The two sub-bars occupy the same slot; only the active view's shows. */
-  .barsep{width:1px;height:18px;background:var(--border);flex:none;margin:0 3px}
+  /* the PRIMARY view switch (Compile Stages ↔ Export Code) is a filled segmented
+     toggle — visually distinct from the subtle sub-tabs it controls, so it reads
+     as "this picks what everything to my right shows". */
+  #srcTabs{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:2px;gap:2px}
+  #srcTabs button{border-radius:6px;padding:4px 11px;font-weight:600}
+  #srcTabs button.active{background:var(--accent);color:#fff;border-color:transparent}
+  .barsep{width:1px;height:18px;background:var(--border);flex:none;margin:0 4px}
   .subbar{display:none;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
   .subbar.active{display:flex}
   .exporteditor{flex:1;min-height:0;display:none}
@@ -543,7 +549,7 @@
       <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.4" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.6a5.4 5.4 0 000 10.8z" fill="currentColor"/></svg>
     </button>
     <button id="configBtn" data-tip="Configuration — pipeline, engine, formatting &amp; lints">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.3"/><path d="M8 1.3l.95 1.7 1.9-.55.35 1.95 1.95.35-.55 1.9L15.7 8l-1.75.95.55 1.9-1.95.35-.35 1.95-1.9-.55L8 15.7l-.95-1.75-1.9.55-.35-1.95-1.95-.35.55-1.9L1.3 8l1.75-.95-.55-1.9 1.95-.35.35-1.95 1.9.55z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V15z"/></svg>
     </button>
     <button class="run" id="runBtn" disabled data-tip="Compile & run — Ctrl/Cmd + Enter">
       <svg viewBox="0 0 16 16"><path d="M4.5 3.2l8 4.8-8 4.8z" fill="currentColor"/></svg> Run <kbd>⌃⏎</kbd>
@@ -555,8 +561,8 @@
   <section class="pane src">
     <div class="label">
       <div class="tabs" id="srcTabs">
-        <button id="stabStages" class="active" data-sview="stages" data-tip="Stages — Source · Parsed (.p.aif) · Typed (.s.aif) · Run (.run.aif): the compilation tower for the current buffer">Stages</button>
-        <button id="stabExport" data-sview="export" data-tip="Export — idiomatic JavaScript / TypeScript / Python / C, transpiled in-browser">Export</button>
+        <button id="stabStages" class="active" data-sview="stages" data-tip="Compile Stages — watch your code become each intermediate form: Source → Parsed → Typed → Run. Picks what the panel below shows.">Compile Stages</button>
+        <button id="stabExport" data-sview="export" data-tip="Export Code — translate your program to another language (JavaScript / TypeScript / Python / C), transpiled in-browser. Picks what the panel below shows.">Export Code</button>
       </div>
       <span class="barsep"></span>
       <div class="subbar active" id="subStages">
@@ -784,6 +790,7 @@
   <span class="badge">● runs 100% in your browser</span>
   <span class="ftxt">The whole nimony toolchain — parser, checker, and interpreter — is
     compiled to JavaScript and runs in this tab. Nothing is sent to a server.</span>
+  <div style="flex:1"></div>
   <span class="ftxt fdim fkeep">Engine:
     <span class="footsel-wrap">
       <select id="footEngineSel" class="footsel" aria-label="Execution engine">
@@ -793,7 +800,6 @@
       </select>
     </span>
   </span>
-  <div style="flex:1"></div>
   <span class="ftxt fdim"><a href="https://github.com/aoughwl/aowlparser" target="_blank" rel="noopener">aowlparser</a> · <a href="https://github.com/aoughwl/aowlsem" target="_blank" rel="noopener">aowlsem</a> · <a href="https://github.com/aoughwl/aowli-release" target="_blank" rel="noopener">aowli</a></span>
   <span id="perf"></span>
 </footer>
@@ -1617,7 +1623,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
             navigator.clipboard.readText().then(t=>{ ed.executeEdits("ctx",[{range:ed.getSelection(),text:t,forceMoveMarkers:true}]); ed.focus(); }).catch(()=>{}); }},
         { sep:true },
         { label:"Go to Definition", kb:"F12", act:()=>trigger("editor.action.revealDefinition") },
-        { label:"Select all", kb:"⌘A", act:()=>trigger("editor.action.selectAll") },
+        { label:"Select all", kb:"⌘A", act:()=>{ ed.setSelection(model.getFullModelRange()); ed.focus(); } },
         { sep:true },
         { label:"Command Palette", kb:"F1", act:()=>trigger("editor.action.quickCommand") },
         { label:"Run", kb:"⌃⏎", off:runBtn.disabled, act:()=>run() },
