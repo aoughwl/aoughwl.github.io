@@ -15,13 +15,39 @@ ships only the built binaries, hardened for public distribution.
 
 ---
 
+## v0.3.1 — runs the semantic checker (byte-identical to native)
+
+The current release is **v0.3.1**. It carries three root-cause correctness
+fixes on top of v0.3.0 — the ones that let aowli run **aowlsem, the Nimony
+semantic checker itself**, and produce output **byte-identical to a native
+compile** (520/520 tokens on the reference `.p.nif`). That's the milestone: the
+interpreter is now correct enough to run a real, compiler-grade program end to
+end, so [aowlcode](aowlcode)'s `debug`/`trace` can be pointed at the compiler's
+own passes.
+
+What v0.3.1 fixes:
+
+- **Fully-initialised pointer values** — constructing an interior `ptr`
+  (`vkPtr`) left the flat-memory view fields (`region` / `foff` / `elemBits` /
+  `base`) uninitialised, so a later read saw garbage. Caught with valgrind
+  running under mimalloc's Valgrind-tracking build; every `vkPtr` construction
+  now sets all fields. This was a genuine memory-safety class, not just a
+  cosmetic gap.
+- **`seq` append value-copy** — `s.add x` now copies `x` on the way in (the same
+  `=copy` envelope semantics v0.3.0 gave assignment), so a later mutation of the
+  appended element doesn't alias the source.
+- **Content-addressed tag dedup** — `StringView.==` is now gated so NIF tag
+  interning deduplicates correctly (surfaced through `borrowCStringUnsafe`);
+  content-addressed / `TokenBuf`-style programs compare tags by identity as
+  intended.
+
 ## v0.3.0 — correctness-complete
 
-The current release is **v0.3.0**, the correctness-complete build of aowli. Both
-engines — the tree-walker behind `aowli-interp` / `aowli-dbg` and the internal
-bytecode VM — now reach **zero in-scope divergence across a 423-program
-differential corpus** run against the nimony compiler. The engines agree with
-each other and with native execution, program for program.
+**v0.3.0** was the correctness-complete build of aowli. Both engines — the
+tree-walker behind `aowli-interp` / `aowli-dbg` and the internal bytecode VM —
+reached **zero in-scope divergence across a 423-program differential corpus**
+run against the nimony compiler. The engines agree with each other and with
+native execution, program for program.
 
 What v0.3.0 closes:
 
@@ -72,7 +98,7 @@ aowli source paths and no internal proc/type names.
 ## Distribution
 
 Shipped as a **GitHub Release**,
-[v0.3.0](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.0), with the
+[v0.3.1](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.1), with the
 binaries as release assets. Each build lists a SHA256 and a VirusTotal-by-hash
 link so the asset can be verified independently of trusting the download host.
 
