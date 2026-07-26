@@ -96,19 +96,85 @@ Because a missing path yields a JNull rather than faulting,
 
 | Method | Behaviour |
 |---|---|
-| `initialize` | Returns `protocolVersion` `2024-11-05`, `capabilities.tools`, `serverInfo`. |
+| `server/discover` | **(2026-07-28)** Advertises `protocolVersions`, `capabilities` (incl. the `extensions` map), `serverInfo`. Doubles as the stdio back-compat probe. |
+| `initialize` | **(legacy 2024-11-05)** Negotiates `protocolVersion` from the client's request, else the legacy version; returns `capabilities`, `serverInfo`. |
 | `notifications/initialized` / `initialized` | Acknowledged with no response. |
 | `ping` | Empty result. |
-| `tools/list` | Every registered tool with its `name`, `description`, `inputSchema`. |
-| `tools/call` | Dispatches to the handler; wraps the result as a text content block. |
+| `tools/list` | Every registered tool with its `name`, `description`, `inputSchema`; plus `ttlMs` + `cacheScope` caching hints (2026-07-28). |
+| `tools/call` | Dispatches to the handler; wraps the result as a text content block. Can return an `InputRequiredResult` (MRTR) or a task handle (Tasks). |
+| `tasks/get` / `tasks/cancel` / `tasks/update` | **(2026-07-28 Tasks extension)** Drive a task handle returned by `tools/call`. |
 | batch arrays | Each sub-request dispatched; one response line per non-notification. |
 | bad JSON | `-32700` parse error (`id: null`). |
 | unknown method (with `id`) | `-32601` method not found. |
+| unsupported `_meta` protocol version | `-32602` invalid params. |
 
 Tool-level errors ride back as `isError: true` **responses**, not JSON-RPC
 errors — JSON-RPC `error` objects are reserved for transport and method faults.
 This is the MCP convention, and it matches the reference Python server the
 aowlcode plugin ships.
+
+---
+
+## Two protocol versions: 2024-11-05 and 2026-07-28
+
+The **2026-07-28 revision** is the largest change to MCP since launch: it breaks
+with MCP's stateful past. `aowlmcp` speaks **both** the legacy and the new
+protocol, negotiated per request, so upgrading a client is never a flag day.
+
+**What changed in 2026-07-28**
+
+- **Stateless core.** The `initialize` / `notifications/initialized` handshake and
+  the `Mcp-Session-Id` header are gone. Any server instance can serve any
+  request. Instead of a handshake, every request carries its context in `_meta`
+  (inside `params`):
+  - `io.modelcontextprotocol/protocolVersion`
+  - `io.modelcontextprotocol/clientInfo`
+  - `io.modelcontextprotocol/clientCapabilities`
+- **`server/discover`** replaces `initialize` for capability discovery.
+- **Streamable-HTTP routing headers** `Mcp-Method` / `Mcp-Name` let load
+  balancers route without inspecting the body. A single-instance aowlmcp server
+  accepts and ignores them (the method/name come from the JSON-RPC body).
+- **Caching hints** `ttlMs` + `cacheScope` on list responses.
+- **MRTR** (Multi-Round-Trip Requests) replaces mid-call server→client requests:
+  a tool returns an `InputRequiredResult`, the client re-calls with responses.
+- **Tasks** and **MCP Apps** move to negotiated `extensions`.
+- **Roots / Sampling / Logging** are deprecated (aowlmcp never shipped them; on
+  stdio, log to `stderr`).
+
+**How aowlmcp negotiates.** When a request's `_meta` names a version we don't
+support, it's rejected with `-32602`. Requests without `_meta` are treated as
+legacy (2024-11-05) and work unchanged. `server/discover` advertises both
+versions; the legacy `initialize` still works for old clients.
+
+### Multi-Round-Trip tools (MRTR)
+
+Register with `registerToolMRTR`; the handler receives `inputResponses` and the
+echoed `requestState`, and returns `newInputRequired(...)` to ask for input:
+
+```nim
+proc deleteFiles(args, inputResponses, requestState: JsonValue): JsonValue =
+  if inputResponses.kind != jnObject:           # first call → ask
+    let requests = newJObject()
+    requests["confirm"] = newJObject()          # {type:"elicitation", …}
+    return newInputRequired(requests, $args{"count"}.getInt(0))
+  result = newJObject()                          # follow-up → complete
+  result["message"] = newJString(
+    if inputResponses{"confirm"}.getBool(false): "deleted" else: "cancelled")
+
+srv.registerToolMRTR("delete_files", "…", schema, deleteFiles)
+```
+
+### Task tools (Tasks extension)
+
+Register with `registerTaskTool`; `tools/call` returns a `{taskId, status}`
+handle and the result is fetched via `tasks/get`. The extension is advertised in
+`server/discover` only when a task tool is registered:
+
+```nim
+srv.registerTaskTool("slow_sum", "…", schema, slowSum)
+```
+
+See `examples/mrtr_server.nim` for both, end to end.
 
 ---
 
