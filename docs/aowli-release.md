@@ -15,9 +15,27 @@ ships only the built binaries, hardened for public distribution.
 
 ---
 
+## v0.3.2 — correct string/seq slicing & string equality
+
+The current release is **v0.3.2**. It fixes two shipped-runtime correctness bugs
+that could make a program silently mis-parse its own data — found while running a
+real argument parser under the interpreter:
+
+- **`s[a..b]` / `s[a..<b]` slicing** — the indexer only handled a single integer
+  index, so a slice returned just the first element (e.g. `path[0..<8]` yielded
+  one character) instead of the substring/subsequence. Slicing now reads the range
+  bounds correctly for strings and seqs.
+- **string equality across kinds** — a non-string value (a `nil`/default, or a
+  mis-sliced char) could compare *equal* to a string when both reduced to the same
+  number internally (`nil == "…"` returned `true`). A string is now only ever equal
+  to another string.
+
+Verified byte-identical to a native compile on the repro plus a slice sweep; the
+full differential corpus stays at **77/77** (no regression on the hot `==` path).
+
 ## v0.3.1 — runs the semantic checker (byte-identical to native)
 
-The current release is **v0.3.1**. It carries three root-cause correctness
+**v0.3.1** carries three root-cause correctness
 fixes on top of v0.3.0 — the ones that let aowli run **aowlsem, the Nimony
 semantic checker itself**, and produce output **byte-identical to a native
 compile** (520/520 tokens on the reference `.p.nif`). That's the milestone: the
