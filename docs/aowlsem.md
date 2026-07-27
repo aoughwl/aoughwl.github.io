@@ -97,9 +97,9 @@ choices.
 
 ## Capabilities
 
-Checked construct-by-construct. The `tests/corpus/` suite (166 modules) is the
-concrete list of what is supported; the categories below summarise it. The
-frontier is tracked in `COVERAGE.md`.
+Checked construct-by-construct. The `tests/corpus/` suite (498 modules, all
+byte-exact against the nimony oracle) is the concrete list of what is supported;
+the categories below summarise it. The frontier is tracked in `COVERAGE.md`.
 
 **Declarations & bindings**
 : `let` / `var` / `const` (global and local); type inference from literals,
@@ -140,13 +140,24 @@ procs as values; `importc` procs.
 : generic routine declarations and instantiation (inference and explicit type
 arguments); generic `object` type declarations and instantiation; instantiation
 of imported generics; nested instantiation inside instantiated bodies; instance
-memoisation.
+memoisation. Generic **sum types** (anonymous variants) instantiate and construct
+by inference — `let d = Some(99)` resolves `Option[int]` from the argument,
+annotated conversions (`Option[int](x)`) and multi-parameter sums
+(`Either[int, string]`) resolve to the same instance, and a type-named value
+constructor (`Pair(first: 1, second: 2)`) infers `Pair[int]` from its fields.
+Generic **`ref object`** types instantiate in full: the reference alias and its
+underlying `.Obj` object are each emitted with their own separately-keyed
+instance identity and per-instance lifetime hooks (destroy / move / copy /
+`wasMoved`), variant-dispatched for `case` objects, and their constructors build
+the concrete instance rather than the generic origin.
 
 **Objects, ref & inheritance**
 : `object` declarations, field access, assignment, nesting, object params and
-returns, default fill and empty construction; `ref object`; object and `ref`
-inheritance across multiple levels; `method` declarations with dynamic dispatch
-and overrides.
+returns, default fill and empty construction; `ref object`; **anonymous variants
+(sum types)** — a discriminated `case` object with `of`-label constructors and
+`of Label(field)` pattern matching, its synthesized discriminator enum and
+branch-wise lifetime hooks; object and `ref` inheritance across multiple levels;
+`method` declarations with dynamic dispatch and overrides.
 
 **Templates & macros**
 : `template` expansion (inline substitution of arguments into the body);

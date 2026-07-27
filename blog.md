@@ -70,3 +70,44 @@ once, so a rebuild can never be shadowed again.
 All of this is exposed through [aowlcode](/docs/aowlcode)'s `debug` and new
 `debug_session` tools — see [Debugging](/aowli/debugging) and
 [aowlcode → Execution](/docs/aowlcode/execution).
+
+### What the debugger was for: generics that instantiate
+
+The reason the debugger earned this much attention is the program it debugs:
+[aowlsem](/docs/aowlsem), the semantic checker. Today that program crossed a real
+line — generic *types* now instantiate the way the reference compiler does, all
+the way into the cases that were still emitting the un-specialized generic and
+cascading into unresolved field accesses and 25-way operator sets downstream.
+
+**Generic sum types construct by inference.** `let d = Some(99)` now works out
+`Option[int]` from its argument, so `d.val` is an `int` and `d.val == 99`
+resolves to a single integer comparison instead of a giant overload choice. The
+same inference drives annotated conversions (`Option[int](x)`) and two-parameter
+sums (`Either[int, string]`), and a plain generic object picks its instance from
+its fields too — `Pair(first: 1, second: 2)` becomes `Pair[int]`.
+
+**Generic `ref object` types instantiate in full.** This was the deep one. A
+`ref object` isn't one type — it lowers to a *reference alias* plus the
+underlying object it points at, and each half carries its own set of lifetime
+hooks (destroy / move / copy) so values clean themselves up correctly. A generic
+one like a recursive
+
+```nim
+type Tree[T] = ref object
+  case
+  of Leaf: val: T
+  of Branch: left, right: Tree[T]
+```
+
+was never being instantiated at all — it fell out of the generic machinery early
+and emitted the un-specialized origin at every use. Now `Tree[int]` mints both
+halves with their own separately-keyed identities and per-instance hooks, its
+`Branch(…)` / `Leaf(…)` constructors build the concrete instance, and an
+annotated `let t: Tree[int] = Branch(…)` heap-allocates against the right type
+instead of tripping a type-mismatch.
+
+Every one of these was root-caused by pointing the interpreter's debugger at
+aowlsem's own output and diffing against a native compile — the loop the
+interactive-stepping work above exists to make cheap. Throughout, the byte-exact
+differential corpus held green at **498/498** with full `std/system` parity, so
+the generics work landed without regressing anything already passing.
