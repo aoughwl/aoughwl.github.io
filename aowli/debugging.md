@@ -15,13 +15,26 @@ frame locals — without adding a single `echo`/`write` to the source.
 |---|---|---|
 | `--break:LINE` | `aowli-dbg` | Breakpoint on a source **line number**. Fires in *every* routine that line number appears in, across every module — file-agnostic. |
 | `--break-func:NAME` | `aowli-dbg` | Breakpoint scoped to a **routine name**. Fires on every statement inside that routine only. |
+| `--expand:PATH[,…]` | `aowli-dbg` | Drill into a **deep field** of a captured local without dumping the whole value — dotted/indexed paths like `c.currentModule.name` or `xs.3.field` (fields by name, seq/array by index, `ref`/`ptr` auto-followed), each rendered with a generous budget as an extra `path = value` line. |
+| `--session` | `aowli-dbg` | **Interactive / progressive mode** — run once and pause, stepping and inspecting the live frame on demand over a stdin/stdout control channel (see below). |
 | `--trace` | `aowli-interp` | Renders the whole call tree: `→ callee(args) :LINE` on enter, `← <ret>` on exit, depth-indented. |
 | `--trace-depth:N` | `aowli-interp` | Caps the call tree at depth `N` — use on a *deep* call chain where the full tree is too long to read. |
 | `--trace-profile` | `aowli-interp` | Aggregates call counts/time instead of printing every frame — use on a *wide* program (many calls, shallow tree) where a full trace would be mostly repetition. |
 
-All of `--break`/`--break-func` can repeat and combine in one invocation; every
-hit is captured, not just the first (non-interactive — there is no
-pause/resume/step).
+All of `--break`/`--break-func` can repeat and combine in one invocation. In the
+default **batch** mode every hit is captured (not just the first) and dumped at
+exit; for pause/step/resume, use `--session` (below).
+
+## Bounded value rendering
+
+Every captured value is rendered under a whole-value **character budget**, so a
+large frame local — a compiler's `SemContext`, a memo table, a grammar blob —
+can no longer explode a frame dump into a wall of interning-table internals. When
+the budget runs out, expansion stops with a `…{budget}` marker: the value's shape
+stays legible and you know detail was *deferred*, not missing. To see a deferred
+field, name it directly with **`--expand:PATH`** (or the `expand` command in a
+session) rather than re-dumping the whole value — token-thrift without losing the
+thread.
 
 ## `--break` vs `--break-func`
 
@@ -51,10 +64,40 @@ statement runs. Break on the following line to see a post-assignment value.
 | Program is wide (many shallow calls) rather than deep | `--trace-profile` |
 | Only have a line number, no routine name yet | `--break:LINE`, expect noise, then narrow to `--break-func` |
 
+## Interactive / progressive mode (`--session`)
+
+Batch mode re-runs the *whole* program every time you want to look somewhere new,
+so you must decide up front what to capture — and a slow program (an `aowlsem`
+compile) pays that full re-run on every inspection. **`--session`** turns
+`aowli-dbg` into a co-process instead: it runs **once** and **stays paused between
+commands**, so you inspect and step the *live* frame on demand — no re-execution,
+no predicting captures in advance.
+
+The interpreter emits **JSON events** on stdout (`paused`, `output`, `expanded`,
+`locals`, `stack`, `exited`) and reads **plain line commands** on stdin:
+
+| Command | Effect |
+|---|---|
+| `step` | Step **into** the next statement (descends into calls). |
+| `next` | Step **over** — stay in this frame; skip into called routines. |
+| `finish` | Step **out** — run until the current routine returns. |
+| `continue` | Run to the next breakpoint (or exit). |
+| `break func:NAME` · `break file.nim:LINE` · `break LINE` | Add a breakpoint **live**, mid-session. |
+| `clear` | Remove all breakpoints. |
+| `expand PATH[,…]` | Drill dotted/indexed paths in the paused frame (stays paused). |
+| `locals` · `stack` | Re-inspect the paused frame's locals / routine-name call stack. |
+| `quit` | End the session. |
+
+The session stops on entry, then you set the pace. It needs no coroutine
+machinery: the interpreter is already parked on the stack inside its
+per-statement hook, so a blocking read on the control channel *is* the pause.
+Batch mode and the zero-overhead default path are byte-for-byte unchanged. Via
+[aowlcode](../docs/aowlcode/execution), this is the **`debug_session`** tool.
+
 ## Via aowlcode
 
-The `trace`/`debug` MCP tools wrap this exact binary pipeline (compile → locate
-`.s.aif` → run `aowli-interp`/`aowli-dbg`) with structured JSON returns and
-binary resolution through `$AOWLI_BIN_DIR` → `~/.aowl/bin` → `~/aowli/bin` →
-`PATH`. Full args/returns/failure-mode reference:
+The `trace`/`debug`/`debug_session` MCP tools wrap this exact binary pipeline
+(compile → locate `.s.aif` → run `aowli-interp`/`aowli-dbg`) with structured JSON
+returns and binary resolution through `$AOWLI_BIN_DIR` → `~/.aowl/bin` →
+`~/aowli/bin` → `PATH`. Full args/returns/failure-mode reference:
 [aowlcode → Execution](../docs/aowlcode/execution).

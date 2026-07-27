@@ -13,6 +13,7 @@ const sidebar = [
     items: [
       { text: 'Welcome', link: '/' },
       { text: 'Parity', link: '/docs/parity' },
+      { text: 'Blog', link: '/blog' },
     ],
   },
   {

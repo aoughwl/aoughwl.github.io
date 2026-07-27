@@ -37,19 +37,48 @@ that footer is always preserved even when the body is trimmed to `max_lines`.
 
 | | |
 |---|---|
-| Args | `file`, `breaks=[int]` (line numbers), `break_funcs=[str]` (routine names), `raw` |
+| Args | `file`, `breaks=[int]` (line numbers), `break_funcs=[str]` (routine names), `watch=[str]`, `expand=[str]`, `raw` |
 | Returns | `{ok, captures, stdout, exit_code}` |
 | Binary | `aowli-dbg --break:LINE ... --break-func:NAME ... <main.s.nif>` |
 
-At least one of `breaks`/`break_funcs` is required. **Non-interactive**: no
-pause/resume/step. Each time a breakpoint's line (any routine) or a
-break-func's routine (every statement inside it) is reached, aowli-dbg
-snapshots that frame's locals and execution continues — every hit is
-recorded, not just the first. `captures` is one block per hit: source line +
-enclosing routine + `name = value` per local. Captures are taken at statement
-**entry**, so a line shows the value *before* that statement runs — break on
-the following line to see a post-assignment value. `captures` capped at 20000
-chars, `stdout` at 4000.
+At least one of `breaks`/`break_funcs` is required. **Batch** (for interactive
+stepping, use `debug_session` below): each time a breakpoint's line (any routine)
+or a break-func's routine (every statement inside it) is reached, aowli-dbg
+snapshots that frame's locals and execution continues — every hit is recorded,
+not just the first. `captures` is one block per hit: source line + enclosing
+routine + `name = value` per local, taken at statement **entry** (a line shows
+the value *before* that statement runs — break on the following line for a
+post-assignment value). `captures` capped at 20000 chars, `stdout` at 4000.
+
+Each value is rendered under a **character budget**, so a huge local (a
+`SemContext`, a memo table) can't explode the capture into a wall of internals —
+it elides with a `{budget}` marker instead. Two knobs narrow a dump losslessly:
+`watch=[names]` keeps only the named locals; **`expand=[paths]`** drills a deep
+field directly — dotted/indexed paths like `["c.currentModule.name", "xs.3"]`,
+rendered with a generous budget as extra `path = value` lines — so you can read
+one field of a giant value without dumping the whole thing.
+
+## `debug_session` — interactive / progressive
+
+Batch `debug` re-runs the whole program on every call, so you must predict what
+to capture, and a slow program pays a full re-run per inspection. `debug_session`
+runs the program **once** and keeps it **paused between tool calls**, stepping and
+inspecting the *live* frame on demand.
+
+| | |
+|---|---|
+| Args | `action`, `session_id`, plus start args (`file`, `breaks`, `break_funcs`, `program_args`, `extra_args`) and `paths`/`spec` |
+| Returns | `{session_id, status, location, locals, stack, …}` |
+| Binary | `aowli-dbg --session … <main.s.nif>` |
+
+`action` drives the session: `start` (compile + launch, pause on entry) →
+`step` (into) · `next` (over) · `finish` (out) · `continue` (to next breakpoint
+/ exit) · `expand` (drill `paths` in the paused frame) · `locals` · `stack` ·
+`break` (add breakpoints **live** via `breaks`/`break_funcs`/`spec`) · `clear` ·
+`stop`. Every non-`start` action takes the `session_id` returned by `start`. A
+resume that hits a breakpoint returns the new paused state; one that runs off the
+end returns `status:"exited"`. The subprocess is held across calls; program output
+comes back interleaved as it's produced.
 
 ## Binary resolution
 

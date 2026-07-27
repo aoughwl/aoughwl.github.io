@@ -47,7 +47,8 @@ paren-matching scanner otherwise; each response reports which via `backend`.
 | Tool | Args | Returns | Purpose |
 |---|---|---|---|
 | `trace` | `file`, `max_lines=300`, `raw` | `{ok, trace, stdout, exit_code}` | Compiles to typed NIF, runs `aowli-interp --trace`, returns the depth-indented call tree (`→ callee(args) :LINE` / `← <ret>`) ending in a `-- trace: N calls, max depth M` summary (always kept even when trimmed). |
-| `debug` | `file`, `breaks=[int]`, `break_funcs=[str]`, `raw` | `{ok, captures, stdout, exit_code}` | Compiles to typed NIF, runs `aowli-dbg` with `--break:LINE`/`--break-func:NAME`, returns one capture block per hit: line, routine, frame locals. Non-interactive — no pause/step, every hit recorded and execution continues. |
+| `debug` | `file`, `breaks=[int]`, `break_funcs=[str]`, `watch=[str]`, `expand=[str]`, `raw` | `{ok, captures, stdout, exit_code}` | Compiles to typed NIF, runs `aowli-dbg` with `--break:LINE`/`--break-func:NAME`, returns one capture block per hit: line, routine, frame locals. Batch. Values are char-budgeted; `watch` trims to named locals, `expand` drills deep dotted/indexed paths losslessly. |
+| `debug_session` | `action`, `session_id`, + start args (`file`, `breaks`, `break_funcs`, …), `paths`/`spec` | `{session_id, status, location, locals, stack, …}` | **Interactive/progressive**: runs once and stays paused between calls. `action` = start/step/next/finish/continue/expand/locals/stack/break/clear/stop — step & inspect the live frame with no re-run per look. |
 
 See [Execution](execution) for the binary-resolution chain and capture semantics.
 

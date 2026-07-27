@@ -13,6 +13,8 @@ browser**. → **[See how close we are](/docs/parity)**
 <a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>
 </div>
 
+> **Latest — Jul 27, 2026:** a **progressive debugger** for aowli — run once, pause, step, and inspect the live frame on demand, plus budgeted value rendering and path-addressable `expand`. **[Read the update →](/blog)**
+
 ---
 
 ## Not one binary — a pipeline you can see through
