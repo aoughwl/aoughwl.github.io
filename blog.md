@@ -6,6 +6,52 @@ Development updates from the aoughwl toolchain. Newest first.
 
 ---
 
+## 2026-07-28 — aowli: debugging a big program stopped meaning "recompile it every time"
+
+*Tuesday, July 28, 2026*
+
+Pointing the [aowli](/aowli) debugger at a large program — the semantic checker
+[aowlsem](/docs/aowlsem) itself — used to take minutes per run, and it was easy to
+conclude the interpreter was simply slow on a program that size. It wasn't. The
+interpret is about a second; the minutes were the tooling **recompiling the whole
+program from scratch before every run**, then throwing the build away.
+
+### The cost was the compile, not the interpret
+
+The [aowlcode](/docs/aowlcode) `debug` and `trace` tools compiled the target into a
+fresh throwaway build directory with `-f` (force a full rebuild) on *every* call.
+For aowlsem — its ~20k-line self-hosted compiler plus all of the standard library
+it imports — that cold build is ~47 seconds, paid again on every step of a
+debugging session.
+
+The fix you reach for first is "use a persistent build cache so it rebuilds
+incrementally." We measured it: it doesn't help here. A warm rebuild into the same
+cache, with nothing changed, costs the **same ~47 seconds** — the toolchain has no
+fast incremental path for this shape yet. So the real fix is to **not run the
+compiler at all when nothing changed**: keep the built `.s.nif` and reuse it,
+recompiling only when a source file under the project is actually edited. The first
+debug of a session is cold (~47s); every one after is **~1 second**, until you
+change code. You can also hand the tools a prebuilt `.s.nif` directly and skip the
+compile entirely.
+
+### aowli v0.3.3 — hybrid mode crosses richer data
+
+[aowli v0.3.3](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.3) extends
+the interpreter's optional **hybrid-native** mode, which runs the modules you are
+*not* debugging as real compiled code at full speed while interpreting the one you
+are. Until now only simple signatures (numbers, PODs, strings, flat seqs) could
+cross that boundary. A new shared-memory **arena** lays a live value graph out in
+real native memory layout, so calls taking `ref` objects, nested ref graphs, and
+`seq[T]` fields (including seqs of objects) cross too — the native side reads and
+mutates the same memory, and the changes are reflected back into the interpreter's
+values.
+
+It is additive and dormant: without the hybrid flag, execution is byte-for-byte
+identical to v0.3.2, and anything that still can't be marshalled safely falls back
+to plain interpretation rather than risk a wrong answer.
+
+---
+
 ## 2026-07-28 — aowlsem: generic ref objects reach byte-identity, and value-object method dispatch
 
 *Tuesday, July 28, 2026*
