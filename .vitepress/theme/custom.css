@@ -223,8 +223,11 @@
   justify-content: flex-start !important;
   /* 32px === VPDoc's own horizontal padding, so the search box starts on the
      page's first character. Pinned with !important because VitePress sets the
-     same value from a lazily-injected chunk whose cascade order isn't fixed. */
+     same value from a lazily-injected chunk whose cascade order isn't fixed.
+     The right padding keeps it off the Playground link — the bar shouldn't run
+     edge to edge. */
   padding-left: 32px !important;
+  padding-right: 20px !important;
 }
 .VPNavBarSearch #local-search {
   width: 100%;
@@ -251,6 +254,9 @@
   .VPNavBarSearch #local-search { width: auto !important; }
   .VPNavBarSearch #local-search > button,
   .VPNavBarSearch .DocSearch-Button { width: auto !important; max-width: none !important; }
+  /* collapsed to an icon here — the desktop inset would just push it off the
+     theme toggle */
+  .VPNavBarSearch { padding-right: 0 !important; }
 }
 
 /* ---- Very narrow phones (<380px): the bar runs out of room ----
@@ -599,8 +605,21 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
     padding-right: calc(var(--aowl-pad, 32px) + 32px) !important;
     transition: padding-left .25s ease, padding-right .25s ease;
   }
-  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content {
+  /* Collapsed: the logo column is normally an absolutely-positioned box the
+     width of the sidebar, so with the sidebar gone it hung over empty space and
+     the search ran underneath it. Put it back in flow — it shrinks to the logo,
+     starts at the collapsed page margin (so it lines up with the page text), and
+     the search simply sits after it. */
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .container > .title {
+    position: static !important;
+    width: auto !important;
+    flex: 0 0 auto;
+    padding: 0 !important;
     padding-left: var(--aowl-padc, var(--aowl-gutter, 0px)) !important;
+    transform: none !important;
+  }
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content {
+    padding-left: 0 !important;
     padding-right: calc(var(--aowl-padc, var(--aowl-gutter, 0px)) + 32px) !important;
   }
 
