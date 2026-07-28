@@ -257,15 +257,16 @@ export default {
     }
     start()
 
-    // Clicking the row of a group you are ALREADY on collapses it (VitePress
-    // only ever expands from the row, and reserves collapsing for the caret).
-    // Re-clicking the current page should fold its sub-pages away.
+    // Clicking the row of a group you are ALREADY on TOGGLES it. VitePress only
+    // ever expands from the row and reserves collapsing for the caret, so
+    // re-clicking the current page did nothing. It has to swing both ways —
+    // collapse-only left you stuck with no way back except the caret.
     document.addEventListener('click', (e) => {
       const link = e.target.closest('.VPSidebar .VPSidebarItem > .item > .link')
       if (!link || e.target.closest('.repo-badge')) return
       const row = link.closest('.VPSidebarItem')
-      if (!row.classList.contains('collapsible') || row.classList.contains('collapsed')) return
-      if (!row.classList.contains('is-active')) return
+      // only the row you're already on — any other row should just navigate
+      if (!row.classList.contains('collapsible') || !row.classList.contains('is-active')) return
       const caret = row.querySelector(':scope > .item > .caret')
       if (!caret) return
       e.preventDefault()

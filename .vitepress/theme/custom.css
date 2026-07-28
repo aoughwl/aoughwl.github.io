@@ -221,7 +221,10 @@
   flex: 1 1 auto !important;
   min-width: 0;
   justify-content: flex-start !important;
-  padding-left: 0;
+  /* 32px === VPDoc's own horizontal padding, so the search box starts on the
+     page's first character. Pinned with !important because VitePress sets the
+     same value from a lazily-injected chunk whose cascade order isn't fixed. */
+  padding-left: 32px !important;
 }
 .VPNavBarSearch #local-search {
   width: 100%;
@@ -584,19 +587,20 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
     transition: transform .25s ease;
   }
 
-  /* The nav's content box is aligned to the DOC TEXT COLUMN, not to the raw
-     sidebar width: same left edge as the first character of the page, same
-     right edge as the end of the line. VPDoc adds 32px of its own padding on
-     top of VPContent's, so that 32 is added here too. Everything in the bar —
-     search, the separator, the social cluster — inherits that alignment. */
+  /* The nav's content box mirrors VPContent exactly — the SAME padding, not
+     padding+32. VitePress already puts 32px on .VPNavBarSearch (below), which is
+     precisely the 32px VPDoc adds, so the search lands on the doc's text column.
+     Adding 32 here as well double-counted it, and whether it actually doubled
+     depended on CSS injection order — hence "not exactly correct". The right
+     edge does take the +32, since nothing over there supplies it. */
   .VPNavBar.has-sidebar .content {
     margin-left: 0;
-    padding-left: calc(max(var(--aowl-pad, 32px), calc(var(--aowl-sb-box) + var(--aowl-sb-x, 0px) + var(--aowl-pad, 32px))) + 32px) !important;
+    padding-left: max(var(--aowl-pad, 32px), calc(var(--aowl-sb-box) + var(--aowl-sb-x, 0px) + var(--aowl-pad, 32px))) !important;
     padding-right: calc(var(--aowl-pad, 32px) + 32px) !important;
     transition: padding-left .25s ease, padding-right .25s ease;
   }
   html.aowl-sb-collapsed .VPNavBar.has-sidebar .content {
-    padding-left: calc(var(--aowl-padc, var(--aowl-gutter, 0px)) + 32px) !important;
+    padding-left: var(--aowl-padc, var(--aowl-gutter, 0px)) !important;
     padding-right: calc(var(--aowl-padc, var(--aowl-gutter, 0px)) + 32px) !important;
   }
 
@@ -660,20 +664,26 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
 
   /* The reading column was a fixed 688px, so widening or moving the sidebar only
      slid the same narrow strip of text around instead of reflowing it. Let it
-     take whatever room is left between the sidebar and the "on this page" rail,
-     down to a comfortable minimum — now the sidebar genuinely sets the text
-     measure. */
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content,
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content-container {
+     take whatever room is left between the sidebar and the "on this page" rail —
+     now the sidebar genuinely sets the text measure.
+
+     This applies COLLAPSED TOO. While it was scoped to the open state, the
+     collapsed layout kept the centred 688px column, so changing the collapsed
+     page margin visibly moved the nav bar and left the page untouched. */
+  .VPDoc.has-sidebar .content,
+  .VPDoc.has-sidebar .content-container {
     max-width: none !important;
     width: 100% !important;
     min-width: 0 !important;
   }
+  /* Breathing room between the text and the "On this page" rail. The aside
+     contributes 32px of its own padding; this is the other half of the gap. */
+  .VPDoc.has-sidebar.has-aside .content { padding-right: 32px !important; }
 }
 @media (min-width: 1280px) {
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .container { justify-content: flex-start !important; }
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { flex: 1 1 auto !important; }
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar.has-aside .aside { flex-grow: 0 !important; margin-left: auto !important; }
+  .VPDoc.has-sidebar .container { justify-content: flex-start !important; }
+  .VPDoc.has-sidebar .content { flex: 1 1 auto !important; }
+  .VPDoc.has-sidebar.has-aside .aside { flex-grow: 0 !important; margin-left: auto !important; }
 }
 /* Past 1440px VitePress clamps the page to --vp-layout-max-width and pads the
    leftovers away as dead gutters, which swallowed the sidebar's effect entirely
