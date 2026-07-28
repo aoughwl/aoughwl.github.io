@@ -26,6 +26,18 @@
 }
 .dark .vp-doc div[class*='language-'] { background: #050506; }
 
+/* The sidebar's real box width. VitePress sizes .VPSidebar as
+   --vp-sidebar-width up to 1440px, and past that widens it by the centering
+   gutter — so anything that wants to sit *beside* the sidebar has to use this,
+   not --vp-sidebar-width. Mirrors VPSidebar.vue's own rules exactly; being CSS
+   rather than a measurement, it is right at first paint. */
+:root { --aowl-sb-box: var(--vp-sidebar-width); }
+@media (min-width: 1440px) {
+  :root {
+    --aowl-sb-box: calc((100% - (var(--vp-layout-max-width) - 64px)) / 2 + var(--vp-sidebar-width) - 32px);
+  }
+}
+
 /* slightly wider sidebar than the 272px default */
 :root {
   --vp-sidebar-width: 300px;
@@ -97,7 +109,7 @@
 }
 
 /* ---- Custom nav links: right cluster — Playground | GitHub·Discord·Support - */
-.nav-right { display: inline-flex; align-items: center; gap: 2px; }
+.nav-right { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; }
 .nav-social {
   display: inline-flex;
   align-items: center;
@@ -105,6 +117,19 @@
   margin-left: 8px;
   padding-left: 12px;
   border-left: 1px solid var(--vp-c-divider); /* the kept separator */
+}
+
+/* Once the "On this page" rail exists (VitePress shows it at 1280px), the nav's
+   separator lines up with the rail's vertical rule: the social cluster becomes a
+   224px box — the aside-container width — with the outline's own 16px text
+   indent. Same x, top to bottom. Icons only, since the labels don't fit in it. */
+@media (min-width: 1280px) {
+  .nav-social {
+    flex: 0 0 224px;
+    margin-left: 0;
+    padding-left: 16px;
+  }
+  .nav-social .nav-txt { display: none; }
 }
 .nav-pg-link,
 .nav-social-link {
@@ -189,20 +214,23 @@
   .vp-doc th, .vp-doc td { padding: 6px 10px; white-space: nowrap; }
 }
 
-/* ---- Search: stretch it wide instead of a tiny pill ---- */
+/* ---- Search: fills the reading column, flush with the page text ----
+   No max-width and no left padding, so its left edge is the doc's left edge and
+   it grows to whatever the sidebar/margins leave — the same width as the page. */
 .VPNavBarSearch {
-  flex-grow: 1 !important;
+  flex: 1 1 auto !important;
+  min-width: 0;
   justify-content: flex-start !important;
-  padding-left: 24px;
+  padding-left: 0;
 }
 .VPNavBarSearch #local-search {
   width: 100%;
-  max-width: 460px;
+  max-width: none;
 }
 .VPNavBarSearch #local-search > button,
 .VPNavBarSearch .DocSearch-Button {
   width: 100% !important;
-  max-width: 460px !important;
+  max-width: none !important;
 }
 /* wider search modal input */
 .VPLocalSearchBox .search-bar { max-width: none; }
@@ -278,36 +306,30 @@
 /* icon-only badge (libraries / playground — label already IS the repo name) */
 .repo-badge.icon-only { padding: 2px 4px; }
 
-/* --- Generic per-page GitHub button (from front-matter `repo:`) ----------- */
-.repo-btn-row {
-  display: flex;
-  margin: 0 0 1.5rem;
+/* --- The page title IS the repo link (from front-matter `repo:`) ----------
+   A page named after a project links to that project: the <h1> is brand-violet
+   and clickable, with a GitHub mark beside it. Replaces the standalone button. */
+.repo-src { display: none; }
+
+.vp-doc h1 > .title-repo {
+  color: var(--vp-c-brand-1);
+  text-decoration: none !important;
+  transition: color 0.15s, opacity 0.15s;
 }
-.repo-btn {
+.vp-doc h1 > .title-repo:hover { color: var(--vp-c-brand-2); }
+.title-repo-ico {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 7px;
-  font-size: 0.82rem;
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--vp-c-text-2);
-  background: var(--vp-c-bg-soft);
-  text-decoration: none !important;
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+  vertical-align: baseline;
+  margin-left: 0.42em;
+  /* scale the mark with the heading instead of pinning it at 17px */
+  width: 0.62em;
+  height: 0.62em;
+  opacity: 0.55;
+  transition: opacity 0.15s;
 }
-.repo-btn:hover {
-  color: var(--vp-c-brand-1);
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
-}
-.repo-btn-ico { display: inline-flex; opacity: 0.9; }
-.repo-btn:hover .repo-btn-ico { opacity: 1; }
-.repo-btn-txt { font-family: var(--vp-font-family-mono); font-size: 0.78rem; }
-.repo-btn-arrow { display: inline-flex; opacity: 0.6; }
-.repo-btn:hover .repo-btn-arrow { opacity: 1; }
+.title-repo-ico svg { width: 100%; height: 100%; }
+.vp-doc h1 > .title-repo:hover .title-repo-ico { opacity: 1; }
 
 /* --- Sidebar: tighter than default, region labels as small-caps headers --- */
 .VPSidebar { padding-top: 1.25rem; }
@@ -536,9 +558,21 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
     transform: translateX(var(--aowl-sb-x, 0px));
     transition: transform .25s ease;
   }
+
+  /* The nav's content box is aligned to the DOC TEXT COLUMN, not to the raw
+     sidebar width: same left edge as the first character of the page, same
+     right edge as the end of the line. VPDoc adds 32px of its own padding on
+     top of VPContent's, so that 32 is added here too. Everything in the bar —
+     search, the separator, the social cluster — inherits that alignment. */
   .VPNavBar.has-sidebar .content {
-    margin-left: max(0px, var(--aowl-sb-x, 0px));
-    transition: margin-left .25s ease;
+    margin-left: 0;
+    padding-left: calc(max(var(--aowl-pad, 32px), calc(var(--aowl-sb-box) + var(--aowl-sb-x, 0px) + var(--aowl-pad, 32px))) + 32px) !important;
+    padding-right: calc(var(--aowl-pad, 32px) + 32px) !important;
+    transition: padding-left .25s ease, padding-right .25s ease;
+  }
+  html.aowl-sb-collapsed .VPNavBar.has-sidebar .content {
+    padding-left: calc(var(--aowl-padc, var(--aowl-gutter, 0px)) + 32px) !important;
+    padding-right: calc(var(--aowl-padc, var(--aowl-gutter, 0px)) + 32px) !important;
   }
 
   /* SIDEBAR + PAGE CONTENT — track x when open, collapse when collapsed */
@@ -553,14 +587,15 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
      the padding VitePress already uses to clear the sidebar: same visual result,
      inside the box, nothing overflows.
 
-     --aowl-sb-right is the sidebar's REAL right edge, measured in JS. It is not
-     --vp-sidebar-width: past 1440px VitePress widens the sidebar's box by the
-     centering gutter, so deriving the offset from the width variable left the
-     page sitting underneath the sidebar until you had dragged it a few hundred
-     pixels. --aowl-pad is the page margin (hold the handle + Ctrl + scroll). */
+     --aowl-sb-box is the sidebar's REAL box width, which is NOT
+     --vp-sidebar-width: past 1440px VitePress widens the box by the centering
+     gutter (see the :root block above). Deriving the offset from the width
+     variable alone left the page sitting underneath the sidebar until you had
+     dragged a few hundred pixels. --aowl-pad is the page margin (hold the
+     handle + Ctrl + scroll). */
   html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
     margin-left: 0 !important;
-    padding-left: max(var(--aowl-pad, 32px), calc(var(--aowl-sb-right, 300px) + var(--aowl-pad, 32px))) !important;
+    padding-left: max(var(--aowl-pad, 32px), calc(var(--aowl-sb-box) + var(--aowl-sb-x, 0px) + var(--aowl-pad, 32px))) !important;
     padding-right: var(--aowl-pad, 32px) !important;
     transition: padding-left .25s ease, padding-right .25s ease;
   }
@@ -571,10 +606,13 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
     opacity: 0;
     pointer-events: none;
   }
+  /* Collapsed gets its OWN page margin (hold the floating handle + scroll):
+     with no sidebar to sit beside, the comfortable gutter is a different number.
+     Unset falls back to VitePress's centering gutter, the old behaviour. */
   html.aowl-sb-collapsed .VPContent.has-sidebar {
     margin-left: 0 !important;
-    padding-left: var(--aowl-gutter, 0px) !important;
-    padding-right: var(--aowl-gutter, 0px) !important;
+    padding-left: var(--aowl-padc, var(--aowl-gutter, 0px)) !important;
+    padding-right: var(--aowl-padc, var(--aowl-gutter, 0px)) !important;
   }
   html.aowl-sb-collapsed .VPDoc.has-sidebar .container {
     margin-left: auto !important;
@@ -633,6 +671,16 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
 @media (prefers-reduced-motion: no-preference) and (min-width: 961px) {
   html.aowl-boot .VPSidebar { animation: aowl-in-fade .6s .06s ease both; }
 }
+/* The head script applies the SAVED sidebar offset pre-paint; theme JS then
+   re-clamps it against the live viewport. When those two differ the transitions
+   below animate the difference, which read as the logo starting mid-page and
+   sliding left on every load. Freeze the geometry transitions until boot is
+   over — the offset is then already settled. */
+html.aowl-boot .VPSidebar,
+html.aowl-boot .VPContent.has-sidebar,
+html.aowl-boot .VPNavBar.has-sidebar .container > .title,
+html.aowl-boot .VPNavBar.has-sidebar .content { transition: none !important; }
+
 @keyframes aowl-in-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes aowl-in-up   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes aowl-in-fade { from { opacity: 0; } to { opacity: 1; } }

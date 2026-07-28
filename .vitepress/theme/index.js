@@ -174,13 +174,10 @@ const RepoButton = {
       // front-matter carries `owner/repo` (e.g. aoughwl/requests) or a full URL.
       const label = repo.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '')
       const href = /^https?:\/\//.test(repo) ? repo : 'https://github.com/' + label
-      return h('div', { class: 'repo-btn-row' }, [
-        h('a', { class: 'repo-btn', href, target: '_blank', rel: 'noopener', 'aria-label': 'GitHub — ' + label, 'data-tip': 'View ' + label + ' on GitHub ↗' }, [
-          h('span', { class: 'repo-btn-ico', innerHTML: GITHUB_SVG }),
-          h('span', { class: 'repo-btn-txt' }, label),
-          h('span', { class: 'repo-btn-arrow', innerHTML: REDIRECT_SM }),
-        ]),
-      ])
+      // Not rendered as a button any more — this is just the carrier for the
+      // front-matter, and `linkifyTitle()` turns the page's own <h1> into the
+      // link. One GitHub affordance per page, in the title itself.
+      return h('div', { class: 'repo-src', 'data-href': href, 'data-label': label })
     }
   },
 }
@@ -214,15 +211,34 @@ export default {
   },
   enhanceApp({ router }) {
     if (typeof window === 'undefined') return
-    // Move the front-matter GitHub button from above the page title to directly
-    // under it — the position the hand-written hero button used to occupy.
-    const placeRepoButton = () => {
-      const row = document.querySelector('.repo-btn-row')
+    // The page title IS the repo link: `# aowlabi` becomes a clickable, brand-
+    // coloured heading with a GitHub mark beside it, driven by the page's
+    // `repo:` front-matter. Replaces the separate button that used to sit above
+    // (and then below) the heading.
+    const linkifyTitle = () => {
+      const src = document.querySelector('.repo-src')
       const h1 = document.querySelector('.vp-doc h1')
-      if (row && h1 && row.previousElementSibling !== h1) h1.after(row)
+      if (!h1 || h1.querySelector('.title-repo')) return
+      if (!src) return
+      const href = src.dataset.href
+      if (!href) return
+      const anchor = h1.querySelector('.header-anchor')
+      const a = document.createElement('a')
+      a.className = 'title-repo'
+      a.href = href
+      a.target = '_blank'
+      a.rel = 'noopener'
+      a.setAttribute('data-tip', 'View ' + src.dataset.label + ' on GitHub ↗')
+      // everything before the "#" permalink anchor is the title text
+      while (h1.firstChild && h1.firstChild !== anchor) a.appendChild(h1.firstChild)
+      const ico = document.createElement('span')
+      ico.className = 'title-repo-ico'
+      ico.innerHTML = GITHUB_SVG
+      a.appendChild(ico)
+      h1.insertBefore(a, anchor)
     }
 
-    const run = () => requestAnimationFrame(() => { decorateSidebar(); placeRepoButton(); fixHardLinks() })
+    const run = () => requestAnimationFrame(() => { decorateSidebar(); linkifyTitle(); fixHardLinks() })
     const orig = router.onAfterRouteChanged
     router.onAfterRouteChanged = (to) => { orig?.(to); run() }
     if (document.readyState !== 'loading') run()
@@ -287,23 +303,18 @@ export default {
     // Persisted sidebar geometry: POSITION offset (drag the handle) and WIDTH
     // (hold the handle + scroll wheel). VitePress reads --vp-sidebar-width;
     // --aowl-sb-x nudges the whole sidebar horizontally.
-    const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x', PKEY = 'aowl-pad'
+    const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x', PKEY = 'aowl-pad', PCKEY = 'aowl-pad-collapsed'
     const WMIN = 220, WMAX = 520
     const PMIN = 8, PMAX = 400, PDEF = 32
+    const PCMIN = 0, PCMAX = 700
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
 
-    // The page's left edge tracks the sidebar's REAL right edge, not
-    // --vp-sidebar-width: past 1440px VitePress widens the sidebar's box by the
-    // centering gutter, so the width variable alone left the page tucked under
-    // the sidebar. offsetWidth is the untransformed box, so add the x-offset.
-    const syncSidebarEdge = () => {
-      const sb = document.querySelector('.VPSidebar')
-      if (!sb) return
-      const x = parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
-      root.style.setProperty('--aowl-sb-right', Math.max(0, sb.offsetWidth + x) + 'px')
-    }
-    const applyWidth = (w) => { root.style.setProperty('--vp-sidebar-width', w + 'px'); syncSidebarEdge() }
-    const applyX = (x) => { root.style.setProperty('--aowl-sb-x', x + 'px'); syncSidebarEdge() }
+    // The page's left edge tracks the sidebar's real right edge, which is
+    // --aowl-sb-box (see custom.css) — NOT --vp-sidebar-width, because past
+    // 1440px VitePress widens the sidebar's box by the centering gutter. That
+    // derivation is pure CSS so it is correct at first paint.
+    const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
+    const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
     const applyPad = (p) => root.style.setProperty('--aowl-pad', p + 'px')
     const curPad = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-pad')) || PDEF
     const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
@@ -333,9 +344,6 @@ export default {
     const savedP = parseInt(localStorage.getItem(PKEY))
     applyPad(Number.isFinite(savedP) ? clamp(savedP, PMIN, PMAX) : PDEF)
     window.addEventListener('resize', raf(() => applyX(clampX(xIntent))), { passive: true })
-    // the sidebar's box width is breakpoint-dependent, so re-measure on resize
-    window.addEventListener('resize', raf(syncSidebarEdge), { passive: true })
-    syncSidebarEdge()
 
     const PANEL_CLOSE =
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
@@ -359,7 +367,7 @@ export default {
 
       // Plain click = hide. Horizontal drag = move the sidebar's position. Hold
       // the handle and scroll the wheel = resize its width.
-      let dragging = false, acted = false, startX = 0, startXOff = 0
+      let dragging = false, acted = false, startX = 0, startXOff = 0, wheelMode = null
       const onMove = (e) => {
         const dx = e.clientX - startX
         if (Math.abs(dx) > 3) acted = true      // it's a drag, not a plain click
@@ -370,7 +378,11 @@ export default {
       const onWheel = (e) => {
         e.preventDefault()
         acted = true
-        if (e.ctrlKey || e.metaKey) {
+        // Latch the mode on the FIRST wheel tick of a hold. Trackpad momentum
+        // keeps delivering events after Ctrl is released, which used to flip the
+        // gesture mid-scroll from "page margin" to "make the sidebar wider".
+        if (wheelMode === null) wheelMode = (e.ctrlKey || e.metaKey) ? 'pad' : 'width'
+        if (wheelMode === 'pad') {
           // hold + Ctrl + scroll = the PAGE MARGIN: the gap between the sidebar
           // and the text, and between the text and the right edge of the screen.
           const p = clamp(curPad() + (e.deltaY < 0 ? -12 : 12), PMIN, PMAX)
@@ -391,7 +403,7 @@ export default {
       }
       b.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return
-        dragging = true; acted = false; startX = e.clientX; startXOff = curX()
+        dragging = true; acted = false; wheelMode = null; startX = e.clientX; startXOff = curX()
         // Freeze transitions for the WHOLE hold so move + wheel are instant in
         // ANY order — adding this only after motion left a wheel-then-move
         // sequence animating each step (the "jumping" glitch). Removed on pointerup
@@ -419,25 +431,69 @@ export default {
       sb.dataset.aowlWheel = '1'
       sb.addEventListener('wheel', (e) => {
         if (!e.ctrlKey && !e.metaKey) return
+        // While the handle is HELD the gesture belongs to the handle's own
+        // listener (Ctrl there means page margins). Both used to fire on the
+        // same wheel event — the sidebar's bubbled first — so a margin adjust
+        // kept coming out as a width change.
+        if (root.classList.contains('aowl-sb-resizing')) return
         e.preventDefault()
         const w = clamp(curWidth() + (e.deltaY < 0 ? 22 : -22), WMIN, WMAX)
         applyWidth(w); localStorage.setItem(WKEY, String(w))
       }, { passive: false })
     }
-    const setupSidebar = () => { mountCollapse(); attachSidebarWheel(); syncSidebarEdge() }
+    const setupSidebar = () => { mountCollapse(); attachSidebarWheel() }
     setupSidebar()
     new MutationObserver(raf(setupSidebar)).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
     router.onAfterRouteChanged = (to) => { origRC?.(to); requestAnimationFrame(setupSidebar) }
 
     // Floating "show sidebar" handle — only visible while collapsed.
+    // Hold it and scroll to set the page margin used WHILE COLLAPSED — a value of
+    // its own, since the collapsed layout has no sidebar to sit beside and wants
+    // a wider gutter than the open one. Unset means "keep VitePress's centering
+    // gutter", which is what it used to always do.
     const expand = document.createElement('button')
     expand.className = 'aowl-sb-expand'
     expand.type = 'button'
-    expand.setAttribute('data-tip', 'Show sidebar')
-    expand.setAttribute('aria-label', 'Show sidebar')
+    expand.setAttribute('data-tip', 'Show sidebar · hold + scroll for page margins')
+    expand.setAttribute('aria-label', 'Show sidebar, or hold and scroll to set page margins')
     expand.innerHTML = PANEL_OPEN
-    expand.addEventListener('click', () => setCollapsed(false))
+    const curPadC = () => {
+      const v = parseInt(getComputedStyle(root).getPropertyValue('--aowl-padc'))
+      if (Number.isFinite(v)) return v
+      return parseInt(getComputedStyle(root).getPropertyValue('--aowl-gutter')) || 0
+    }
+    const savedPC = parseInt(localStorage.getItem(PCKEY))
+    if (Number.isFinite(savedPC)) root.style.setProperty('--aowl-padc', clamp(savedPC, PCMIN, PCMAX) + 'px')
+    {
+      let acted = false
+      const onWheel = (e) => {
+        e.preventDefault()
+        acted = true
+        const p = clamp(curPadC() + (e.deltaY < 0 ? -16 : 16), PCMIN, PCMAX)
+        root.style.setProperty('--aowl-padc', p + 'px')
+        localStorage.setItem(PCKEY, String(p))
+      }
+      const onUp = () => {
+        window.removeEventListener('pointerup', onUp)
+        window.removeEventListener('wheel', onWheel)
+        root.classList.remove('aowl-sb-resizing')
+        setTimeout(() => { acted = false }, 0)
+      }
+      expand.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return
+        acted = false
+        root.classList.add('aowl-sb-resizing')
+        window.addEventListener('pointerup', onUp)
+        window.addEventListener('wheel', onWheel, { passive: false })
+        e.preventDefault()
+      })
+      expand.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (acted) return   // it was a margin adjustment, not a request to expand
+        setCollapsed(false)
+      })
+    }
     document.body.appendChild(expand)
 
     // ===== rounded text-selection overlay ==================================
@@ -486,7 +542,7 @@ export default {
 
     // ===== shared UI chrome: fancy tooltips + right-click context menu ======
     initTooltips()
-    const ghUrl = () => { const a = document.querySelector('.repo-btn'); return a && a.getAttribute('href') }
+    const ghUrl = () => { const a = document.querySelector('.title-repo'); return a && a.getAttribute('href') }
     const copy = (t) => { try { navigator.clipboard && navigator.clipboard.writeText(t) } catch (_) {} }
     initContextMenu((target) => {
       const s = (window.getSelection && window.getSelection().toString()) || ''
