@@ -314,6 +314,13 @@ export default {
     // --aowl-sb-box (see custom.css) — NOT --vp-sidebar-width, because past
     // 1440px VitePress widens the sidebar's box by the centering gutter. That
     // derivation is pure CSS so it is correct at first paint.
+    // Collapsed, the logo is parked in the page's left margin — which needs its
+    // width. It's a wordmark image plus a label, so measure rather than guess.
+    const syncTitleWidth = () => {
+      const t = document.querySelector('.VPNavBarTitle .title')
+      if (t && t.offsetWidth) root.style.setProperty('--aowl-title-w', t.offsetWidth + 'px')
+    }
+
     const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
     const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
     const applyPad = (p) => root.style.setProperty('--aowl-pad', p + 'px')
@@ -442,7 +449,10 @@ export default {
         applyWidth(w); localStorage.setItem(WKEY, String(w))
       }, { passive: false })
     }
-    const setupSidebar = () => { mountCollapse(); attachSidebarWheel() }
+    const setupSidebar = () => { mountCollapse(); attachSidebarWheel(); syncTitleWidth() }
+    // the logo is an <img>; its width isn't final until it has decoded
+    window.addEventListener('load', syncTitleWidth)
+    window.addEventListener('resize', raf(syncTitleWidth), { passive: true })
     setupSidebar()
     new MutationObserver(raf(setupSidebar)).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
