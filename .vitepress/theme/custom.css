@@ -250,6 +250,31 @@
   .VPNavBarSearch .DocSearch-Button { width: auto !important; max-width: none !important; }
 }
 
+/* ---- Very narrow phones (<380px): the bar runs out of room ----
+   Search + theme toggle + three social icons don't fit at their normal size, so
+   the whole cluster steps down a notch rather than wrapping or clipping. */
+@media (max-width: 379px) {
+  .nav-social-link { padding: 0 3px !important; height: 30px; }
+  .nav-ico svg { width: 15px; height: 15px; }
+
+  .VPNavBarSearch #local-search > button,
+  .VPNavBarSearch .DocSearch-Button {
+    padding: 0 6px !important;
+    height: 30px !important;
+  }
+  .VPNavBarSearch .DocSearch-Search-Icon { width: 15px; height: 15px; }
+
+  /* the toggle is a fixed-size pill; scale it from the right so it stays
+     flush with the edge of the bar */
+  .VPNavBarAppearance .VPSwitch {
+    transform: scale(0.85);
+    transform-origin: right center;
+  }
+
+  /* claw back the last few pixels so the logo doesn't crowd the search */
+  .VPNavBarTitle .title img { max-height: 22px; }
+}
+
 /* ---- Sidebar rows: names left, badges in one right column, caret in a
    reserved right gutter (absolute, so it never pushes/indents content) ---- */
 .VPSidebarItem .item {
