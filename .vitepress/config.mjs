@@ -13,7 +13,7 @@ const sidebar = [
     items: [
       { text: 'Welcome', link: '/' },
       { text: 'Parity', link: '/docs/parity' },
-      { text: 'Daily Changelog', link: 'https://github.com/aoughwl' },
+      { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
     ],
   },
   {
@@ -240,6 +240,7 @@ export default defineConfig({
     ['script', {}, `(function(){try{var r=document.documentElement;
       var w=parseInt(localStorage.getItem('aowl-sb-width'));if(w>=220&&w<=520)r.style.setProperty('--vp-sidebar-width',w+'px');
       var x=parseInt(localStorage.getItem('aowl-sb-x'));if(x>=-1400&&x<=400)r.style.setProperty('--aowl-sb-x',x+'px');
+      var p=parseInt(localStorage.getItem('aowl-pad'));r.style.setProperty('--aowl-pad',(p>=8&&p<=400?p:32)+'px');
       r.classList.add('aowl-boot');}catch(e){}})();`],
   ],
 

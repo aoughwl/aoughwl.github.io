@@ -551,11 +551,18 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
   /* The page box is `width: 100%`, so offsetting it with a MARGIN pushed it past
      the right edge and the whole document scrolled sideways. Fold the offset into
      the padding VitePress already uses to clear the sidebar: same visual result,
-     inside the box, nothing overflows. */
+     inside the box, nothing overflows.
+
+     --aowl-sb-right is the sidebar's REAL right edge, measured in JS. It is not
+     --vp-sidebar-width: past 1440px VitePress widens the sidebar's box by the
+     centering gutter, so deriving the offset from the width variable left the
+     page sitting underneath the sidebar until you had dragged it a few hundred
+     pixels. --aowl-pad is the page margin (hold the handle + Ctrl + scroll). */
   html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
-    margin-left: 0;
-    padding-left: max(24px, calc(var(--vp-sidebar-width) + var(--aowl-sb-x, 0px)));
-    transition: padding-left .25s ease;
+    margin-left: 0 !important;
+    padding-left: max(var(--aowl-pad, 32px), calc(var(--aowl-sb-right, 300px) + var(--aowl-pad, 32px))) !important;
+    padding-right: var(--aowl-pad, 32px) !important;
+    transition: padding-left .25s ease, padding-right .25s ease;
   }
 
   /* --- collapsed: sidebar slides off, page content reclaims + re-centers --- */
@@ -605,15 +612,11 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { flex: 1 1 auto !important; }
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar.has-aside .aside { flex-grow: 0 !important; margin-left: auto !important; }
 }
-/* Past 1440px VitePress clamps the whole page to --vp-layout-max-width and pads
-   the leftovers away as dead gutters — which swallowed the sidebar's effect
-   entirely on a wide screen. While the sidebar is open, use the real viewport. */
-@media (min-width: 1440px) {
-  html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
-    padding-right: 32px !important;
-    padding-left: max(24px, calc(var(--vp-sidebar-width) + var(--aowl-sb-x, 0px))) !important;
-  }
-}
+/* Past 1440px VitePress clamps the page to --vp-layout-max-width and pads the
+   leftovers away as dead gutters, which swallowed the sidebar's effect entirely
+   on a wide screen. The measured-edge rule above already covers every breakpoint
+   (it carries !important precisely to beat this one), so nothing extra is needed
+   here — the page margin is --aowl-pad, under the user's control. */
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
    keeps its darker line. */

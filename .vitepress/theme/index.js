@@ -287,11 +287,25 @@ export default {
     // Persisted sidebar geometry: POSITION offset (drag the handle) and WIDTH
     // (hold the handle + scroll wheel). VitePress reads --vp-sidebar-width;
     // --aowl-sb-x nudges the whole sidebar horizontally.
-    const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x'
+    const WKEY = 'aowl-sb-width', XKEY = 'aowl-sb-x', PKEY = 'aowl-pad'
     const WMIN = 220, WMAX = 520
+    const PMIN = 8, PMAX = 400, PDEF = 32
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
-    const applyWidth = (w) => root.style.setProperty('--vp-sidebar-width', w + 'px')
-    const applyX = (x) => root.style.setProperty('--aowl-sb-x', x + 'px')
+
+    // The page's left edge tracks the sidebar's REAL right edge, not
+    // --vp-sidebar-width: past 1440px VitePress widens the sidebar's box by the
+    // centering gutter, so the width variable alone left the page tucked under
+    // the sidebar. offsetWidth is the untransformed box, so add the x-offset.
+    const syncSidebarEdge = () => {
+      const sb = document.querySelector('.VPSidebar')
+      if (!sb) return
+      const x = parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
+      root.style.setProperty('--aowl-sb-right', Math.max(0, sb.offsetWidth + x) + 'px')
+    }
+    const applyWidth = (w) => { root.style.setProperty('--vp-sidebar-width', w + 'px'); syncSidebarEdge() }
+    const applyX = (x) => { root.style.setProperty('--aowl-sb-x', x + 'px'); syncSidebarEdge() }
+    const applyPad = (p) => root.style.setProperty('--aowl-pad', p + 'px')
+    const curPad = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-pad')) || PDEF
     const curWidth = () => parseInt(getComputedStyle(root).getPropertyValue('--vp-sidebar-width')) || 300
     const curX = () => parseInt(getComputedStyle(root).getPropertyValue('--aowl-sb-x')) || 0
     // Horizontal-offset limits from the sidebar's ACTUAL rendered inset — its
@@ -316,7 +330,12 @@ export default {
     const savedX = parseInt(localStorage.getItem(XKEY))
     let xIntent = Number.isFinite(savedX) ? savedX : 0
     applyX(clampX(xIntent))
+    const savedP = parseInt(localStorage.getItem(PKEY))
+    applyPad(Number.isFinite(savedP) ? clamp(savedP, PMIN, PMAX) : PDEF)
     window.addEventListener('resize', raf(() => applyX(clampX(xIntent))), { passive: true })
+    // the sidebar's box width is breakpoint-dependent, so re-measure on resize
+    window.addEventListener('resize', raf(syncSidebarEdge), { passive: true })
+    syncSidebarEdge()
 
     const PANEL_CLOSE =
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="14.5 9 11.5 12 14.5 15"/></svg>'
@@ -334,7 +353,7 @@ export default {
       const b = document.createElement('button')
       b.className = 'aowl-sb-collapse'
       b.type = 'button'
-      b.setAttribute('data-tip', 'Click to hide · drag to move · Ctrl + scroll (or hold + scroll) to resize')
+      b.setAttribute('data-tip', 'Click to hide · drag to move · hold + scroll to resize · hold + Ctrl + scroll for page margins')
       b.setAttribute('aria-label', 'Hide, move, or resize sidebar')
       b.innerHTML = PANEL_CLOSE
 
@@ -350,9 +369,16 @@ export default {
       // changes, so a button-scoped wheel listener falls out from under the cursor
       const onWheel = (e) => {
         e.preventDefault()
+        acted = true
+        if (e.ctrlKey || e.metaKey) {
+          // hold + Ctrl + scroll = the PAGE MARGIN: the gap between the sidebar
+          // and the text, and between the text and the right edge of the screen.
+          const p = clamp(curPad() + (e.deltaY < 0 ? -12 : 12), PMIN, PMAX)
+          applyPad(p); localStorage.setItem(PKEY, String(p))
+          return
+        }
         const w = clamp(curWidth() + (e.deltaY < 0 ? 14 : -14), WMIN, WMAX)
         applyWidth(w); localStorage.setItem(WKEY, String(w))
-        acted = true
       }
       const onUp = () => {
         window.removeEventListener('pointermove', onMove)
@@ -398,7 +424,7 @@ export default {
         applyWidth(w); localStorage.setItem(WKEY, String(w))
       }, { passive: false })
     }
-    const setupSidebar = () => { mountCollapse(); attachSidebarWheel() }
+    const setupSidebar = () => { mountCollapse(); attachSidebarWheel(); syncSidebarEdge() }
     setupSidebar()
     new MutationObserver(raf(setupSidebar)).observe(document.body, { childList: true, subtree: true })
     const origRC = router.onAfterRouteChanged
