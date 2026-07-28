@@ -6,6 +6,68 @@ Development updates from the aoughwl toolchain. Newest first.
 
 ---
 
+## 2026-07-28 — aowlsem: generic ref objects reach byte-identity, and value-object method dispatch
+
+*Tuesday, July 28, 2026*
+
+[aowlsem](/docs/aowlsem) — the from-scratch semantic checker that replaces the
+reference compiler's `nimsem` — spent the day closing real gaps against the
+reference's own typed output. The method is deliberately low-tech: write a small,
+*valid* program that exercises one language feature, run both checkers, and diff
+the results token-for-token. Every difference is either a bug to fix or a
+deliberate lowering choice to record. It is now **~20.8k lines** of self-hosted
+Nimony across **700 commits**, with the byte-exact differential corpus holding at
+**498/498** modules and `std/system` checking clean.
+
+### Generic `ref object` — the last mile to byte-identical
+
+Yesterday these instantiated *structurally*; today they match the reference
+**byte for byte**. Three residual differences fell:
+
+- **Construction emits a heap allocation, not a value.** `Container[int](items: …)`
+  now lowers to `(newobj (ref Container.Obj … ) …)` — a real `ref` allocation —
+  instead of a stack `oconstr` of the value half.
+- **Per-instance lifetime hooks carry no module suffix.** A generic instance is
+  content-addressed already (its hash makes it globally unique), so its synthesized
+  `=destroy`/`=copy`/… names must *not* also bake in the defining module — an
+  inconsistency that also kept the comparison from folding the hash.
+- **Typevar numbering.** The underlying object half now numbers its type parameter
+  `T.1` (the alias took `T.0`), matching how the reference counts a `ref object`'s
+  two synthesized declarations.
+
+### Value objects that carry methods
+
+The standout fix. An inheritable object with managed fields that *also* declares
+`method`s — `type Animal = object of RootObj … method sound(a: Animal)` — was
+getting the full four-hook lifetime-pragma form. The reference emits **only** the
+user-method vtable table: a type with a real vtable routes its own destruction
+through the vtable's destroy slot (filled in a later pass), so the checker lists
+just the methods. The discriminator turned out to be the *presence of a user
+method*, not inheritability — an identical object with no method still gets its
+hooks. A common polymorphism pattern, now byte-identical.
+
+### And a run of smaller parity fixes
+
+- **Generic variants resolve their branch fields.** `o.val` inside a generic
+  `unwrap[T](r: Result[T])` now finds the named-variant branch field instead of
+  emitting a bare, unmangled name.
+- **`{.borrow.}` operators that return a distinct type** convert their result back:
+  `+`(Celsius, Celsius) computes in `float` and wraps the answer in `(dconv Celsius …)`.
+- **`untyped`/`typed` template parameters are wildcards** — a `template twice(x: untyped)`
+  now *inlines* at the call site instead of emitting a spurious call to the template.
+- **Bool `case` labels** emit the literal `(true)`/`(false)` tags rather than
+  resolving to the bool enum's member symbols.
+
+Earlier in the day the same grind landed lambdas/anonymous procs as expressions,
+cross-scope iterator resolution (so a local variable named like an iterator no
+longer hides it), custom `[]`/`[]=`/`{}`/`contains` operators, multi-index
+`x[i, j]` read and write (two assertion crashes fixed), and a batch of
+cross-module import-resolution fixes in the driver. Throughout, the three
+regression gates stayed green: **498/498** corpus, **64/64** diagnostics, and
+`std/system` within its expected seven-line window.
+
+---
+
 ## 2026-07-27 — A progressive debugger for aowli
 
 *Monday, July 27, 2026*
