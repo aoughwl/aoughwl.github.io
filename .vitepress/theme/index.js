@@ -148,10 +148,23 @@ function decorateSidebar() {
   })
 }
 
+// ---- links that must leave the SPA ---------------------------------------
+// The playground is a separate static app under /playground/, not a VitePress
+// route. VitePress's router intercepts every same-origin <a> and tries a
+// client-side navigation, which lands on the 404 page. Any anchor carrying a
+// `target` attribute is skipped by that interceptor, so stamping `target="_self"`
+// turns these back into real, same-tab navigations.
+function fixHardLinks() {
+  document.querySelectorAll('a[href*="/playground"]').forEach((a) => {
+    if (!a.hasAttribute('target')) a.setAttribute('target', '_self')
+  })
+}
+
 // ---- generic per-page GitHub button --------------------------------------
 // Every doc page gets its repo button for free: just add `repo: aoughwl/<name>`
 // (or a full URL) to the page's YAML front-matter. No per-page markup, no
-// hand-written links. Rendered at the top of the doc via the `doc-before` slot.
+// hand-written links. Rendered via the `doc-before` slot, then moved to sit
+// directly under the page title by `placeRepoButton()`.
 const RepoButton = {
   setup() {
     const { frontmatter } = useData()
@@ -201,7 +214,15 @@ export default {
   },
   enhanceApp({ router }) {
     if (typeof window === 'undefined') return
-    const run = () => requestAnimationFrame(decorateSidebar)
+    // Move the front-matter GitHub button from above the page title to directly
+    // under it — the position the hand-written hero button used to occupy.
+    const placeRepoButton = () => {
+      const row = document.querySelector('.repo-btn-row')
+      const h1 = document.querySelector('.vp-doc h1')
+      if (row && h1 && row.previousElementSibling !== h1) h1.after(row)
+    }
+
+    const run = () => requestAnimationFrame(() => { decorateSidebar(); placeRepoButton(); fixHardLinks() })
     const orig = router.onAfterRouteChanged
     router.onAfterRouteChanged = (to) => { orig?.(to); run() }
     if (document.readyState !== 'loading') run()
@@ -219,6 +240,22 @@ export default {
       run()
     }
     start()
+
+    // Clicking the row of a group you are ALREADY on collapses it (VitePress
+    // only ever expands from the row, and reserves collapsing for the caret).
+    // Re-clicking the current page should fold its sub-pages away.
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('.VPSidebar .VPSidebarItem > .item > .link')
+      if (!link || e.target.closest('.repo-badge')) return
+      const row = link.closest('.VPSidebarItem')
+      if (!row.classList.contains('collapsible') || row.classList.contains('collapsed')) return
+      if (!row.classList.contains('is-active')) return
+      const caret = row.querySelector(':scope > .item > .caret')
+      if (!caret) return
+      e.preventDefault()
+      e.stopPropagation()
+      caret.click()
+    }, true)
 
     // --- scroll state: lets the top bar declutter as you leave the top ---
     const root = document.documentElement

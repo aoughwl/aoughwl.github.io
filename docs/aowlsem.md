@@ -72,72 +72,87 @@ With `--path:` and `--nimcache:` set, `aowlsem m` resolves the module's whole
 import graph itself — a real drop-in for `nimsem`. Full command/flag reference and
 the programmatic `semcheck*` entry point are on the [CLI & API page](aowlsem/cli).
 
-## Capabilities
+## What it checks
 
-Checked construct-by-construct; the `tests/corpus/` suite (498 modules, all
-byte-exact against the reference oracle) is the concrete list. What each construct
-lowers to — with worked `.p.aif → .s.aif` examples — is catalogued on the
-[Lowering reference](aowlsem/lowering).
+Everything below is checked construct by construct against the reference
+compiler's own output. The `tests/corpus/` suite — 498 modules, all byte-exact —
+is the concrete list. What each construct lowers to, with worked
+`.p.aif → .s.aif` examples, is on the [Lowering reference](aowlsem/lowering).
 
-**Declarations & bindings**
-: `let` / `var` / `const` (global and local); type inference from literals,
-identifiers, calls and operators; explicit-type bindings; typed constants (`(suf
-v "i64")`); compile-time integer const-folding; multi-assignment; tuple unpacking
-in `let`/`var`.
+#### Declarations and bindings
 
-**Types**
-: `int`/`float`/`bool`/`char`; sized-int aliases (`int8`, `uint`, `int64`, `byte`
-→ `(i N)`/`(u N)`) with explicit `hconv` narrowing; `string`; `array[N,T]` with
-indexing, `len`, `high`, `low`; `seq[T]` (`@[]`, indexing, index-assign, `len`,
-iteration, `add`); tuples (positional and named); `distinct` types and
-conversions; `enum` (with synthesized `$`); `set` operations; `HSlice` (`a ..<
-b`); `ptr`/pointer casts; `sizeof`.
+`let` / `var` / `const`, global and local. Type inference from literals,
+identifiers, calls and operators. Explicit-type bindings, typed constants
+(`(suf v "i64")`), compile-time integer const-folding, multi-assignment, and
+tuple unpacking in `let` / `var`.
 
-**Operators & conversions**
-: arithmetic `+ - * div mod` and float `/`; bitwise `and`/`or`/`xor`, shifts
-`shl`/`shr`; comparisons `< <= == > >= !=`; boolean `and`/`or`/`not`; unary `-`,
-`abs`; compound assignment; `ord`, `succ`/`pred`, `$`, int/float conversions;
-string concat, equality, indexing, index-assign, iteration.
+#### Types
 
-**Control flow**
-: `if`/`elif`/`else` (statement and expression); `case`/`of`/`else` with range
-branches; `while`; `for` over ranges, sequences and strings; `break`/`continue`;
-labelled `block`; `defer`; `try`/`except`/`finally` and `except T as e`;
-`return`; `when` folded at compile time (`defined`, `x is T`, `typeof`).
+`int`, `float`, `bool`, `char`. Sized-int aliases (`int8`, `uint`, `int64`,
+`byte` → `(i N)` / `(u N)`) with explicit `hconv` narrowing. `string`.
+`array[N,T]` with indexing, `len`, `high`, `low`. `seq[T]` — `@[]`, indexing,
+index-assign, `len`, iteration, `add`. Tuples, positional and named. `distinct`
+types and their conversions. `enum`, with a synthesized `$`. `set` operations.
+`HSlice` (`a ..< b`). `ptr` and pointer casts. `sizeof`.
 
-**Routines**
-: procs with parameters, return types and implicit `result`; overload resolution
-by arity and parameter type; `var` parameters (`(mut T)` + auto-deref); named
-arguments; UFCS (with and without parens); operator definitions; `{.borrow.}`
-operators (including distinct-return conversion); recursion, mutual recursion,
-nested procs; forward references; procs and iterators as values; anonymous proc
-literals (lambdas); `importc` procs.
+#### Operators and conversions
 
-**Generics**
-: generic routine and `object` declaration + instantiation (inference,
-multi-typevar inference, callback/proc-type inference, and explicit type args);
-instantiation of imported generics; nested instantiation; instance memoisation.
-Generic **sum types** instantiate and construct by inference (`Some(99)` →
-`Option[int]`; `Either[int,string]`; `Pair(first:1,second:2)` → `Pair[int]`),
+Arithmetic `+ - * div mod` and float `/`. Bitwise `and` / `or` / `xor` and the
+shifts `shl` / `shr`. Comparisons `< <= == > >= !=`. Boolean `and` / `or` /
+`not`. Unary `-` and `abs`. Compound assignment. `ord`, `succ` / `pred`, `$`,
+int↔float conversions. String concat, equality, indexing, index-assign and
+iteration.
+
+#### Control flow
+
+`if` / `elif` / `else` as both statement and expression. `case` / `of` / `else`
+including range branches. `while`. `for` over ranges, sequences and strings.
+`break` / `continue`. Labelled `block`. `defer`. `try` / `except` / `finally`,
+including `except T as e`. `return`. `when`, folded at compile time — `defined`,
+`x is T`, `typeof`.
+
+#### Routines
+
+Procs with parameters, return types and an implicit `result`. Overload
+resolution by arity and parameter type. `var` parameters (`(mut T)` plus
+auto-deref). Named arguments. UFCS, with and without parens. Operator
+definitions and `{.borrow.}` operators, including distinct-return conversion.
+Recursion, mutual recursion and nested procs. Forward references. Procs and
+iterators as values, anonymous proc literals, and `importc` procs.
+
+#### Generics
+
+Generic routine and `object` declaration and instantiation: inference,
+multi-typevar inference, callback and proc-type inference, and explicit type
+arguments. Imported generics instantiate; nested instantiation works; instances
+are memoised.
+
+Generic **sum types** instantiate and construct by inference — `Some(99)` →
+`Option[int]`, `Either[int,string]`, `Pair(first:1,second:2)` → `Pair[int]` —
 with named-variant branch fields resolving inside generic bodies. Generic **`ref
-object`** types emit both halves (ref-alias + `.Obj`) with correct per-instance
-identity, lifetime hooks, and typevar numbering, and construct the concrete
-instance.
+object`** types emit both halves (the ref alias and `.Obj`) with correct
+per-instance identity, lifetime hooks and typevar numbering, and construct the
+concrete instance.
 
-**Objects, ref & inheritance**
-: `object` declarations, field access/assignment, nesting, params/returns,
-default fill, empty construction; `ref object`; **anonymous variants (sum
-types)** with `of`-label constructors and `of Label(field)` pattern matching;
-object and `ref` inheritance across multiple levels; `method` declarations with
-dynamic dispatch and overrides (value-object methods emit a vtable-only pragma).
+#### Objects, refs and inheritance
 
-**Templates & macros**
-: `template` expansion (inline substitution; `untyped`/`typed` wildcard params);
-`macro` declaration and expansion via compile-time evaluation.
+`object` declarations with field access and assignment, nesting, use as
+parameters and return types, default fill and empty construction. `ref object`.
+Anonymous variants (sum types) with `of`-label constructors and
+`of Label(field)` pattern matching. Object and `ref` inheritance across multiple
+levels. `method` declarations with dynamic dispatch and overrides — value-object
+methods emit a vtable-only pragma.
 
-**Modules**
-: `import` resolution against checked `.s.aif` (with `from X import`, `import X
-except`, transitive re-exports); `include` inlining; `system` loading.
+#### Templates and macros
+
+`template` expansion by inline substitution, with `untyped` / `typed` wildcard
+params. `macro` declaration and expansion via compile-time evaluation.
+
+#### Modules
+
+`import` resolution against checked `.s.aif`, including `from X import`,
+`import X except` and transitive re-exports. `include` inlining. `system`
+loading.
 
 ## Optimizer
 

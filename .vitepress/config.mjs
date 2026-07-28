@@ -13,7 +13,7 @@ const sidebar = [
     items: [
       { text: 'Welcome', link: '/' },
       { text: 'Parity', link: '/docs/parity' },
-      { text: 'Blog', link: '/blog' },
+      { text: 'Daily Changelog', link: 'https://github.com/aoughwl' },
     ],
   },
   {
@@ -40,7 +40,17 @@ const sidebar = [
           { text: 'Browser & JavaScript', link: '/docs/aowlparser/browser' },
         ],
       },
-      { text: 'Sem — aowlsem', link: '/docs/aowlsem' },
+      {
+        text: 'Sem — aowlsem',
+        link: '/docs/aowlsem',
+        collapsed: true,
+        items: [
+          { text: 'Architecture', link: '/docs/aowlsem/architecture' },
+          { text: 'Diagnostics', link: '/docs/aowlsem/diagnostics' },
+          { text: 'CLI & API', link: '/docs/aowlsem/cli' },
+          { text: 'Lowering reference', link: '/docs/aowlsem/lowering' },
+        ],
+      },
       { text: 'Hexer — aowlhexer', link: '/docs/aowlhexer' },
     ],
   },
@@ -172,7 +182,9 @@ export default defineConfig({
     'A ground-up, self-hosted reimplementation of the Nimony toolchain — parser, semantic checker, lowering, and code generators — open at every seam and running in your browser.',
   lang: 'en-US',
   cleanUrls: true,
-  appearance: 'dark', // default dark, but the theme toggle stays available
+  // Follow the OS/browser setting (iOS + macOS dark mode, Windows, Android) on
+  // first visit; the toggle still wins and is remembered after that.
+  appearance: true,
   ignoreDeadLinks: true,
   lastUpdated: false,
 
@@ -203,7 +215,13 @@ export default defineConfig({
     ['link', { rel: 'manifest', href: '/site.webmanifest' }],
     ['meta', { name: 'apple-mobile-web-app-title', content: 'aoughwl' }],
     ['meta', { name: 'application-name', content: 'aoughwl' }],
-    ['meta', { name: 'theme-color', content: '#0a0a0b' }],
+    // Browser/OS chrome colour follows the system theme, so iOS Safari's status
+    // bar and address bar match the page instead of always going near-black.
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#ffffff' }],
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0a0a0b' }],
+    ['meta', { name: 'color-scheme', content: 'light dark' }],
+    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
     // --- Open Graph / Twitter (link previews on Discord, Slack, X, iMessage) ---
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'aoughwl' }],

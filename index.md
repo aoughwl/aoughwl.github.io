@@ -1,32 +1,35 @@
+---
+repo: aoughwl
+---
+
 # aoughwl
 
-A **from-scratch reimplementation of the entire Nim / Nimony toolchain** —
-parser, semantic checker, lowering, code generators — with one audacious goal:
-**byte-for-byte identical output** to the originals. Not a fork,
-not a wrapper; every stage is rewritten and held to the real compiler's exact
-bytes by a differential harness. It's written *in* Nimony, self-hosting, **open at
-every seam**, and runs where the classic compiler can't — **right in your
-browser**. → **[See how close we are](/docs/parity)**
+aoughwl is a rewrite of the Nim / Nimony toolchain — parser, semantic checker,
+lowering, code generators — done from scratch, in Nimony, and held to one
+standard: **the output should match the original byte for byte**. Every stage is
+diffed against the real compiler's own output, so "close enough" never counts.
+It self-hosts, every stage is a separate tool, and the whole front end runs in a
+browser. → **[See how close we are](/docs/parity)**
 
 <div class="hero-actions">
-<a href="https://aoughwl.github.io/playground/">▶ Open the Playground</a>
-<a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>
+<a href="https://aoughwl.github.io/playground/" target="_self">▶ Open the Playground</a>
 </div>
 
-> **Latest — Jul 27, 2026:** a **progressive debugger** for aowli — run once, pause, step, and inspect the live frame on demand, plus budgeted value rendering and path-addressable `expand`. **[Read the update →](/blog)**
+> **Latest — Jul 27, 2026:** a **progressive debugger** for aowli — run it once,
+> then pause, step, and inspect the live frame on demand, with budgeted value
+> rendering and path-addressable `expand`. **[Read the update →](/blog)**
 
 ---
 
-## Not one binary — a pipeline you can see through
+## A pipeline, not a binary
 
-The classic Nim / Nimony toolchain reaches you as a **built compiler**: parsing,
-semantic checking, lowering, and code generation all happen *inside* one program.
-Real, well-defined stages — but internal. The intermediate results live in memory,
-the pass boundaries aren't something you can hold, and swapping a stage means
-patching and rebuilding the compiler. It works, but it's a black box.
+The stock Nim / Nimony compiler is one program. Parsing, checking, lowering and
+code generation are real stages with real boundaries, but those boundaries only
+exist in memory: you can't hold an intermediate result, and swapping a stage
+means patching and rebuilding the compiler.
 
-aowlmony breaks the same job into **independent tools, one per stage**, with a
-stable, textual IR flowing between every one:
+aowlmony splits the same job into one tool per stage, with a textual IR passing
+between them:
 
 ```
  .nim / .aowl ─► aowlparser ─► aowlsem ─► aowlhexer ─┬─ aowlc  → C / native
@@ -35,30 +38,37 @@ stable, textual IR flowing between every one:
                                                       └─ aowlts · aowlpy → TS / Python
 ```
 
-The IR at every seam is **AIF — byte-for-byte Nimony's NIF**. Because the seams
-are a real format on disk, not a private in-memory structure, things fall out a
-sealed binary can't give you:
+That IR is **AIF, which is byte-for-byte Nimony's NIF**. Because each boundary is
+a file rather than a private data structure:
 
-- **Inspect anything** — stop after any stage and read exactly what it produced; the IR is text, nothing hidden between passes.
-- **Run a stage on its own** — `aowlparser` parses, `aowli` interprets; each is a tool you invoke by itself, on its own input.
-- **Swap a stage** — every stage speaks the same AIF (≡ NIF), so drop one of ours in *beside* nimony's own (`nifler` / `nimsem` / `hexer`), or replace it with your own, without touching the rest.
-- **Runs where a packed binary can't** — most notably the **browser**: parser, checker, and interpreter compile to JavaScript and run client-side.
+- **You can read it.** Stop after any stage and look at exactly what it produced.
+- **You can run one stage alone.** `aowlparser` parses. `aowli` interprets. Each
+  takes its own input and writes its own output.
+- **You can substitute a stage.** Ours and Nimony's own (`nifler` / `nimsem` /
+  `hexer`) speak the same format, so they mix — or you write your own.
+- **It runs in places a compiled binary doesn't.** Parser, checker and
+  interpreter all compile to JavaScript and run client-side.
 
-Same programs, same output — Nim and Nimony code behaves identically — but the
-machine that produces it is open at every joint instead of sealed shut. The
-interop contract is written up in **[AIF ≡ NIF](/docs/aif)**.
+The programs behave the same either way. The difference is what you can get at
+while they compile. The interop contract is written up in
+**[AIF ≡ NIF](/docs/aif)**.
 
-## What you get that stock Nimony doesn't
+## What this gives you over stock Nimony
 
-- 🌐 **Runs in the browser** — parse → semcheck → run, fully client-side. **[Try it live →](https://aoughwl.github.io/playground/)**
-- 🎯 **Byte-exact parity** — `aowlparser` is proven against `nifler` by a differential harness over the **entire** standard library.
-- 🧩 **Many targets** — native **C**, native/faithful **JavaScript**, **WASM**, an **interpreter + bytecode VM**, plus idiomatic **TypeScript** and **Python**.
-- 📚 **A fuller stdlib** — a complete networking stack (TLS 1.3, HTTP/1.1 + HTTP/2, WebSocket, HTTP/3) and a typed HTML/CSS layer.
-- ⚡ **Instant incremental re-checks** — the checker is warm and fast enough for live, as-you-type editor tooling.
+- **It runs in the browser.** Parse, check and run, entirely client-side.
+  **[Try it →](https://aoughwl.github.io/playground/)**
+- **Byte-exact parity, measured.** `aowlparser` is diffed against `nifler` across
+  the whole standard library.
+- **More targets.** C, native and faithful JavaScript, WASM, an interpreter and a
+  bytecode VM, plus TypeScript and Python.
+- **A bigger stdlib.** A full networking stack — TLS 1.3, HTTP/1.1 and HTTP/2,
+  WebSocket, HTTP/3 — and a typed HTML/CSS layer.
+- **Fast re-checks.** The checker stays warm, which is what makes as-you-type
+  editor tooling possible.
 
 ---
 
-## The pipeline — front to back
+## The pipeline
 
 | Stage | Repo | What it is |
 |:--|:--|:--|
@@ -73,35 +83,35 @@ interop contract is written up in **[AIF ≡ NIF](/docs/aif)**.
 
 | Target | Repo | Notes |
 |:--|:--|:--|
-| **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(public binaries)* | tree-walker **+ bytecode VM**, differentially tested against native; the binaries are public even though the source stays private. |
-| **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc` — **GC-free**, ARC baked in. |
+| **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(public binaries)* | tree-walker and bytecode VM, diffed against native; source is private, the binaries are not. |
+| **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc`. No GC; ARC is baked in. |
 | **JavaScript** | [aowljs](/docs/aowljs) | typed IR → native JS; near-native speed, readable output. |
 | **JS / WASM** | [aowlweb](/docs/aowlweb) | the faithful browser runtime, with an async runtime. |
 | **TypeScript** | [aowlts](/docs/aowlts) | idiomatic TypeScript. |
 | **Python** | [aowlpy](/docs/aowlpy) | idiomatic Python. |
 
-## Tools & libraries
+## Tools and libraries
 
 | Project | What it is |
 |:--|:--|
-| **[▶ Playground](https://aoughwl.github.io/playground/)** | the whole toolchain in your browser — edit, parse, type-check, run. |
+| **[▶ Playground](https://aoughwl.github.io/playground/)** | the toolchain in your browser — edit, parse, type-check, run. |
 | **[aowlcode](/docs/aowlcode)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain (`trace`/`debug` backed by the public [aowli-release](/aowli-release)). |
-| **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension, live as-you-type diagnostics and type-directed completion. |
-| **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes & editor integration built on `aowlparser`'s `check`. |
-| **[aowlfmt](/docs/aowlfmt)** | verified layout formatter — proves it changed nothing but whitespace before it touches your file. |
-| **[aowllens](/docs/aiflens)** | NIF lens: reads typed `.s.nif` artifacts and emits JSON (decls, outline, members, type-at-position) that powers the LSP. |
+| **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension: as-you-type diagnostics, type-directed completion. |
+| **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes and editor integration built on `aowlparser`'s `check`. |
+| **[aowlfmt](/docs/aowlfmt)** | layout formatter that proves it changed nothing but whitespace before writing your file. |
+| **[aowllens](/docs/aiflens)** | reads typed `.s.nif` and emits JSON — decls, outline, members, type-at-position — which is what the LSP runs on. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |
 
 ---
 
-## The private side
+## What's private, and why
 
-The **lowering (aowlhexer)**, along with the
-JavaScript / TypeScript / WASM / Python backend repos, are **kept private for
-now** — their **docs are public here**, and access is granted on request (just
-ask). The playground moves onto the new sem + hexing shortly.
+The lowering stage ([aowlhexer](/docs/aowlhexer)) and the
+JavaScript / TypeScript / WASM / Python backend repos are private for now. Their
+docs are public here and access is granted on request — just ask. The playground
+moves onto the new sem and hexing shortly.
 
-And this toolchain is the **floor, not the building**. The full aoughwl platform it
-was built to carry opens up as the stack matures. Curious? Reach out on
-**[Discord](https://discord.gg/nxa3W7w4rJ)** (`timbuktu_guy`).
+The toolchain is groundwork. The larger aoughwl platform it was built for opens
+up as the stack matures. Ask on **[Discord](https://discord.gg/nxa3W7w4rJ)**
+(`timbuktu_guy`).

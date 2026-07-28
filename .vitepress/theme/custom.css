@@ -249,8 +249,8 @@
   margin: 0;
 }
 
-/* hover the WHOLE row (name + badge together); only real link rows */
-.VPSidebarItem.is-link > .item:hover { background: var(--vp-c-default-soft); }
+/* No hover fill on sidebar rows — the link text brightening is the affordance. */
+.VPSidebarItem.is-link > .item:hover .link-text { color: var(--vp-c-text-1); }
 
 /* the "aowljs ↗" badge — subtle, flush to the reserved column, links to the repo.
    position + z-index lift it ABOVE the row's (full-width, invisible) link text
@@ -272,7 +272,7 @@
   background: transparent;
   transition: color 0.15s, background-color 0.15s;
 }
-.repo-badge:hover { color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
+.repo-badge:hover { color: var(--vp-c-brand-1); }
 .repo-badge svg { flex: 0 0 auto; opacity: 0.85; }
 .repo-badge:hover svg { opacity: 1; }
 /* icon-only badge (libraries / playground — label already IS the repo name) */
@@ -548,9 +548,14 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
   html:not(.aowl-sb-collapsed) .VPSidebar {
     transform: translateX(var(--aowl-sb-x, 0px));
   }
+  /* The page box is `width: 100%`, so offsetting it with a MARGIN pushed it past
+     the right edge and the whole document scrolled sideways. Fold the offset into
+     the padding VitePress already uses to clear the sidebar: same visual result,
+     inside the box, nothing overflows. */
   html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
-    margin-left: max(0px, var(--aowl-sb-x, 0px));
-    transition: margin-left .25s ease;
+    margin-left: 0;
+    padding-left: max(24px, calc(var(--vp-sidebar-width) + var(--aowl-sb-x, 0px)));
+    transition: padding-left .25s ease;
   }
 
   /* --- collapsed: sidebar slides off, page content reclaims + re-centers --- */
@@ -582,11 +587,32 @@ html.aowl-sb-resizing .VPNavBar.has-sidebar .content { transition: none !importa
      so this only applies while the sidebar is open. */
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { margin: 0 !important; }
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content-container { margin: 0 !important; }
+
+  /* The reading column was a fixed 688px, so widening or moving the sidebar only
+     slid the same narrow strip of text around instead of reflowing it. Let it
+     take whatever room is left between the sidebar and the "on this page" rail,
+     down to a comfortable minimum — now the sidebar genuinely sets the text
+     measure. */
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content,
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content-container {
+    max-width: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
 }
 @media (min-width: 1280px) {
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .container { justify-content: flex-start !important; }
-  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { flex: 0 1 auto !important; width: auto !important; }
+  html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar .content { flex: 1 1 auto !important; }
   html:not(.aowl-sb-collapsed) .VPDoc.has-sidebar.has-aside .aside { flex-grow: 0 !important; margin-left: auto !important; }
+}
+/* Past 1440px VitePress clamps the whole page to --vp-layout-max-width and pads
+   the leftovers away as dead gutters — which swallowed the sidebar's effect
+   entirely on a wide screen. While the sidebar is open, use the real viewport. */
+@media (min-width: 1440px) {
+  html:not(.aowl-sb-collapsed) .VPContent.has-sidebar {
+    padding-right: 32px !important;
+    padding-left: max(24px, calc(var(--vp-sidebar-width) + var(--aowl-sb-x, 0px))) !important;
+  }
 }
 /* Mobile "on this page" bar: its border-bottom uses --vp-c-gutter (near-black),
    invisible on the dark theme. Use the lighter border gray on dark; light theme
