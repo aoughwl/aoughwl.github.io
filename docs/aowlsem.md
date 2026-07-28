@@ -4,38 +4,45 @@ repo: aoughwl/aowlsem
 
 # aowlsem — the semantic-analysis stage
 
-`aowlsem` is the semantic checker of the aoughwl toolchain. It reads the parse
-dialect of AIF (`.p.aif`, as produced by [aowlparser](aowlparser)) and writes
-typed, symbol-resolved AIF (`.s.aif`) ready for the lowering stage
-([aowlhexer](aowlhexer)). It resolves names, checks types, picks overloads, and
-instantiates generics.
+`aowlsem` is the semantic checker of the aoughwl toolchain, a clean-room
+replacement for the reference compiler's `nimsem`. It reads the parse dialect of
+AIF (`.p.aif`, from [aowlparser](aowlparser)) and writes typed, symbol-resolved
+AIF (`.s.aif`) ready for the lowering stage ([aowlhexer](aowlhexer)). It resolves
+names, checks types, picks overloads, instantiates generics, and synthesizes
+lifetime hooks — **checking and lowering fused in one demand-driven pass**.
 
 ```
  .p.aif ──► aowlsem ──► .s.aif
  (parse)   (semcheck)  (typed)
 ```
 
+It is ~20.8k lines of self-hosted Nimony. Its byte-exact differential corpus
+stands at **498/498** modules matching the reference compiler's own typed output,
+with the entire `std/system` checking clean.
+
 ## Model
 
-Demand-driven. There is no global multi-phase walk over the module. Every
-semantic fact — a symbol's type, an overload choice, a generic instance — is
-computed on demand and memoised, so a construct is checked exactly when another
-construct needs its result. Forward references and mutual recursion at module
-scope need no forward declarations.
+**Demand-driven, checking and lowering fused.** Every semantic routine has the
+shape `sem*(c, dest, cur): Type` — it consumes parse-form AIF at `cur`, *writes*
+the lowered typed AIF into `dest`, and *returns* the checked type. There is no
+separate check pass and lower pass, and no global multi-phase walk: each fact — a
+symbol's type, an overload choice, a generic instance — is computed the moment
+another construct needs it, then memoised. Forward references and mutual
+recursion at module scope need no forward declarations.
 
-Built on the `nifcore` cursor stack, so tree traversal uses fast `skip` over the
-AIF token buffer rather than materialising nodes.
+Built on the `nifcore` cursor stack, so traversal is fast `skip` over the AIF
+token buffer rather than materialising nodes. The engine is one compilation unit
+of nine `include` fragments. See [Architecture](aowlsem/architecture) for the
+full model — including a direct answer to *"can the checker and lowerer be split
+into two stages?"*
 
 ## Diagnostics
 
-A semantic error does not stop the check. aowlsem records a structured
+A semantic error does not stop the check. `aowlsem` records a structured
 diagnostic and continues, so one run reports every independent error in the
-module rather than only the first.
-
-Each diagnostic carries a stable code, the source span from the AIF line info,
-and optional follow-up notes. The rendering shows the offending source line with
-a caret under the exact span, and — where a name is misspelt — the closest
-identifier actually in scope, by edit distance:
+module. Each diagnostic carries a **stable code**, a real **source span** with a
+caret underline, and `help:`/`note:` follow-ups — including edit-distance "did you
+mean" suggestions computed over the names actually in scope:
 
 ```
 error[E0300]: undeclared field `zz` on `Point`
@@ -46,132 +53,106 @@ error[E0300]: undeclared field `zz` on `Point`
    = did you mean `x`?
 ```
 
-Diagnostics are written to stderr after the `.s.aif` is emitted, so they are a
-side channel: the typed output is identical whether or not a diagnostic fired.
-
-Current codes:
-
-| Code | Meaning |
-|---|---|
-| `E0100` | undeclared identifier (with an in-scope suggestion) |
-| `E0101` | undeclared routine (with an in-scope suggestion) |
-| `E0200` | type mismatch — a declared or assigned-to type the value cannot satisfy |
-| `E0300` | undeclared field on a known object type (with a field suggestion) |
-| `E0400` | assignment to an immutable `let`/`const` binding (points back at the declaration) |
-
-## Build
-
-```sh
-nimony c --base:src -d:nimony src/aowlsem.nim
-# or:
-./build.sh          # writes bin/aowlsem  (override compiler with NIMONY=…)
-```
+Diagnostics are a **side channel**: they are written to stderr after the `.s.aif`
+is emitted, and recording one never alters the typed output — a valid program
+yields zero. There are **36 codes** in two bands: genuine **errors** the
+reference compiler also rejects, and a band of advisory **opinion lints**
+(E0205–E0222) that flag tautologies, no-ops and dead branches the reference
+*accepts*. The full table, the rustc-grade renderer, the JSON tooling seam, and a
+comparison with the reference's diagnostics are on the [Diagnostics
+page](aowlsem/diagnostics).
 
 ## Usage
 
 ```sh
-aowlsem m <in.p.aif> <out.s.aif> [flags]     # semcheck a module
-aowlsem opt <in.s.aif> <out.s.aif>           # run the high-level optimizer
-aowlsem passthrough <in.aif> [out.aif]       # load + re-emit (smoke test)
+aowlsem m <in.p.aif> <out.s.aif> --path:<lib> --nimcache:<nc>   # semcheck a module
 ```
 
-`-` or an empty output path writes to stdout. Diagnostics go to stderr after a
-complete `.s.aif` is written, so tooling still gets a usable artifact when a
-module has errors.
-
-### Flags for `m`
-
-| Flag | Meaning |
-|---|---|
-| `--sys:<system.s.aif>` | Supply the checked `system` module explicitly. |
-| `--imp:<module.s.aif>` | Add an already-checked imported module (repeatable). |
-| `--path:<dir>` / `-p:<dir>` | Add a module search path (repeatable). |
-| `--nimcache:<dir>` | Where the driver placed the parsed `.p.aif` inputs (defaults to the input's directory). |
-| `--noSystem` | Do not auto-load `system`. |
-
-With `--path:` and `--nimcache:` set, `aowlsem m` resolves the module's own
-import graph: it reads the module's `.p.deps.aif`, auto-loads `system` and each
-imported module's already-checked `.s.aif`, and inlines every `include` into one
-flat module before checking. Explicit `--sys:`/`--imp:` override the auto-loaded
-choices.
+With `--path:` and `--nimcache:` set, `aowlsem m` resolves the module's whole
+import graph itself — a real drop-in for `nimsem`. Full command/flag reference and
+the programmatic `semcheck*` entry point are on the [CLI & API page](aowlsem/cli).
 
 ## Capabilities
 
-Checked construct-by-construct. The `tests/corpus/` suite (498 modules, all
-byte-exact against the nimony oracle) is the concrete list of what is supported;
-the categories below summarise it. The frontier is tracked in `COVERAGE.md`.
+Checked construct-by-construct; the `tests/corpus/` suite (498 modules, all
+byte-exact against the reference oracle) is the concrete list. What each construct
+lowers to — with worked `.p.aif → .s.aif` examples — is catalogued on the
+[Lowering reference](aowlsem/lowering).
 
 **Declarations & bindings**
 : `let` / `var` / `const` (global and local); type inference from literals,
-in-scope identifiers, calls and operators; explicit-type bindings; typed
-constants (`(suf v "i64")`); compile-time constant folding of integer
-arithmetic; multi-assignment; tuple unpacking in `let`/`var`.
+identifiers, calls and operators; explicit-type bindings; typed constants (`(suf
+v "i64")`); compile-time integer const-folding; multi-assignment; tuple unpacking
+in `let`/`var`.
 
 **Types**
-: `int`/`float`/`bool`/`char`; sized-int aliases (`int8`, `uint`, `int64`,
-`byte` → `(i N)`/`(u N)`); `string`; `array[N,T]` with indexing, `len`, `high`,
-`low`; `seq[T]` with `@[]`, indexing, index-assign, `len`, iteration, `add`;
-tuples (positional and named); `distinct` types and conversions; `enum`
-declarations (with the synthesized `$`); `set` operations; `HSlice` (`a ..< b`);
-`ptr`/pointer casts; `sizeof`.
+: `int`/`float`/`bool`/`char`; sized-int aliases (`int8`, `uint`, `int64`, `byte`
+→ `(i N)`/`(u N)`) with explicit `hconv` narrowing; `string`; `array[N,T]` with
+indexing, `len`, `high`, `low`; `seq[T]` (`@[]`, indexing, index-assign, `len`,
+iteration, `add`); tuples (positional and named); `distinct` types and
+conversions; `enum` (with synthesized `$`); `set` operations; `HSlice` (`a ..<
+b`); `ptr`/pointer casts; `sizeof`.
 
 **Operators & conversions**
 : arithmetic `+ - * div mod` and float `/`; bitwise `and`/`or`/`xor`, shifts
 `shl`/`shr`; comparisons `< <= == > >= !=`; boolean `and`/`or`/`not`; unary `-`,
-`abs`; compound assignment (`+=` etc.); `ord`, `succ`/`pred`, `$`, int/float
-conversions; string concatenation, equality, indexing and index-assign,
-iteration.
+`abs`; compound assignment; `ord`, `succ`/`pred`, `$`, int/float conversions;
+string concat, equality, indexing, index-assign, iteration.
 
 **Control flow**
-: `if`/`elif`/`else` (statement and expression); `case`/`of`/`else` including
-range branches (statement and expression); `while`; `for` over ranges,
-sequences and strings; `break`/`continue`; labelled `block`; `defer`;
-`try`/`except`/`finally` and `except T as e`; `return` (explicit, bare, void);
-`when`/`elif`/`else` folded at compile time (`defined`, `x is T`, `typeof`).
+: `if`/`elif`/`else` (statement and expression); `case`/`of`/`else` with range
+branches; `while`; `for` over ranges, sequences and strings; `break`/`continue`;
+labelled `block`; `defer`; `try`/`except`/`finally` and `except T as e`;
+`return`; `when` folded at compile time (`defined`, `x is T`, `typeof`).
 
 **Routines**
-: procs with parameters, return types and implicit `result`; overload
-resolution by arity and by parameter type; `var` parameters (`(mut T)` +
-auto-deref); named arguments; UFCS calls (with and without parens); operator
-definitions; recursion, mutual recursion and nested procs; forward references;
-procs as values; `importc` procs.
+: procs with parameters, return types and implicit `result`; overload resolution
+by arity and parameter type; `var` parameters (`(mut T)` + auto-deref); named
+arguments; UFCS (with and without parens); operator definitions; `{.borrow.}`
+operators (including distinct-return conversion); recursion, mutual recursion,
+nested procs; forward references; procs and iterators as values; anonymous proc
+literals (lambdas); `importc` procs.
 
 **Generics**
-: generic routine declarations and instantiation (inference and explicit type
-arguments); generic `object` type declarations and instantiation; instantiation
-of imported generics; nested instantiation inside instantiated bodies; instance
-memoisation. Generic **sum types** (anonymous variants) instantiate and construct
-by inference — `let d = Some(99)` resolves `Option[int]` from the argument,
-annotated conversions (`Option[int](x)`) and multi-parameter sums
-(`Either[int, string]`) resolve to the same instance, and a type-named value
-constructor (`Pair(first: 1, second: 2)`) infers `Pair[int]` from its fields.
-Generic **`ref object`** types instantiate in full: the reference alias and its
-underlying `.Obj` object are each emitted with their own separately-keyed
-instance identity and per-instance lifetime hooks (destroy / move / copy /
-`wasMoved`), variant-dispatched for `case` objects, and their constructors build
-the concrete instance rather than the generic origin.
+: generic routine and `object` declaration + instantiation (inference,
+multi-typevar inference, callback/proc-type inference, and explicit type args);
+instantiation of imported generics; nested instantiation; instance memoisation.
+Generic **sum types** instantiate and construct by inference (`Some(99)` →
+`Option[int]`; `Either[int,string]`; `Pair(first:1,second:2)` → `Pair[int]`),
+with named-variant branch fields resolving inside generic bodies. Generic **`ref
+object`** types emit both halves (ref-alias + `.Obj`) with correct per-instance
+identity, lifetime hooks, and typevar numbering, and construct the concrete
+instance.
 
 **Objects, ref & inheritance**
-: `object` declarations, field access, assignment, nesting, object params and
-returns, default fill and empty construction; `ref object`; **anonymous variants
-(sum types)** — a discriminated `case` object with `of`-label constructors and
-`of Label(field)` pattern matching, its synthesized discriminator enum and
-branch-wise lifetime hooks; object and `ref` inheritance across multiple levels;
-`method` declarations with dynamic dispatch and overrides.
+: `object` declarations, field access/assignment, nesting, params/returns,
+default fill, empty construction; `ref object`; **anonymous variants (sum
+types)** with `of`-label constructors and `of Label(field)` pattern matching;
+object and `ref` inheritance across multiple levels; `method` declarations with
+dynamic dispatch and overrides (value-object methods emit a vtable-only pragma).
 
 **Templates & macros**
-: `template` expansion (inline substitution of arguments into the body);
-`macro` declarations and expansion, including compile-time evaluation.
+: `template` expansion (inline substitution; `untyped`/`typed` wildcard params);
+`macro` declaration and expansion via compile-time evaluation.
 
 **Modules**
-: `import` resolution against already-checked `.s.aif`; `include` inlining;
-loading `system` so builtin routines and types (`string`, `&`, `$`, …) resolve.
+: `import` resolution against checked `.s.aif` (with `from X import`, `import X
+except`, transitive re-exports); `include` inlining; `system` loading.
 
 ## Optimizer
 
 `aowlsem opt` runs a high-level pass over an already-checked `.s.aif` and reports
-the node count before and after. It is separate from `m`, so semantic output is
-unaffected.
+the node count before and after. It is a **separate pass** from `m`, so semantic
+output is unaffected.
+
+## Pages
+
+| Page | Contents |
+|---|---|
+| [Architecture](aowlsem/architecture) | the fused check+lower model, demand-driven engine, the nine include-fragments, `SemContext`, the prescan, and the *"can the two systems be split?"* answer |
+| [Diagnostics](aowlsem/diagnostics) | side-channel design, all 36 codes in two bands (errors vs opinion lints), rustc-grade rendering, "did you mean", JSON seam, comparison to the reference |
+| [CLI & API](aowlsem/cli) | `m` / `opt` / `passthrough`, flags, self-resolving imports, exit behavior, and the `semcheck*` programmatic entry |
+| [Lowering reference](aowlsem/lowering) | worked `.p.aif → .s.aif` transformations for every major construct |
 
 ## Pipeline
 
@@ -181,4 +162,6 @@ unaffected.
 ```
 
 aowlsem is the typing seam: everything downstream reads the symbols, resolved
-overloads and generic instances it writes into `.s.aif`.
+overloads and generic instances it writes into `.s.aif`. The format on both sides
+is [AIF, which is NIF](aif) byte-for-byte, so the typed output is interchangeable
+with the reference compiler's own.
