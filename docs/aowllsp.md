@@ -4,7 +4,7 @@ repo: aoughwl/aowllsp
 
 # aowllsp — the Language Server, written in Nimony
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowllsp` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowllsp)** — clones the repo into the in-browser IDE, no install.
 
 **[aowllsp](https://github.com/aoughwl/aowllsp)** is a Language Server for Nimony
 that is itself **written in Nimony** — a ground-up rewrite of the old (Nim 2)

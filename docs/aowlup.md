@@ -4,7 +4,7 @@ repo: aoughwl/aowlup
 
 # aowlup — the toolchain manager
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowlup` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlup)** — clones the repo into the in-browser IDE, no install.
 
 `aowlup` is **`rustup` for the aowl/nimony stack**. It installs, versions, and
 *selects* the components of the compilation pipeline; the driver,

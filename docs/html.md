@@ -4,7 +4,7 @@ repo: aoughwl/html
 
 # html — typed HTML5 for nimony
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/html` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/html)** — clones the repo into the in-browser IDE, no install.
 
 A registry of every HTML5 element and its attributes (with void / deprecated /
 experimental markers), plus a document-tree builder and a correct, escaping,

@@ -1,6 +1,6 @@
 # nimony-lsp (Nim 2) — deprecated
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/nim2-nimony-lsp` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/nim2-nimony-lsp)** — clones the repo into the in-browser IDE, no install.
 
 The original **Nim 2** `nimony-lsp` — a Language Server + VSCode extension built
 on Nimony's `idetools`. It is **complete and fully featured**, and **deprecated**:

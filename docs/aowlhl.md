@@ -4,7 +4,7 @@ repo: aoughwl/aowlhl
 
 # aowlhl — shared High-Level IR
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowlhl` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlhl)** — clones the repo into the in-browser IDE, no install.
 
 The **shared lowering** for the idiomatic Nim-to-high-level backends: it turns
 nimony's sem'd IR into a small, target-neutral **High-Level IR (HL-IR)** that the

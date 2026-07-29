@@ -1,6 +1,6 @@
 # aowllib — the aowl system runtime
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowllib` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowllib)** — clones the repo into the in-browser IDE, no install.
 
 `aowllib` is the hand-written C runtime that supplies the `system` / `syncio`
 symbols a post-[aowlhexer](aowlhexer) `.c.aif` references, so real programs —

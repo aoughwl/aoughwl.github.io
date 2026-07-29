@@ -4,7 +4,7 @@ repo: aoughwl/aowlmony
 
 # aowlmony — the nimony rewrite driver
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowlmony` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlmony)** — clones the repo into the in-browser IDE, no install.
 
 `aowlmony` is the driver that unifies the aoughwl self-owned stack into one
 compiler over **AIF** (the aowl intermediate format): give it a `.nim` file and

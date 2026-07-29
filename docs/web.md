@@ -4,7 +4,7 @@ repo: aoughwl/web
 
 # web — HTML + validated CSS in one nimony block
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/web` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/web)** — clones the repo into the in-browser IDE, no install.
 
 `web` is a declarative DSL that builds a typed HTML tree and, inline, validates every
 style declaration against the MDN value grammar, lowering each `style:` block to a single

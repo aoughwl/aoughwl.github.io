@@ -4,7 +4,7 @@ repo: aoughwl/aowlmcp
 
 # aowlmcp — Model Context Protocol servers in Nimony
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowlmcp` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlmcp)** — clones the repo into the in-browser IDE, no install.
 
 `aowlmcp` lets you expose Nimony procedures as LLM-callable tools. It implements
 the [Model Context Protocol](https://modelcontextprotocol.io) (MCP) stdio

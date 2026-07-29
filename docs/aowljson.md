@@ -4,7 +4,7 @@ repo: aoughwl/aowljson
 
 # aowljson — a JSON value type for Nimony
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowljson` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowljson)** — clones the repo into the in-browser IDE, no install.
 
 `aowljson` is a small, self-contained JSON library for **Nimony**: a reference
 `JsonValue` tree with a recursive-descent parser, a compact serializer, safe

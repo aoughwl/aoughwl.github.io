@@ -4,7 +4,7 @@ repo: aoughwl/aowlfmt
 
 # aowlfmt — verified layout formatter
 
-> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+> ▶️ **[Try `aoughwl/aowlfmt` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlfmt)** — clones the repo into the in-browser IDE, no install.
 
 A source formatter for Nim / aowl that **proves it changed nothing but layout**
 before it will touch your file. Written in **nimony**, like the rest of the
