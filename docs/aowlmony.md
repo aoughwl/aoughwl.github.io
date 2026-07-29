@@ -4,6 +4,8 @@ repo: aoughwl/aowlmony
 
 # aowlmony — the nimony rewrite driver
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `aowlmony` is the driver that unifies the aoughwl self-owned stack into one
 compiler over **AIF** (the aowl intermediate format): give it a `.nim` file and
 it runs parser → sem → lowering → **your choice of native code or

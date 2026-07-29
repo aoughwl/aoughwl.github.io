@@ -1,5 +1,7 @@
 # aoughwl compiler fixes
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 Compiler fixes that went into [`aoughwl/nimony`](https://github.com/aoughwl/nimony)
 (branch `master`). Each is written against the Nim language and portable to
 [`nim-lang/nimony`](https://github.com/nim-lang/nimony). Each entry records a bug

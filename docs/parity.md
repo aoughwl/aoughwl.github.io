@@ -1,5 +1,7 @@
 # Parity
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 The target is a rewrite of the Nim / Nimony toolchain whose output is **byte-for-byte
 identical** to the original: same parse tree, same typed IR, same generated code,
 down to the byte. Not a fork and not a wrapper — each stage is written from

@@ -1,5 +1,7 @@
 # aowlpy — idiomatic Python backend
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 An **idiomatic Python** backend for [nimony](../nimony): Nim types become real
 Python objects, not byte offsets.
 

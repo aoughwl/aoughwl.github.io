@@ -1,5 +1,7 @@
 # The tooling stack: incremental compilation, aowl-lsp & aiflens
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 How editor tooling for [Nimony](../nimony) actually works, end to end — the
 **incremental compiler** at the bottom, the **[aowl-lsp](aowl-lsp)** server
 that rides it, and the **[aiflens](aiflens)** NIF-reading core they share.

@@ -4,6 +4,8 @@ repo: aoughwl/aowlsem
 
 # aowlsem — the semantic-analysis stage
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `aowlsem` is the semantic checker of the aoughwl toolchain, a clean-room
 replacement for the reference compiler's `nimsem`. It reads the parse dialect of
 AIF (`.p.aif`, from [aowlparser](aowlparser)) and writes typed, symbol-resolved

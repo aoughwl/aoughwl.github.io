@@ -4,6 +4,8 @@ repo: aoughwl/aowljs
 
 # aowljs — a `.s.nif` → native-JavaScript backend
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `aowljs` transpiles a typed nimony NIF (`.s.nif`) to **real JavaScript** — mapping
 nimony values onto native JS values instead of onto a simulated linear memory —
 so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**

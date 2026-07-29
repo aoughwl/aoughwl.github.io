@@ -4,6 +4,8 @@ repo: aoughwl/aowlhexer
 
 # aowlhexer — the aowl lowering pass
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `aowlhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
 `.c.aif` that the native backend prints — injecting ARC, lifting closures,
 inlining iterators, lowering exceptions, and monomorphising generics along the

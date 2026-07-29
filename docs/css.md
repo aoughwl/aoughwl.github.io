@@ -4,6 +4,8 @@ repo: aoughwl/css
 
 # css — an MDN-typed CSS engine for nimony / Nim 3.0
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `css` parses a whole stylesheet and then *validates* it: every property value against its official MDN value-definition syntax, every math and functional value against its own signature, and every selector against Selectors-4 (with specificity and a source-order cascade resolver on top). It is pure logic — standard library only, **no dependencies, no aoughwl substrate** — so `import css` compiles and runs on plain nimony / Nim 3.0. It is the successor to the Nim-2 `thing-king/css`.
 
 > **Status** — Value, function-argument, selector, cascade and full-stylesheet parsing are complete and MDN-driven (Bootstrap 5.3.3: 5 542 declarations, zero false positives). Gaps: at-rule *bodies* are parsed but their preludes (`@media`/`@supports`/`@keyframes`) are not yet grammar-checked, selector functional arguments (`:nth-child(An+B)`) are only balance-checked, and computed-style inheritance / `@import` resolution are not done.

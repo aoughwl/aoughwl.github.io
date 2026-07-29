@@ -1,5 +1,7 @@
 # AIF ≡ NIF — how aoughwl interops with Nimony
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 aoughwl is a ground-up reimplementation of the Nimony toolchain. The reason it
 drops straight into the existing nimony world — and the reason **any Nim or
 Nimony program is expected to behave identically in aoughwl** — is one deliberate

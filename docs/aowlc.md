@@ -4,6 +4,8 @@ repo: aoughwl/aowlc
 
 # aowlc — a `.c.nif` → C native backend
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 `aowlc` compiles nimony's **post-`hexer`** IR (`.c.nif`) to **real C** and links it
 with `gcc` to a native binary. It's the self-owned native counterpart to
 [aowljs](aowljs) (the JavaScript backend) — same architecture (NIF reader +

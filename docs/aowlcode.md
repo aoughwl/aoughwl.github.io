@@ -4,6 +4,8 @@ repo: aoughwl/aowlcode
 
 # aowlcode — Nim/Nimony Claude Code plugin & MCP server
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 Mediates agent access to the **Nim** and **Nimony** toolchains through
 structured MCP tools: an agent works from compact diagnostics, outlines, and
 targeted NIF slices instead of raw compiler output and multi-hundred-kilobyte

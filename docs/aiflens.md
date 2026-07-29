@@ -4,6 +4,8 @@ repo: aoughwl/aiflens
 
 # aiflens — a NIF lens for tooling
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 A thin CLI over [Nimony](../nimony)'s own NIF libraries (`nifreader` /
 `nifstreams` / `nifcursors` / `nifindexes`). It reads `nimcache/*.nif` artifacts
 with the **real parser** and emits compact JSON for a host tool to consume.

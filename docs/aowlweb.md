@@ -4,6 +4,8 @@ repo: aoughwl/aowlweb
 
 # aowlweb — JavaScript & WebAssembly backends
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 Two backends that take Nim to the web: one emits JavaScript, the other emits
 WebAssembly. Both are plugins for [nimony](../nimony) — they read the lowered IR
 nimony hands its C backend and produce a `.js` or `.wasm` file instead of C. They

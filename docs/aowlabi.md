@@ -4,6 +4,8 @@ repo: aoughwl/aowlabi
 
 # aowlabi — the shared value-representation / ABI truth
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 The single canonical answer to *"how is each type laid out, per target."* Before
 `aowlabi`, three places each kept their own copy of that answer — the
 [aowli](aowli) interpreter, the [aowlc](aowlc) C backend, and the

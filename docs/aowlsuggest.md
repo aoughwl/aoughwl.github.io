@@ -4,6 +4,8 @@ repo: aoughwl/aowlsuggest
 
 # aowlsuggest — diagnostics, quick-fixes & editor integration
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 The layer that sits **on top of [aowlparser](aowlparser)** and turns its
 recoverable diagnostics into something actionable: verified quick-fixes, batch /
 CI linting, and editor (LSP) payloads. Written in **nimony**, like the parser it

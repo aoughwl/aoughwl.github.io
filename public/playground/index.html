@@ -67,7 +67,11 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
-  body{background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+  body{background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;
+    -webkit-user-select:none;-moz-user-select:none;user-select:none}
+  /* Nothing in the chrome is text-selectable — only the code editor and real form
+     fields (stdin, dialog inputs) keep native text selection. */
+  .monaco-editor,.monaco-editor textarea,input,textarea,[contenteditable]{-webkit-user-select:text;-moz-user-select:text;user-select:text}
 
   /* ---- header: left brand + status, right edge-to-edge segmented actions ---- */
   header{display:flex;align-items:stretch;min-height:42px;border-bottom:1px solid var(--border);background:var(--panel)}
@@ -83,8 +87,8 @@
   .brand a.logo:hover{opacity:1}
   .brand h1{font-size:15px;margin:0;letter-spacing:.2px;white-space:nowrap;font-weight:400}
   .brand h1 .np-nimony{font-weight:650}
-  /* "playground" reads as the quieter half — lighter + faded */
-  .brand h1 .np-pg{font-weight:400;opacity:.55}
+  /* "playground" now wears the bolder, full-strength wordmark style. */
+  .brand h1 .np-pg{font-weight:650;opacity:1;color:var(--fg)}
   .brand h1 .dot{opacity:.4;padding:0 2px}
 
   /* one combined status line: a single state dot + a middot-joined summary */
@@ -139,6 +143,58 @@
   /* resizable split: --split is the source pane's size. A draggable #gutter
      updates it; the layout button (now in the OUTPUT header) flips orientation
      or hides the output entirely; a floating button restores it. */
+  /* ---- workbench: docked explorer panel + the editor/output main ----------
+     The explorer is a DOCKED, resizable, dockable-left/right panel — the same
+     tiled-window family as the editor and console, not a free-floating window. */
+  #workbench{flex:1;display:flex;min-height:0;min-width:0;overflow-x:hidden}
+  #workbench[data-fxside="right"]{flex-direction:row-reverse}
+  #explorerDock{flex:0 0 var(--fx-w,244px);min-width:150px;max-width:60vw;
+    display:flex;flex-direction:column;background:var(--panel);min-height:0;overflow:hidden}
+  #workbench[data-fxside="left"] #explorerDock{border-right:1px solid var(--border)}
+  #workbench[data-fxside="right"] #explorerDock{border-left:1px solid var(--border)}
+  #workbench.fx-hidden #explorerDock,#workbench.fx-hidden #fxGutter{display:none}
+  #explorerDock .dock-head{display:flex;align-items:center;gap:6px;height:32px;flex:none;
+    padding:0 4px 0 11px;border-bottom:1px solid var(--border);background:var(--panel2)}
+  #explorerDock .dock-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  #explorerDock .dock-title svg{width:13px;height:13px;opacity:.8}
+  #explorerDock .dock-tools{display:flex;align-items:center;gap:1px;margin-left:auto}
+  #explorerDock .dock-btn,#explorerDock .dock-tools button{width:24px;height:24px;border:0;background:transparent;
+    color:var(--muted);border-radius:5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+  #explorerDock .dock-btn:hover,#explorerDock .dock-tools button:hover{background:var(--border);color:var(--fg)}
+  #explorerDock .dock-btn svg,#explorerDock .dock-tools button svg{width:14px;height:14px}
+  #explorerDock .dock-body{flex:1;overflow:auto;min-height:0}
+  #fxGutter{flex:0 0 1px;cursor:col-resize;background:var(--border);position:relative;z-index:5;transition:background .15s}
+  #fxGutter::after{content:"";position:absolute;top:0;bottom:0;left:-4px;right:-4px;cursor:col-resize}
+  #fxGutter:hover,#fxGutter.drag{background:var(--accent)}
+  /* a small "show explorer" affordance when it's hidden */
+  #fxShow{display:none;position:absolute;left:8px;top:8px;z-index:30;width:30px;height:30px;border-radius:7px;
+    border:1px solid var(--border);background:var(--panel2);color:var(--accent2);cursor:pointer;align-items:center;justify-content:center}
+  #workbench.fx-hidden ~ #fxShow,body.fx-hidden #fxShow{display:inline-flex}
+  #fxShow svg{width:16px;height:16px}
+  @media (max-width:640px){ #explorerDock{position:absolute;z-index:40;height:100%;box-shadow:2px 0 16px rgba(0,0,0,.4)} }
+  /* the explorer header is a DRAG handle — grab any whitespace to re-dock it
+     left/right (moveable, but stays a docked panel, not free-floating). */
+  #explorerDock .dock-head{cursor:grab}
+  #explorerDock .dock-head.grabbing{cursor:grabbing}
+  #explorerDock .dock-head button{cursor:pointer}
+  /* drop-zone hints while dragging the explorer */
+  #workbench.fx-dragging::before,#workbench.fx-dragging::after{content:"";position:absolute;top:0;bottom:0;width:16%;
+    background:linear-gradient(var(--accent),transparent);opacity:0;pointer-events:none;z-index:50;transition:opacity .12s}
+  #workbench.fx-dragging::before{left:0} #workbench.fx-dragging::after{right:0}
+  #workbench.fx-drop-left::before{opacity:.22} #workbench.fx-drop-right::after{opacity:.22}
+  #workbench{position:relative}
+
+  /* debugger drawer, attached to the bottom of the editor pane */
+  #debuggerDock{flex:0 0 var(--dbg-h,260px);min-height:120px;max-height:70%;display:flex;flex-direction:column;
+    background:var(--panel);border-top:1px solid var(--border);min-width:0}
+  #debuggerDock[hidden]{display:none}
+  #dbgResize{height:1px;flex:none;cursor:row-resize;position:relative;z-index:3;background:var(--border);transition:background .15s}
+  #dbgResize::after{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px;cursor:row-resize}
+  #dbgResize:hover,#dbgResize.drag{background:var(--accent)}
+  .dbgdock-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+
+
   main{flex:1;display:flex;min-height:0;--split:50%}
   main[data-layout="cols"]{flex-direction:row}
   main[data-layout="rows"]{flex-direction:column}
@@ -160,13 +216,20 @@
   main.out-hidden>.pane.src{flex:1 1 var(--split)}
   main.out-hidden>.pane.out{flex:0 0 0;opacity:0;pointer-events:none}
   main.out-hidden>#gutter{flex-basis:0;opacity:0;pointer-events:none}
+   main.out-hidden>#gutter::after{content:none}
   .pane{display:flex;flex-direction:column;min-width:0;min-height:0}
   /* container-type lets the source label respond to the PANE's width (e.g. when
      the split gutter shrinks the editor), not just the viewport — see @container. */
   .pane.src{position:relative;container-type:inline-size;container-name:srcpane}
-  #gutter{flex:0 0 6px;background:var(--border);position:relative;z-index:2;touch-action:none}
+  /* the resize handle is EXACTLY the 1px --border line (no surrounding
+     whitespace); the grab area is a wider ::after that OVERFLOWS into the panes
+     without taking any layout width. */
+  #gutter{flex:0 0 1px;background:var(--border);position:relative;z-index:3;touch-action:none;transition:background .15s}
+  #gutter::after{content:"";position:absolute;z-index:1}
   main[data-layout="cols"]>#gutter{cursor:col-resize}
   main[data-layout="rows"]>#gutter{cursor:row-resize}
+  main[data-layout="cols"]>#gutter::after{top:0;bottom:0;left:-4px;right:-4px;cursor:col-resize}
+  main[data-layout="rows"]>#gutter::after{left:0;right:0;top:-4px;bottom:-4px;cursor:row-resize}
   #gutter:hover,#gutter.drag{background:var(--accent)}
 
   .pane .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 10px 8px 14px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;gap:8px}
@@ -174,11 +237,22 @@
   /* the SOURCE label now carries a tab bar (Source / Parsed / Typed / Run) on the
      left, mirroring the output pane, with the combined status line + type-check
      timing pushed to the right. */
-  .pane.src .label{position:relative;padding:6px 10px 6px 12px;gap:10px}
+  /* Keep this bar on ONE line at every width: the primary switch and status stay
+     put, and the stage/target group (subbar) scrolls horizontally when squished
+     rather than wrapping into an ugly multi-row block. */
+  .pane.src .label{position:relative;padding:6px 10px 6px 12px;gap:10px;flex-wrap:nowrap;overflow:hidden}
+  body.stages-hidden .pane.src > .label{display:none}
   .pane.src .label #statusLine{margin-left:auto;padding-left:0;text-transform:none;letter-spacing:0}
   .pane.src .label #semStatus{margin-left:0}
-  @container srcpane (max-width:680px){ .pane.src .label #statusLine{display:none} }
-  @container srcpane (max-width:520px){ .pane.src .label #semStatus{display:none} }
+  #srcTabs{flex:none}
+  .pane.src #subStages,.pane.src #subExport{min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+  .pane.src #subStages::-webkit-scrollbar,.pane.src #subExport::-webkit-scrollbar{display:none}
+  .pane.src #subStages .exseg,.pane.src #subExport .exseg{flex-wrap:nowrap}
+  .pane.src #subStages .exseg button,.pane.src #subExport .exseg button{flex:none}
+  @container srcpane (max-width:720px){ .pane.src .label #statusLine{display:none} }
+  @container srcpane (max-width:560px){ .pane.src .label #semStatus{display:none} }
+  @container srcpane (max-width:480px){ .pane.src .label .barsep{display:none}
+    #srcTabs button{padding:3px 7px;font-size:10.5px} }
   /* the right-pane views are mutually exclusive; only the active one shows.
      The SOURCE pane uses the same idea (.sview) — its tabs flip between the live
      editor and the three NIF rungs (parsed / typed / run). */
@@ -236,7 +310,7 @@
   .exportbar .exbtn.copied,.subbar .exbtn.copied{color:var(--accent2);border-color:var(--accent2)}
   /* export target segmented control + read-only Monaco viewer (feat: export) */
   .exportbar .exseg,.subbar .exseg{flex-wrap:wrap}
-  .exportbar .exmeta,.subbar .exmeta{margin-left:8px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34cqw}
+  .exportbar .exmeta,.subbar .exmeta{margin-left:10px;color:var(--muted);font-size:11px;font-style:italic;font-family:var(--mono);opacity:.72;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34cqw}
   /* merged source-pane bar: [Stages|Export] │ active sub-selector … status(right).
      The two sub-bars occupy the same slot; only the active view's shows. */
   /* the PRIMARY view switch (Compile Stages ↔ Translate Code) — square buttons
@@ -262,7 +336,10 @@
     border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-family:var(--mono);font-size:12.5px;line-height:1.5;outline:none}
   #stdinBox:focus{border-color:var(--accent)}
   #stdinBox::placeholder{color:var(--muted);opacity:.7}
-  /* floating "show output" button, bottom-right of the editor when collapsed */
+  /* the old floating "show output" FAB is retired — the console toggle now lives
+     in the file-tab action row (see #fileTabs .ft-actions). Kept in the DOM (its
+     listeners still run) but never shown. */
+  #showOut{display:none!important}
   .fab{position:absolute;right:26px;bottom:13px;z-index:5;background:var(--panel2);color:var(--fg);
     border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;
     display:inline-flex;align-items:center;box-shadow:0 3px 14px rgba(0,0,0,.32);
@@ -289,15 +366,16 @@
   .prob .loc{color:var(--muted);min-width:52px} .prob.warn .loc{color:var(--warn)}
   .prob .probbody{display:flex;flex-direction:column;gap:1px;min-width:0}
   .prob .fixhint{color:var(--muted);font-size:.92em}
-  /* themed scrollbars for the panels */
-  #out,.nifview,#symList,#editor{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  #out::-webkit-scrollbar,.nifview::-webkit-scrollbar,#symList::-webkit-scrollbar{width:10px;height:10px}
-  #out::-webkit-scrollbar-track,.nifview::-webkit-scrollbar-track,#symList::-webkit-scrollbar-track{background:transparent}
-  #out::-webkit-scrollbar-thumb,.nifview::-webkit-scrollbar-thumb,#symList::-webkit-scrollbar-thumb{
+  /* themed scrollbars for the panels — incl. the explorer tree, debugger panes
+     and floating-window bodies (item: the explorer scrollbar was unstyled). */
+  #out,.nifview,#symList,#editor,.dock-body,.fx-tree,.dbg-panes,.wk-body,.dbg-out{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  #out::-webkit-scrollbar,.nifview::-webkit-scrollbar,#symList::-webkit-scrollbar,.dock-body::-webkit-scrollbar,.dbg-panes::-webkit-scrollbar,.wk-body::-webkit-scrollbar{width:10px;height:10px}
+  #out::-webkit-scrollbar-track,.nifview::-webkit-scrollbar-track,#symList::-webkit-scrollbar-track,.dock-body::-webkit-scrollbar-track,.dbg-panes::-webkit-scrollbar-track,.wk-body::-webkit-scrollbar-track{background:transparent}
+  #out::-webkit-scrollbar-thumb,.nifview::-webkit-scrollbar-thumb,#symList::-webkit-scrollbar-thumb,.dock-body::-webkit-scrollbar-thumb,.dbg-panes::-webkit-scrollbar-thumb,.wk-body::-webkit-scrollbar-thumb{
     background:var(--border);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
-  #out::-webkit-scrollbar-thumb:hover,.nifview::-webkit-scrollbar-thumb:hover,#symList::-webkit-scrollbar-thumb:hover{
+  #out::-webkit-scrollbar-thumb:hover,.nifview::-webkit-scrollbar-thumb:hover,#symList::-webkit-scrollbar-thumb:hover,.dock-body::-webkit-scrollbar-thumb:hover,.dbg-panes::-webkit-scrollbar-thumb:hover,.wk-body::-webkit-scrollbar-thumb:hover{
     background:var(--muted);background-clip:padding-box}
-  #out::-webkit-scrollbar-corner,.nifview::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner{background:transparent}
+  #out::-webkit-scrollbar-corner,.nifview::-webkit-scrollbar-corner,#symList::-webkit-scrollbar-corner,.dock-body::-webkit-scrollbar-corner{background:transparent}
   footer{border-top:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;padding:8px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   footer .badge{color:var(--accent2)}
   footer .ftxt{color:var(--muted)}
@@ -538,10 +616,13 @@
 <header>
   <div class="brand">
     <a class="logo" href="../" data-tip="aoughwl docs" aria-label="aoughwl documentation"></a>
-    <h1><span class="np-nimony">nimony</span><span class="dot">·</span><span class="np-pg">playground</span></h1>
+    <h1><span class="np-pg">playground</span></h1>
   </div>
   <div class="spacer"></div>
   <div class="actions">
+    <button id="resetBtn" data-tip="Reset — clear the workspace, all files &amp; projects, and restore the default playground">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.5-3.6"/><path d="M13 2.2v3h-3"/></svg>
+    </button>
     <button id="shareBtn" data-tip="Copy a shareable link to this code">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 9.6l3.2-3.2"/><path d="M8.7 4.6l1-1a2.15 2.15 0 013 3l-1.6 1.6"/><path d="M7.3 11.4l-1 1a2.15 2.15 0 01-3-3l1.6-1.6"/></svg>
     </button>
@@ -557,6 +638,24 @@
   </div>
 </header>
 
+<div id="workbench" data-fxside="left">
+  <aside id="explorerDock">
+    <div class="dock-head">
+      <span class="dock-title">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.8 4c0-.6.4-1 1-1h3l1.4 1.4h5c.6 0 1 .4 1 1v6.2c0 .6-.4 1-1 1H2.8c-.6 0-1-.4-1-1z"/></svg>
+        Explorer
+      </span>
+      <span class="dock-tools" id="explorerTools"></span>
+      <button class="dock-btn" id="fxDockSide" data-tip="Dock left / right">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1.4"/><path d="M6 3v10"/></svg>
+      </button>
+      <button class="dock-btn" id="fxDockHide" data-tip="Hide the explorer">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+      </button>
+    </div>
+    <div class="dock-body" id="explorerBody"></div>
+  </aside>
+  <div id="fxGutter" title="Drag to resize the explorer"></div>
 <main id="main" data-layout="cols">
   <section class="pane src">
     <div class="label">
@@ -609,6 +708,12 @@
         <pre id="exOut" class="nifview codeview"><span class="sys">Export your program to another language — transpiled entirely in your browser by the nimony toolchain compiled to JavaScript. Type-check first (the program must be valid); the selected target's source appears here with syntax highlighting.</span></pre>
       </div>
     </div>
+    <!-- the debugger is ATTACHED to the editor as a bottom drawer (not a floating
+         window): a resize handle + header + body that debugger.js renders into. -->
+    <div id="debuggerDock" hidden>
+      <div id="dbgResize" title="Drag to resize the debugger"></div>
+      <div class="dbgdock-body" id="debuggerBody"></div>
+    </div>
     <button id="showOut" class="fab" data-tip="Show the output panel">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.6"/><path d="M4.6 6.4L6.6 8l-2 1.6"/><line x1="8" y1="10" x2="11" y2="10"/></svg>
     </button>
@@ -638,6 +743,7 @@
     </div>
   </section>
 </main>
+</div><!-- /#workbench -->
 
 <!-- ============================ Config panel ============================ -->
 <!-- A slide-in settings drawer (full-screen sheet on phones). The sem / engine
@@ -803,6 +909,7 @@
     </span>
   </span>
   <span class="ftxt fdim"><a href="https://github.com/aoughwl/aowlparser" target="_blank" rel="noopener">aowlparser</a> · <a href="https://github.com/aoughwl/aowlsem" target="_blank" rel="noopener">aowlsem</a> · <a href="https://github.com/aoughwl/aowli-release" target="_blank" rel="noopener">aowli</a></span>
+  <span class="ftxt fdim">Discord: <b>timbuktu_guy</b></span>
   <span id="perf"></span>
 </footer>
 
@@ -842,13 +949,23 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
 <!-- ?v= cache-busts the hand-written glue so fixes take effect without a hard
      refresh (the big bundles are fetched separately and change rarely). -->
 <script src="examples.js?v=6"></script>
+<!-- multi-file IDE layer: workspace VFS, docked explorer, git clone, std
+     browsing, and the time-travel debugger -->
+<script src="winkit.js?v=2"></script>
+<script src="workspace.js?v=6"></script>
+<script src="gitclone.js?v=3"></script>
+<script src="stdmount.js?v=3"></script>
+<script src="explorer.js?v=11"></script>
+<script src="debugger.js?v=10"></script>
 <script src="pipeline.js?v=15"></script>
 <script src="engine.js?v=11"></script>
 <script src="parser.js?v=10"></script>
 <script src="sem.js?v=9"></script>
 <script src="suggest.js?v=1"></script>
-<script src="editor.js?v=9"></script>
-<script src="lsp.js?v=9"></script>
+<script src="editor.js?v=11"></script>
+<script src="split.js?v=2"></script>
+<script src="nav.js?v=1"></script>
+<script src="lsp.js?v=11"></script>
 <script src="curlyconvert.js?v=7"></script>
 <script src="exporters.js?v=2"></script>
 <script src="assemble.js?v=2"></script>
@@ -962,11 +1079,13 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   }
   // Run is refused whenever the engine isn't up or the code has errors.
   function updateRunState(){
+    const nim = activeIsNim();
     const blocked = st.errCount>0;
     const ready = st.engine==="ready";
-    runBtn.classList.toggle("blocked", blocked && ready);
-    if(!runBtn.classList.contains("running")) runBtn.disabled = !ready || blocked;
-    runBtn.setAttribute("data-tip", blocked ? "Fix the errors above to run"
+    runBtn.classList.toggle("blocked", (blocked && ready) || !nim);
+    if(!runBtn.classList.contains("running")) runBtn.disabled = !ready || blocked || !nim;
+    runBtn.setAttribute("data-tip", !nim ? "Only .nim / .aowl files can be run"
+      : blocked ? "Fix the errors above to run"
       : ready ? "Compile & run — Ctrl/Cmd + Enter" : "Engine still loading…");
   }
 
@@ -1272,7 +1391,23 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     // keep the Source stage's live byte count fresh as you type
     if(curSrcView==="stages" && curStage==="edit") updateStageMeta();
   }
+  // Only .nim / .aowl files are compiled by nimony. For any other file (json, js,
+  // c, nif, …) we skip the whole pipeline so it just shows native highlighting with
+  // no nim errors.
+  function activeIsNim(){ return !window.AowliWorkspace || window.AowliWorkspace.activeIsNim(); }
+  function clearPipelineForNonNim(){
+    syntaxDiags = []; semDiags = []; refreshMarkers();
+    if(window.AowliLsp && window.AowliLsp.update) window.AowliLsp.update("", "");
+    const lang = (window.AowliWorkspace && window.AowliWorkspace.activeLang && window.AowliWorkspace.activeLang()) || "text";
+    const note = '<span class="sys">'+esc(lang.toUpperCase())+' file — shown with native syntax highlighting. Only <code>.nim</code> / <code>.aowl</code> files are compiled &amp; run by nimony.</span>';
+    if(pnifEl) pnifEl.innerHTML = note;
+    if(snifEl) snifEl.innerHTML = note;
+    stageBytes.pnif = null; stageBytes.snif = null;
+    if(curSrcView==="stages") updateStageMeta();
+    semStatus('');
+  }
   function runParse(){
+    if(!activeIsNim()){ clearPipelineForNonNim(); return; }
     if(!window.AowliParser || !window.AowliParser.ready){
       pnifEl.innerHTML='<span class="sys">parser loading…</span>'; return;
     }
@@ -1311,6 +1446,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     }
   }
   async function runSemCheck(){
+    if(!activeIsNim()){ semStatus(""); return; }
     // only real syntax ERRORS gate the sem check; opinion-lint warnings/hints don't.
     if(syntaxDiags.some(d=>(d.severity||"error")==="error")){ semStatus(""); return; }
     if(!window.AowliSem || !window.AowliSem.ready || !window.AowliParser || !window.AowliParser.ready) return;
@@ -1322,7 +1458,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
       const { nif } = window.AowliParser.parseFull(src, "in.nim");   // memo hit — runParse already parsed this buffer
       const t0=performance.now();
       semStatus('<span class="sys">● type-checking…</span>');
-      const { snif, diags, cached } = await window.AowliSem.compile(nif);   // runs in the worker
+      const { snif, diags, cached } = await window.AowliSem.compile(nif, undefined, src);   // runs in the worker (multi-module aware)
       const ms=(performance.now()-t0).toFixed(0);
       // The semcheck is async now: the buffer may have moved on (or picked up a
       // syntax error) while the worker was busy. Drop this result if so — a fresh
@@ -1547,6 +1683,11 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     }finally{ runRungBusy=false; }
   }
   document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();run();}});
+  // Monaco swallows keystrokes while focused, so the document-level Ctrl/Cmd+Enter
+  // above never fires from inside the editor. Expose run() and let editor.js bind
+  // it as a first-class Monaco command.
+  window.AowliRun = run;
+  if(window.AowliEditor && window.AowliEditor.bindRun) window.AowliEditor.bindRun(run);
 
   // 3-way theme cycle: light → dark (blue) → black (true dark). The chosen theme
   // is mirrored onto the docs site's key (light/dark axis) so going back matches.
@@ -1705,8 +1846,12 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
       menu.style.top =Math.max(6, Math.min(y, innerHeight-mh-6))+"px";
     }
     // capture phase: Monaco consumes contextmenu on its textarea even with its
-    // own menu disabled, so we must intercept before it.
-    document.addEventListener("contextmenu",e=>{ e.preventDefault(); e.stopPropagation(); open(e.clientX, e.clientY, e.target); }, true);
+    // own menu disabled, so we must intercept before it. EXCEPTION: the file
+    // explorer owns its rows' right-click menu (rename/delete/move/…), so let those
+    // events through to explorer.js instead of showing the code menu here.
+    document.addEventListener("contextmenu",e=>{
+      if(e.target && e.target.closest && e.target.closest(".fx-tree, #explorerDock, #fx-menu")) return;
+      e.preventDefault(); e.stopPropagation(); open(e.clientX, e.clientY, e.target); }, true);
     // capture phase: Monaco stops propagation on its own mousedown, so a click
     // INTO the editor would never bubble here — capture closes the menu anyway.
     document.addEventListener("mousedown",e=>{ if(!e.target.closest("#ctxmenu")) hide(); }, true);
@@ -1747,6 +1892,7 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
       orientBtn.setAttribute("data-tip", orient==="cols"
         ? "Side-by-side — switch to stacked" : "Stacked — switch to side-by-side");
       showOut.classList.toggle("show", hidden);   // fade in/out (see .fab CSS)
+      const cbtn=$("#consoleTabBtn"); if(cbtn) cbtn.classList.toggle("on", !hidden);   // tab-row console toggle
       try{ localStorage.setItem("np-orient", orient); localStorage.setItem("np-hidden", hidden?"1":"0"); }catch(_){}
     }
     orientBtn.addEventListener("click",()=>{ orient = orient==="cols"?"rows":"cols"; apply(); });
@@ -1754,6 +1900,10 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
     showOut.addEventListener("click",()=>{ hidden=false; apply(); selectTab("out"); });
     // used by run(): guarantee the Output is on screen and selected
     ensureOutputVisible = ()=>{ if(hidden){ hidden=false; apply(); } selectTab("out"); };
+    // The console toggle in the file-tab action row shows/hides the output pane.
+    window.AowliConsoleToggle = ()=>{ hidden=!hidden; apply(); if(!hidden) selectTab("out"); };
+    window.AowliConsoleVisible = ()=> !hidden;
+    window.AowliConsoleSyncBtn = ()=>{ const cbtn=$("#consoleTabBtn"); if(cbtn) cbtn.classList.toggle("on", !hidden); };
     // Escape hides the output — even from inside Monaco. Capture phase so it
     // beats Monaco's own key handling; but yield to Monaco's popups (suggest /
     // parameter hints / find / rename) so their Escape still dismisses them
@@ -1834,31 +1984,243 @@ if(!("sem" in window.AowliOpts)) window.AowliOpts.sem = "nim";
   function decodeShare(s){
     try{ return decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))); }catch(_){ return null; }
   }
+  // base64url over raw bytes (for the compressed workspace token)
+  function b64urlEnc(bytes){ let s=""; for(let i=0;i<bytes.length;i++) s+=String.fromCharCode(bytes[i]);
+    return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+  function b64urlDec(str){ const bin=atob(str.replace(/-/g,"+").replace(/_/g,"/"));
+    const b=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
+  // gzip a string → "z"+b64url (or "u"+b64url of raw utf8 if CompressionStream absent)
+  async function packWorkspace(str){
+    if(typeof CompressionStream==="undefined") return "u"+b64urlEnc(new TextEncoder().encode(str));
+    const cs=new CompressionStream("gzip");
+    const buf=await new Response(new Blob([str]).stream().pipeThrough(cs)).arrayBuffer();
+    return "z"+b64urlEnc(new Uint8Array(buf));
+  }
+  async function unpackWorkspace(tok){
+    const kind=tok[0], bytes=b64urlDec(tok.slice(1));
+    if(kind==="u") return new TextDecoder().decode(bytes);
+    const ds=new DecompressionStream("gzip");
+    return await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
+  }
+
   const shareBtn=$("#shareBtn"), shareHTML=shareBtn.innerHTML;
   const checkSVG='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 8.4l3 3 6.6-7.2"/></svg>';
-  shareBtn.addEventListener("click",()=>{
-    const url=location.origin+location.pathname+"#c="+encodeShare(window.AowliEditor.getValue());
-    try{ history.replaceState(null,"",url); }catch(_){}
-    const done=()=>{ shareBtn.innerHTML=checkSVG; shareBtn.classList.add("copied");
-      setTimeout(()=>{ shareBtn.innerHTML=shareHTML; shareBtn.classList.remove("copied"); },1400); };
-    if(navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(()=>prompt("Share link:",url));
-    else prompt("Share link:",url);
+  function shareDone(){ shareBtn.innerHTML=checkSVG; shareBtn.classList.add("copied");
+    setTimeout(()=>{ shareBtn.innerHTML=shareHTML; shareBtn.classList.remove("copied"); },1400); }
+  function copyLink(url){ if(navigator.clipboard) navigator.clipboard.writeText(url).then(shareDone).catch(()=>prompt("Share link:",url)); else prompt("Share link:",url); }
+  shareBtn.addEventListener("click", async ()=>{
+    // Share the ENTIRE workspace (all your projects & files) when the multi-file
+    // workspace is present; fall back to the single-buffer link otherwise.
+    const W = window.AowliWorkspace;
+    if(W && W.exportWorkspace){
+      try{
+        W.flush();
+        const data = W.exportWorkspace();
+        if(data.projects.length){
+          const tok = await packWorkspace(JSON.stringify(data));
+          const url = location.origin+location.pathname+"#w="+tok;
+          if(url.length > 60000)
+            print('<span class="err">This workspace is very large ('+Math.round(url.length/1024)+' KB) — the link may be too long for some browsers/chat apps.</span>');
+          copyLink(url); return;
+        }
+      }catch(e){ /* fall through to single-file */ }
+    }
+    copyLink(location.origin+location.pathname+"#c="+encodeShare(window.AowliEditor.getValue()));
   });
 
-  // editor ready -> load a shared link if present, else the demo; parse on every edit
-  window.AowliEditor.onReady(()=>{
-    window.AowliEditor.onChange(scheduleParse);
-    const shared=(location.hash||"").match(/[#&]c=([^&]+)/);
-    const code=shared?decodeShare(shared[1]):null;
-    if(code!=null){
-      window.AowliEditor.setValue(code);
-      print('<span class="sys">Loaded from a shared link — edit freely and press Run.</span>');
-      runParse(); runSemCheck();
-    } else {
-      loadDemo();
-    }
+  // ---- Reset: wipe the whole workspace (files, projects, tabs, panel + debugger
+  //      state) and reload into the fresh default playground. Everything the app
+  //      persists lives under the "np-" localStorage prefix, so clear those keys
+  //      and reload — the cleanest full reset (rebuilds all in-memory state too). ----
+  const resetBtn=$("#resetBtn");
+  if(resetBtn) resetBtn.addEventListener("click", async ()=>{
+    const ok = window.AowliUi
+      ? await window.AowliUi.confirm("Reset the playground?",
+          { note:"This clears every file and project in the workspace and restores the default. This can't be undone.", ok:"Reset everything", danger:true })
+      : confirm("Reset the playground? This clears every file and project.");
+    if(!ok) return;
+    try{
+      const keys=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.indexOf("np-")===0) keys.push(k); }
+      keys.forEach(k=>{ try{ localStorage.removeItem(k); }catch(_){} });
+    }catch(_){}
+    try{ history.replaceState(null,"",location.origin+location.pathname); }catch(_){}
+    location.reload();
   });
+
+  // editor ready -> initialise the multi-file workspace, then open the active
+  // file; parse on every edit and flush the buffer back into the active file.
+  window.AowliEditor.onReady(()=>{
+    window.AowliEditor.onChange(()=>{ if(window.AowliWorkspace) window.AowliWorkspace.flush();
+      if(window.AowliTabs && window.AowliTabs.promoteActive) window.AowliTabs.promoteActive();   // editing keeps a preview tab open
+      scheduleParse(); });
+    // Opening a file DEFERS the reparse/recheck (via the same debounce as typing)
+    // instead of doing it synchronously inside the click handler — that synchronous
+    // parse + NIF render + marker refresh was the brief freeze on every file open.
+    if(window.AowliWorkspace) window.AowliWorkspace.onActiveFileChange(()=>{ scheduleParse(); updateRunState(); });
+    // Boot the explorer FIRST so its tab-tracking listener is wired before the
+    // workspace opens its first file — otherwise a freshly-seeded file (e.g. after
+    // Reset) opens with no tab.
+    if(window.AowliExplorerBoot) window.AowliExplorerBoot();
+    bootWorkspace();
+    if(window.AowliStdWarm) window.AowliStdWarm();
+    if(window.AowliDebuggerBoot) window.AowliDebuggerBoot();
+  });
+
+  // Seed / restore the workspace and open a first file.
+  function bootWorkspace(){
+    const W = window.AowliWorkspace;
+    if(!W){
+      const shared=(location.hash||"").match(/[#&]c=([^&]+)/);
+      const code=shared?decodeShare(shared[1]):null;
+      if(code!=null){ window.AowliEditor.setValue(code); runParse(); runSemCheck(); } else loadDemo();
+      return;
+    }
+    // A clone link (#clone=owner/repo[/tree/branch/sub]): restore local work, then
+    // clone the repo and spawn into it.
+    const cloneSpec=(location.hash||"").match(/[#&]clone=([^&]+)/);
+    if(cloneSpec && window.AowliGit){
+      W.load();
+      const spec = decodeURIComponent(cloneSpec[1]);
+      print('<span class="sys">Cloning <b>'+esc(spec)+'</b>…</span>');
+      window.AowliGit.cloneSpec(spec, t=>{ const el=$("#statusText"); if(el) el.textContent=t; })
+        .then(()=>{ try{ history.replaceState(null,"",location.origin+location.pathname); }catch(_){}
+          print('<span class="sys">Cloned <b>'+esc(spec)+'</b> — edit freely and press Run.</span>'); })
+        .catch(e=>{ print('<span class="err">clone failed: '+esc(e&&e.message||e)+'</span>'); if(!W.firstFile()) seedDemo(W); });
+      return;
+    }
+    // A whole-workspace share link (#w=…): restore any existing local work, then
+    // MERGE the shared projects in and open its active file. Decompress is async.
+    const wsShare=(location.hash||"").match(/[#&]w=([^&]+)/);
+    if(wsShare){
+      W.load();
+      unpackWorkspace(wsShare[1]).then(json=>{
+        let data=null; try{ data=JSON.parse(json); }catch(_){}
+        if(data && W.importWorkspace(data)){
+          try{ history.replaceState(null,"",location.origin+location.pathname); }catch(_){}
+          print('<span class="sys">Loaded a shared workspace — edit freely and press Run.</span>');
+        } else if(!W.firstFile()) seedDemo(W);
+      }).catch(()=>{ if(!W.firstFile()) seedDemo(W); });
+      return;
+    }
+    const shared=(location.hash||"").match(/[#&]c=([^&]+)/);
+    const sharedCode=shared?decodeShare(shared[1]):null;
+    const restored = W.load();
+    if(sharedCode!=null){
+      const p = W.addProject({ name:"shared", kind:"user", files:{ "main.nim": sharedCode } });
+      W.openFile(p.id, "main.nim", true);
+      print('<span class="sys">Loaded from a shared link — edit freely and press Run.</span>');
+    } else if(restored && W.activeRef){
+      W.openFile(W.activeRef.projectId, W.activeRef.path, true);
+    } else if(restored){
+      const f = W.firstFile(); if(f) W.openFile(f.projectId, f.path, true); else seedDemo(W);
+    } else {
+      seedDemo(W);
+    }
+  }
+  function seedDemo(W){
+    const body = (window.PLAYGROUND_DEMO && window.PLAYGROUND_DEMO.trim())
+      ? window.PLAYGROUND_DEMO : 'echo "hello, aoughwl"\n';
+    const p = W.addProject({ name:"scratch", kind:"user", files:{ "helloWorld.nim": body } });
+    W.openFile(p.id, "helloWorld.nim", true);
+    if(window.AowliTabs && window.AowliTabs.touch) window.AowliTabs.touch(W.activeRef);
+  }
   if(window.AowliEngine&&window.AowliEngine.ready) window.__nifiEngineReady(true);
+
+  // ---- explorer + debugger toolbar buttons + docked-panel plumbing ----
+  (function(){
+    const wb = $("#workbench"), gutter = $("#fxGutter");
+    const KEY_W="np-fx-w", KEY_HID="np-fx-hidden", KEY_SIDE="np-fx-side";
+    // restore geometry / state
+    try{ const w=parseInt(localStorage.getItem(KEY_W),10); if(w>=150&&w<=900) wb && wb.style.setProperty("--fx-w", w+"px"); }catch(_){}
+    try{ if(wb && localStorage.getItem(KEY_HID)==="1") wb.classList.add("fx-hidden"); }catch(_){}
+    try{ const s=localStorage.getItem(KEY_SIDE); if(wb && (s==="left"||s==="right")) wb.setAttribute("data-fxside", s); }catch(_){}
+    function relayoutEditor(){ if(window.AowliEditor && window.AowliEditor.relayout) window.AowliEditor.relayout(); }
+    // The Explorer/Debugger toggles live in the file-tab row (created by
+    // explorer.js). Reflect the explorer's open state on its tab-row button.
+    function syncExplorerBtn(){ const b=$("#fxTabBtn"); if(b && wb) b.classList.toggle("on", !wb.classList.contains("fx-hidden")); }
+    function toggleHide(){ if(!wb) return; wb.classList.toggle("fx-hidden");
+      try{ localStorage.setItem(KEY_HID, wb.classList.contains("fx-hidden")?"1":"0"); }catch(_){} syncExplorerBtn(); relayoutEditor(); }
+    function setSide(s){ if(!wb||(s!=="left"&&s!=="right")) return; wb.setAttribute("data-fxside", s);
+      try{ localStorage.setItem(KEY_SIDE, s); }catch(_){} relayoutEditor(); }
+    function toggleSide(){ setSide(wb && wb.getAttribute("data-fxside")==="right"?"left":"right"); }
+    // Compile-stages / translate-code bar toggle (the source pane's top label row).
+    (function(){
+      const KEY="np-stages-hidden";
+      let hidden=false; try{ hidden = localStorage.getItem(KEY)==="1"; }catch(_){}
+      function apply(){ document.body.classList.toggle("stages-hidden", hidden);
+        const b=$("#stagesTabBtn"); if(b) b.classList.toggle("on", !hidden);
+        if(window.AowliEditor && window.AowliEditor.relayout) window.AowliEditor.relayout(); }
+      window.AowliStagesToggle = ()=>{ hidden=!hidden; try{ localStorage.setItem(KEY, hidden?"1":"0"); }catch(_){} apply(); };
+      window.AowliStagesSyncBtn = apply;
+      apply();
+    })();
+    // Exposed so the file-tab-row buttons (explorer.js) can drive the panels.
+    window.AowliExplorerToggle = toggleHide;
+    window.AowliExplorerVisible = () => !!(wb && !wb.classList.contains("fx-hidden"));
+    window.AowliExplorerSyncBtn = syncExplorerBtn;
+    const hb=$("#fxDockHide"); if(hb) hb.addEventListener("click", toggleHide);
+    const sb=$("#fxDockSide"); if(sb) sb.addEventListener("click", toggleSide);
+    syncExplorerBtn();
+
+    // item 2: drag the explorer by ANY whitespace in its header to re-dock it
+    // left/right (moveable, but stays a docked panel — not free-floating).
+    const dockHead = document.querySelector("#explorerDock .dock-head");
+    if(dockHead && wb){
+      let hdrag=null;
+      dockHead.addEventListener("pointerdown", e=>{
+        if(e.target.closest("button")) return;           // buttons keep their own action
+        hdrag={ moved:false }; dockHead.classList.add("grabbing");
+        try{ dockHead.setPointerCapture(e.pointerId); }catch(_){}
+      });
+      dockHead.addEventListener("pointermove", e=>{
+        if(!hdrag) return; hdrag.moved = true;
+        wb.classList.add("fx-dragging");
+        const r = wb.getBoundingClientRect(), frac=(e.clientX-r.left)/r.width;
+        wb.classList.toggle("fx-drop-left", frac < 0.5);
+        wb.classList.toggle("fx-drop-right", frac >= 0.5);
+      });
+      const hend=e=>{ if(!hdrag) return;
+        dockHead.classList.remove("grabbing");
+        if(hdrag.moved){ const r=wb.getBoundingClientRect(), frac=(e.clientX-r.left)/r.width; setSide(frac<0.5?"left":"right"); }
+        wb.classList.remove("fx-dragging","fx-drop-left","fx-drop-right");
+        hdrag=null;
+      };
+      dockHead.addEventListener("pointerup", hend);
+      dockHead.addEventListener("pointercancel", ()=>{ if(hdrag){ dockHead.classList.remove("grabbing"); wb.classList.remove("fx-dragging","fx-drop-left","fx-drop-right"); hdrag=null; } });
+    }
+
+    // debugger drawer resize (#dbgResize), attached to the editor pane
+    const dbgResize = $("#dbgResize"), dbgDock = $("#debuggerDock");
+    try{ const h=parseInt(localStorage.getItem("np-dbg-h"),10); if(h>=120&&h<=800&&dbgDock) dbgDock.style.setProperty("--dbg-h", h+"px"); }catch(_){}
+    if(dbgResize && dbgDock){
+      let dd=false;
+      dbgResize.addEventListener("pointerdown",e=>{ dd=true; dbgResize.classList.add("drag"); dbgResize.setPointerCapture(e.pointerId); });
+      dbgResize.addEventListener("pointermove",e=>{ if(!dd) return;
+        const r=dbgDock.getBoundingClientRect();
+        let h=r.bottom-e.clientY; h=Math.max(120, Math.min(h, (dbgDock.parentElement.getBoundingClientRect().height*0.75)));
+        dbgDock.style.setProperty("--dbg-h", Math.round(h)+"px");
+      });
+      const dend=()=>{ if(!dd) return; dd=false; dbgResize.classList.remove("drag");
+        try{ localStorage.setItem("np-dbg-h", parseInt(getComputedStyle(dbgDock).getPropertyValue("--dbg-h"),10)||260); }catch(_){} relayoutEditor(); };
+      dbgResize.addEventListener("pointerup", dend); dbgResize.addEventListener("pointercancel", dend);
+    }
+    // resize the docked explorer by dragging its gutter
+    if(gutter && wb){
+      let drag=false;
+      gutter.addEventListener("pointerdown",e=>{ drag=true; gutter.classList.add("drag"); gutter.setPointerCapture(e.pointerId); });
+      gutter.addEventListener("pointermove",e=>{ if(!drag) return;
+        const right = wb.getAttribute("data-fxside")==="right";
+        const r = wb.getBoundingClientRect();
+        let w = right ? (r.right - e.clientX) : (e.clientX - r.left);
+        w = Math.max(150, Math.min(w, Math.min(900, r.width-200)));
+        wb.style.setProperty("--fx-w", Math.round(w)+"px");
+      });
+      const end=()=>{ if(!drag) return; drag=false; gutter.classList.remove("drag");
+        try{ localStorage.setItem(KEY_W, parseInt(getComputedStyle(wb).getPropertyValue("--fx-w"),10)||244); }catch(_){} relayoutEditor(); };
+      gutter.addEventListener("pointerup", end); gutter.addEventListener("pointercancel", end);
+      gutter.addEventListener("dblclick",()=>{ wb.style.setProperty("--fx-w","244px"); try{localStorage.setItem(KEY_W,244);}catch(_){} relayoutEditor(); });
+    }
+  })();
 
   // ======================= Config panel wiring =========================
   window.AowliOpts = window.AowliOpts || {};

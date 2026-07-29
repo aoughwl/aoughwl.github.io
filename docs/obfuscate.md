@@ -4,6 +4,8 @@ repo: aoughwl/obfuscate
 
 # obfuscate — a NIF/AIF obfuscator for Nimony
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 An obfuscator for [Nimony](../nimony), built as a **test article**: a
 program-analysis that claims to understand code by its execution *structure*
 rather than its identifier *names* — or its source *shape* — should behave

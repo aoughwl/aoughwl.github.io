@@ -4,6 +4,8 @@ repo: aoughwl/aowlparser
 
 # aowlparser — Nim → AIF parser
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.aif`).
 Produces the same output as the classic compiler's `nifler`, but is self-hosted —
 no dependency on the classic Nim compiler, so it compiles through the nimony JS

@@ -4,6 +4,8 @@ repo: aoughwl/html
 
 # html — typed HTML5 for nimony
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 A registry of every HTML5 element and its attributes (with void / deprecated /
 experimental markers), plus a document-tree builder and a correct, escaping,
 void-aware renderer. Pure logic for nimony / Nim 3.0 — standard library only,

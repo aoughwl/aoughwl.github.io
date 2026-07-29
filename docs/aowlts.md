@@ -1,5 +1,7 @@
 # aowlts — idiomatic TypeScript backend
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 An **idiomatic TypeScript** backend for [nimony](../nimony): Nim types become real
 TypeScript types, not byte offsets.
 

@@ -1,5 +1,7 @@
 # The net stack
 
+> ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
+
 A Nimony-native networking stack, one concern per repo, layered `tcp → net →
 tls → serve` with transport-free `http`/`compress` helpers and `ws` / `requests`
 alongside. Common stance throughout: nimony-native, no framework runtime,
