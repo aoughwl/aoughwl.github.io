@@ -236,3 +236,42 @@ characters long simply stopped matching. The pattern hole `?d2` had been read as
 side referenced — and a rule that matches nothing produces no error, just no
 results. Worth noting as a general hazard: a corrupted *pattern* fails silently,
 where corrupted *data* usually announces itself.
+
+### `return` or `yield` outside a routine crashed the compiler
+
+*Fixed in `src/nimony/sem.nim` (`semReturn`, `semYield`).*
+
+**What.** Any module-level `return` — or `yield` — crashed nimsem instead of
+reporting an error:
+
+```
+Error: unhandled exception: src/lib/nifcursors.nim(149, 3)
+  `c.p != nil and c.rem > 0`  [AssertionDefect]
+```
+
+```nim
+var x = 1
+if x == 1:
+  return          # crash, not a diagnostic
+```
+
+**Why.** `semReturn` *did* diagnose the case — `` `return` only allowed within a
+routine`` — but then fell through to the code that type-checks the returned value
+against `c.routine.returnType`. Outside a routine there is no routine record, so
+that cursor is empty, and `typeKind` on an empty cursor trips the nifcursors
+`load` assertion. `semRaise` next door is written as an `if/elif` chain and so
+never had the problem; `semReturn` and `semYield` read the type unconditionally.
+
+**Fix.** Treat "no enclosing routine" the way both procs already treat a
+template: there is no expected type, so use `autoType` and let the error that was
+already reported stand on its own. In `semReturn` the bare-`return` branch also
+has to skip the `returnType.typeKind != VoidT` test, because reading it is itself
+the crash.
+
+**How it surfaced.** A differential batch for
+[aowlsem](https://github.com/aoughwl/aowlsem) — hand-written invalid programs
+whose ACCEPT/REJECT verdict is compared against the real driver. The crash had
+been hiding as an agreement: a crash exits non-zero, so it *looked* like a
+rejection, and the oracle never got far enough to reveal that aowlsem was
+accepting the program. Stock Nim rejects both (`'return' not allowed here`), so
+aowlsem gained the matching check (`E0279`) in the same pass.
