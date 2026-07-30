@@ -4,7 +4,7 @@
 
 ---
 
-`nimlang` server, 25 tools, JSON-RPC 2.0 over stdio. Every tool accepts an
+`nimlang` server, 26 tools, JSON-RPC 2.0 over stdio. Every tool accepts an
 optional `terse: bool` (default = truthiness of `NIMLANG_AGGRESSIVE`) — see
 [Terse mode](#terse-mode). `compile`, `build`, and `defs_uses` also take
 `raw: bool`, echoing the exact argv/contract they ran — see [Raw mode](#raw-mode).
@@ -28,6 +28,7 @@ repo's apparent source tree by ten.
 
 | Tool | Args | Returns | Purpose |
 |---|---|---|---|
+| `doctor` | `versions=false` | `{found, missing, note?, aowl_mode, terse_default}` | Which binaries every tool will shell out to (`nim`, `nimsuggest`, `nimble`, `nimony`, `nimsem`, `nifler`, `hastur`, `aowli-interp`, `aowli-dbg`), what is missing and which tools that breaks, plus the aowl mode currently in force. Run first when a failure looks environmental. |
 | `map` | `root="."`, `max_dirs=20`, `max_modules=15` | `{toolchain, builds_with?, toolchain_note?, entry_points, config, dirs, largest, modules, lines}` | Whole-repo orientation in ONE call, replacing the `ls` + `find` + `cat README` + outline-three-files opening ritual. `builds_with` parses the build script's actual compiler invocation — which is how a Nimony project carrying no `nimony.cfg` marker stops reading as Nim, with `toolchain_note` flagging the disagreement. |
 | `search` | `pattern`, `root="."`, `glob`, `files=false`, `fixed=false`, `case=false`, `max_hits=40`, `per_file=6`, `max_cols=160`, `include_generated=false` | `{matches:[{file, hits:["N: text"]}], files, hits, truncated?, note?}` | The `Grep`/`Glob` replacement. Output is capped on three axes at once — per line, per file, per search — and says so when it truncates; hits are grouped by file so N matches cost one path string. `files: true` returns matching paths only (substring, or fnmatch when the pattern has glob metacharacters). For a Nim *symbol*, `symbols`/`defs_uses` are still sharper. |
 
