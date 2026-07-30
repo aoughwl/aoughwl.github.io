@@ -125,6 +125,7 @@ const sidebar = [
         link: '/docs/aowlcode',
         collapsed: true,
         items: [
+          { text: 'Aowl mode (default-on)', link: '/docs/aowlcode/aowl-mode' },
           { text: 'Tools', link: '/docs/aowlcode/tools' },
           { text: 'Commands', link: '/docs/aowlcode/commands' },
           { text: 'Agents', link: '/docs/aowlcode/agents' },

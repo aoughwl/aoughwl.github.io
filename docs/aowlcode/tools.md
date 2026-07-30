@@ -4,7 +4,7 @@
 
 ---
 
-`nimlang` server, 17 tools, JSON-RPC 2.0 over stdio. Every tool accepts an
+`nimlang` server, 25 tools, JSON-RPC 2.0 over stdio. Every tool accepts an
 optional `terse: bool` (default = truthiness of `NIMLANG_AGGRESSIVE`) — see
 [Terse mode](#terse-mode). `compile`, `build`, and `defs_uses` also take
 `raw: bool`, echoing the exact argv/contract they ran — see [Raw mode](#raw-mode).
@@ -18,6 +18,18 @@ optional `terse: bool` (default = truthiness of `NIMLANG_AGGRESSIVE`) — see
 | `explain_failure` | `file`, `toolchain="auto"`, `extra_args=[]`, `terse` | `{ok, toolchain, verdict, diagnostics, culprit?}` | Compiles; on failure returns a ≤5-line `verdict` + `culprit` (Nimony: smallest NIF node spanning the error; Nim: ±3 source lines). Replaces compile→outline→query by hand. |
 | `shrink` | `file`, `toolchain="auto"`, `terse` | `{original_lines, minimal_lines, minimal_source, kept_error}` | Delta-debugs to a minimal still-failing repro (drops top-level statements while the first `Error:` is preserved). Bounded: ≤200 compiles / 90s. |
 | `phase_report` | `file`, `toolchain="auto"`, `extra_args=[]`, `terse` | `{ok, phases:[{phase, artifact, summary}]}` | Compiles with Nimony, 1-line summary (byte size, node count, top tag counts) per `nimcache/*.<phase>.nif`. Nim → empty list + note (no NIF phases). |
+
+## Orientation & search
+
+These two replace the shell habits that [aowl mode](aowl-mode) denies. Both
+exclude checked-in generated artifact trees (`nimcache/`, `*.nif`, emitted
+`*.c`) and all hidden directories — `.claude/worktrees/` alone can multiply a
+repo's apparent source tree by ten.
+
+| Tool | Args | Returns | Purpose |
+|---|---|---|---|
+| `map` | `root="."`, `max_dirs=20`, `max_modules=15` | `{toolchain, builds_with?, toolchain_note?, entry_points, config, dirs, largest, modules, lines}` | Whole-repo orientation in ONE call, replacing the `ls` + `find` + `cat README` + outline-three-files opening ritual. `builds_with` parses the build script's actual compiler invocation — which is how a Nimony project carrying no `nimony.cfg` marker stops reading as Nim, with `toolchain_note` flagging the disagreement. |
+| `search` | `pattern`, `root="."`, `glob`, `files=false`, `fixed=false`, `case=false`, `max_hits=40`, `per_file=6`, `max_cols=160`, `include_generated=false` | `{matches:[{file, hits:["N: text"]}], files, hits, truncated?, note?}` | The `Grep`/`Glob` replacement. Output is capped on three axes at once — per line, per file, per search — and says so when it truncates; hits are grouped by file so N matches cost one path string. `files: true` returns matching paths only (substring, or fnmatch when the pattern has glob metacharacters). For a Nim *symbol*, `symbols`/`defs_uses` are still sharper. |
 
 ## Navigation
 
@@ -36,7 +48,9 @@ optional `terse: bool` (default = truthiness of `NIMLANG_AGGRESSIVE`) — see
 | `nif_outline` | `nif_file`, `terse` | `{tags:[{tag,name,line,col?,sym?}], backend}` | Top-level `(tag name ...)` nodes, no bodies. |
 | `nif_query` | `nif_file`, `needle`, `terse` | `{matches:[{tag,name,snippet}], count, backend}` | Subtrees whose head tag or symbol matches `needle`; snippets truncated (~40 lines, ~15 terse). Capped at 50 matches. |
 | `nif_render` | `nif_file`, `needle?`, `terse` | `{rendered:[{tag,name?,pseudo_nim}], backend}` | Renders NIF node(s) as compact pseudo-Nim (`proc`/`let`/`call`/`if`/`type`/… mapped to Nim-ish syntax, `sym.NN.mod` demangled to `sym`); unknown tags fall back to a raw s-expr. ~10x smaller than raw NIF. |
-| `nif_diff` | `file_a`, `file_b` | `{changed:[...]}` | Unified diff (context 1) between two NIF/text files, `---`/`+++` headers trimmed. |
+| `nif_diff` | `file_a`, `file_b`, `mode="raw"\|"canon"\|"semantic"`, `max_lines` | `{changed:[...], identical, differing}` | Unified diff (context 1) between two NIF/text files, headers trimmed. `mode=canon` strips line-info suffixes and framing directives; `mode=semantic` additionally folds generic-instance hashes and orders instances — the canonical form for oracle comparison, and what makes a differential harness's `canon.py` unnecessary. |
+| `nif_run` | `file`, `deps`, `variants=[]`, `program_args=[]`, `install_as`, `timeout=60`, `max_chars` | `{exit, stdout, equivalent?, diverged?}` | Executes an already-built `.s.nif` on the aowli interpreter together with its sibling dependency modules. The module under test is installed under its **real nimcache name** — derived from the `.s.nif`'s own `(stmts …)` header — because getting that step wrong silently runs the *oracle* instead of the candidate. Several `variants` run in identical environments for a one-call behavioural-equivalence verdict; bytes are returned only when they diverge, plus a warning when the reference printed nothing (an equivalence check on a silent program proves nothing). |
+| `bisect` | `command` (with a `{flags}` hole), `toggles`, `when="exit_nonzero"` (also `exit_zero`, `stdout_contains`/`_lacks`/`_differs`/`_same`), `pattern`, `cwd`, `timeout=120` | `{minimal, baseline_reproduces, attempts}` | ddmin over a flag matrix: the minimal toggle subset that still reproduces a divergence. Generalises the `--no:PASS` sweep that pins a miscompiling compiler pass, and unlike a linear scan it finds multi-flag interactions. The no-toggle baseline is run and reported, so a vacuous result is visible rather than convincing. |
 
 All four prefer the optional `niflens`/`aiflens` helper (the compiler's own NIF
 libraries — set `$NIFLENS` or put it on `PATH`) and fall back to an in-Python
@@ -51,6 +65,17 @@ paren-matching scanner otherwise; each response reports which via `backend`.
 | `debug_session` | `action`, `session_id`, + start args (`file`, `breaks`, `break_funcs`, …), `paths`/`spec` | `{session_id, status, location, locals, stack, …}` | **Interactive/progressive**: runs once and stays paused between calls. `action` = start/step/next/finish/continue/expand/locals/stack/break/clear/stop — step & inspect the live frame with no re-run per look. |
 
 See [Execution](execution) for the binary-resolution chain and capture semantics.
+
+## Bounded shell
+
+The two remaining unbounded-output habits, which aowl mode deliberately lets
+through (they are not archaeology) and which are still among the largest single
+context costs in a session.
+
+| Tool | Args | Returns | Purpose |
+|---|---|---|---|
+| `changes` | `cwd="."`, `rev`, `staged`, `paths=[]`, `patch=false`, `max_files=40`, `max_hunks=8`, `max_chars` | `{files:["+A -D path"], hunks:{path:["@@ …"]}, untracked?, patch?, changed}` | `git diff` reduced to per-file +/- counts and **hunk headers** — which procs changed and by how much, at ~1% of the patch's size. Ask for `patch: true` on the one file that turns out to matter. |
+| `run` | `command`, `cwd`, `grep`, `head=30`, `tail=60`, `timeout=300` | `{exit, lines, output, truncated?, matched?}` | Runs a command and elides the **middle** of its output rather than the tail: a build log's ends carry the information — what ran, and why it stopped — while the middle is repetition, so the failing assertion always survives. `grep` filters to matching lines instead. |
 
 ## Terse mode
 

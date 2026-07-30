@@ -6,6 +6,12 @@ repo: aoughwl/aowlcode
 
 > ▶️ **[Try `aoughwl/aowlcode` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlcode)** — clones the repo into the in-browser IDE, no install.
 
+**v1.0 — [aowl mode](aowlcode/aowl-mode) is ON by default.** `Grep`/`Glob` and
+the shell's code-archaeology family are denied out of the box, and every denial
+names the one-call structural tool that answers the question instead. That is
+the whole product: the tools below existed for months and were skipped anyway,
+because shelling out is a reflex and choosing a tool is a decision.
+
 Mediates agent access to the **Nim** and **Nimony** toolchains through
 structured MCP tools: an agent works from compact diagnostics, outlines, and
 targeted NIF slices instead of raw compiler output and multi-hundred-kilobyte
@@ -32,6 +38,7 @@ all hooks, and exposes `/aowlcode:*` commands (see `/help`).
 
 | Page | Covers |
 |---|---|
+| [Aowl mode](aowlcode/aowl-mode) | **Start here.** The default-on lock: what each mode denies, the redirect table, why `off` expires, and the four escape hatches. |
 | [Tools](aowlcode/tools) | Every `nimlang` MCP tool — args, return shape, one-line purpose. The full reference. |
 | [Commands](aowlcode/commands) | `/aowlcode:*` slash commands, each mapped to its backing tool. |
 | [Agents](aowlcode/agents) | Subagents (`nif-inspector`, `nim-fixer`, `nim-applier`), model tiering, and the `fanout-apply` workflow. |
@@ -43,6 +50,8 @@ all hooks, and exposes `/aowlcode:*` commands (see `/help`).
 
 `toolchain="auto"` (the default) walks up from the target file for a
 `nimony.paths`/`nimony.cfg`, or a `nim.cfg` mentioning nimony → Nimony;
-otherwise Nim. `NIMLANG_TOOLCHAIN=nim|nimony` forces it globally; an explicit
+otherwise Nim. A repo that carries no marker and is built by a shell script
+(aowlsem, for one) reads as Nim by that rule alone — `map` reports what the
+build script actually invokes and flags the disagreement. `NIMLANG_TOOLCHAIN=nim|nimony` forces it globally; an explicit
 `toolchain` arg wins per call. `nimony c` exits 0 on failure — every tool
 computes `ok` from parsing for an `Error:` diagnostic, never the exit code.

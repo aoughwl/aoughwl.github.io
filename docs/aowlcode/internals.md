@@ -14,6 +14,11 @@
 | `NIMLANG_AGGRESSIVE` | Truthy → every tool defaults to terse output. | unset (verbose) |
 | `AOWLI_BIN_DIR` | Directory holding `aowli-interp`/`aowli-dbg` (for `trace`/`debug`). | `PATH`, then `~/.aowl/bin`, then `~/aowli/bin` |
 | `NIFLENS` | Path to the optional `niflens`/`aiflens` helper. | `PATH` lookup |
+| `AOWLCODE_DEFAULT_MODE` | Baseline aowl mode when no state file exists: `off`/`guided`/`strict`. | `guided` |
+| `AOWLCODE_MODE_TTL_HOURS` | How long an explicit mode (including `off`) survives before falling back to the baseline. | `12` |
+| `AOWLCODE_NO_MODE_GATE` | `1` → disable the aowl-mode hook and the session banner entirely. | unset |
+| `AOWLCODE_ALLOW_GENERATED_GREP` | `1` → allow unscoped searches over generated artifact trees. | unset |
+| `AOWLCODE_NO_SRC_GUARD` | `1` → allow whole-file reads of large sources. | unset |
 
 ## Hooks
 
@@ -21,6 +26,10 @@ Stdlib-only Python, fail-open (any error exits 0 rather than blocking).
 
 | Hook | Event / matcher | Behavior |
 |---|---|---|
+| `session-banner.py` | `SessionStart` | Injects ~200 tokens: the active mode plus the redirect table, once per session. Cheaper than the denial messages it prevents; silent when the mode is `off`. |
+| `aowl-mode.py` | `PreToolUse` / `Bash\|Grep\|Glob` | **The lock, on by default** (`guided`). Denies code archaeology and names the tool to use instead; state re-read per call, so toggling needs no restart. See [Aowl mode](aowl-mode). |
+| `guard-generated-grep.py` | `PreToolUse` / `Grep\|Glob` | Denies an *unscoped* search over a tree containing checked-in `nimcache/*.nif` or emitted `.c`, handing back the scoped re-invocation. A single NIF hit can be one 40KB line. |
+| `guard-source-read.py` | `PreToolUse` / `Read` | Denies a whole-file `Read` of a large `.nim`, returning a `symbol → line-range` outline in the same turn so the follow-up read is a window. |
 | `guard-nif-read.py` | `PreToolUse` / `Read` | Denies reading a `.nif` >15000 bytes; embeds a compact outline of the file in the denial reason (transform-not-block) so the same turn still gets useful structure. |
 | `guard-nif-bash.py` | `PreToolUse` / `Bash` | Denies `cat`/`head`/`tail`/`less`/`more`/`bat` targeting a `.nif` >15000 bytes — the shell-side bypass of the Read guard. |
 | `trim-build-output.py` | `PostToolUse` / `Bash` | For `nimony`/`hastur`/`nim c`/`nimble` invocations, strips `nifmake:`/`FAILURE:`/`niflink` noise and surfaces the real diagnostics as `additionalContext`. |

@@ -11,9 +11,9 @@ conclusion — never raw compiler output, NIF dumps, or full file contents.
 
 | Agent | Model | Tools | Job |
 |---|---|---|---|
-| `nif-inspector` | default (no override) | `Read`, `Bash`, `Glob`, `Grep` | Absorbs bulky NIF/phase artifacts and large Nim/Nimony source; returns the specific tag/symbol/phase/`file:line` that answers the question, one-to-few sentences, at most a tiny snippet. Prefers `nif_outline`/`nif_query`/`nif_diff` over raw reads (blocked >15KB anyway). |
-| `nim-fixer` | `haiku` | `Bash`, `Read`, `Edit`, `compile`, `explain_failure`, `shrink`, `outline`, `nif_query`, `nif_render` | Runs the diagnose loop: `explain_failure` → (optionally) `shrink` → targeted `Read`/`Edit` → `compile` to recheck → repeat. Stops at `ok:true`, ~6 attempts with no progress, or genuine ambiguity. Returns a minimal diff + one verdict line. |
-| `nim-applier` | `haiku` | `Bash`, `Read`, `Edit`, `compile`, `build` | Applies ONE pre-specified exact edit (old/new text or diff) + runs a given verify command. Does not diagnose, shrink, or improvise — ambiguous match or edit-doesn't-apply is reported and it stops. The mechanical fan-out worker for `nim-fixer`'s decisions. |
+| `nif-inspector` | default (no override) | `Read`, `Bash`, `search`, `nif_outline`, `nif_query`, `nif_render`, `nif_diff`, `symbols`, `decl_of` | Absorbs bulky NIF/phase artifacts and large Nim/Nimony source; returns the specific tag/symbol/phase/`file:line` that answers the question, one-to-few sentences, at most a tiny snippet. Prefers `nif_outline`/`nif_query`/`nif_diff` over raw reads (blocked >15KB anyway). |
+| `nim-fixer` | `haiku` | `Bash`, `Read`, `Edit`, `run`, `search`, `compile`, `explain_failure`, `shrink`, `outline`, `nif_query`, `nif_render` | Runs the diagnose loop: `explain_failure` → (optionally) `shrink` → targeted `Read`/`Edit` → `compile` to recheck → repeat. Stops at `ok:true`, ~6 attempts with no progress, or genuine ambiguity. Returns a minimal diff + one verdict line. |
+| `nim-applier` | `haiku` | `Bash`, `Read`, `Edit`, `run`, `search`, `compile`, `build` | Applies ONE pre-specified exact edit (old/new text or diff) + runs a given verify command. Does not diagnose, shrink, or improvise — ambiguous match or edit-doesn't-apply is reported and it stops. The mechanical fan-out worker for `nim-fixer`'s decisions. |
 
 The split: `nim-fixer` is the expensive reasoning loop (diagnose → decide →
 edit, one file at a time); `nim-applier` is the cheap, dumb, parallel-safe
@@ -41,6 +41,10 @@ parallel — no cross-talk, so every item must be independently applicable
 Not for research, diagnosis, or design decisions — those stay interactive in
 the main conversation or a `nim-fixer` delegation, where an expensive model
 (or a human) can actually judge an ambiguous diagnostic.
+
+Since v1.0 the agents carry the structural tools directly: [aowl mode](aowl-mode)
+applies to sub-agents too, and an agent whose only search tool is `Grep` is an
+agent the default would wedge.
 
 ## `nif-inspector` in practice
 

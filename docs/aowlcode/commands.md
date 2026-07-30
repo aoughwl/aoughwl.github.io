@@ -9,6 +9,7 @@ All namespaced `/aowlcode:<name>` (listed by `/help`). Each wraps one or more
 
 | Command | Argument hint | Backing tool(s) | Purpose |
 |---|---|---|---|
+| `/aowl-mode` | `[status\|strict\|guided\|off\|default]` | — | The default-on lock (see [Aowl mode](aowl-mode)). No argument reports the mode, where it came from, and how many archaeology calls it has intercepted. |
 | `/check` | `[file] [toolchain: nim\|nimony\|auto]` | `compile` | Type-check, report diagnostics only. Trusts `ok`, not exit code. |
 | `/build` | `[file] [run] [release] [toolchain]` | `build` | Linked executable + diagnostics + binary path; `run`/`release` optional. |
 | `/explain-failure` | `[file] [toolchain]` | `explain_failure` | One-shot verdict + culprit; no raw diagnostics dump. |
@@ -25,6 +26,11 @@ All namespaced `/aowlcode:<name>` (listed by `/help`). Each wraps one or more
 | `/land` | `[repo path] [feature label]` | — | End-of-feature checkpoint: flush learnings to memory, commit+push (author `savannt`, no co-author trailer), print `✅ landed`. |
 
 ## Notes on specific commands
+
+- **`/aowl-mode`** is the one command whose absence you notice: `guided` is the
+  default, so `Grep`/`Glob`/`grep`/`sed`/raw `nim c` are already denied before
+  you run anything. Commands containing `aowlcode-mode` are never blocked, so
+  it is always reachable — even from inside `strict`.
 
 - **`/check` vs `/build`** — `/check`/`compile` only type-checks (`nim check`);
   it never produces a runnable binary, even for Nim. Use `/build` when you need
