@@ -35,6 +35,16 @@ Stdlib-only Python, fail-open (any error exits 0 rather than blocking).
 | `trim-build-output.py` | `PostToolUse` / `Bash` | For `nimony`/`hastur`/`nim c`/`nimble` invocations, strips `nifmake:`/`FAILURE:`/`niflink` noise and surfaces the real diagnostics as `additionalContext`. |
 | `precompact-nudge.py` | `PreCompact` (no matcher) | Reminds the agent to run `/land` first if durable learnings from the session haven't been flushed to memory — compaction discards anything not written down. |
 
+## Which copy is running
+
+Claude Code does not execute the marketplace checkout. It installs a copy to
+`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/` and records the path
+in `~/.claude/plugins/installed_plugins.json`. If a reload fetches a newer
+version directory but leaves that record on the old one, the session keeps
+running the old code — visible only as a command or tool that does not exist.
+`doctor` reports this directly (`plugin.stale`); the fix is to repoint the
+`installPath`/`version` entry (or reinstall) and restart, not another reload.
+
 ## `.lsp.json` — single dispatching entry
 
 Nim and Nimony share the `.nim` extension; Claude Code has no documented way
