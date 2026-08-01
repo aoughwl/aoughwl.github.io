@@ -35,7 +35,12 @@ cooperatively multiplexed.
 | Server | Entry | Verified |
 |---|---|---|
 | **HTTP/1.1** (`serve/reactorhttp.nim`) | `serveHttpReactor(port, handler)` | 60 keep-alive conns × 5 reqs = 300/300, one thread |
+| **HTTPS** (same module, same coroutine) | `serveHttpsReactor(port, cert, key, handler)` | 30 simultaneous TLS conns × 5 = 150/150, one thread |
+| **HTTP/2** (`serve/reactorh2.nim`) | `serveHttp2Reactor(port, handler)` | **h2spec 146/146** |
+| **HTTP/2 over TLS** | `serveHttp2TlsReactor(port, cert, key, handler)` | **h2spec 146/146** over TLS |
+| **HTTPS with ALPN dispatch** | `serveHttpsAlpnReactor(port, cert, key, handler)` | h2 + http/1.1 interleaved on one port; h2spec 146/146 on that port |
 | **WebSocket** RFC 6455 (`serve/reactorws.nim`) | `serveWsReactor(port, handler)` | Autobahn-grade, 40 clients = 160/160, one thread |
+| **wss://** (same module, same coroutine) | `serveWssReactor(port, cert, key, handler)` | 20 simultaneous TLS clients = 80/80, one thread |
 | **HTTP/3 (QUIC)** (`serve/reactorh3.nim`) | `serveH3Reactor(port, cert, key, handler)` | 20 independent QUIC clients = 20/20, one thread |
 | **QUIC datagrams** (RFC 9221) | `sendDatagram` / `takeDatagram` | round-trip echo, ASan-clean |
 | **WebTransport** (extended CONNECT + WT datagrams) | `clientWtConnect` / `wtSendDatagram` | session + datagram round-trip (needs vendored nghttp3 ≥ 1.x) |
@@ -54,6 +59,27 @@ close codes are validated and echoed (Close 1002 on a bad code); and
 permessage-deflate is compressed/inflated per message — 19/19 conformance cases,
 one thread.
 
+**HTTP/2** keeps all protocol work in libnghttp2, which is a pure codec — it
+never touches a socket. The coroutine drains what the session has queued and
+feeds it what it reads; `h2NextOut` / `h2Feed` are the whole seam. Sessions live
+in a fixed table because nghttp2 keeps the `user_data` pointer it is given, and
+a coroutine local is not address-stable; the table size is the concurrency
+bound and overflow is counted, not dropped in silence.
+
+The score was **95/146 before this server existed**, against the blocking
+HTTP/2 driver, and the recorded reason — "it never answers a protocol violation
+with GOAWAY" — was wrong. Every failing section passes when run alone: the
+blocking server drives one connection to completion before accepting again, so
+one connection left open wedges the listener and every later case times out.
+*When a conformance suite fails only in aggregate, suspect the concurrency
+model, not the protocol code.* Three real bugs were hiding behind that
+misdiagnosis: `nghttp2_session_mem_recv` may consume less than it is given (a
+frame in the tail of a read was being dropped); `close()` with unread bytes
+queued makes the kernel send RST where the peer expects FIN; and nghttp2
+silently discards a HEADERS naming an already-used stream id without ever
+calling `on_begin_headers`, so RFC 7540 §5.1.1 has to be enforced from
+`on_begin_frame`.
+
 **HTTP/3** rides QUIC over a single UDP socket. The QUIC transport, TLS 1.3
 handshake, connection-ID routing, timers, and the HTTP/3 (QPACK) layer live in a
 C glue shim (`quic/quicglue.c`) compiled against system **ngtcp2 + nghttp3 +
@@ -69,6 +95,16 @@ proc handler(req: Request): Response {.nimcall.} =
   response(200, "text/plain", "hello from the async reactor\n")
 
 serveHttpReactor(8140, handler)   # one thread, epoll, many connections
+```
+
+```nim
+import serve, serve/reactorh2
+
+proc handler(req: Request): Response {.nimcall.} =
+  response(200, "text/plain", "ok " & req.path & "\n")
+
+# One HTTPS port: HTTP/2 for clients that ask for it, HTTP/1.1 for the rest.
+serveHttpsAlpnReactor(8443, "cert.pem", "key.pem", handler)
 ```
 
 The blocking worker-pool servers (`serve/loop.nim`, `serve/pool.nim`) remain for
@@ -88,6 +124,54 @@ serveH3Reactor(8443, "cert.pem", "key.pem", handle)   # HTTP/3 on one thread
 Build the QUIC glue shim first with `quic/build.sh` (Ubuntu deps:
 `libngtcp2-dev libngtcp2-crypto-gnutls-dev libnghttp3-dev libgnutls28-dev`) and
 put `libaowlquic.so` on the loader path.
+
+---
+
+## TLS, and one body per protocol
+
+`serve/asynctls.nim` is the TLS twin of the async I/O primitives —
+`awaitTlsHandshake` / `awaitTlsRead` / `awaitTlsWriteAll`. Nothing new was
+needed underneath: the `tls` package already returns `tlsWantRead` /
+`tlsWantWrite` on a non-blocking socket, and those map straight onto parking for
+`EPOLLIN` / `EPOLLOUT`. Handshakes are therefore async like everything else — a
+peer that stalls half-way through one costs a coroutine, not the thread.
+
+Two traps worth naming:
+
+- **Make the accepted fd non-blocking *before* wrapping it.** `wrapServer`
+  starts the handshake; on a blocking fd it runs the entire handshake inline, on
+  the reactor thread.
+- **The direction is TLS's choice, not the operation's.** A read can want
+  writability (a TLS 1.3 key update) and a write can want readability, so each
+  primitive parks on whichever the status names.
+
+Teardown is `close_notify` → FIN → bounded drain rather than a bare `close()`:
+closing while the peer's last bytes sit unread makes the kernel answer them with
+RST. That detail alone was worth two h2spec cases.
+
+`serve/asyncconn.nim` then keeps this from doubling the code. A `Conn` is
+`{fd, isTls, tls}` and the `awaitConn*` templates branch on `isTls`, each arm
+inlining the primitive it needs — a runtime branch is the only abstraction the
+coroutine transform allows, and it costs one predictable branch against a
+syscall. HTTP/1.1, HTTP/2 and WebSocket each run **one** connection body for
+both transports; only the accept loop differs.
+
+---
+
+## Idle timeouts
+
+The reactor originally had no clock at all: `epoll_wait` blocked forever, so a
+coroutine parked on a socket that never became ready stayed parked for the life
+of the process. One silent peer could hold a connection — and, for HTTP/2, one
+of the fixed session slots — indefinitely.
+
+`setIdleTimeout(fd, ms)` arms a `CLOCK_MONOTONIC` deadline when a coroutine
+parks and disarms it on readiness, so it measures *idleness*, not connection
+age; `epoll_wait` then blocks until the nearest deadline. An expiry **shuts the
+socket down** instead of resuming the continuation with an error — the coroutine
+reads 0 and takes the end-of-connection path it already has, so no server needed
+a line of new control flow. Defaults: 60 s for HTTP/1.1 and HTTP/2, off for
+WebSocket, since a silent subscription is not a stalled one.
 
 ---
 
