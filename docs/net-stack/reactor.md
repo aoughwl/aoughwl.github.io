@@ -42,6 +42,7 @@ cooperatively multiplexed.
 | **WebSocket** RFC 6455 (`serve/reactorws.nim`) | `serveWsReactor(port, handler)` | Autobahn-grade, 40 clients = 160/160, one thread |
 | **wss://** (same module, same coroutine) | `serveWssReactor(port, cert, key, handler)` | 20 simultaneous TLS clients = 80/80, one thread |
 | **HTTP/3 (QUIC)** (`serve/reactorh3.nim`) | `serveH3Reactor(port, cert, key, handler)` | 20 independent QUIC clients = 20/20, one thread |
+| **All three at once** (`serve/reactorall.nim`) | `serveAllReactor(port, cert, key, handler)` | HTTP/1.1 + HTTP/2 + HTTP/3 on one port, one handler, one thread; the HTTP/3 leg driven by third-party aioquic |
 | **QUIC datagrams** (RFC 9221) | `sendDatagram` / `takeDatagram` | round-trip echo, ASan-clean |
 | **WebTransport** (extended CONNECT + WT datagrams) | `clientWtConnect` / `wtSendDatagram` | session + datagram round-trip (needs vendored nghttp3 ≥ 1.x) |
 
@@ -172,6 +173,45 @@ socket down** instead of resuming the continuation with an error — the corouti
 reads 0 and takes the end-of-connection path it already has, so no server needed
 a line of new control flow. Defaults: 60 s for HTTP/1.1 and HTTP/2, off for
 WebSocket, since a silent subscription is not a stalled one.
+
+---
+
+## Timers that resume, and stopping
+
+Two things the loop gained beyond connections.
+
+**A timer that resumes rather than kills.** The idle timeout above ends a
+connection, which is right for a peer that has gone quiet and wrong for a
+protocol servicing its own timers. `awaitReadableFor(fd, ms, timedOut)` returns
+on readability *or* on the deadline and says which. That is what let HTTP/3 give
+up its private epoll loop and join the shared reactor — and therefore what makes
+one thread able to serve TCP and QUIC together.
+
+**A stop.** `run()` used to loop until the process was killed, so ending a
+server meant cutting a response in half. `requestStop(graceful)` writes 8 bytes
+to an eventfd the loop also watches — the only work a signal handler may do, and
+the only way to interrupt a blocked `epoll_wait`. A graceful stop closes the
+listeners and lets in-flight connections finish; `run()` returns when the last
+one closes. The server entry points install SIGINT/SIGTERM handlers, so Ctrl-C
+drains.
+
+## One port, three protocols
+
+```nim
+import serve, serve/reactorall
+
+proc handler(req: Request): Response {.nimcall.} =
+  response(200, "text/plain", "ok " & req.path & "\n")
+
+serveAllReactor(8443, "cert.pem", "key.pem", handler)
+```
+
+TLS/TCP with ALPN dispatch (`h2` or `http/1.1`) and QUIC/UDP on the same port
+number, from one handler, on one thread. Every TCP response carries
+`Alt-Svc: h3=":8443"` — without it a browser never tries HTTP/3, however well
+the UDP side works. HTTP/3's `(method, path, body)` shape is adapted to
+`Request`/`Response` inside `reactorall`, so callers write one handler rather
+than two.
 
 ---
 
