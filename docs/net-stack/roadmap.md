@@ -119,10 +119,10 @@ an `onLimit` hook.*
 
 | Bound | Value | Where |
 |---|---|---|
-| Whole-request cap | 8 MiB | `serve/loop.nim:33`, `reactorhttp.nim:31` |
+| ~~Whole-request cap~~ | 8 MiB **default**, `setServeLimits` / `setReactorLimits` | closed 2026-08-01 |
 | H3 request body cap | 1 MiB, re-allocated per `takeRequest` | `quic/quic.nim:127` |
 | H3 request body (C side) | unbounded | `quicglue.c` `rbody_append` |
-| Keep-alive requests | 100 blocking / 1000 reactor (inconsistent) | `loop.nim:37`, `reactorhttp.nim:32` |
+| ~~Keep-alive requests~~ | 100 blocking / 1000 reactor, both **defaults** now — the split is deliberate (a kept-alive connection costs a thread in one model, a coroutine in the other) | closed 2026-08-01 |
 | Read chunk | 8192 / 4096 / 16384 depending on file | `loop.nim:35`, `reactorhttp.nim:33`, `http2.nim:369` |
 | Write chunk | 65536 | `loop.nim:36` |
 | WS max message | 64 MiB | `reactorws.nim:52` |
@@ -139,7 +139,7 @@ an `onLimit` hook.*
 | Incoming datagram queue | 128, silent drop | `quicglue.c` `idg[128]` |
 | H3 method / path | 16 / 512 bytes, **silently truncated** | `quicglue.c`, `quic.nim:112` |
 | HTTP/2 streams / session | 64, silent drop | `http2.nim:97` |
-| HTTP/2 response headers | 39, silently dropped past that | `http2.nim:248` |
+| ~~HTTP/2 response headers~~ | 128, and overflow now answers **500** with `h2HeaderOverflows()` counting it — a dropped `Set-Cookie` is a wrong response, not a trimmed one | closed 2026-08-01 |
 | Static file | whole file into memory, no cap | `static.nim:97` |
 
 ### Timeouts
