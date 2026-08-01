@@ -189,8 +189,13 @@ write/header/close timeouts everywhere.
   suites and groups are fixed, there is no server SNI callback (one cert per
   context — no HTTP/3 virtual hosting), and the client verify callback accepts
   any certificate unconditionally.
-- **HTTP/2 sends exactly one SETTINGS entry** (MAX_CONCURRENT_STREAMS=100).
-  Window sizes, frame size, header table size, max header list size: unreachable.
+- ~~**HTTP/2 sends exactly one SETTINGS entry** (MAX_CONCURRENT_STREAMS=100).
+  Window sizes, frame size, header table size, max header list size:
+  unreachable.~~ **Closed 2026-08-01**: `H2Settings` / `setH2Settings` cover all
+  five; a 0 field means "keep nghttp2's default" rather than "announce 0", and
+  `MAX_HEADER_LIST_SIZE` — unbounded by default, which is a choice worth
+  revisiting — is now settable. Verified on the wire, h2spec still 146/146 with
+  the extra entries announced.
 - **nghttp3 settings**: only `enable_connect_protocol` and `h3_datagram` are set;
   `max_field_section_size`, QPACK table capacity and blocked streams are not.
 - **No Retry / address-validation tokens and no 0-RTT** in QUIC — the server is
