@@ -224,8 +224,19 @@ handlers.
 
 Absent across the board otherwise: connection limits and
 accept throttling, backpressure, access logging, metrics, tracing, qlog, error
-and panic hooks (a raising handler is uncaught — one bad request takes the
-process or worker down), and custom error-page rendering.
+and custom error-page rendering.
+
+**Corrected 2026-08-01 — "a raising handler is uncaught" is wrong for this
+stack.** `Handler` carries no `.raises`, so nimony rejects a `raise` inside a
+handler at compile time and forces any `.raises` call to be wrapped; the
+uncaught-exception class does not exist, and a try/except in the serving loop
+would add nothing. What remains is a **defect** (out-of-bounds index, nil
+dereference, a failed assertion in a callee), which is not catchable: `panic`
+writes its message and calls `exit(1)`. Measured: the process dies, the
+connection gets no reply, the port is released. Fail-fast is the right
+behaviour; the gap was that the message named no request. `serve/crashcontext.nim`
+now prints `serve: died while handling: GET /boom` on the way out, hooked
+through **`atexit`** (nothing raises SIGABRT on this path).
 
 **Response streaming closed 2026-08-01.** `serve/stream.nim` adds a pull
 producer — `proc(st: var StreamState; chunk: var string): bool {.nimcall.}` —
