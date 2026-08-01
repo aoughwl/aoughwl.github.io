@@ -140,7 +140,7 @@ an `onLimit` hook.*
 | H3 method / path | 16 / 512 bytes, **silently truncated** | `quicglue.c`, `quic.nim:112` |
 | HTTP/2 streams / session | 64, silent drop | `http2.nim:97` |
 | ~~HTTP/2 response headers~~ | 128, and overflow now answers **500** with `h2HeaderOverflows()` counting it — a dropped `Set-Cookie` is a wrong response, not a trimmed one | closed 2026-08-01 |
-| ~~Static file~~ | whole file into memory, now capped (`setStaticFileLimit`, refusals counted); streaming remains the real fix | closed 2026-08-01 |
+| ~~Static file~~ | `staticStreamFor` produces it from disk and needs no cap; the in-memory path keeps one (`setStaticFileLimit`, refusals counted) | closed 2026-08-01 |
 
 ### Timeouts
 
@@ -225,8 +225,20 @@ handlers.
 Absent across the board otherwise: connection limits and
 accept throttling, backpressure, access logging, metrics, tracing, qlog, error
 and panic hooks (a raising handler is uncaught — one bad request takes the
-process or worker down), custom error-page rendering, and response streaming
-(every path materializes the whole body, so no SSE and no chunked responses).
+process or worker down), and custom error-page rendering.
+
+**Response streaming closed 2026-08-01.** `serve/stream.nim` adds a pull
+producer — `proc(st: var StreamState; chunk: var string): bool {.nimcall.}` —
+that the connection coroutine calls until it returns false, which is the only
+shape available given a handler cannot suspend and therefore cannot write.
+`setReactorStreamHandler(handler, wants)` installs it beside the ordinary
+handler with a predicate choosing which routes stream. A stream that knows its
+length sends `Content-Length` and raw pieces; one that does not is chunked on
+HTTP/1.1 and close-delimited on anything older. Built in: `fileStream` (with
+offset/length, so it backs a byte range), `sseEvent`/`sseStream` with the
+headers an EventSource needs, and `staticStreamFor` — static serving with
+validators and ranges that never holds the file. Measured rather than asserted:
+a 128 MiB download arrives byte-exact with the server's peak RSS at ~6 MB.
 
 **Closed 2026-08-01:** `static.nim` now does ETag / Last-Modified / 304
 (`If-None-Match` including `*` and weak echoes) and byte ranges (206 with

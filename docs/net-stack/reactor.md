@@ -176,6 +176,34 @@ WebSocket, since a silent subscription is not a stalled one.
 
 ---
 
+## Streaming a response
+
+Every response path materialised the whole body first, ruling out server-sent
+events, downloads larger than memory, and any response whose first byte should
+reach the client before the last is computed.
+
+`serve/stream.nim` adds a **pull producer** — `proc(st: var StreamState;
+chunk: var string): bool {.nimcall.}` — called repeatedly by the connection
+coroutine until it returns false. Pull rather than push, because a handler
+cannot suspend and therefore cannot write; it can only be asked for the next
+piece while the coroutine does the suspending write. A stream that knows its
+length sends `Content-Length` and raw pieces (progress bars, truthful `HEAD`);
+one that does not is chunked on HTTP/1.1 and close-delimited on anything older,
+since silently chunking at an HTTP/1.0 client corrupts the body.
+
+Built in: `fileStream` (offset/length, so it backs a byte range),
+`sseEvent`/`sseStream` with the `no-cache` and `X-Accel-Buffering: no` an
+EventSource needs to survive an intermediary, and `staticStreamFor` — the static
+layer with ETag/304 and ranges, producing the file from disk.
+
+*Verified by measurement, not assertion: a 128 MiB file arrives byte-exact while
+the server's peak RSS stays around 6 MB* (`tests/reactor_stream_e2e.sh`).
+
+A producer runs on the reactor thread and must not block: a feed with nothing to
+send returns an empty chunk rather than sleeping.
+
+---
+
 ## Calling out
 
 The stack could *serve* asynchronously and could only *call* synchronously —
