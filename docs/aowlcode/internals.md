@@ -19,6 +19,9 @@
 | `AOWLCODE_NO_MODE_GATE` | `1` → disable the aowl-mode hook and the session banner entirely. | unset |
 | `AOWLCODE_ALLOW_GENERATED_GREP` | `1` → allow unscoped searches over generated artifact trees. | unset |
 | `AOWLCODE_NO_SRC_GUARD` | `1` → allow whole-file reads of large sources. | unset |
+| `AOWLCODE_SERVER` | `python` forces the Python server; `nim` requires the Nimony one and fails loudly if it cannot be built. | auto |
+| `AOWLCODE_NO_BUILD` | `1` → never rebuild the Nimony server; run whatever binary is present. | unset |
+| `AOWLCODE_BUILD_WAIT` | Seconds `launch.sh` lets a rebuild finish **before** serving, when the sources are newer than the binary. `0` = never wait. | `25` |
 
 ## Hooks
 
@@ -33,7 +36,10 @@ Stdlib-only Python, fail-open (any error exits 0 rather than blocking).
 | `guard-nif-read.py` | `PreToolUse` / `Read` | Denies reading a `.nif` >15000 bytes; embeds a compact outline of the file in the denial reason (transform-not-block) so the same turn still gets useful structure. |
 | `guard-nif-bash.py` | `PreToolUse` / `Bash` | Denies `cat`/`head`/`tail`/`less`/`more`/`bat` targeting a `.nif` >15000 bytes — the shell-side bypass of the Read guard. |
 | `trim-build-output.py` | `PostToolUse` / `Bash` | For `nimony`/`hastur`/`nim c`/`nimble` invocations, strips `nifmake:`/`FAILURE:`/`niflink` noise and surfaces the real diagnostics as `additionalContext`. |
-| `precompact-nudge.py` | `PreCompact` (no matcher) | Reminds the agent to run `/land` first if durable learnings from the session haven't been flushed to memory — compaction discards anything not written down. |
+| `precompact-nudge.py` | `PreCompact` (no matcher) | Reminds the agent to run `/land` first if durable learnings from the session haven't been flushed to memory — compaction discards anything not written down. Emits `systemMessage`: `hookSpecificOutput` is valid for `PreToolUse`/`UserPromptSubmit`/`PostToolUse`/`PostToolBatch`/`Stop` but **not** `PreCompact`, where it fails validation and the output is discarded. |
+
+The session banner also warns when the MCP server is running a build older than
+its sources — see [Which copy is running](#which-copy-is-running).
 
 ## Which copy is running
 

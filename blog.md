@@ -6,6 +6,88 @@ Development updates from the aoughwl toolchain. Newest first.
 
 ---
 
+## 2026-08-01 — aowlcode: verdicts that rested on nothing
+
+*Saturday, August 1, 2026*
+
+One question applied across [aowlcode](/docs/aowlcode): what is each tool's
+verdict actually resting on? Every row below reported success, or a clean
+comparison, for work that had not happened.
+
+### False successes
+
+| Tool | Reported | Actual | Fix |
+|---|---|---|---|
+| `compile` | `ok:true`, `diagnostics:[]` | `nimony c --bogus-flag f.nim` prints 63 usage lines and **exits 0**, compiling nothing — no `Error:`, no crash marker, no artifact | usage banner is a failure spelling, alongside `undefined reference`/`collect2:`/`[Bug] `; diagnostic names `extra_args` |
+| `explain_failure` | `OK (nimony): compiles clean` | any failing compile with no recognised `Error`, timeouts included (`if ok or errors.len == 0`) | verdict derives from `ok`; the no-diagnostic case says so and names the timeout |
+| `compile` | empty `diagnostics` | unparsed toolchain output was dropped entirely; `raw:true` shows the invocation, never the output | `unparsed_output`: last 12 lines when the parser matched nothing |
+| `nif_run` | `identical:true` | both variants **crashed** (rc=1, 21B stdout); the guard only covered a *silent* reference | warns when variants agree on a failure or a timeout |
+| `trace_diff` | `behavior preserved at trace granularity` | **neither** run produced a trace — equal because both empty; exit codes reported but excluded from the verdict | exit status folded into `identical`; empty-trace and identical-failure warnings; `exit_diff` for status-only divergence |
+| `bisect` | `minimal` set | a killed run satisfies `exit_nonzero`, so timed-out subsets were recorded as reproducing unobserved | `timed_out_runs` + warning naming the predicate |
+| `shrink` | `minimal_source` | 200-compile cap hit mid-search returned a partially reduced file | `truncated` + `next_steps`; wall-clock `budget` |
+| `parity.py` | `0 cases, 0 divergent`, exit 0 | filter matched no case | names the unmatched filter, exits 2 |
+
+### Unbounded calls
+
+ddmin is O(n²) runs, so `bisect`'s per-run `timeout` bounded nothing (20 toggles
+× 120s = 40+ min, past the client's silence budget → call abandoned, every run
+wasted). Total `budget` added: 600s, capped at 900, returning the reached subset
+with `budget_exhausted`. Same for `shrink`. `nimsuggest --stdin` (behind
+`symbols`/`outline`/`defs_uses`), `nimble path` and `doctor`'s `--version` probe
+ran unbounded in the Nimony server while `server.py` had bounded all three —
+nimsuggest does not exit on a file it cannot parse, it waits.
+
+### Binary identity
+
+`build.sh` overwrites `bin/server` in place: the running process keeps a
+deleted inode, at a path whose contents are now someone else's, under a matching
+version. Server records its binary mtime at startup → `doctor.server_stale` +
+session-banner warning. `launch.sh` no longer serves stale by design —
+`AOWLCODE_BUILD_WAIT` (default 25s, `0` = old behaviour) lets a rebuild finish
+first.
+
+**aowli binaries already hot-swap.** Replacing `~/.aowl/bin/aowli-interp` or
+`aowli-dbg` takes effect on the next call — path resolved per call, aowli output
+never cached (the trace cache key names a nimcache dir for the nimony-built
+`.s.nif`). Verified by swapping under a live server. Added: `doctor versions:true`
+identifies the live build (`aowli-dbg` via `--version` build id, `aowli-interp`
+via size+mtime, having none), and a paused `debug_session` — an already-running
+process of the old build — reports `binary_swapped`.
+
+Also fixed: `nif_run` copied only `*.s.nif`, leaving `.idx.nif` VFS indexes
+behind, so a module with sibling nimcache deps died on
+`vfs: open failed: …/<n>.s.idx.nif` — its stated purpose. Verified against
+`~/aowlsem/nimcache` (43 index files).
+
+### False failures
+
+nimony builds through a shared `nimcache_static` regardless of project; two
+concurrent compiles overwrite each other's objects → `undefined reference` /
+`collect2: error`. Two spurious failures in one day, each costing a re-run to
+disbelieve. All nimony invocations (both servers, `build.sh`, test scripts) now
+serialise through one `flock`. Serialise, not isolate: a unique `--nimcache:`
+per call discards cache reuse and does not cover `nimcache_static` anyway.
+Measured: same lock → wall 2.0s; different lock paths → 1.1s.
+
+### Gate blind spots
+
+The differential harness compared tool **names**, so both servers could
+advertise the same 26 tools with different contracts — 6 of 26 did. Fixing that
+exposed wrong `required` sets on 3 (`nif_file` demanded while `file` is a
+documented alias), and fixing that exposed a missing `action` enum on
+`debug_session`, leaving its 18 actions undiscoverable from the server that
+serves them. Remaining py/nim gaps are an enumerated allow-list; unlisted
+divergence fails.
+
+`precompact-nudge` had **never worked**: `hookSpecificOutput` is rejected on
+`PreCompact`, so every compaction printed a validation error and discarded the
+reminder. Now `systemMessage`. `launch.sh` itself had no test — one stray echo
+corrupts the JSON-RPC stream for a whole session; covered now, along with all 8
+registered hooks driven from `hooks.json`.
+
+Gates: 197 curated + 116 sweep differential cases, 107 unit checks, 39
+end-to-end checks.
+
 ## 2026-07-28 — aowli: debugging a big program stopped meaning "recompile it every time"
 
 *Tuesday, July 28, 2026*
