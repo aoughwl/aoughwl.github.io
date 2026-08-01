@@ -50,3 +50,9 @@ sockets — so any transport can reuse them. `tls` sits beside `net` (it wraps a
 | [requests](net-stack/requests) | Browser-identical HTTP client (curl-impersonate) | [aoughwl/requests](https://github.com/aoughwl/requests) |
 
 Each library page above is a self-contained API reference for that repo.
+
+For where the stack is going — what "100% configurable on both sides"
+definitively means, every hardcoded value and unreachable knob we found in an
+audit of all eight repos, how that compares to Go / Rust / Node / Netty, and the
+phased order to close it — see the **[configurability
+roadmap](net-stack/roadmap)**.
