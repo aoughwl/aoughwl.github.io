@@ -158,8 +158,9 @@ just more parked I/O. The async client bounds its own exchange too
 adds the other kind of timer — one that RESUMES the coroutine instead of
 tearing the socket down — which is what QUIC's own timers need.
 
-Still missing: handler-execution timeout, and everything above for the
-BLOCKING stack.
+The blocking stack's one timeout is now a default rather than a law
+(`setServeReadTimeout`). Still missing: handler-execution timeout, and separate
+write/header/close timeouts everywhere.
 
 ### Protocol policy
 
@@ -167,7 +168,9 @@ BLOCKING stack.
   the `TlsContext` internally. SNI multi-cert, ALPN, versions, ciphers, mTLS —
   all supported by `aoughwl-tls`, all unreachable unless you abandon the entry
   point and write your own accept loop around `serveConnectionTls`.
-  **Closed for the reactor servers (2026-08-01):** every async TLS entry point
+  **Closed (2026-08-01)** for `serveTls` and `serveTlsConcurrent` too: both take
+  a `TlsContext` overload, with the cert/key forms delegating to it.
+  **Closed for the reactor servers:** every async TLS entry point
   (`serveHttpsReactor`, `serveWssReactor`, `serveHttp2TlsReactor`,
   `serveHttpsAlpnReactor`) takes a `TlsContext` the caller built and
   configured, with the cert/key form delegating to it. Verified reaching the
@@ -202,12 +205,17 @@ BLOCKING stack.
 
 ### Lifecycle and observability
 
-**Graceful shutdown is closed for the reactor (2026-08-01):**
+**Graceful shutdown is closed (2026-08-01).** For the blocking stack:
+`stopServing` shuts down the registered listeners — the only thing that can
+interrupt a blocking `accept` — so workers leave their loops and `runPool`'s
+joins return; `serveStopOnSignals` wires SIGINT/SIGTERM to it, opt-in. The same
+change fixed a busy-spin: a failed `accept` was a bare `continue`, so a dead
+listener span every worker at 100% CPU indefinitely. For the reactor:
 `requestStop(graceful)` writes to an eventfd the loop also watches (the only
 work a signal handler may do, and the only way to interrupt a blocked
 `epoll_wait`); a graceful stop closes the listeners and lets in-flight
 connections finish, and the server entry points install SIGINT/SIGTERM
-handlers. The blocking pool still has none.
+handlers.
 
 Absent across the board otherwise: connection limits and
 accept throttling, backpressure, access logging, metrics, tracing, qlog, error
