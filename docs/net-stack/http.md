@@ -6,8 +6,8 @@ repo: aoughwl/http
 
 Pure HTTP logic with no sockets, no I/O, and no aoughwl-substrate dependency:
 typed methods and status codes, header primitives, RFC 3986 URL/query/form
-codecs, tolerant request parsing, response building, and a chunked-transfer
-codec. It sits between `tcp`/`tls` and any server or client — `serve` is built
+codecs, tolerant request **and response** parsing, response building, and a
+chunked-transfer codec. It sits between `tcp`/`tls` and any server or client — `serve` is built
 on it — so the same HTTP layer backs any transport. Standard-library only; the
 optional `http/contentcoding` submodule adds `Content-Encoding` negotiation and
 pulls in the `compress` package.
@@ -200,3 +200,20 @@ policy. Not pulled in by `import http`.
   standard-library only — no C FFI, no external repos.
 - `http/contentcoding` additionally depends on the aoughwl `compress` package
   (gzip / brotli / zstd codecs), which it re-exports.
+
+## Parsing a response
+
+`parseResponse` is the client-side mirror of `parseRequest`: status line,
+headers, body, with `headerValue` / `hasHeader` overloads to match. Two
+decisions are worth knowing:
+
+- **Transfer framing is not applied.** A chunked body comes back chunked and
+  `decodeChunked` is the caller's next step — which is what lets a streaming
+  client act on headers before the body has arrived.
+- **Malformed input reports rather than raises**, like `parseRequest`: a
+  response that never parsed has `status == 0`.
+
+`parseStatusLine` and `responseHeaderEnd` are exported alongside, because an
+incremental client has to know the header block has fully arrived before it can
+work out how much body it is owed. `serve`'s async client is built on exactly
+these three.

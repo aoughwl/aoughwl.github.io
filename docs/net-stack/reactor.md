@@ -176,6 +176,29 @@ WebSocket, since a silent subscription is not a stalled one.
 
 ---
 
+## Calling out
+
+The stack could *serve* asynchronously and could only *call* synchronously —
+`net`, `tls` and `requests` all block the calling thread, which on a
+single-threaded server means one upstream call stops every other connection.
+
+`serve/asyncclient.nim` closes that: `awaitConnect` and `awaitFetch` do
+connect → TLS handshake → request → response with every step suspending inside
+the calling coroutine, so a server can proxy or call an API while continuing to
+serve. `http`'s `parseResponse` (new — the package could build a response but
+not read one) does the parsing.
+
+Scope is stated rather than implied: HTTP/1.1, one request per connection, no
+pooling, no redirect following, and **DNS resolution blocks** — `getaddrinfo`
+has no non-blocking form worth the name, so a hostname costs the reactor thread
+the lookup while an IP literal costs nothing.
+
+The test asserts the property, not the feature: 12 concurrent requests proxied
+through a deliberately 0.5s upstream finish in ~0.5s. A blocking fetch would
+take ~6s, so the elapsed time is the assertion.
+
+---
+
 ## Timers that resume, and stopping
 
 Two things the loop gained beyond connections.
