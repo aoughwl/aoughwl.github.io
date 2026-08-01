@@ -144,11 +144,22 @@ an `onLimit` hook.*
 
 ### Timeouts
 
-The blocking stack has exactly one: `ReadTimeoutMillis = 15000`, a `const`. The
-reactor servers have **none** — `epollWait(..., -1)` blocks forever and the
-reactor has no timer facility at all, so a slowloris connection is held
-indefinitely. Missing everywhere: write timeout, header timeout, idle timeout,
-handler-execution timeout, TLS-handshake timeout, close-handshake timeout.
+The blocking stack has exactly one: `ReadTimeoutMillis = 15000`, a `const`.
+
+**Closed for the reactor (2026-08-01).** It has a clock now: `setIdleTimeout`
+arms a `CLOCK_MONOTONIC` deadline while a coroutine is parked and disarms it on
+readiness, so it measures idleness rather than connection age; `epoll_wait`
+blocks until the nearest deadline instead of forever. Expiry shuts the socket
+down, which the coroutine sees as an ordinary EOF, so no server needed new
+control flow. Defaults are 60 s for HTTP/1.1 and HTTP/2 and off for WebSocket,
+each overridable per server, and the TLS handshake is covered because it is
+just more parked I/O. The async client bounds its own exchange too
+(`awaitFetch(..., timeoutMs)`, armed before the connect). `awaitReadableFor`
+adds the other kind of timer — one that RESUMES the coroutine instead of
+tearing the socket down — which is what QUIC's own timers need.
+
+Still missing: handler-execution timeout, and everything above for the
+BLOCKING stack.
 
 ### Protocol policy
 
@@ -156,8 +167,17 @@ handler-execution timeout, TLS-handshake timeout, close-handshake timeout.
   the `TlsContext` internally. SNI multi-cert, ALPN, versions, ciphers, mTLS —
   all supported by `aoughwl-tls`, all unreachable unless you abandon the entry
   point and write your own accept loop around `serveConnectionTls`.
+  **Closed for the reactor servers (2026-08-01):** every async TLS entry point
+  (`serveHttpsReactor`, `serveWssReactor`, `serveHttp2TlsReactor`,
+  `serveHttpsAlpnReactor`) takes a `TlsContext` the caller built and
+  configured, with the cert/key form delegating to it. Verified reaching the
+  wire: a TLS-1.3-only context refuses a `--tls-max 1.2` client while an h2
+  client still gets HTTP/2. The blocking entry points still own their context.
 - **ALPN is hardcoded**: `h2`/`http1.1` in HTTP/2, a single `h3` in QUIC.
-  `serveTls` sets none at all.
+  `serveTls` sets none at all. (The reactor's ALPN list is now the entry point's
+  contract rather than a literal — `serveHttpsAlpnReactor` advertises both and
+  dispatches per connection — but it is still not caller-supplied, deliberately:
+  the dispatcher's protocol choice IS the ALPN result.)
 - **QUIC transport parameters are a static function with no context argument** —
   stream limits, flow-control windows, 1 MiB connection window, 30 s idle
   timeout, all fixed. Congestion control is whatever ngtcp2 defaults to (CUBIC);
@@ -182,8 +202,14 @@ handler-execution timeout, TLS-handshake timeout, close-handshake timeout.
 
 ### Lifecycle and observability
 
-Absent across the board: graceful shutdown/drain (no signal handling, no stop
-token, and `runPool` joins workers that can never return), connection limits and
+**Graceful shutdown is closed for the reactor (2026-08-01):**
+`requestStop(graceful)` writes to an eventfd the loop also watches (the only
+work a signal handler may do, and the only way to interrupt a blocked
+`epoll_wait`); a graceful stop closes the listeners and lets in-flight
+connections finish, and the server entry points install SIGINT/SIGTERM
+handlers. The blocking pool still has none.
+
+Absent across the board otherwise: connection limits and
 accept throttling, backpressure, access logging, metrics, tracing, qlog, error
 and panic hooks (a raising handler is uncaught — one bad request takes the
 process or worker down), custom error-page rendering, and response streaming
