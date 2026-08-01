@@ -633,7 +633,7 @@ feature a lie:
 - `epollAdd`/`Mod`/`Del` discarding their return values
 - `Sink.body` per-char growth
 
-### Phase 1 — config records — **done except `QuicConfig`**
+### Phase 1 — config records — **done**
 
 **The prerequisite for the whole roadmap.** There was no config type anywhere in
 the stack, which is why every knob had been hardcoded at the call site.
@@ -649,7 +649,7 @@ constructor whose values are readable, and a `merge` following the scope ladder:
 | compress | `CodecOpts` | `codecopts.nim` |
 | ws | `WsConfig` | `ws/wsconfig.nim` |
 | serve | `ServerConfig` | `serve/serverconfig.nim` |
-| quic | `QuicConfig` | not started |
+| quic | `QuicConfig` | `quic/quicconfig.nim` (+ `aq_set_config` in the shim) |
 
 Three conventions came out of doing it, and they are worth keeping:
 
@@ -679,9 +679,15 @@ Two things turned up while wiring it that were defects, not gaps:
   header of sixteen `f` digits **overflowed to a negative size** and the framing
   read it as a short chunk.
 
-Still open in this phase: `QuicConfig`, and the `requests` client, whose
-existing `RequestConfig` is the model the rest follow but which has its own
-Phase 7 backlog.
+`QuicConfig` needed the C shim to accept it, so the eight transport-parameter
+literals in `default_tp` became `aq_set_config`/`aq_get_config`; the defaults
+are read back *from* the shim rather than restated in nimony, because two
+copies of a default is one copy too many. The shim's fixed capacities
+(`MAX_CONNS`, `MAX_STREAMS`, `MAX_CIDS`, `MAX_REQ`) remain compile-time — they
+are counted in `AqStats` on overflow but are not settable yet.
+
+Still open: the `requests` client, whose existing `RequestConfig` is the model
+the rest follow but which has its own Phase 7 backlog.
 
 ### Phase 2 — bounds, timeouts, and the reactor timer
 
