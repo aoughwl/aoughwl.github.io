@@ -633,30 +633,71 @@ feature a lie:
 - `epollAdd`/`Mod`/`Del` discarding their return values
 - `Sink.body` per-char growth
 
-### Phase 1 — config records
+### Phase 1 — config records — **done except `QuicConfig`**
 
-**The prerequisite for the whole roadmap.** There is no config type anywhere in
-the stack today, which is why every knob has been hardcoded at the call site.
-Introduce, per library: `TcpOpts`, `TlsConfig` (server-side), `ParserLimits`,
-`CodecOpts`, `WsConfig`, `ServerConfig`, `QuicConfig`, and make `requests`'
-existing `RequestConfig` the model they all follow. Each is a plain object with
-public fields, a `default*()` constructor whose values are readable, and a
-`merge` following the scope ladder.
+**The prerequisite for the whole roadmap.** There was no config type anywhere in
+the stack, which is why every knob had been hardcoded at the call site.
 
-Also in this phase, because they are the same edit: `net` must re-export `tcp`,
-and `serveTls`/`serveTlsConcurrent` must accept a caller-supplied `TlsContext`.
-Those two changes alone move a large block of existing-but-unreachable knobs into
-reach.
+Landed, one per library, each a plain object with public fields, a `default*()`
+constructor whose values are readable, and a `merge` following the scope ladder:
+
+| library | record | module |
+|---|---|---|
+| tcp | `TcpOpts` | `tcp/tcpopts.nim` |
+| tls | `TlsConfig` | `tlsconfig.nim` |
+| http | `ParserLimits` | `http/parserlimits.nim` |
+| compress | `CodecOpts` | `codecopts.nim` |
+| ws | `WsConfig` | `ws/wsconfig.nim` |
+| serve | `ServerConfig` | `serve/serverconfig.nim` |
+| quic | `QuicConfig` | not started |
+
+Three conventions came out of doing it, and they are worth keeping:
+
+- **Unset is not the same as off, and not the same as unlimited.** Every record
+  distinguishes "inherit" from a deliberate zero. Collapsing them means an
+  override that raises one bound silently removes the others. The sentinel has
+  to sit outside the field's valid range — `CodecOpts` uses `-1000` because raw
+  deflate is a negative `windowBits` and zstd takes negative levels.
+- **The empty record is a verified no-op.** Each library's test asserts that
+  applying it touches nothing, which is what makes it a safe base for a merge.
+- **Records nest rather than restate.** A server's TLS policy *is* a
+  `TlsConfig`; `ServerConfig.merge` recurses into each sub-record's own rule.
+
+Also landed here, as the same edit: `net` re-exports `tcp`, and
+`serveTls`/`serveTlsConcurrent` accept a caller-supplied `TlsContext` — plus
+`serveTls(port, handler, cfg)`, which lets a caller *describe* the context
+rather than having to build one.
+
+Two things turned up while wiring it that were defects, not gaps:
+
+- `setTcpOption`/`getTcpOption` were documented as a generic escape hatch to any
+  int-valued socket option, but every level and optname constant was private and
+  their values differ between Winsock and POSIX. No caller outside `tcp` could
+  name an option, so **the escape hatch could not be reached at all**.
+  `tcpOptionByName` resolves a portable name to the platform's pair.
+- `http`'s chunk-size accumulator had no bound on its running total, so a chunk
+  header of sixteen `f` digits **overflowed to a negative size** and the framing
+  read it as a short chunk.
+
+Still open in this phase: `QuicConfig`, and the `requests` client, whose
+existing `RequestConfig` is the model the rest follow but which has its own
+Phase 7 backlog.
 
 ### Phase 2 — bounds, timeouts, and the reactor timer
 
 Move every value from the hardcoded tables above into its Phase 1 record. The
-one item here that is real engineering rather than mechanical: **the reactor has
-no timer facility at all** (`epollWait(..., -1)`, one continuation per fd), so
-read/write/idle/header timeouts for the async servers require a timer queue and a
-deadline-aware wait — a scheduler change, and the gating item for the whole
-timeout story. Also in scope: `onLimit` hooks so Phase 0's silent drops become
-observable rather than merely non-silent.
+reactor timer that gated this whole phase is **done** — `nowMs()` on
+CLOCK_MONOTONIC, `setIdleTimeout`, deadline-aware `epoll_wait`, and
+`awaitReadableFor` for a deadline that resumes rather than kills.
+
+What remains here is mechanical and now unblocked:
+
+- the five servers that still call `listenTcp(port)` directly rather than
+  `serveListen` — `http2`, `reactorh2`, `reactorws`, `reactorall`, `router` —
+  so a listener policy reaches every server, not three of them
+- feeding `ServerConfig.parser` to the parsers the servers construct
+- `onLimit` hooks, so Phase 0's counted drops become observable rather than
+  merely non-silent
 
 ### Phase 3 — escape hatches
 
