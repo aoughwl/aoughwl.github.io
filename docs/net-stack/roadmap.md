@@ -140,7 +140,7 @@ an `onLimit` hook.*
 | H3 method / path | 16 / 512 bytes, **silently truncated** | `quicglue.c`, `quic.nim:112` |
 | HTTP/2 streams / session | 64, silent drop | `http2.nim:97` |
 | ~~HTTP/2 response headers~~ | 128, and overflow now answers **500** with `h2HeaderOverflows()` counting it — a dropped `Set-Cookie` is a wrong response, not a trimmed one | closed 2026-08-01 |
-| Static file | whole file into memory, no cap | `static.nim:97` |
+| ~~Static file~~ | whole file into memory, now capped (`setStaticFileLimit`, refusals counted); streaming remains the real fix | closed 2026-08-01 |
 
 ### Timeouts
 
@@ -228,10 +228,24 @@ and panic hooks (a raising handler is uncaught — one bad request takes the
 process or worker down), custom error-page rendering, and response streaming
 (every path materializes the whole body, so no SSE and no chunked responses).
 
-`static.nim` additionally has no Range support, no ETag/Last-Modified/304, no
-cache headers, a fixed 17-entry MIME table and a hardcoded `/index.html`.
+**Closed 2026-08-01:** `static.nim` now does ETag / Last-Modified / 304
+(`If-None-Match` including `*` and weak echoes) and byte ranges (206 with
+`Content-Range`, 416 when unsatisfiable, `Accept-Ranges`), through
+`staticResponseFor(root, req)` which `staticRoute` uses. `If-Modified-Since` is
+honoured by exact match against the value we issued — conservative in the only
+direction that cannot serve a stale body.
+
+`static.nim` additionally has no `Cache-Control` policy knob, a fixed 17-entry
+MIME table and a hardcoded `/index.html`.
 
 ### Composability
+
+**Partly closed 2026-08-01:** `toHandler`'s `{.nimcall.}` entry composes with
+every reactor server, demonstrated and tested end to end over HTTP/1.1, HTTP/2
+and HTTP/3 (`examples/reactor_router.nim`, `tests/reactor_router_e2e.sh`) —
+including a path parameter surviving the HTTP/3 path, where the request is
+rebuilt from `(method, path, body)`. What remains below is the handler-shape
+duplication, not an inability to route asynchronously.
 
 Routing and middleware exist (`serve/router.nim`) but only for the blocking and
 nimcall paths. The reactor HTTP, WebSocket, HTTP/2 and HTTP/3 servers each have
