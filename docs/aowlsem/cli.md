@@ -33,6 +33,42 @@ typed AIF (`.s.aif`) ready for [aowlhexer](../aowlhexer).
 | `--nimcache:<dir>` | Where the driver placed the parsed `.p.aif` inputs (defaults to the input's directory). |
 | `--noSystem` | Do not auto-load `system`. |
 | `--diagnostics:json` | Emit diagnostics as a JSON array (see [Diagnostics → JSON](diagnostics#json-output--the-tooling-seam)). |
+| `--macros:<mode>` | How a compile-time plugin is executed — `auto` (default), `interp`, `compiled`, `off`. Append `,verbose` to report each step. |
+| `--ceDepth:<n>` | Internal. How many const-evaluator generations deep this process is; aowlsem sets it on the child it spawns. Not for hand use. |
+
+#### Compile-time evaluation
+
+Two things run during a check, and they are the same kind of program: a **macro
+expansion** and a **`const` evaluator**. Both are generated modules, built from
+the host module's own declarations, and both are selected by `--macros:`.
+
+| Mode | What runs the plugin |
+|---|---|
+| `auto` | Interpret it; fall back to a native build if that fails. |
+| `interp` | Semcheck the generated module to `.s.aif` and run it under [aowli](../aowli-release). Nothing is linked, so this is the cheap path — and the only one available before a native toolchain exists. |
+| `compiled` | Build a host-native binary. |
+| `off` | No plugins: the shape matcher and the constant folds alone. |
+
+A value no fold can compute is **evaluated** rather than matched. aowlsem
+generates a module carrying the declarations preceding the value, runs it, and
+folds what comes back through `std/writenif` — the serializer emits the AIF atom
+exactly, where `echo` would render it for a human and lose float digits.
+
+Evaluated contexts, and what each would otherwise emit:
+
+| Context | Without evaluation |
+|---|---|
+| `const` initialiser (module level or inside a routine) | the call, inside the `(suf … "i64")` wrapper that promises a literal |
+| `when` condition | the `else` branch — an unknown condition is not a false one |
+| array dimension — `array[sz(), int]` | a call inside a type, where the form needs a literal bound |
+| enum member value — `b = v()` | the auto-increment ordinal |
+
+Scalars (`int`, `float`, `bool`, `string`) return one atom. Aggregates return
+their members: an array is read by index, a `seq` by looping to `len` (its length
+is not known before it runs), an object by field name; the caller rebuilds the
+`(aconstr …)` / `(oconstr …)`, because it holds the type and the generated module
+cannot spell it. A member count that does not match is a failure, not a partial
+fold.
 
 #### Self-resolving imports
 
