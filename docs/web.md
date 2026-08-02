@@ -14,10 +14,11 @@ compiler plugin that lowers to builder calls over [`html`](https://github.com/ao
 validation). For nimony / Nim 3.0.
 
 > **Status** — Works today for server-side / static output: HTML rendering plus a
-> de-duplicated scoped stylesheet with full MDN validation of every declaration. The
-> `component` form adds `for`/`if` control flow and runtime text children. No client-side
-> reactivity, event binding, or component-parameter passing yet — those are out of scope
-> for this release.
+> de-duplicated scoped stylesheet with full MDN validation of every declaration.
+> `component` takes typed parameters, composes with other components, and styles by
+> `Style` VALUE; `for`/`if` control flow and runtime children work in both `web:` and
+> `component` blocks. No client-side reactivity or event binding yet — those are out of
+> scope for this release.
 
 ## Quickstart
 
@@ -42,7 +43,104 @@ echo renderStylesheet()      # .c…{color:red;padding:10px 20px}
 for e in styleErrors(): echo e   # declarations that failed MDN validation
 ```
 
+## Components
+
+`component` gives a tree parameters. It lowers to an ordinary `proc … : HTML`, so a
+component is called, composed and type-checked like any other procedure — there is no
+component runtime, registry, or lifecycle.
+
+```nim
+proc defaultTheme(): Style =
+  declare("color", "black") & declare("padding", "10px")
+
+component card(title: string):
+  input children: HTML                 # a parameter
+  input footer: string = "(no footer)" # …with a default
+  let theme = defaultTheme()           # ordinary locals — any nimony statement
+  let highlight = true
+
+  box:                                 # no marker: the tree is the tail of the body,
+    @id "card"                         # starting at the first tree-shaped statement
+    h1 title
+    children                           # spliced — `children` is HTML, not text
+    if highlight:                      # control flow works INSIDE an element, for
+      @style theme:                    # directives as well as for children
+        color: red                     # overrides the theme, keeps its padding
+    for i in 1 ..< 3:
+      p $i & ". item"
+    small footer
+
+let kids = web:
+  p "a spliced child"
+
+let page = card(title = "Hello", children = kids)
+echo render(page)
+# <div id="card" class="c9fb024aa"><h1>Hello</h1><p>a spliced child</p>
+#  <p>1. item</p><p>2. item</p><small>(no footer)</small></div>
+echo renderStylesheet()
+# .c9fb024aa{color:red;padding:10px}      <- theme's black overridden, padding kept
+```
+
+### Forms
+
+| form | meaning |
+| --- | --- |
+| `input x: T` / `input x: T = d` | a parameter; a default requires this form |
+| `component card(x: T):` | parameters in the header — **no defaults** (see below) |
+| `@name value` | an attribute; the ident is kebab-cased (`@dataId` → `data-id`) |
+| `@name` | a boolean attribute (`@disabled`), rendered bare |
+| `@style s` / `@style s:` + block | attach a `Style` value, optionally overridden |
+| `@style:` + block | an anonymous inline style |
+| `tag "text"` / `tag:` + block | an element |
+| anything else | a value — appended according to its **type** |
+
+### Styling is by value
+
+A [`Style`](https://github.com/aoughwl/css) is an ordered set of validated declarations,
+merged right-wins by `&`. So `theme & declare("color", "red")` is the theme with one
+property replaced and every other property intact, and `@style theme:` with an override
+block is exactly that merge. A theme is therefore ordinary data — `defaultTheme()` is just
+a proc returning a `Style`, and it can be built, passed as an `input`, and overridden per
+element. Literal and computed styles alike are MDN-validated and lowered to one
+content-addressed class, so equal styles share a class however they were built.
+
+### Children are typed, not syntactic
+
+Every child is emitted verbatim into `webAppend`, which is overloaded on `string`,
+`HTMLNode` and `HTML`. What a child *means* is therefore decided by its type: `h1 title`
+renders text and `children` splices a tree, with no syntax distinguishing the two and no
+type inspection in the plugin.
+
+### Elements versus components
+
+**A call is an element iff its name is a real HTML tag**, asked of `html`'s element
+registry rather than a tag list copied into the DSL. Everything else is a call to a
+component, so the two compose with one syntax.
+
+A **bare identifier is never an element**. `title`, `label`, `footer`, `data`, `form`,
+`summary`, `time` and `code` are all real tags *and* among the most ordinary parameter
+names there are; reading a bare `title` as `<title>` would silently swallow the input of
+any component that named one that way. A component whose tree begins with a spliced value
+rather than an element marks it with an explicit `web:` block.
+
+### Two constraints worth knowing
+
+A header parameter list **cannot carry a default**: `component card(title: string = "x")`
+is parsed as a *call*, and a call argument may not be `name: T = default`. That is a parser
+rule, not a style preference, and it is why defaulted inputs live on `input` lines.
+
+A component that accepts children names that input `children`, because a block of children
+passed at a call site lowers to a named argument `children = …` (Nim forbids a positional
+argument after a named one, so a trailing positional slot would not compose).
+
+There is no `@style when cond:` form — `if cond: @style x` already expresses it, since
+control flow inside an element lowers into the same accumulator.
+
 ## The DSL
+
+`web:` is the same DSL without the proc wrapper — reach for it when you just want an
+`HTML` value in an ordinary variable. Both surfaces are lowered by one engine
+(`web/deps/weblower`), so they cannot drift apart.
 
 Inside a `web:` block each line is one of five forms:
 
@@ -75,8 +173,9 @@ element constructors are available without a second import.
 
 | symbol | signature | what it does |
 | --- | --- | --- |
-| `web` | `template web(body: untyped): HTML` | Compiler plugin (`deps/web_plugin`). Lowers the declarative HTML+CSS block into a chained `webFrag()`/`webAdd`/`webEl`/`webChild`/`webAttr`/`webStyle` expression, yielding an `HTML` value. Text children must be compile-time string literals. |
-| `component` | `template component(name, body: untyped)` | Compiler plugin (`deps/component_plugin`). Like `web:`, but the block may contain `for`/`if` control flow and its text children may be runtime expressions (`p $i & ". item"`). Lowers to a `proc name(): HTML` that builds the tree over a mutable accumulator; call `name()` to get the `HTML`. Attributes and `style:` values stay compile-time. |
+| `web` | `template web(body: untyped): HTML` | Compiler plugin (`deps/web_plugin`). Lowers the declarative HTML+CSS block to an `HTML` value. May contain `for`/`if`/`while` control flow, `@` directives, `Style` values and arbitrary runtime children. |
+| `component` | `template component(name, body: untyped)` | Compiler plugin (`deps/component_plugin`). The same DSL wrapped in a generated `proc name(<inputs>): HTML`, so a component takes typed parameters and composes with other components. `input` lines and a header parameter list both become proc parameters. |
+| `dumpWeb` | `template dumpWeb(name, body: untyped)` | Debug aid (`deps/dump_plugin`): lowers a block to `echo "<its parse tree>"`, so a DSL shape can be discovered from the parser instead of guessed. |
 
 ### Output
 
@@ -96,7 +195,10 @@ public and can be used to assemble a tree programmatically.
 | `webEl` | `proc webEl(tag: string): HTMLNode` | A new empty element node for `tag`. |
 | `webText` | `proc webText(s: string): HTMLNode` | A text node. |
 | `webChild` | `proc webChild(n, c: HTMLNode): HTMLNode` | Appends child `c` to `n`, returns `n` (chainable). |
+| `webAppend` | `proc webAppend(n: HTMLNode, x: string \| HTMLNode \| HTML): HTMLNode` | Appends a child chosen by **type**: a `string` becomes a text node, an `HTMLNode` is spliced as-is, an `HTML` fragment splices all of its nodes. The lowering target for every child. |
 | `webAttr` | `proc webAttr(n: HTMLNode, name, value: string): HTMLNode` | Sets attribute `name=value` on `n`, returns `n`. |
+| `webFlag` | `proc webFlag(n: HTMLNode, name: string): HTMLNode` | Sets a boolean attribute (rendered bare, no `="…"`) — what `@disabled` lowers to. |
+| `webStyleVal` | `proc webStyleVal(n: HTMLNode, s: Style): HTMLNode` | Attaches a `Style` VALUE — what `@style` lowers to. Routed through `webStyle`, so a computed style gets the same validation, class and dedup as a literal block. |
 | `webStyle` | `proc webStyle(n: HTMLNode, decls: string): HTMLNode` | Validates `"prop:value;…"`, lowers it to one content-addressed class, merges that class onto `n` (preserving any existing `class`), records new rules for `renderStylesheet()` and any failures for `styleErrors()`. |
 | `webFrag` | `proc webFrag(): HTML` | An empty fragment (`@[]`) — the accumulator a `web:` block grows. |
 | `webAdd` | `proc webAdd(f: HTML, n: HTMLNode): HTML` | Appends node `n` to fragment `f`, returns the grown fragment. |
@@ -121,11 +223,19 @@ The `HTMLNode` object model and its constructors come through `export html`:
 - **Content-addressed classes.** The scoped class name is `"c"` + an 8-hex FNV-1a hash of
   the declaration string, so structurally identical `style:` blocks collapse to one rule
   and one class automatically.
-- **Two plugins, one surface.** `web:` lowers to a pure nested-expression chain (fast,
-  literal-only). `component` lowers each element to a block expression over a mutable
-  accumulator inside a generated `proc`, which is what lets a `for` loop append N children
-  and lets text children be runtime expressions — the accumulator lives in a non-global
-  frame so a half-built tree is never snapshotted.
+- **Two plugins, ONE engine.** `web:` and `component:` both call `deps/weblower`; the only
+  difference is the wrapper (an expression versus a generated `proc`). They are the same
+  language by construction rather than by discipline, so a feature added to one cannot go
+  missing from the other.
+- **The lowering is accumulator-shaped.** Every element becomes a block expression over a
+  mutable local (`var e = webEl("div"); e = webAppend(e, …); e`). That is what lets `for`
+  and `if` work *inside* an element — for `@` directives as much as for children, since a
+  branch is not a special case but the same append statements under the original
+  condition. A chained-expression lowering (`webChild(webChild(…))`) can express neither.
+  The accumulator lives in a non-global frame, so a half-built tree is never snapshotted.
+- **Meaning comes from types, not syntax.** Children are emitted verbatim into the
+  overloaded `webAppend`, so the plugin never decides whether a value is text or a tree —
+  the type checker does, at the call site, with real diagnostics.
 - **Global rule/error state.** `renderStylesheet()` and `styleErrors()` read process-global
   registries populated as `style:` blocks compile; they accumulate across every `web:`/
   `component` in the module.
