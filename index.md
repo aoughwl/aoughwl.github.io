@@ -99,6 +99,7 @@ while they compile. The interop contract is written up in
 | **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension: as-you-type diagnostics, type-directed completion. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes and editor integration built on `aowlparser`'s `check`. |
 | **[aowlfmt](/docs/aowlfmt)** | layout formatter that proves it changed nothing but whitespace before writing your file. |
+| **[aowlhost](/docs/aowlhost)** | runs an aowl module as a plugin under a capability policy — default grant is nothing, and a denied filesystem call is halted at the native boundary. |
 | **[aowllens](/docs/aiflens)** | reads typed `.s.nif` and emits JSON — decls, outline, members, type-at-position — which is what the LSP runs on. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |
