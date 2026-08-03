@@ -131,6 +131,7 @@ const sidebar = [
           { text: 'Agents', link: '/docs/aowlcode/agents' },
           { text: 'Execution', link: '/docs/aowlcode/execution' },
           { text: 'Internals', link: '/docs/aowlcode/internals' },
+          { text: 'Token budget', link: '/docs/aowlcode/token-budget' },
         ],
       },
       { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
