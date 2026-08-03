@@ -44,6 +44,7 @@ all hooks, and exposes `/aowlcode:*` commands (see `/help`).
 | [Agents](aowlcode/agents) | Subagents (`nif-inspector`, `nim-fixer`, `nim-applier`), model tiering, and the `fanout-apply` workflow. |
 | [Execution](aowlcode/execution) | `trace` / `debug` — running and inspecting a program via the aowli interpreter, not just compiling it. |
 | [Internals](aowlcode/internals) | Skills, hooks, LSP dispatch, config env vars. |
+| [Token budget](aowlcode/token-budget) | **The audit of the thrift claim.** Measured savings per tool, context amplification (355×), the fixed cost of the tool schemas, and the ranked work list. |
 | [Full README](reference/aowlcode) | Verbatim upstream README archive. |
 
 ## Toolchain detection
