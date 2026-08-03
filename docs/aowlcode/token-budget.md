@@ -4,6 +4,29 @@
 
 ---
 
+## Status
+
+The audit below was written first; the fixes it produced have since landed
+(`d939eda`). Two of its own recovery estimates did not survive further
+measurement and are corrected in place — see
+[§7](#7-ranked-work-list), which now records what shipped.
+
+| Landed | Effect |
+|---|---|
+| `terse` is the **default**, not an env-var opt-in | the 12 terse-capable tools no longer depend on `NIMLANG_AGGRESSIVE` being exported |
+| `terse` implemented where it was **inert** | `nif_outline` 0.3 % → **−43.8 %**, `build` 0 % → **−68.9 %** |
+| `search` gained `terse` | **−19.5 %** on the costliest tool in the server |
+| `trim-build-output.py` replaces instead of appending | it had been *adding* up to 4,000 chars on top of the output it claimed to trim |
+| `Read` guard judges a window by **size**, not presence | `limit=100000` on a 403 KB file used to pass; now clamped |
+| 17 never-invoked commands hidden from the listing | ~435 tokens/request |
+| `aowl-ledger` reads the transcript | the 515× `Edit` over-count is gone |
+
+**Not shipped:** the tool-surface consolidation (§5). It is a two-registry
+refactor with real regression risk and its benefit is second-order; it is
+planned, not done.
+
+---
+
 aowlcode's stated purpose is token thrift. This page is the audit of that claim,
 measured rather than asserted. Every number below comes from one of three
 sources, all reproducible:
@@ -239,17 +262,21 @@ effect, using many-hit queries so there is something to compress:
 | `compile` | 768 | 482 | **37 %** |
 | `explain_failure` | 1,087 | 854 | **21 %** |
 | `nif_render` | 5,847 | 5,341 | 8.7 % |
-| `nif_outline` | 3,239 | 3,229 | **0.3 % — inert** |
-| `build` | 341 | 341 | **0 % — inert** |
-| `phase_report` | — | — | not measured |
+| `nif_outline` | 3,239 | 3,229 → **1,822** | 0.3 % → **43.8 % (fixed)** |
+| `build` | 341 | 341 → **106** | 0 % → **68.9 % (fixed)** |
+| `search` | 580 | **467** | **19.5 % (added)** |
+| `phase_report` | — | — | accepts `terse` and ignores it *deliberately* |
 
-The 14 tools with **no** `terse` parameter at all: `search`, `run`, `changes`,
-`map`, `doctor`, `shrink`, `trace`, `trace_diff`, `nif_diff`, `nif_run`,
-`bisect`, `debug`, `explain_crash`, `debug_session`.
+`nif_outline` was emitting one JSON object per node either way; terse only
+omitted an empty `name`, which is exactly the 10 bytes measured. It now emits
+flat `"proc myCmpStr.0.:8"` strings, the shape `outline` already used. `build`
+gated only `diagnostics`, so a clean build — where both branches emit `[]` —
+was byte-identical; it now drops `toolchain` and `project_flags` too, which are
+~180 bytes of constant on a green build.
 
-`search` is the most expensive `nimlang` tool in the system — 807 calls, 270 MB
-amplified, 8.7 % of all context drain — and it has no terse mode. That is the
-single largest unclaimed win inside the plugin.
+The 13 tools still with **no** `terse` parameter: `run`, `changes`, `map`,
+`doctor`, `shrink`, `trace`, `trace_diff`, `nif_diff`, `nif_run`, `bisect`,
+`debug`, `explain_crash`, `debug_session`.
 
 ### Terse is already on
 
@@ -271,8 +298,8 @@ By measured value, not by how interesting the work is.
 
 | # | Change | Basis | Est. recovery |
 |---|---|---|---|
-| 1 | Bound `Read` — redirect whole-file reads to `outline` + `decl_of`, the way aowl mode already redirects `grep` | `Read` = 52.9 % of drain, 2,546 B/call avg; `decl_of` answers the same question at 334 B | up to ~1.2 GB amplified |
-| 2 | Bound `Bash` output — cap and tail-truncate at the PreToolUse boundary | `Bash` = 27.4 % of drain over 4,211 calls | up to ~400 MB amplified |
+| 1 | **Corrected.** `Read` is not abused — 75.3 % of its bytes are *already windowed*, exact repeats are 0.6 %. The lever is substituting `decl_of` for the 857 reads that request ≤60 lines (one declaration) at 1,696 B avg | `decl_of` answers the same question at 334 B | ~1.17 MB/40 sessions = **37.4 % of `.nim` read bytes**, ~110 M tokens amplified — *not* the ~1.2 GB first estimated |
+| 2 | **Withdrawn.** `Bash` has no spike to cap: only **3 of 4,211 calls** exceeded 20 KB (2.5 % of `Bash` bytes). Cost is volume at 651 B/call — `git` 17.6 %, `sed` 10.9 %, `ls` 9.0 % | a truncation cap recovers almost nothing | ~0, not ~400 MB |
 | 3 | Defer the 10 never-called tool schemas behind `ToolSearch` | 1,898 tokens × every request | ~1.9 K tokens/request |
 | 4 | Give `search` a terse mode | 8.7 % of drain, no terse today | ~40 % of 270 MB |
 | 5 | Implement terse for `nif_outline` and `build` | declared, measured inert | small but they are lies today |
@@ -282,6 +309,21 @@ By measured value, not by how interesting the work is.
 
 Items 1 and 2 are worth more than everything else on this page combined. The
 plugin has optimised the 15 % it owns and left the 80 % untouched.
+
+### A guard that failed open on exactly the files it was for
+
+Fixing the `Read` path surfaced a latent defect worth recording. The guard maps
+a file's declarations and refuses to deny unless that map would actually narrow
+the read — if one symbol spans ≥90 % of the file, the map buys nothing, so the
+read is allowed. But the outline scan stops at `SYMBOL_CAP` (80) symbols, and
+the range fill then ran the **last kept symbol's end to EOF**. On any file with
+more than 80 declarations that artefact looked like a 91 % span, the dominance
+test fired, and the guard allowed the read.
+
+The guard was disabled on precisely the large, declaration-dense files it
+exists for, silently, for as long as the cap has been there. Dominance is now
+judged only on spans that were actually resolved, and
+`hooks/tests/test_read_window.py` covers it.
 
 ### Why `Read` was not gated, and what gating it would look like
 
