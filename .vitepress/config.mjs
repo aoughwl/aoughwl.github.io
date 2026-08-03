@@ -120,6 +120,7 @@ const sidebar = [
         ],
       },
       { text: 'Formatter — aowlfmt', link: '/docs/aowlfmt' },
+      { text: 'Test runner — aowltest', link: '/docs/aowltest' },
       {
         text: 'Claude Code — aowlcode',
         link: '/docs/aowlcode',

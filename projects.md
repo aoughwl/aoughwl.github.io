@@ -21,6 +21,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowllsp](docs/aowllsp) — Language Server (nimony rewrite): diagnostics + type-directed completion | `aoughwl/aowllsp` | public |
 | [aowlsuggest](docs/aowlsuggest) — diagnostics, quick-fixes & lint layer over `aowlparser`'s `check` | `aoughwl/aowlsuggest` | public |
 | [aowlfmt](docs/aowlfmt) — verified layout formatter (proves it changed nothing but whitespace) | `aoughwl/aowlfmt` | public |
+| [aowltest](docs/aowltest) — content-addressed test runner: skips a test whose transitive input hash is unchanged | `aoughwl/aowltest` | public |
 | [aowlhost](docs/aowlhost) — runs an aowl module as a plugin under a capability policy (no-IO by default) | `aoughwl/aowlhost` | public |
 | [aowllens](docs/aiflens) — NIF lens: typed `.s.nif` → JSON (decls/outline/members/typeat) for tooling | `aoughwl/aowllens` | public |
 | [net stack](docs/net-stack) — `tcp`/`net`/`tls`/`http`/`compress`/`serve`/`ws`/`requests` | `aoughwl/{tcp,net,tls,http,compress,serve,ws,requests}` | public |
