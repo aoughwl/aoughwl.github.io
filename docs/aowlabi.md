@@ -132,9 +132,30 @@ something outside itself. `tests/run.sh`, about 25 seconds:
 
 | Part | Checked against | Count |
 |---|---|---|
-| layout | a true differential — one program prints what the real nimony compiler lays out, another prints what the engine computes from descriptors alone, and the two are diffed | 90 types |
+| layout | a true differential — one program prints what the real nimony compiler lays out, another prints what the engine computes from descriptors alone, and the two are diffed | 105 types |
 | heap spec | real strings, seqs and refs built by the real compiler, read back *through* the offsets. No check hardcodes a number | 153 |
-| marshal | invariants over every leaf kind wrapped in every aggregate shape, with a deliberately separate leaf scanner — checking the module's recursion against itself would prove nothing | 847 |
+| marshal | invariants over every leaf kind wrapped in every aggregate shape, with a deliberately separate leaf scanner — checking the module's recursion against itself would prove nothing | 857 |
+| 32-bit | the same differential at `ptrSize = 4`, against a compiler actually laying out for 32 bits | 21 sizes |
+
+Every descriptor the layout corpus builds is also run through `validate`, which
+names the ones whose answer would be a guess. That is a different question from
+whether the number matches, and asking it found two corpus rows built from a
+`seq` descriptor with no element type — right sizes, since a seq header is two
+words whatever it holds, and therefore invisible to the numbers.
+
+The 32-bit tier exists because this machine has no 32-bit libc, so
+`--passc:-m32` cannot produce a program to measure and the width checks were
+invariance-only: *4, 8 and 16 behave consistently*, which is a statement about
+aowlabi and not about any compiler. `nimony c --bits:32` folds
+`const x = sizeof(T)` at the **target** width during semantic checking and
+writes the literal into the generated C before the link fails on the
+pointer-size assert, so the tier compiles a corpus that is never linked and
+never run, and reads the numbers back out of the C. It costs what you would
+expect: sizes only (offsets need a running program), no `UncheckedArray` tail
+(the constant folder refuses that expression, though the same `sizeof`
+answers at runtime), and rows matched positionally — so the harness refuses to
+score at all unless the count of extracted literals equals the count of rows,
+because a parser that matches nothing would leave two empty files diffing clean.
 
 nimony implements neither `alignof` nor `offsetof`, so the differential measures
 alignment structurally: the offset of `t` in `object (c: char, t: T)` *is*
@@ -145,8 +166,10 @@ per branch.
 gate redden, put it away again. Removing the rtti word reddens the inheriting
 types; shifting the `LongString` data offset by one word reddens the string
 checks; sizing a set by its base's width instead of its range reddens nine rows;
-restoring an older pointer-as-POD bug reddens twenty marshal invariants. A gate
-that has never failed proves nothing.
+restoring an older pointer-as-POD bug reddens twenty marshal invariants; moving
+the 32-bit model to `ptrSize = 8` reddens 16 of its 21 rows, and the five that
+survive are the width-independent ones. A gate that has never failed proves
+nothing.
 
 ### What it found
 
@@ -161,6 +184,13 @@ Writing it was not a formality:
   no caller had ever instantiated it.
 - **String literals do not follow the same SSO tiering as strings built at
   runtime**, described above.
+- **Two compiler bugs.** `sizeof` in a constant context under-reported every
+  object with an aggregate field — `object (char, string, char)` folded to 24
+  where the C backend said 32, because the padding in front of the aggregate was
+  dropped and the tail round-up hid it whenever the aggregate was last. And a
+  `{.closure.}` proc type in an object field was never lowered to its two-word
+  `(fn, env)` shape, so such a type did not compile at all. Both are described in
+  [aoughwl compiler fixes](nimony-fork).
 
 ## When the answer would be a guess
 
