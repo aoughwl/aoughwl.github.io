@@ -275,3 +275,96 @@ been hiding as an agreement: a crash exits non-zero, so it *looked* like a
 rejection, and the oracle never got far enough to reveal that aowlsem was
 accepting the program. Stock Nim rejects both (`'return' not allowed here`), so
 aowlsem gained the matching check (`E0279`) in the same pass.
+
+### `sizeof` under-reported every object with an aggregate field
+
+*Commit `c596bfc4`, `src/nimony/sizeof.nim` (`combine`).*
+
+**What.** `sizeof` in a **constant** context lost the padding in front of an
+aggregate field, so every field after it sat too low and the type came out too
+small. The C backend was right, so the two disagreed silently:
+
+```nim
+type
+  Sub = object
+    x: int64
+    y: int64
+  A = object
+    a: char
+    b: Sub
+    c: char
+const cA = sizeof(A)
+echo cA, " ", sizeof(A)      # was: 24 32
+```
+
+`b: string` and `b: seq[int32]` were wrong the same way. `b: ref int` was right,
+and so was an aggregate as the **last** field.
+
+**Why.** `update`, which handles a scalar field, rounds the running offset up to
+the field's alignment before adding it. `combine`, which merges an aggregate
+field, added `inner.size` to an unaligned `c.size`. For `A`: `char` → 1;
+`Sub` (16, align 8) → `1 + 16 = 17` instead of `align(1, 8) + 16 = 24`;
+`char` → 18; `finish` → `align(18, 8) = 24`. Correct is 32. That same tail
+round-up in `finish` is why an aggregate in last position looked correct — it
+covered the missing padding — and why the bug survived.
+
+**Fix.** Align `c.size` to `inner.maxAlign` before adding, exactly as `update`
+does. `inner.maxAlign == 0` is the `{.packed.}` sentinel and still imposes no
+alignment on the container.
+
+This was a wrong answer rather than a refusal: anything sizing a buffer from a
+const `sizeof` allocated short.
+
+**How it surfaced.** [aowlabi](aowlabi)'s layout differential, which diffs the
+compiler's own numbers against an independent engine — specifically its new
+32-bit tier, which reads folded `sizeof` literals out of the C emitted for
+`--bits:32`. The defect turned out not to be width-specific at all. Worth
+recording separately: `sizeof.nim`'s own `when isMainModule` suite does not run —
+`nim c -r src/nimony/sizeof.nim` dies on its first case at
+`assert n.kind == IntLit`, before and after this change — so the module carrying
+this bug had no working self-test.
+
+### A `{.closure.}` proc type in an object field was never lowered
+
+*Commit `75da5035`, `src/hexer/lambdalifting.nim`.*
+
+**What.** A closure-typed field did not compile at all; gcc rejected the struct:
+
+```nim
+type
+  PC = proc (x: int): int {.closure.}
+  H = object
+    p: PC
+proc main =
+  var h = default(H)
+main()
+```
+
+```
+error: incompatible types when initializing type 'NI64 (*)(NI64)'
+  using type 'struct X60Qt_0_IAtupleAiS64ZArefSX52ootX4fbj0sysvq0asl...'
+```
+
+**Why.** The field was emitted as a bare nimcall proc pointer — one word, no env
+parameter — while every value of that type is the two-word `(fn, env)` tuple
+lambdalifting builds. Closure proc types are lowered by `treProcType`, reached
+through `treType` and `trLocal`. Object fields are `FldS`, which is not in
+`LocalDecls`, so a field decl never reached that path: pass 2's `TypeS` case was
+a plain `takeTree`, and pass 1's rewrote exactly one thing (an itertype alias).
+The same held for a closure type inside a tuple or array element.
+
+**Fix.** Pass 2's `TypeS` walks the body through a new `treTypeBody`, which
+lowers a `{.closure.}` routine type wherever it occurs and publishes the type
+when it rewrote anything, so importers see the lowered field rather than the
+shape the declaring module started with. A tuple already in the lifted shape is
+left alone, or its own `fn` slot would be wrapped a second time. Pass 1 sets
+`hasClosures` when a type body contains such a type, because a module that only
+*declares* one has none of the other signals that make pass 2 run.
+
+`sizeof(H)` is now 16, matching the tuple — and matching what
+[aowlabi](aowlabi)'s `akClosure` says a closure is.
+
+**How it surfaced.** Adding a closure-typed row to aowlabi's layout corpus. It
+also settled the layout question the row was for: `sizeof` of a `{.closure.}`
+type is 16, because hexer rewrites it to the tuple before `sizeof` sees it, so
+`sizeof.nim`'s one-word `RoutineTypes` arm only ever answers for `nimcall`.
