@@ -368,3 +368,66 @@ left alone, or its own `fn` slot would be wrapped a second time. Pass 1 sets
 also settled the layout question the row was for: `sizeof` of a `{.closure.}`
 type is 16, because hexer rewrites it to the tuple before `sizeof` sees it, so
 `sizeof.nim`'s one-word `RoutineTypes` arm only ever answers for `nimcall`.
+
+### A declared object field default was silently ignored
+
+*Commit `3f406b4d`, `src/nimony/sem.nim`.*
+
+**What.** A field's declared default value never reached the object. Both the
+constructor and `default(T)` produced the type's zero instead:
+
+```nim
+type
+  K = enum kA, kB
+  P = object
+    labelCounter: int = 1
+    kind: K
+
+P(kind: kA).labelCounter   # nimony said 0, Nim 2 says 1
+default(P).labelCounter    # nimony said 0, Nim 2 says 1
+var r: P; r.labelCounter   # 0 in both — correct, defaults don't apply here
+```
+
+**Why.** Sem *records* the default on the declaration and then ignores it when
+completing the constructor. Both halves are visible in the `.s.nif`:
+
+```
+(fld :labelCounter.0 . . (i 64) 1)                                   <- declared
+(kv labelCounter.0 (expr .. std/system/defaults.nim (suf 0 "i64")))  <- 0 emitted
+```
+
+`buildObjConstrField` called `callDefault(typ)` unconditionally and never
+consulted `field.val`. One path serves both `T(a: x)` and `default(T)`, which is
+why the two symptoms are one bug.
+
+**Fix.** Emit `field.val` when it is not a `DotToken`. It is already semchecked
+at the declaration, so it splices in directly.
+
+Not done when `bindings` is non-empty — an invoked generic type reached through
+the parent/instantiation walk, whose default still mentions the type's typevars.
+Substituting it with `instantiateExprIntoBuf` (the obvious move, and the first
+version of this fix) re-sems into the constructor buffer and emits a tree the
+post-sem phase validator walks off the end of: it SIGSEGVs in `collectChildKinds`
+on `tests/nimony/converter/tgenericconverter.nim` and breaks
+`tests/nimony/track/ttype_usage.nim`. Measured against a baseline run of the same
+suite — 587/594 before, 585/594 with the substitution, 587/594 with the guard,
+and those two were the only delta (7 pre-existing `nosystem/*` failures in every
+run). The remaining gap is narrow: an ordinary `G[int](v: 3)` still takes the
+splice path and honours `n: int = 5`.
+
+**Why it mattered more than it looks.** The bug is invisible in the source and
+silent at runtime — a type states its starting value, the program reads a
+plausible zero, nothing warns. And it only bit **nimony-compiled** programs: the
+compiler's own tools are built by Nim 2, so the same source was correct in
+`bin/hexer` and wrong in any nimony port of it.
+
+**How it surfaced.** A closure iterator run under
+[aowli](https://github.com/aoughwl/nimony)'s destructor-lowering mode exited
+before its first iteration. `hexer/coro_transform.nim` declares
+`ProcContext.labelCounter: int = 1` precisely so an emitted coroutine label can
+never collide with the hardcoded entry state 0. Inside aowli's nimony-compiled
+partial hexer that default was dropped, the first yield emitted `(lab 0)`, and
+the lowering grew **two procs named `once.0.s0.`** — in NIF the symbol is the
+identity, so the yield's continuation resolved to the *done* state and the loop
+stopped before it started. Rebuilding with the fixed compiler turns
+`once.0.s0. + once.0.s0.` into `once.0.s0. + once.0.s1.`, and 0 iterations into 1.
