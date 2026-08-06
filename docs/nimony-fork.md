@@ -431,3 +431,57 @@ the lowering grew **two procs named `once.0.s0.`** — in NIF the symbol is the
 identity, so the yield's continuation resolved to the *done* state and the loop
 stopped before it started. Rebuilding with the fixed compiler turns
 `once.0.s0. + once.0.s0.` into `once.0.s0. + once.0.s1.`, and 0 iterations into 1.
+
+### The shared object cache was keyed by basename, so its compile flags were not part of its identity
+
+*Commit `4e65d2ad`.*
+
+**What.** `nimcache_static/` holds the object files produced from `{.compile.}`
+pragmas — in practice mimalloc's `static.c`. They do not depend on per-project
+state, so one build compiles them and every other build on the machine reuses
+the result. But the object was keyed by **basename**: a single `static.o` slot,
+with nothing in its identity recording the flags it had been built with.
+
+**Why it matters.** Whichever build ran last decided the allocator for every
+other nimony program on the machine, including builds already running in another
+session. A `-O0` debug build, a `--cc:clang` build and a test run injecting
+`--passC:-DMI_TRACK_VALGRIND=1` all wrote the same file; two builds wanting
+different flags could not coexist at all. This was already live rather than
+hypothetical — `hastur`'s `prebuildSharedObjects` had to `removeFile` the slot
+before a valgrind test run precisely because a plain `bin/nimony c foo.nim`
+could leave a stale, untracked object there for the tests to silently reuse.
+
+**Fix.** `sharedObjFile` (`src/nimony/deps.nim`) now names the object
+`static_<digest>.o`, where the digest covers the exact `cc` invocation — driver,
+`-O` level, `--passC` and `{.passC.}` flags, the `-I` project root — plus that
+TU's own `{.compile.}` arguments. The `cc` flags are collected into a seq once
+and used both to emit the command and to compute the key, so the two cannot
+drift apart. `hastur`'s deletion workaround is removed.
+
+### Every nimony program linked a debug-mode mimalloc, `-d:danger` included
+
+*Same commit `4e65d2ad`; it depends on the keying fix above.*
+
+**What.** `lib/std/system/mimalloc.nim` compiled `static.c` with
+`-DMI_STATS=1 -I…` and nothing else. mimalloc's `types.h` sets `MI_DEBUG 2`
+unless `MI_BUILD_RELEASE` or `NDEBUG` is defined, which turns on `MI_PADDING`,
+`MI_PADDING_CHECK`, `MI_ENCODE_FREELIST` and `mi_assert_internal`. `nm` on a
+shipped `-d:danger` binary showed `_mi_assert_fail`, `mi_check_padding`,
+`mi_is_valid_pointer` and `mi_page_decode_padding`. Separately, `MI_STATS` is
+not tested anywhere in mimalloc — the macro the library reads is `MI_STAT`, so
+that `-D` defined a name nothing looks at, and the counters
+`getOccupiedMem`/`getTotalMem`/`getFreeMem` report were on only as a side effect
+of `MI_DEBUG>0`.
+
+**Fix.** `-d:release`/`-d:danger` compile with `-DMI_BUILD_RELEASE`, and both
+modes ask for `-DMI_STAT=1` explicitly so the three public procs report the same
+thing in every build mode. This is only safe *because* the cache is now keyed on
+the flags: with the old basename key, a `when defined(danger)` in a build pragma
+would have made the last program built on the machine choose every other
+program's allocator.
+
+**Measured.** With a toolchain built from this change, a plain build, a
+`-d:danger` build and a `--passC:-DMI_TRACK_VALGRIND=1` build produce three
+coexisting objects instead of clobbering one. The danger object is 241KB with
+**0** `mi_assert_fail`/`mi_check_padding`/`mi_page_decode_padding` symbols,
+against 352KB and 3 for the debug one; both programs run.
