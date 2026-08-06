@@ -485,3 +485,50 @@ program's allocator.
 coexisting objects instead of clobbering one. The danger object is 241KB with
 **0** `mi_assert_fail`/`mi_check_padding`/`mi_page_decode_padding` symbols,
 against 352KB and 3 for the debug one; both programs run.
+
+### An inline range as a set's element type crashed the compiler
+
+*Commit `1dc52142`.*
+
+**What.** `set['a'..'z']` — which Nim defines as `set[range['a'..'z']]` — did
+not compile. `semArrayType` recognises an inline range expression
+(`isRangeExpr` → `semRangeTypeFromExpr`), so `array['a'..'z', T]` works; the
+`SetT` branch in `semtypes.nim` went straight to `semLocalTypeImpl`, which
+semmed `'a'..'z'` as a **value** expression. That is not an ordinal type, so a
+correct program was rejected with *"set element type must be ordinal"*.
+
+**Why it was a crash and not a diagnostic.** The `SetT` branch closes its own
+tree with `takeParRi` *before* it validates the element type, so `buildErr`
+appended the error node **after** a complete `(set T)`. The type-decl reader
+expects one well-formed tree and aborted with a `[Bug]` traceback —
+`expected ')', but got: (err . "set element type must be ordinal")`. That hit
+every invalid set element type, not just this one: `set[string]`,
+`set[1.0..2.0]` and `set[someProc]` all crashed the compiler rather than being
+reported. `semArrayType` was unaffected because it errors while its own tree is
+still open.
+
+**Fix.** Handle `isRangeExpr` in the set branch exactly as arrays do, and make
+the error node *replace* the set tree (`dest.shrink setStart`) instead of
+following it.
+
+The bug was wider than the char range it was reported for — `set[0..9]` failed
+identically. `set[char]` and the named `set[range['a'..'z']]` were unaffected,
+which is why it went unnoticed. Gated by `tests/nimony/sets/tsetrange.nim`,
+checked against the unfixed compiler and failing there.
+
+### A char literal could never satisfy a char range
+
+*Commit `9225cbe9`.*
+
+**What.** `var c: range['a'..'z'] = 'b'` was rejected with *"cannot prove value
+is in range 97..122"*.
+
+**Why.** The range-proof pass (`contracts_fir.nim`) models a literal operand by
+reading its ordinal value, but handled only `IntLit` and `UIntLit`. A `CharLit`
+fell through to the "value we cannot model" branch, which rejects
+unconditionally — so no char literal, in range or not, could ever be assigned to
+a char range. The integer analogue (`range[0..9] = 5`) always worked.
+
+**Fix.** Read the literal the way `getConstOrdinalValue` does. An out-of-range
+char now also gets the precise literal diagnostic instead of the vague one:
+`value out of range: 66 notin 97..122`.
