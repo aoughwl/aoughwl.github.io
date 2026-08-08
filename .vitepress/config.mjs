@@ -52,6 +52,7 @@ const sidebar = [
         ],
       },
       { text: 'Hexer — aowlhexer', link: '/docs/aowlhexer' },
+      { text: 'High-Level IR — aowlhl', link: '/docs/aowlhl' },
     ],
   },
   {
@@ -76,7 +77,6 @@ const sidebar = [
           { text: 'Overview', link: '/docs/aowllib' },
         ],
       },
-      { text: 'High-Level IR — aowlhl', link: '/docs/aowlhl' },
       { text: 'Value layout & ABI — aowlabi', link: '/docs/aowlabi' },
     ],
   },
