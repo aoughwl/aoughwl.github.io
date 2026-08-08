@@ -133,6 +133,7 @@ const sidebar = [
           { text: 'Execution', link: '/docs/aowlcode/execution' },
           { text: 'Internals', link: '/docs/aowlcode/internals' },
           { text: 'Token budget', link: '/docs/aowlcode/token-budget' },
+          { text: 'Fleet (phone control)', link: '/docs/aowlcode/fleet' },
         ],
       },
       { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
@@ -169,6 +170,7 @@ const sidebar = [
       },
       { text: 'JSON — aowljson', link: '/docs/aowljson' },
       { text: 'MCP servers — aowlmcp', link: '/docs/aowlmcp' },
+      { text: 'Discord bots — discord', link: '/docs/discord' },
     ],
   },
   {
