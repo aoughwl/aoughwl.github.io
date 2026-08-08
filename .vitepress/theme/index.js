@@ -50,7 +50,7 @@ const DESC_BY_PATH = {
   '/docs/aowlsem': 'Semantic checker — resolves types, overloads, and reports errors',
   '/docs/aowlhexer': 'Lowering pass — simplifies typed code down toward the backends',
   '/aowli': 'Interpreter — runs your program directly, with no separate compile step',
-  '/docs/aowllib': 'The native runtime library that compiled programs link against',
+  '/docs/aowlrt': 'The native runtime library that compiled programs link against',
   '/docs/aowlhl': 'Shared high-level IR that the interpreter and JS backend both read',
   '/docs/aowlc': 'C backend — emits C source you can compile to a native binary',
   '/docs/aowljs': 'JavaScript backend — transpiles straight to fast native JS',

@@ -2,19 +2,19 @@
 
 > ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
 
-The target is a rewrite of the Nim / Nimony toolchain whose output is **byte-for-byte
-identical** to the original: same parse tree, same typed IR, same generated code,
-down to the byte. Not a fork and not a wrapper — each stage is written from
-scratch and then diffed against the real compiler's output.
+Every stage of this toolchain is written from scratch and then held to one
+standard: run the same input through the reference tool and through ours, and
+the two outputs have to be **identical down to the byte**. Same parse tree, same
+typed IR, same generated code.
 
-We're not all the way there. This page is the scoreboard.
+That bar is unforgiving on purpose. Every naming decision, emission order,
+whitespace convention and line-info offset has to match, and at the end you are
+looking at a diff that is either empty or it isn't — there is no partial credit
+and no room to talk your way past it. Clearing it is what makes a stage an
+actual drop-in replacement instead of something that looks like one.
 
-## Why byte-for-byte
-
-"Close" is easy to claim and impossible to check. Byte-for-byte isn't: every
-naming decision, emission order, whitespace convention and line-info offset has
-to match, and the diff is either empty or it isn't. Passing that bar is what
-makes a stage an actual drop-in replacement rather than a lookalike.
+We have not cleared it everywhere. This page is the scoreboard, including the
+parts that aren't green.
 
 ## Where each stage stands
 
@@ -42,43 +42,51 @@ The front of the pipeline is done. `aowlparser` is diffed against native
 | upstream Nim/lib | 310 | 310 | 283 |
 | curated | 172 | 172 | 156 |
 
-0 crashes, 0 hangs across all four. The remaining byte gaps are written down,
-not mysterious — see [Parity & gaps](aowlparser/known-gaps).
+0 crashes, 0 hangs across all four. The byte gaps that remain are written down
+one by one rather than left as a mystery — see
+[Parity & gaps](aowlparser/known-gaps).
 
 ## Semantic checker
 
-`aowlsem` is a clean-room replacement for `nimsem` and is the stage where parity
-is currently being ground out construct by construct. The corpus stands at
-**498/498 modules byte-exact**, including all of `std/system`.
+`aowlsem` is a clean-room replacement for `nimsem`, and it is the stage where
+parity is currently being ground out construct by construct. The corpus stands
+at **498/498 modules byte-exact**, including all of `std/system`.
 
-What's left is not a long tail of near-misses. Broad differential runs over the
-whole nimcache oracle set point at specific missing features — anonymous sum-type
-construction and `of`-pattern matching are the largest — rather than at drift in
-code that already works. Details on the [aowlsem page](aowlsem).
+What's left is not a long tail of near-misses. Differential runs over the whole
+nimcache oracle set point at specific missing features — anonymous sum-type
+construction and `of`-pattern matching are the two biggest — rather than at
+drift inside code that already works. That's the good kind of remaining work:
+you can name it, and finishing one construct moves a countable number of
+modules. Details on the [aowlsem page](aowlsem).
 
 ## Lowering
 
 `aowlhexer` still runs the reference compiler's 25 lowering passes, so its
-`.c.aif` matches by construction almost everywhere. Two deliberate exceptions,
-both places the reference marks its own code as unfinished:
+`.c.aif` matches by construction almost everywhere. There are two deliberate
+exceptions, both in places the reference marks its own code as unfinished:
 
 - **Captured `var` / `out` parameters are now rejected.** A closure that captures
   a `var T` parameter holds a pointer into the *caller's* frame, so an
-  environment outliving the call dangles. The reference leaves this as a TODO in
-  `lambdalifting`; we make it a lowering-time error.
+  environment that outlives the call is left pointing at dead stack. The
+  reference leaves this as a TODO in `lambdalifting`; we make it a lowering-time
+  error.
 - **Move analysis reports the right token.** In `mover`, the "other usage" that
   blocks a sink was recorded after the cursor had already advanced past it, so
   the diagnostic pointed at a closing paren. It now points at the use.
 
-Both make aowlhexer stricter or more accurate than the original, not looser —
-one can reject a program the reference accepts, which is the point. This is a
-staging post: the passes get rewritten onto an aowl-owned core, and then this
-row stops saying ⏳.
+Both make aowlhexer stricter or more accurate than the original rather than
+looser, so either one can reject a program the reference accepts. That is the
+trade we want. The passes get rewritten onto an aowl-owned core next, and then
+this row stops saying ⏳.
 
 ## How we measure
 
-Every claim here comes from a differential harness: run the same input through
-the reference tool and ours, normalize only what genuinely doesn't matter, diff
-the bytes. A green diff is the only thing that counts as done for a construct;
-everything else is a punch-list item. That's how the parser got here, and it's
-how each remaining stage closes.
+Every claim on this page comes out of a differential harness: run the same input
+through the reference tool and ours, normalize only what genuinely doesn't
+matter, diff the bytes. A green diff is the only thing that counts as done for a
+construct — everything else is a punch-list item, not a rounding error. That is
+how the parser got where it is, and it is how each remaining stage closes.
+
+If a number here looks wrong to you, we would rather hear it than not. The
+harnesses are in the repos, and the argument is welcome on
+[Discord](https://discord.gg/nxa3W7w4rJ).

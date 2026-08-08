@@ -1,14 +1,14 @@
-# aowllib — the aowl system runtime
+# aowlrt — the aowl system runtime
 
-> ▶️ **[Try `aoughwl/aowllib` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowllib)** — clones the repo into the in-browser IDE, no install.
+> ▶️ **[Try `aoughwl/aowlrt` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlrt)** — clones the repo into the in-browser IDE, no install.
 
-`aowllib` is the hand-written C runtime that supplies the `system` / `syncio`
+`aowlrt` is the hand-written C runtime that supplies the `system` / `syncio`
 symbols a post-[aowlhexer](aowlhexer) `.c.aif` references, so real programs —
 `echo`, strings, seqs, `ref`/variant objects, inheritance with method dispatch,
 ARC — link and run **natively** through [aowlc](aowlc) with **no** nimony
 `system.c.aif`.
 
-Repo **`aoughwl/aowllib`** (public). Status: **working** — `echo "hello"` and 43
+Repo **`aoughwl/aowlrt`** (public). Status: **working** — `echo "hello"` and 43
 other programs compile to native binaries and pass a **44/44** acceptance suite,
 **ASan/UBSan/LSan-clean, leak-free**. It is the largest single unlock in the
 [aowlmony](aowlmony) rewrite: it lets a program compile *natively* through the
@@ -23,7 +23,7 @@ By the time [aowlhexer](aowlhexer) has lowered a program, ARC calls and runtime
 operations are *injected* into the `.c.aif`: they reference runtime symbols
 (`write`, the string/seq structs, `=destroy`, `allocFixed`, `arcInc`, …) that
 must exist at link time. Nimony satisfies them by compiling its `system` module
-to `.c.aif`; aowllib provides them as an aowl-owned C layer instead.
+to `.c.aif`; aowlrt provides them as an aowl-owned C layer instead.
 
 ## Linking
 
@@ -34,29 +34,29 @@ disambiguator `0`, from the module hashed `syn1lfpjv`; aowlc mangles it to
 > an undefined runtime extern is exactly a referenced atom `base.disamb.HASH`
 > with a **non-empty** `HASH`.
 
-aowllib is written once with hash-independent names (`aowllib_*` / `Aowllib*`).
-`bin/aowllib-cc` collects the undefined externs, maps each `base` through
-`runtime/runtime-map.js` onto an aowllib entry point, and injects a per-program
+aowlrt is written once with hash-independent names (`aowlrt_*` / `Aowlrt*`).
+`bin/aowlrt-cc` collects the undefined externs, maps each `base` through
+`runtime/runtime-map.js` onto an aowlrt entry point, and injects a per-program
 shim right after aowlc's C prelude:
 
 ```c
-typedef struct { NI fullLen_0; NI rc_0; NI capImpl_0; NC8* data_0; } Aowllib_LongString;
-typedef struct { NU bytes_0; Aowllib_LongString* more_0; } Aowllib_string;
-typedef Aowllib_string string_0_sysvq0asl;      // type aliased by name
-#define write_0_syn1lfpjv  aowllib_write_string  // proc/global aliased by macro
-#define stdout_0_syn1lfpjv aowllib_stdout
+typedef struct { NI fullLen_0; NI rc_0; NI capImpl_0; NC8* data_0; } Aowlrt_LongString;
+typedef struct { NU bytes_0; Aowlrt_LongString* more_0; } Aowlrt_string;
+typedef Aowlrt_string string_0_sysvq0asl;      // type aliased by name
+#define write_0_syn1lfpjv  aowlrt_write_string  // proc/global aliased by macro
+#define stdout_0_syn1lfpjv aowlrt_stdout
 ```
 
 Field names (`bytes_0`, `fullLen_0`, …) are hash-independent — nimony field name
-plus a `.disamb` — so aowllib pins them directly; only type/proc *symbols* carry
-the module hash and are bridged by the shim. Any runtime symbol aowllib doesn't
+plus a `.disamb` — so aowlrt pins them directly; only type/proc *symbols* carry
+the module hash and are bridged by the shim. Any runtime symbol aowlrt doesn't
 cover is printed as a coverage gap and the build fails — never silently stubbed.
 
 ```
-.c.aif ──aowlc printer──▶ C ──inject shim──▶ gcc + runtime/aowllib.c ──▶ native binary
+.c.aif ──aowlc printer──▶ C ──inject shim──▶ gcc + runtime/aowlrt.c ──▶ native binary
 ```
 
-`aowllib-cc` compiles with `-Werror=implicit-function-declaration`: a runtime
+`aowlrt-cc` compiles with `-Werror=implicit-function-declaration`: a runtime
 call without a prototype would be assumed to return `int` and silently truncate a
 64-bit pointer return, so that class is a hard error, not a `-w`-silenced warning.
 
@@ -73,7 +73,7 @@ native ABI.
 | `File` | `{ NI fd; NU flags; }` (raw OS fd, `nimNativeIo`) | 16 B |
 
 **`LongString.data` is a pointer, not an inline flexible array.** nimony declares
-it `UncheckedArray[char]` at offset 24; aowllib uses a pointer because (a) that is
+it `UncheckedArray[char]` at offset 24; aowlrt uses a pointer because (a) that is
 exactly what aowlc emits for a string-literal const — `(LongString){ .data_0 =
 "hi" }` stores a pointer to real storage, whereas a flexible-array compound
 literal reserves no space — and (b) a heap string is then one allocation
@@ -92,7 +92,7 @@ pointer.
 | 255 | long (heap) | `more->data`, refcounted via `more->rc` |
 | 254 | static (literal) | `more->data`, never freed |
 
-`aowllib_str_from_bytes(p, n)` builds inline when `n ≤ 14`, else a heap
+`aowlrt_str_from_bytes(p, n)` builds inline when `n ≤ 14`, else a heap
 `LongString` (slen 255, `rc = 0`). Literals lower to a static `LongString`.
 
 ## ARC
@@ -105,7 +105,7 @@ Single-threaded (`arcops.nim`); `rc` stores `refcount − 1`, so `0` == unique.
 | `arcDec(rc)` | `rc == 0 ? free : (--rc, keep)` |
 | `arcIsUnique(rc)` | `rc == 0` |
 
-String `=destroy`/`=copy`/`=dup`/`=wasMoved` live in aowllib; seq and user-`ref`
+String `=destroy`/`=copy`/`=dup`/`=wasMoved` live in aowlrt; seq and user-`ref`
 hooks are monomorphised into the program by aowlhexer.
 
 ## Coverage
@@ -124,7 +124,7 @@ Symbols provided (`runtime/runtime-map.js`):
 | panics | `panic`, bounds `nimIcheckB`/`nimIcheckAB`/`nimUcheckB`/`nimUcheckAB`, `oomHandler` |
 
 **Overload resolution.** `write`, `$`, `add`, `==`, `<`, `<=`, `cmp` and the
-`=hooks` share one name; `aowllib-cc` picks the target from the call's argument
+`=hooks` share one name; `aowlrt-cc` picks the target from the call's argument
 **type**, read from the IR (literal shape, the same-module declaration, or a typed
 node). `write` falls back to a disambiguator table (`0`=string, `1`=bool, `2`=int,
 `7`=char) for args whose type can't be read. Comparators only reach the linker as
@@ -133,14 +133,14 @@ comparator extern is a reported gap, not a mis-bind.
 
 **Program-local return types.** `for c in s` lowers to `toOpenArray(s)` and
 `s[a..b]` to `[]`(string, `HSlice`); both return module-hashed structs defined
-*after* the shim, so `aowllib-cc` can't `#define` them — it emits a real wrapper
+*after* the shim, so `aowlrt-cc` can't `#define` them — it emits a real wrapper
 after the type section (`{ str_data(s), str_len(s) }`; slice → inclusive
-`aowllib_str_slice_ab`, `a` clamped to 0, `b` to `high(s)`, empty → `""`).
+`aowlrt_str_slice_ab`, `a` clamped to 0, `b` to `high(s)`, empty → `""`).
 
 ## Inheritance / RTTI
 
 `object of RootObj` works: field access at any depth, `ref` hierarchies, and
-**dynamic method dispatch** through the per-type vtable. aowllib supplies the
+**dynamic method dispatch** through the per-type vtable. aowlrt supplies the
 `RootObj` (`{ Rtti* vt }`) and `Rtti` (`{ int dl; uint32* dy; void* mt[256] }`)
 type-info layouts plus the `nimChckNilDisp` dispatch guard; per-type vtable consts
 are emitted into the program. `mt` is a fixed 256-slot array (not a flexible
@@ -169,10 +169,10 @@ npm run test:regen  # regenerate each .c.aif from its .nim first (needs nimony)
 
 ## Not covered
 
-- **`of` type test** (`x of Derived`) — a **nimony** bug, not aowllib's:
+- **`of` type test** (`x of Derived`) — a **nimony** bug, not aowlrt's:
   `vtables_backend.nim` emits an `of` check (`display[level] == hash(T)`) whose
   `level`/target hash don't line up with the type's own display array, so it is
-  always false. aowlc/aowllib faithfully execute what nimony emits.
+  always false. aowlc/aowlrt faithfully execute what nimony emits.
 - Exceptions beyond `panic` (the `eraiser` error-code path); `$`-of-float
   (`write(File, float)` works, the string-returning `$` isn't wired).
 - The aowl-source `system` module (Phase 2) that would replace this hand-written

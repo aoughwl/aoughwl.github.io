@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitepress'
 
 // ---------------------------------------------------------------------------
-// Sidebar tree. Region headers (OVERVIEW / PIPELINE / EMITTERS / ECOSYSTEM) are
-// top-level groups; each stage is a link, and any stage that has sub-pages is a
+// Sidebar tree. Region headers (OVERVIEW / INTERFACE / COMPILER / EMITTERS /
+// RUNTIME / TOOLS / LIBRARIES) are top-level groups, ordered the way a program
+// travels. Each stage is a link, and any stage that has sub-pages is a
 // { collapsed: true, link, items } group — click the label to open the page,
 // click the chevron to expand. Adding a child page to ANY stage is a one-liner:
 // give it an `items: [...]` array and it becomes collapsible.
@@ -26,6 +27,14 @@ const sidebar = [
   {
     text: 'COMPILER',
     items: [
+      {
+        text: 'The AIF format',
+        link: '/docs/aif',
+        collapsed: true,
+        items: [
+          { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
+        ],
+      },
       {
         text: 'Parser — aowlparser',
         link: '/docs/aowlparser',
@@ -56,31 +65,6 @@ const sidebar = [
     ],
   },
   {
-    text: 'RUNTIME',
-    items: [
-      {
-        text: 'Interpreter — aowli',
-        link: '/aowli',
-        collapsed: true,
-        items: [
-          { text: 'Engines', link: '/aowli/engines' },
-          { text: 'Debugging', link: '/aowli/debugging' },
-          { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
-          { text: 'aowli-release (public binaries)', link: '/docs/aowli-release' },
-        ],
-      },
-      {
-        text: 'Runtime — aowllib',
-        link: '/docs/aowllib',
-        collapsed: true,
-        items: [
-          { text: 'Overview', link: '/docs/aowllib' },
-        ],
-      },
-      { text: 'Value layout & ABI — aowlabi', link: '/docs/aowlabi' },
-    ],
-  },
-  {
     text: 'EMITTERS',
     items: [
       { text: 'C — aowlc', link: '/docs/aowlc' },
@@ -100,6 +84,25 @@ const sidebar = [
       },
       { text: 'TypeScript — aowlts', link: '/docs/aowlts' },
       { text: 'Python — aowlpy', link: '/docs/aowlpy' },
+    ],
+  },
+  {
+    text: 'RUNTIME',
+    items: [
+      {
+        text: 'Interpreter — aowli',
+        link: '/aowli',
+        collapsed: true,
+        items: [
+          { text: 'Engines', link: '/aowli/engines' },
+          { text: 'Debugging', link: '/aowli/debugging' },
+          { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
+          { text: 'aowli-release (public binaries)', link: '/docs/aowli-release' },
+        ],
+      },
+      { text: 'Runtime — aowlrt', link: '/docs/aowlrt' },
+      { text: 'Plugin host — aowlhost', link: '/docs/aowlhost' },
+      { text: 'Value layout & ABI — aowlabi', link: '/docs/aowlabi' },
     ],
   },
   {
@@ -136,7 +139,6 @@ const sidebar = [
           { text: 'Fleet (phone control)', link: '/docs/aowlcode/fleet' },
         ],
       },
-      { text: 'AIF CLI — aiflens', link: '/docs/aiflens' },
       { text: 'Obfuscator — obfuscate', link: '/docs/obfuscate' },
     ],
   },

@@ -63,5 +63,5 @@ binaries (`fib(20)=6765`, `ack(3,4)=125`, `fib(25)=75025`).
 
 Own it incrementally — rewrite passes onto an aowl-owned core (dropping the
 `$NIMONY_SRC` dependency), then retarget the shared infra to the aowl AIF
-libraries. Paired with [aowllib](aowllib) (the runtime ARC injects calls into),
+libraries. Paired with [aowlrt](aowlrt) (the runtime ARC injects calls into),
 this removes the last nimony dependencies from native codegen.
