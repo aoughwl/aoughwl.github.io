@@ -49,66 +49,88 @@ is missed too.
 
 ## Projects
 
-A **project** is one supervised session on one repo. Three rules define them.
+A **project** is one repo the fleet looks after and one Claude Code session on
+it. There are three things a project can be, and the design is in the difference
+between them.
 
-**Every boot starts with zero.** Not "usually zero" — zero, every time. A
-project is a decision made for a session, not a setting. Carrying the list
-across a boot means the machine comes up and puts sessions on repos nobody asked
-about this morning, invisibly, because a config that was already right is the
-one thing nobody re-reads.
-
-The single exception is not one: a project whose process is **still alive** is
-adopted rather than re-created. The supervisor's children are orphaned rather
-than killed when it dies, so a crash-restart five seconds later would otherwise
-abandon a live session to keep editing a checkout nobody is watching. Adoption,
-never persistence.
-
-**Two ways to work, and the difference is the ending.**
-
-| you say | what happens |
+| | |
 |---|---|
-| `work on aowlsem` | **standing** — inbox first, runs until stopped |
-| `work on aowlsem: fix the X drop` | **one job** — it reports back and stops |
-| the same, at a project already running | **an interrupt** — done, reported, then back to standing |
+| 💤 **idle** | its session clears the inbox and then waits. The default. |
+| ♾️ **working** | it works without stopping. Inbox first, always. |
+| 🔗 **attached** | a session **you** started. Read only: never spawned, nudged or killed. |
 
-A task registers no standing goal, so the Stop hook does not hand the work back
-and the supervisor does not restart it when it exits: it is allowed to be
-finished. When it finishes, its **last message** is pushed to the phone as the
-report — taken from the session's output rather than from a tool it has to
-remember to call, because a report that depends on the model remembering is one
-that is sometimes missing.
+**Adding is not starting.** A session working on its own initiative costs tokens
+every minute and only some of those minutes were asked for, so working is a
+separate, deliberate verb. An idle session comes up, empties whatever is queued
+for its label, says what it cleared, and ends its turn.
 
-A running project is **never re-briefed**. Asking for one that is already
-running reports how long it has been up and names where direction goes instead:
-a running session holds a context that a second briefing fights with.
+**Idle costs nothing and still answers.** Ending the turn is the correct outcome
+for a session whose job is to wait, so the supervisor lets it *sleep* rather than
+respawning it — a respawn loop would start a session every fifteen seconds all
+night, and every view would call that healthy. What wakes it is exactly what it
+is waiting for: a message queued for its label.
 
-**One dial stays adjustable**: how wide it fans out. Setting it writes the
-config *and* messages the running session, so it applies to the turn it is in
-the middle of rather than at some future restart.
+**The inbox comes first in both states.** A message interrupts standing work,
+gets done, and then the standing goal resumes. Nothing about "work without
+stopping" outranks something a human actually asked for.
 
-Everything the fleet spawns runs **Opus at medium effort** — projects, the
-planner and the concierge alike. Stated in the supervisor rather than left to
-whatever the CLI defaults to that week: a session working unattended for hours
-is a property of the fleet, not of the machine's current settings.
+**Nothing comes up working after a reboot.** The project *list* survives — those
+are the repos the fleet looks after, and re-typing them every reboot is a chore
+with nothing behind it. "Keep working on this without stopping" does not: that is
+a decision made for an afternoon, and a machine that resumes it silently is
+spending on yesterday's intent, invisibly, because a config that was already
+right is the one thing nobody re-reads. The single exception is a project whose
+process is **still alive** — the supervisor's children are orphaned rather than
+killed when it dies, so a crash-restart five seconds later would otherwise
+abandon a live session to keep editing a checkout nobody is watching.
 
-## Saying it, instead of typing a slash
+**A working project is never re-briefed.** Asking for one that is already working
+reports how long it has been up and names where direction goes instead: a running
+session holds a context that a second briefing fights with.
 
-Slash commands are a keyboard affordance and this is a phone. "work on aowlsem",
-"what is aowlsem doing?", "3 agents on aowlsem", "subscribe to aowlsem loud" all
-reach the same handlers the slash commands do — one implementation, so the two
-cannot drift.
+**It compacts itself** every two hours. Automatic compaction handles the context
+window; this handles the other half — hours of transcript about work that landed
+and was pushed long ago.
 
-A sentence only becomes a command when it is **unambiguous**: the verb is at the
-front, and where the command names an existing project, that project resolves.
-"stop the aowlsem gate flaking" is not a stop command, because *the aowlsem gate
-flaking* is not a running project. Everything else falls through to a chat
-session — the safe direction, where the worst case is an answer instead of an
-action.
+Everything the fleet spawns runs **Opus at medium effort**, stated in the
+supervisor rather than left to whatever the CLI defaults to that week: a session
+working unattended for hours is a property of the fleet, not of the machine's
+current settings.
 
-Names are resolved, not matched literally: "work on the discord integration"
-finds `~/aoughwl-discord`. An **ambiguous** name resolves to nothing and lists
-the candidates, because guessing between two repos puts a session on the wrong
-checkout.
+## Attaching to a session you are already running
+
+One command adopts a Claude Code session started by hand, in a terminal the human
+keeps watching. Nothing is spawned, nudged, goaled or killed — the fleet only
+reads.
+
+That is possible because there is nothing to attach *to*. Claude Code already
+writes every turn of every session to `~/.claude/projects/<cwd>/<id>.jsonl`, in
+the same record shape a supervised worker's redirected stdout has, so the log and
+subscription views work against it unchanged. No tty, no terminal multiplexer, no
+interference with what is on the screen.
+
+The transcript path is re-resolved every tick rather than pinned, because quitting
+and restarting a session produces a new file — and a pinned path would freeze the
+log view on a session that ended hours ago while looking exactly like a quiet one.
+
+Attaching over a project the fleet is running is **refused**. Two sessions editing
+one checkout is the failure this whole system exists to avoid, and that is the
+moment it would happen.
+
+## Commands, not conversation
+
+Every verb is a registered slash command, so the list the client offers as you
+type is the whole surface. A message that is not one gets a single line saying so.
+
+There was a concierge — a session on the other end of the DM that answered
+anything typed at it, in prose, and could plan and create new repos. It was
+removed. What it mostly produced was a confident paragraph about work nobody had
+started, and each one cost a session turn to write. The gate asserts the negative
+directly: a plain message must spawn **nothing**.
+
+Project names are resolved rather than matched literally, so a phrase finds the
+right checkout. An **ambiguous** name resolves to nothing and lists the
+candidates, because guessing between two repos puts a session on the wrong one.
 
 ## Subscriptions
 
@@ -131,23 +153,6 @@ Subscribing starts from the **end** of the log, and the read position only ever
 advances to the last complete line — a record still being written cannot be
 parsed, and re-reading it next tick is free where advancing past it would drop
 it.
-
-## Starting something that does not exist yet
-
-Describe a new project in a sentence and a planning session writes a plan: what
-it is, what it deliberately is **not**, the design decisions with their rejected
-alternatives, a build order, and the gate that proves it works. That arrives on
-the phone with three buttons.
-
-Nothing is created until you tap **Start**. Then the repo is made, the plan is
-its first commit, and a project starts with that plan as its standing goal.
-
-The approval step is not ceremony. A one-sentence description is not enough to
-build from, and an agent starting from one spends its first hour inventing the
-requirements you would have given it in ten seconds. It is also the last moment
-where "that is not what I meant" costs nothing. The plan is the model's final
-message and the bridge writes the file, so the planning session needs no `Write`
-tool at all.
 
 ## Repairing itself, with a way back
 
@@ -230,8 +235,10 @@ Both suites assert **both directions** — what must be pushed and what must
 stopped alerting looks exactly like a quiet night, and a positive-only suite
 stays green through it.
 
-The negative cases run first, and the sentence router's are the clearest example
-of why: it fails *silently* by construction, since anything it declines to
-understand goes to a chat session and comes back with a plausible answer. So the
-suite asserts that "the aowlsem gate is flaking, can you stop that from
-happening" is **not** a stop command, before it asserts that "stop aowlsem" is.
+The negative cases run first, and the clearest examples are the ones about not
+acting. A plain message must spawn **nothing** — the positive half of that
+assertion (a reply was sent) passes whether or not a session was started behind
+it. An idle project whose session ended its turn must not be restarted, counted
+by how many sessions were spawned rather than by how it looks, because a
+supervisor respawning one every fifteen seconds all night is green in every view:
+a growing log, a live process, recent activity.
