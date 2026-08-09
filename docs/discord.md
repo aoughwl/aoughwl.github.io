@@ -138,6 +138,39 @@ credential is actually wrong. A 503, a rate limit or a dropped connection is
 transient, and treating one as fatal takes a bot offline until a human notices —
 observed in the wild, with the resulting message blaming the token.
 
+## The double-close had to be found by shrinking
+
+The socket-ownership bug above is worth a note about *how* it was found, because
+the answer at the time was "not with a debugger".
+
+[`aowli`](/docs/aowli) could not run **any** net-stack program. `tcp/native.nim`
+declares the POSIX socket constants as bodyless `{.importc.}` globals —
+`SOL_SOCKET`, `SO_REUSEADDR`, `O_NONBLOCK` and the rest — and nothing seeded
+them, so they hit the interpreter's unbound-importc refusal. A `debug_session`
+on the gateway client died at `SOL_SOCKET` *before the program's first line*.
+
+The refusal itself was correct, and that is the interesting part: a zero
+`SOL_SOCKET` aims every `setsockopt` at the wrong level, and a zero `O_NONBLOCK`
+silently leaves the socket **blocking**. Both of those fail far away from the
+line that caused them, so answering with a plausible zero would have been much
+worse than halting. The gap was never the refusal — it was that nothing supplied
+the values.
+
+That made a whole domain undebuggable at once: `net`, `tls`, `ws`, `http`,
+`serve`, `requests` and every client built on them. So the double free was
+narrowed by shrinking the program by hand instead, which is why it reads as a
+shutdown-only SIGSEGV in the notes above — a bug that never fires in a quick
+manual test and could not be stepped through either.
+
+**This is now fixed.** aowli seeds the socket, fcntl and poll constant family
+from the system headers, so net-stack programs are debuggable. The values are
+taken by compiling a one-file C program that prints each macro on the host,
+rather than from memory — several are counter-intuitive (`SO_KEEPALIVE` is 9,
+`MSG_NOSIGNAL` is `0x4000`, `O_NONBLOCK` and `SOCK_NONBLOCK` are both 2048) —
+and they are **Linux/glibc numbers**, pinned to this host. macOS and the BSDs
+disagree loudly: `SOL_SOCKET` is `0xffff` there and `O_NONBLOCK` is 4. A port
+means re-running the probe on that host, not editing the table by eye.
+
 ## Not using `requests`
 
 [`requests`](/docs/net-stack/requests) was the obvious REST client — it is
