@@ -126,6 +126,7 @@ so on the page. The scoreboard, including what is missing and why, is the
 | **[aowlhost](/docs/aowlhost)** | runs an aowl module as a plugin under a capability policy — default grant is nothing, and a denied filesystem call is halted at the native boundary. |
 | **[aowllens](/docs/aiflens)** | reads typed `.s.aif` and emits JSON — decls, outline, members, type-at-position — which is what the LSP runs on. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
+| **[LLM stack](/docs/llm-stack)** | [anthropic](/docs/llm-stack/anthropic) · [openai](/docs/llm-stack/openai) — typed clients for the Messages and Chat Completions APIs, each with a headless `-p` CLI. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |
 
 ---

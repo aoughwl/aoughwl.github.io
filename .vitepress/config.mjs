@@ -170,6 +170,15 @@ const sidebar = [
           { text: 'css', link: '/docs/css' },
         ],
       },
+      {
+        text: 'LLM stack',
+        link: '/docs/llm-stack',
+        collapsed: true,
+        items: [
+          { text: 'anthropic', link: '/docs/llm-stack/anthropic' },
+          { text: 'openai', link: '/docs/llm-stack/openai' },
+        ],
+      },
       { text: 'JSON — aowljson', link: '/docs/aowljson' },
       { text: 'MCP servers — aowlmcp', link: '/docs/aowlmcp' },
       { text: 'Discord bots — discord', link: '/docs/discord' },
