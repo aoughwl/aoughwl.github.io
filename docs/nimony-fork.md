@@ -532,3 +532,56 @@ a char range. The integer analogue (`range[0..9] = 5`) always worked.
 **Fix.** Read the literal the way `getConstOrdinalValue` does. An out-of-range
 char now also gets the precise literal diagnostic instead of the vague one:
 `value out of range: 66 notin 97..122`.
+
+### The compiler died while reporting an error, instead of reporting it
+
+*Commit `e622a927`.*
+
+**What.** A module with an unresolvable call did not produce an error message.
+It produced an `AssertionDefect` and no diagnosis at all:
+
+```
+semcall.nim(1116)   resolveOverloads
+renderer.nim(2161)  asNimCode
+renderer.nim(643)   gcall
+nifcursors.nim(299) gcallComma
+nifcursors.nim(152) kind
+nifcursors.nim(149) load
+Error: unhandled exception: nifcursors.nim(149, 3)
+       `c.p != nil and c.rem > 0`  [AssertionDefect]
+```
+
+**Why.** `hasMore` documents itself as *"Safe at end-of-buffer (`rem == 0`) —
+returns false rather than dereferencing"*, and only one of its two branches
+honours that:
+
+```nim
+when defined(virtualParRi):
+  n.rem > 0 and n.kind != ParRi   # guarded
+else:
+  n.kind != ParRi                 # not guarded
+```
+
+`n.kind` calls `load`, whose first statement is `assert c.p != nil and
+c.rem > 0`. So on the default build an exhausted cursor hits the assert instead
+of answering `false`. It surfaces on the **error path** because that is where
+exhausted cursors come from: `resolveOverloads` renders the call it could not
+resolve, and hands the renderer a cursor that has run out.
+
+**Fix.** Put the `rem > 0` guard in both branches. It is a copy of what `load`
+already requires, so it cannot widen what `hasMore` accepts — it only stops the
+assert being reached.
+
+**Why it matters beyond the one assert.** A compiler that cannot report its own
+error blocks everything downstream. This was found by aoughwl's round trip: two
+of aowlsem's five re-exported modules report *zero* errors and then kill the
+compiler, so they cannot be diagnosed or worked on at all. A diagnostic path
+runs precisely when the input is unusual, which is exactly when it needs the
+defensive reads a happy path does not.
+
+**Untested here.** `~/nimony` does not currently build — `hastur build nimony`
+and a direct `nim c src/nimony/nimsem.nim` both fail with `lib/std/system/
+alloc.nim(15, 37) Error: invalid pragma: untyped`, classic Nim being handed
+nimony's own stdlib through `src/nimony/nim.cfg`. That is pre-existing and
+unrelated. The change is a one-line guard matching an assert that already
+exists; it wants a build and a regression test wherever the toolchain builds.
