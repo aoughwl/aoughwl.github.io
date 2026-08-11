@@ -161,6 +161,24 @@ A missing key yields an invalid view, and every accessor returns its default for
 one — so a chain through absent data cannot fault and allocates nothing on the
 way.
 
+### On the command line
+
+```sh
+aowlparser jsonlint config.json          # RFC 8259 strict; exit 1 + line:col
+aowlparser jsonq api.json user.name      # extract one field
+aowlparser jsonq api.json 'items[2].id'  # dot-separated keys, [n] indices
+```
+
+`jsonlint` is deliberately stricter than most linters: `NaN`, `Infinity`,
+trailing commas and comments are not JSON, and a tool that quietly accepts them
+is how they reach a file someone else's parser has to read. The exit codes are
+the contract — 0 valid, 1 invalid, 2 misuse — and `tests/robust.sh` pins them,
+because a command no gate runs is a command that rots.
+
+`jsonq` prints a scalar as itself (`1.5e3` comes back `1.5e3`, not `1500.0` —
+numbers keep their spelling) and a container as its size; dumping a subtree is
+`render`'s job.
+
 ### With `aowljson`
 
 ```nim
