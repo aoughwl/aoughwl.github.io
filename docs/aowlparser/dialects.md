@@ -26,6 +26,7 @@ a first-class parser validated on a real corpus.
 | `vds-parsed` | `aowlparser vds` | 1,224 MDN grammar strings |
 | `md-parsed` | `aowlparser md` | every `.md` — 5,920 files, 6s |
 | `yaml-parsed` | `aowlparser yaml` | every `.yaml`/`.yml` — 2,112 files, 0.4s — **and** the official yaml-test-suite, 402 cases |
+| `cfg-parsed` | `aowlparser cfg` | every `.cfg`/`.ini` — 1,070 files |
 
 ```sh
 aowlparser auto file.yml     # dialect from the extension
@@ -65,6 +66,19 @@ Reading any of those as structure produces a tree that is nonsense **while
 staying perfectly byte-exact**, so the round-trip cannot tell the two apart.
 That is why every dialect carries shape assertions, and why they concentrate
 precisely here.
+
+## `cfg-parsed`
+
+The ini family as it actually appears on disk, which here means Nim's `nim.cfg`
+dialect above all: `[sections]`, `key = value`, switches (`--path:"$lib"`,
+`-d:release`), bracketed keys (`warning[SmallLshouldNotBeUsed] = off`),
+`@if`/`@end` conditionals, `#`/`;` comments.
+
+Its hazard is not embedded content but **ambiguity**: one directory holds
+`--path:"x"`, `path = "x"` and `[Package]`, and guessing wrong still round-trips
+byte-for-byte because every byte survives whichever node it lands in. The shape
+assertions are therefore about WHICH node a line became — the only thing a byte
+comparison cannot see.
 
 ## `yaml-parsed`
 
