@@ -18,8 +18,8 @@ Best of 30, DOM-building, parse-only, on real documents:
 
 | reader | 9.9MB catalog | 1.5MB source index | 1.3MB protocol |
 |:--|--:|--:|--:|
-| **jsonfast** (one-off) | **1377 MB/s** | **2065 MB/s** | **1442 MB/s** |
-| **jsonfast** (reused parser) | **1480 MB/s** | **2163 MB/s** | **1489 MB/s** |
+| **jsonfast** (one-off) | **1430 MB/s** | **2114 MB/s** | **1460 MB/s** |
+| **jsonfast** (reused parser) | **1516 MB/s** | **2219 MB/s** | **1497 MB/s** |
 | V8 `JSON.parse` (node 25) | 617 | 766 | 559 |
 | CPython `json` (C accelerated) | 217 | 274 | 296 |
 | `aowljson` (ref tree) | 166 | 331 | 194 |
@@ -35,6 +35,27 @@ reused figure, so it is here — beside the cold one, so neither is hidden.
 **It is still not a simdjson clone.** simdjson builds a two-stage SIMD
 structural index over the entire document before parsing anything: a different
 architecture, not a tuning gap.
+
+### What that rewrite would actually buy — measured before writing it
+
+Stage 1 of that design is a SIMD sweep that writes the offset of every
+structural byte into an index, and it is a hard ceiling on the whole approach,
+so it was measured first as a standalone C program:
+
+| document | stage 1 alone | structural bytes |
+|:--|--:|--:|
+| 9.9MB catalog | 2895 MB/s | 7.6% |
+| 1.5MB source index | 2428 MB/s | 8.3% |
+| 1.3MB protocol | 3071 MB/s | 8.3% |
+
+Stage 2 then walks that index — roughly 8% of the bytes — and builds the tape.
+Combining the two serially puts the whole design in the neighbourhood of
+1.6–1.7 GB/s on the catalog against 1430 today: about **+20%**, for a rewrite of
+the entire front half and a much subtler correctness story (quote state and
+escape runs have to be reconstructed from the index rather than seen directly).
+
+That is a real option, not a closed door — but it is worth knowing the size of
+the prize before spending the week, which is why the number is here.
 
 ## Where the speed comes from
 
