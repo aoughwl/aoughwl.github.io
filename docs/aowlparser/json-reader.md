@@ -18,19 +18,23 @@ Best of 30, DOM-building, parse-only, on real documents:
 
 | reader | 9.9MB catalog | 1.5MB source index | 1.3MB protocol |
 |:--|--:|--:|--:|
-| **jsonfast** (one-off) | **1430 MB/s** | **2114 MB/s** | **1460 MB/s** |
-| **jsonfast** (reused parser) | **1516 MB/s** | **2219 MB/s** | **1497 MB/s** |
-| V8 `JSON.parse` (node 25) | 617 | 766 | 559 |
-| CPython `json` (C accelerated) | 217 | 274 | 296 |
-| `aowljson` (ref tree) | 166 | 331 | 194 |
+| **jsonfast** (borrowed, zero copy) | **2343 MB/s** | **2872 MB/s** | **1964 MB/s** |
+| **jsonfast** (reused parser) | 1784 MB/s | 2383 MB/s | 1710 MB/s |
+| **jsonfast** (one-off) | 1698 MB/s | 2249 MB/s | 1654 MB/s |
+| V8 `JSON.parse` (node 25) | 621 MB/s | 775 MB/s | 573 MB/s |
+| CPython `json` (C accelerated) | 225 MB/s | 270 MB/s | 312 MB/s |
+| `aowljson` (ref tree) | 167 MB/s | 343 MB/s | 199 MB/s |
 
-`tests/json/bench.sh` runs that table on your machine. That is **2.2–2.8× V8
-and 5.0–7.9× CPython**, in the GB/s range on every shape.
+`tests/json/bench.sh` runs that table on your machine. That is **3.4–3.8× V8 and
+6.3–10.6× CPython** on the zero-copy path, and never below 1.6 GB/s on any
+shape.
 
-Both numbers are shown because they answer different questions. A one-off parse
-allocates and zeroes a fresh tape; a server parsing a stream of documents reuses
-one parser (`newJsonDoc` + `parseInto`) and pays that once. simdjson reports the
-reused figure, so it is here — beside the cold one, so neither is hidden.
+Three rows, because they answer three different questions and quoting only the
+best one would be marketing. **borrowed** (`parseBorrowed`) copies nothing and is
+the row comparable to simdjson, which borrows the same way — and carries the
+same hazard: the document and its views die with the caller's buffer.
+**reused** is what a server does: `newJsonDoc` once, `parseInto` per document.
+**one-off** is what a script does.
 
 **It is still not a simdjson clone.** simdjson builds a two-stage SIMD
 structural index over the entire document before parsing anything: a different
@@ -73,6 +77,12 @@ the prize before spending the week, which is why the number is here.
   learned anything.
 - **A jump table for the parser state**, worth another 2%: an if-chain makes
   every token pay, and whichever order you choose penalises one document shape.
+- **Not copying the document** — worth **17–28%**, the largest single win, and
+  invisible until a profile put `memcpy` and `memset` next to each other. Input
+  is taken by `sink` so `parseInto(p, readFile(path))` moves, and
+  `parseBorrowed` skips ownership entirely.
+- **Reading through a byte pointer rather than a string** — another **+11%**,
+  with one code path for owned and borrowed bytes alike.
 - **A hand-grown tape instead of `seq.add`** — worth **+43%**, and the reason
   profiling beat intuition. nimony's `seq.add` asks the allocator about the
   block on every append: 26% of all instructions were mimalloc bookkeeping,
