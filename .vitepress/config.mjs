@@ -42,6 +42,8 @@ const sidebar = [
         items: [
           { text: 'Architecture', link: '/docs/aowlparser/architecture' },
           { text: 'Grammar coverage', link: '/docs/aowlparser/grammar' },
+          { text: 'Dialects', link: '/docs/aowlparser/dialects' },
+          { text: 'JSON reader', link: '/docs/aowlparser/json-reader' },
           { text: 'Differential testing', link: '/docs/aowlparser/testing' },
           { text: 'Configuration', link: '/docs/aowlparser/configuration' },
           { text: 'Parity & gaps', link: '/docs/aowlparser/known-gaps' },
