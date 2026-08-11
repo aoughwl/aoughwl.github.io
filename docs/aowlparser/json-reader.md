@@ -18,21 +18,23 @@ Best of 30, DOM-building, parse-only, on real documents:
 
 | reader | 9.9MB catalog | 1.5MB source index | 1.3MB protocol |
 |:--|--:|--:|--:|
-| **jsonfast** | **963 MB/s** | **2248 MB/s** | **1051 MB/s** |
-| V8 `JSON.parse` (node 25) | 613 | 794 | 559 |
-| CPython `json` (C accelerated) | 219 | 275 | 299 |
-| `aowljson` (ref tree) | 165 | 339 | 199 |
+| **jsonfast** (one-off) | **1377 MB/s** | **2065 MB/s** | **1442 MB/s** |
+| **jsonfast** (reused parser) | **1480 MB/s** | **2163 MB/s** | **1489 MB/s** |
+| V8 `JSON.parse` (node 25) | 617 | 766 | 559 |
+| CPython `json` (C accelerated) | 217 | 274 | 296 |
+| `aowljson` (ref tree) | 166 | 331 | 194 |
 
-`tests/json/bench.sh` runs that table on your machine.
+`tests/json/bench.sh` runs that table on your machine. That is **2.2–2.8× V8
+and 5.0–7.9× CPython**, in the GB/s range on every shape.
 
-That is 1.6–2.8× V8 and 3.5–8.2× CPython on the same documents, with the
-string-heavy case in the GB/s range where SIMD parsers live.
+Both numbers are shown because they answer different questions. A one-off parse
+allocates and zeroes a fresh tape; a server parsing a stream of documents reuses
+one parser (`newJsonDoc` + `parseInto`) and pays that once. simdjson reports the
+reused figure, so it is here — beside the cold one, so neither is hidden.
 
 **It is still not a simdjson clone.** simdjson builds a two-stage SIMD
-structural index over the entire document and would win on the object-heavy
-shapes. What changed is where the remaining gap lives: it is now the parser's
-own bookkeeping — tape writes, the state machine, number and literal handling —
-rather than its byte scanning.
+structural index over the entire document before parsing anything: a different
+architecture, not a tuning gap.
 
 ## Where the speed comes from
 
@@ -50,6 +52,10 @@ rather than its byte scanning.
   learned anything.
 - **A jump table for the parser state**, worth another 2%: an if-chain makes
   every token pay, and whichever order you choose penalises one document shape.
+- **A hand-grown tape instead of `seq.add`** — worth **+43%**, and the reason
+  profiling beat intuition. nimony's `seq.add` asks the allocator about the
+  block on every append: 26% of all instructions were mimalloc bookkeeping,
+  about 390 instructions per value for what should be a 16-byte store.
 - **SIMD scanning** (`src/jsonfast_simd.c`) for the two loops that consume
   nearly every byte — whitespace, and the run to a string's next `"`, `\` or
   control character — sixteen bytes at a time. +7% on the object-heavy catalog,
