@@ -585,3 +585,69 @@ alloc.nim(15, 37) Error: invalid pragma: untyped`, classic Nim being handed
 nimony's own stdlib through `src/nimony/nim.cfg`. That is pre-existing and
 unrelated. The change is a one-line guard matching an assert that already
 exists; it wants a build and a regression test wherever the toolchain builds.
+
+---
+
+## `nimcache_static` — the shared object's identity, and the build-concurrency ceiling
+
+*(2026-08-16, commit `fb953045`)*
+
+`nimony c` compiles the TUs named by `{.compile.}` / `.build("C", …)` pragmas —
+today that is mimalloc's `static.c` — into a directory derived from the compiler
+installation, `<nimony-root>/nimcache_static/`, **regardless of what
+`--nimcache:` says**. The intent is good: those TUs do not depend on the user's
+project, so compiling them once and reusing the object across every nimcache on
+the machine saves several seconds per cold build.
+
+The consequence is that the directory is shared by every nimony build on the
+machine, so the object's **name** has to carry everything that distinguishes one
+build's version of it from another's. Keyed by basename alone — `static.o` —
+a `--cc:clang` build, a `-O0` build and a test run injecting
+`--passC:-DMI_TRACK_VALGRIND=1` all write the one slot, and then hand their
+allocator to every other project on the box, including builds already running in
+another session.
+
+`ccIdentity` fixed the first half: an FNV-1a digest of the exact cc flag vector
+plus that TU's own pragma arguments, so the object is `static_<digest>.o`.
+
+**What this commit fixes is the second half.** The flag vector ended with
+`-I<rootPath>`, and `rootPath` is relative to the *caller's current directory*.
+So the digest varied with where you stood. Measured on one five-line program:
+
+| built from | object |
+|---|---|
+| its own directory | `static_e1f81b58197cd00b.o` |
+| its parent directory | `static_5083d71df367201c.o` |
+
+Two names for the same object, neither reachable from the other. A directory
+whose whole purpose is to compile that TU *once for the machine* was instead
+accumulating one copy per (cwd × flags), with no GC — and the cross-project
+sharing it exists for never happened at all.
+
+The project include path belongs to the generated project TUs, which are the
+only ones that include project headers, so it moves out of the shared flag
+vector and onto each of those `cc` nodes' own arguments. A `{.compile.}`d TU
+that genuinely needs a project header can pass it in its pragma arguments, which
+are already part of its identity. After the change: one object across both
+cwds, both programs build and run.
+
+### Why it matters: the lock around every compile
+
+Because two builds could destroy each other's `static.o`, every `nimony c` on
+this machine has been funnelled through a machine-wide `flock` — and the lock is
+taken around the *entire compiler invocation*, not around the object, so the
+cost is 100% of build concurrency to protect one file.
+
+With a compiler built from this tree, two concurrent `nimony c` runs on
+different projects with a **cold** shared object both succeed — five rounds out
+of five, no lock, no `cannot find …/static.o`.
+
+**What is not yet claimed.** Two builds with *identical* flags still target one
+path, and nifmake writes command outputs in place (there is no temp-and-rename
+anywhere in `src/nifmake`), so a linker can still read an object another build
+is midway through writing. Unique names make that window small and the content
+identical; they do not close it. The remaining fix is a temp+rename in nifmake's
+runner — with the caveat that it must rename *only* when the command actually
+produced a temp, because producers write `OnlyIfChanged` and a blanket rename
+would replace unchanged outputs and re-fire every dependent node, breaking the
+incremental behaviour the compiler's whole design rests on.
