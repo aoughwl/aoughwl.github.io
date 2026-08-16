@@ -22,6 +22,7 @@ const sidebar = [
     items: [
       { text: 'Manager — aowlup', link: '/docs/aowlup' },
       { text: 'Driver — aowlmony', link: '/docs/aowlmony' },
+      { text: 'Store — aowlcas', link: '/docs/aowlcas' },
     ],
   },
   {
