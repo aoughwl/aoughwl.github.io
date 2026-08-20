@@ -31,6 +31,13 @@ const money = (cents, currency = 'usd') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase(), maximumFractionDigits: cents % 100 ? 2 : 0 })
     .format(cents / 100)
 
+const SHORT_INTERVAL = { month: 'mo', year: 'yr', week: 'wk', day: 'day' }
+
+/** `$19.99/mo`, or just `$39.99` for something bought once. */
+const priceOf = (plan) =>
+  money(plan.price_cents, plan.currency) +
+  (plan.interval ? '/' + (SHORT_INTERVAL[plan.interval] || plan.interval) : '')
+
 const when = (unix) =>
   unix ? new Date(unix * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
 
@@ -40,7 +47,8 @@ const HUMAN = {
   invalid_key: 'That key was not recognised. Check for a typo, or paste it straight from the email.',
   revoked: 'This key has been revoked. If you think that is wrong, get in touch on Discord.',
   refunded: 'This purchase was refunded, so the key is no longer active.',
-  expired: 'This licence has expired.',
+  expired: 'This subscription has lapsed. Restart it and the same key starts working again — you do not need a new one.',
+  not_a_subscription: 'There is no Stripe subscription behind this key, so there is nothing to manage.',
   no_seats_left: 'Every seat on this key is in use. Release a machine below, then activate again.',
   wrong_product: 'That key is for a different product.',
   rate_limited: 'Too many attempts from here. Wait a few minutes and try again.',
@@ -59,7 +67,11 @@ const humanise = (slug, detail) => detail || HUMAN[slug] || slug || 'Something w
 const BuyButton = {
   props: {
     product: { type: String, required: true },
+    // Optional: name one plan when a product has several. Omitted, the cheapest
+    // active plan wins, which is also what the API does.
+    plan: { type: String, default: null },
     price: { type: [String, Number], default: null },
+    interval: { type: String, default: '' },
     label: { type: String, default: 'Buy' },
   },
   setup(props) {
@@ -76,14 +88,19 @@ const BuyButton = {
     onMounted(async () => {
       try {
         const r = await api('/catalog', { method: 'GET' })
-        live.value = (r.products || []).find((p) => p.id === props.product) || null
+        const product = (r.products || []).find((p) => p.id === props.product)
+        const plans = product?.plans || []
+        live.value = props.plan ? plans.find((p) => p.id === props.plan) : plans[0]
       } catch { /* leave live null */ }
       state.value = live.value ? 'ready' : 'unavailable'
     })
 
     const shown = computed(() => {
-      if (live.value) return money(live.value.price_cents, live.value.currency)
-      return props.price != null ? money(Number(props.price)) : ''
+      if (live.value) return priceOf(live.value)
+      if (props.price == null) return ''
+      // Front-matter fallback, so the page is not blank while the catalogue
+      // loads and still reads sensibly if it never does.
+      return priceOf({ price_cents: Number(props.price), interval: props.interval })
     })
 
     const label = computed(() => {
@@ -97,7 +114,9 @@ const BuyButton = {
       busy.value = true
       error.value = ''
       try {
-        const r = await api('/checkout', { body: { product: props.product } })
+        const r = await api('/checkout', {
+          body: { plan: live.value?.id ?? props.plan, product: props.product },
+        })
         if (r.url) location.href = r.url
         else { error.value = humanise(r.error, r.detail); busy.value = false }
       } catch {
@@ -124,7 +143,9 @@ const BuyButton = {
               ' for access in the meantime.',
             ]
           : [
-              'Card payment through Stripe. ',
+              live.value?.interval
+                ? 'Card payment through Stripe, cancel any time. '
+                : 'Card payment through Stripe. ',
               h('a', { href: '/store/license' }, 'Already bought it?'),
             ]),
         error.value ? h('p', { class: 'aowl-err' }, error.value) : null,
@@ -151,15 +172,19 @@ const StoreGrid = {
       if (error.value) return h('p', { class: 'aowl-err' }, error.value)
       if (!items.value) return h('p', { class: 'aowl-muted' }, 'Loading…')
       if (!items.value.length) return h('p', { class: 'aowl-muted' }, 'Nothing for sale yet.')
-      return h('div', { class: 'aowl-grid' }, items.value.map((p) =>
-        h('a', { class: 'aowl-card', href: `/store/${p.id}` }, [
+      return h('div', { class: 'aowl-grid' }, items.value.map((p) => {
+        // The cheapest plan is the headline price; a product with none is
+        // listed but plainly marked as not yet purchasable.
+        const cheapest = (p.plans || [])[0]
+        return h('a', { class: 'aowl-card', href: `/store/${p.id}` }, [
           h('h3', null, p.name),
           h('p', { class: 'aowl-card-tag' }, p.tagline),
           h('div', { class: 'aowl-card-foot' }, [
-            h('span', { class: 'aowl-card-price' }, money(p.price_cents, p.currency)),
+            h('span', { class: 'aowl-card-price' }, cheapest ? priceOf(cheapest) : 'Soon'),
             p.latest_version ? h('span', { class: 'aowl-card-ver' }, 'v' + p.latest_version) : null,
           ]),
-        ])))
+        ])
+      }))
     }
   },
 }
@@ -211,6 +236,15 @@ const LicensePanel = {
       look()
     }
 
+    // Card changes, invoices and cancellation all live on Stripe's own page.
+    async function manage() {
+      busy.value = true; error.value = ''
+      const r = await api('/portal', { body: { key: key.value.trim() } })
+      busy.value = false
+      if (r.ok) location.href = r.url
+      else error.value = humanise(r.error, r.detail)
+    }
+
     function forget() {
       localStorage.removeItem('aowl-key')
       key.value = ''; info.value = null; error.value = ''; dl.value = ''
@@ -245,16 +279,25 @@ const LicensePanel = {
           h('tbody', null, [
             row('Key', i.key_prefix + '-••••-••••-••••'),
             row('Seats', `${i.seats_used} of ${i.seats} in use`),
-            row('Expires', i.expires_at ? when(i.expires_at) : 'never'),
+            // For a live subscription this date is the next renewal; for a
+            // lapsed one it is when it ran out. Label it for what it is rather
+            // than calling both "expires".
+            row(ok ? (i.kind === 'subscription' ? 'Renews' : 'Expires') : 'Ended',
+                i.expires_at ? when(i.expires_at) : 'never'),
             row('Latest build', i.latest_version ? 'v' + i.latest_version : 'not published yet'),
           ]),
         ]),
-        ok
-          ? h('div', { class: 'aowl-lic-actions' }, [
-              h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: download }, 'Download the latest build'),
-              h('button', { class: 'aowl-ghost', onClick: forget }, 'Forget this key on this browser'),
-            ])
-          : null,
+        h('div', { class: 'aowl-lic-actions' }, [
+          ok
+            ? h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: download },
+                'Download the latest build')
+            : null,
+          i.manageable
+            ? h('button', { class: 'aowl-ghost', disabled: busy.value, onClick: manage },
+                ok ? 'Manage subscription' : 'Restart subscription')
+            : null,
+          h('button', { class: 'aowl-ghost', onClick: forget }, 'Forget this key on this browser'),
+        ]),
         i.machines.length
           ? h('div', { class: 'aowl-machines' }, [
               h('h4', null, 'Machines'),
@@ -289,8 +332,9 @@ const LicensePanel = {
 // ---------------------------------------------------------------------------
 const ThanksPanel = {
   setup() {
-    const state = ref('waiting')   // waiting | ready | slow | error
+    const state = ref('waiting')   // waiting | ready | reactivated | slow | error
     const licenceKey = ref('')
+    const prefix = ref('')
     const product = ref('')
     const copied = ref(false)
 
@@ -301,7 +345,11 @@ const ThanksPanel = {
         try {
           const r = await api(`/order?order=${encodeURIComponent(order)}`, { method: 'GET' })
           product.value = r.product_name || r.product || ''
+          prefix.value = r.key_prefix || ''
           if (r.ready) {
+            // A resubscription revived the key they already had, so there is
+            // nothing new to reveal -- saying "here is your key" would be a lie.
+            if (r.reactivated) { state.value = 'reactivated'; return }
             const c = await api(`/claim?order=${encodeURIComponent(order)}`, { method: 'GET' })
             licenceKey.value = c.key || ''
             state.value = c.key ? 'ready' : 'slow'
@@ -327,6 +375,20 @@ const ThanksPanel = {
         return h('div', { class: 'aowl-thanks' }, [
           h('h3', null, 'Payment received — minting your key…'),
           h('p', { class: 'aowl-muted' }, 'This normally takes a couple of seconds. Do not close the page.'),
+        ])
+      }
+      if (state.value === 'reactivated') {
+        return h('div', { class: 'aowl-thanks' }, [
+          h('h3', null, 'Welcome back — your existing key is live again'),
+          h('p', null, [
+            'This is the same key you already had',
+            prefix.value ? h('code', null, ` ${prefix.value}-••••-••••-••••`) : '',
+            ', with your machines still on it. There is no new key, and nothing to reinstall.',
+          ]),
+          h('p', null, [
+            h('a', { href: '/store/license' }, 'Open your licence page'),
+            ' to check it and grab the latest build.',
+          ]),
         ])
       }
       if (state.value === 'slow') {

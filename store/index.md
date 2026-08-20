@@ -20,11 +20,15 @@ learn:
   password.
 - **The key activates machines.** Each product says how many. Activation binds
   the build to that machine and hands it a signed licence token, after which the
-  machine works with no network at all.
+  machine works offline.
 - **A machine can be released** from [your licence page](/store/license), which
   frees the seat for another one. Reinstalling on the same machine does not cost
   a seat.
-- **Updates are included** for the licence's lifetime, at the same key.
+- **Updates are included** while the subscription is live — there is no version
+  to buy again.
+- **Cancelling does not destroy the key.** It goes dormant at the end of the
+  period you have paid for, and restarting the subscription wakes the same key
+  up, with its machines still on it. Nothing to re-buy, nothing to lose.
 
 Payment is handled by Stripe. We never see a card number, and the licence
 database stores a hash of your key rather than the key itself — a breach on our

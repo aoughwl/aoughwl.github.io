@@ -32,8 +32,8 @@ exportMod(guid = "you.mod", name = "Mod", author = "you", version = "1.0.0",
 ```
 
 > **Private repo, public docs.** The code lives at `savannt/aowlspt` and is
-> private. The build is **[$39, with a perpetual licence](/store/aowlspt)** —
-> every update, three machines, and the mods. Questions first: Discord
+> private. The build is **[$19.99 a month](/store/aowlspt)** — every update,
+> three machines, the mods, cancel whenever. Questions first: Discord
 > **timbuktu_guy**.
 
 [[toc]]
