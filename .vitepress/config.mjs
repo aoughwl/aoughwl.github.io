@@ -201,7 +201,7 @@ const sidebar = [
           { text: 'Reaching into IL2CPP', link: '/docs/aowlspt/il2cpp' },
           { text: 'The emulator', link: '/docs/aowlspt/emulator' },
           { text: 'Case study', link: '/docs/aowlspt/case-study' },
-          { text: 'Get a licence — $39', link: '/store/aowlspt' },
+          { text: 'Get a licence — $19.99/mo', link: '/store/aowlspt' },
         ],
       },
     ],
