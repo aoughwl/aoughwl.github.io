@@ -42,7 +42,10 @@ token on each machine next expires.
 
 ## Not for sale
 
-The compiler, the interpreter, the parser, the emitters, the playground and
-every library documented on this site stay free. If you want to support that
+The compiler, the parser, the emitters, the playground and every library
+documented on this site stay free. The interpreter is the one exception, and a
+partial one: [`aowli-release`](https://github.com/aoughwl/aowli-release) v0.3.5
+stays public and free, while current, continuously-licensed builds of it and
+its debugger are [a subscription](/store/aowli). If you want to support that
 work rather than buy something, there is a [support link](https://donate.stripe.com/3cI6oH1eJ74w9L1e3ueAg00)
 in the nav.
