@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // ---------------------------------------------------------------------------
 // Sidebar tree. Region headers (OVERVIEW / INTERFACE / COMPILER / EMITTERS /
-// RUNTIME / TOOLS / LIBRARIES) are top-level groups, ordered the way a program
+// RUNTIME / TOOLS / LIBRARIES / GAMES) are top-level groups, ordered the way a program
 // travels. Each stage is a link, and any stage that has sub-pages is a
 // { collapsed: true, link, items } group — click the label to open the page,
 // click the chevron to expand. Adding a child page to ANY stage is a one-liner:
@@ -188,6 +188,32 @@ const sidebar = [
     ],
   },
   {
+    text: 'GAMES',
+    items: [
+      {
+        text: 'Tarkov modding — aowlspt',
+        link: '/docs/aowlspt',
+        collapsed: true,
+        items: [
+          { text: 'Architecture', link: '/docs/aowlspt/architecture' },
+          { text: 'The C ABI', link: '/docs/aowlspt/abi' },
+          { text: 'The mod API', link: '/docs/aowlspt/api' },
+          { text: 'Reaching into IL2CPP', link: '/docs/aowlspt/il2cpp' },
+          { text: 'The emulator', link: '/docs/aowlspt/emulator' },
+          { text: 'Case study', link: '/docs/aowlspt/case-study' },
+          { text: 'Get a licence — $39', link: '/store/aowlspt' },
+        ],
+      },
+    ],
+  },
+  {
+    text: 'STORE',
+    items: [
+      { text: 'What is for sale', link: '/store/' },
+      { text: 'Your licence', link: '/store/license' },
+    ],
+  },
+  {
     text: 'DEPRECATED',
     items: [
       { text: 'nimony-lsp (Nim 2) — nim2-nimony-lsp', link: '/docs/nim2-nimony-lsp' },
@@ -246,14 +272,14 @@ export default defineConfig({
     ['meta', { property: 'og:site_name', content: 'aoughwl' }],
     ['meta', { property: 'og:title', content: 'aoughwl' }],
     ['meta', { property: 'og:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
-    ['meta', { property: 'og:url', content: 'https://aoughwl.github.io/' }],
-    ['meta', { property: 'og:image', content: 'https://aoughwl.github.io/og-image.png' }],
+    ['meta', { property: 'og:url', content: 'https://aoughwl.com/' }],
+    ['meta', { property: 'og:image', content: 'https://aoughwl.com/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'aoughwl' }],
     ['meta', { name: 'twitter:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
-    ['meta', { name: 'twitter:image', content: 'https://aoughwl.github.io/og-image.png' }],
+    ['meta', { name: 'twitter:image', content: 'https://aoughwl.com/og-image.png' }],
     // Apply the saved sidebar width/offset BEFORE first paint (no flash), and
     // stamp `aowl-boot` for the one-time entrance animation.
     ['script', {}, `(function(){try{var r=document.documentElement;

@@ -1,0 +1,337 @@
+// Storefront components.
+//
+// The site is static. Everything that needs a secret -- prices, checkout,
+// licence lookups, downloads -- is one fetch away at /api/v1, served by the
+// aowl-store Worker on this same origin. Nothing here is product-specific:
+// a new thing to sell is a row in the Worker's `products` table plus a page
+// that drops <BuyButton product="its-id" /> on it.
+
+import { h, ref, onMounted, computed } from 'vue'
+
+// Same-origin in production. A preview build (localhost, *.github.io) has no
+// Worker in front of it, so it talks to the real API cross-origin instead.
+const API = (() => {
+  if (typeof window === 'undefined') return '/api/v1'
+  return /(^|\.)aoughwl\.com$/.test(location.hostname)
+    ? '/api/v1'
+    : 'https://aoughwl.com/api/v1'
+})()
+
+async function api(path, { method = 'POST', body } = {}) {
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  const json = await res.json().catch(() => ({}))
+  return { status: res.status, ...json }
+}
+
+const money = (cents, currency = 'usd') =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase(), maximumFractionDigits: cents % 100 ? 2 : 0 })
+    .format(cents / 100)
+
+const when = (unix) =>
+  unix ? new Date(unix * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
+
+// Errors from the API are machine-readable slugs. This is the one place they
+// become sentences, so the Worker never has to carry copy.
+const HUMAN = {
+  invalid_key: 'That key was not recognised. Check for a typo, or paste it straight from the email.',
+  revoked: 'This key has been revoked. If you think that is wrong, get in touch on Discord.',
+  refunded: 'This purchase was refunded, so the key is no longer active.',
+  expired: 'This licence has expired.',
+  no_seats_left: 'Every seat on this key is in use. Release a machine below, then activate again.',
+  wrong_product: 'That key is for a different product.',
+  rate_limited: 'Too many attempts from here. Wait a few minutes and try again.',
+  no_release: 'There is no published build to download yet.',
+  expired_link: 'That download link expired. Ask for a new one.',
+  already_claimed: 'This key has already been shown once. It is in your email.',
+  internal_error: 'Something broke on our side. Nothing was charged twice — check your email, then Discord.',
+}
+const humanise = (slug, detail) => detail || HUMAN[slug] || slug || 'Something went wrong.'
+
+// ---------------------------------------------------------------------------
+// <BuyButton product="aowlspt" price="3900" /> -- price is a fallback shown
+// before the catalogue answers, so the button never renders blank or lies by
+// omission while it loads.
+// ---------------------------------------------------------------------------
+const BuyButton = {
+  props: {
+    product: { type: String, required: true },
+    price: { type: [String, Number], default: null },
+    label: { type: String, default: 'Buy' },
+  },
+  setup(props) {
+    const busy = ref(false)
+    const error = ref('')
+    const live = ref(null)
+
+    onMounted(async () => {
+      try {
+        const r = await api('/catalog', { method: 'GET' })
+        live.value = (r.products || []).find((p) => p.id === props.product) || null
+      } catch { /* fall back to the front-matter price */ }
+    })
+
+    const shown = computed(() => {
+      if (live.value) return money(live.value.price_cents, live.value.currency)
+      return props.price != null ? money(Number(props.price)) : ''
+    })
+
+    const buy = async () => {
+      if (busy.value) return
+      busy.value = true
+      error.value = ''
+      try {
+        const r = await api('/checkout', { body: { product: props.product } })
+        if (r.url) location.href = r.url
+        else { error.value = humanise(r.error, r.detail); busy.value = false }
+      } catch {
+        error.value = 'Could not reach checkout. Are you offline?'
+        busy.value = false
+      }
+    }
+
+    return () =>
+      h('div', { class: 'aowl-buy' }, [
+        h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: buy }, [
+          h('span', { class: 'aowl-buy-label' }, busy.value ? 'Opening checkout…' : props.label),
+          shown.value ? h('span', { class: 'aowl-buy-price' }, shown.value) : null,
+        ]),
+        h('p', { class: 'aowl-buy-note' }, [
+          'Card payment through Stripe. ',
+          h('a', { href: '/store/license' }, 'Already bought it?'),
+        ]),
+        error.value ? h('p', { class: 'aowl-err' }, error.value) : null,
+      ])
+  },
+}
+
+// ---------------------------------------------------------------------------
+// <StoreGrid /> -- every active product, straight from the catalogue.
+// ---------------------------------------------------------------------------
+const StoreGrid = {
+  setup() {
+    const items = ref(null)
+    const error = ref('')
+    onMounted(async () => {
+      try {
+        const r = await api('/catalog', { method: 'GET' })
+        items.value = r.products || []
+      } catch {
+        error.value = 'Could not load the catalogue.'
+      }
+    })
+    return () => {
+      if (error.value) return h('p', { class: 'aowl-err' }, error.value)
+      if (!items.value) return h('p', { class: 'aowl-muted' }, 'Loading…')
+      if (!items.value.length) return h('p', { class: 'aowl-muted' }, 'Nothing for sale yet.')
+      return h('div', { class: 'aowl-grid' }, items.value.map((p) =>
+        h('a', { class: 'aowl-card', href: `/store/${p.id}` }, [
+          h('h3', null, p.name),
+          h('p', { class: 'aowl-card-tag' }, p.tagline),
+          h('div', { class: 'aowl-card-foot' }, [
+            h('span', { class: 'aowl-card-price' }, money(p.price_cents, p.currency)),
+            p.latest_version ? h('span', { class: 'aowl-card-ver' }, 'v' + p.latest_version) : null,
+          ]),
+        ])))
+    }
+  },
+}
+
+// ---------------------------------------------------------------------------
+// <LicensePanel /> -- paste a key, see what it entitles you to, download it,
+// and free a machine you no longer use.
+// ---------------------------------------------------------------------------
+const LicensePanel = {
+  setup() {
+    const key = ref('')
+    const info = ref(null)
+    const error = ref('')
+    const busy = ref(false)
+    const dl = ref('')
+
+    // Convenience only: a key in localStorage saves retyping it on every visit.
+    // It is not an auth token -- every call re-checks it server-side.
+    onMounted(() => {
+      const saved = localStorage.getItem('aowl-key')
+      if (saved) { key.value = saved; look() }
+    })
+
+    async function look() {
+      if (!key.value.trim() || busy.value) return
+      busy.value = true; error.value = ''; dl.value = ''
+      try {
+        const r = await api('/license', { body: { key: key.value.trim() } })
+        if (r.ok) { info.value = r; localStorage.setItem('aowl-key', key.value.trim()) }
+        else { info.value = null; error.value = humanise(r.error, r.detail) }
+      } catch {
+        error.value = 'Could not reach the licence server.'
+      }
+      busy.value = false
+    }
+
+    async function download() {
+      busy.value = true; error.value = ''
+      const r = await api('/download', { body: { key: key.value.trim() } })
+      busy.value = false
+      if (r.ok) { dl.value = r.url; location.href = r.url }
+      else error.value = humanise(r.error, r.detail)
+    }
+
+    async function release(id) {
+      busy.value = true
+      await api('/deactivate', { body: { key: key.value.trim(), machine: id } })
+      busy.value = false
+      look()
+    }
+
+    function forget() {
+      localStorage.removeItem('aowl-key')
+      key.value = ''; info.value = null; error.value = ''; dl.value = ''
+    }
+
+    return () =>
+      h('div', { class: 'aowl-lic' }, [
+        h('div', { class: 'aowl-lic-form' }, [
+          h('input', {
+            class: 'aowl-input',
+            value: key.value,
+            spellcheck: 'false',
+            autocapitalize: 'characters',
+            placeholder: 'AOWL-SPT-XXXX-XXXX-XXXX-XXXX',
+            onInput: (e) => { key.value = e.target.value },
+            onKeydown: (e) => { if (e.key === 'Enter') look() },
+          }),
+          h('button', { class: 'aowl-buy-btn aowl-sm', disabled: busy.value, onClick: look }, 'Look up'),
+        ]),
+        error.value ? h('p', { class: 'aowl-err' }, error.value) : null,
+        info.value ? licenceBody(info.value) : null,
+      ])
+
+    function licenceBody(i) {
+      const ok = i.status === 'active'
+      return h('div', { class: 'aowl-lic-body' }, [
+        h('div', { class: 'aowl-lic-head' }, [
+          h('h3', null, i.product_name || i.product),
+          h('span', { class: 'aowl-pill ' + (ok ? 'ok' : 'bad') }, i.status),
+        ]),
+        h('table', { class: 'aowl-kv' }, [
+          h('tbody', null, [
+            row('Key', i.key_prefix + '-••••-••••-••••'),
+            row('Seats', `${i.seats_used} of ${i.seats} in use`),
+            row('Expires', i.expires_at ? when(i.expires_at) : 'never'),
+            row('Latest build', i.latest_version ? 'v' + i.latest_version : 'not published yet'),
+          ]),
+        ]),
+        ok
+          ? h('div', { class: 'aowl-lic-actions' }, [
+              h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: download }, 'Download the latest build'),
+              h('button', { class: 'aowl-ghost', onClick: forget }, 'Forget this key on this browser'),
+            ])
+          : null,
+        i.machines.length
+          ? h('div', { class: 'aowl-machines' }, [
+              h('h4', null, 'Machines'),
+              h('table', { class: 'aowl-kv' }, [
+                h('tbody', null, i.machines.map((m) =>
+                  h('tr', null, [
+                    h('td', null, m.name || m.id),
+                    h('td', null, m.status === 'active' ? 'active, last seen ' + when(m.last_seen) : 'released'),
+                    h('td', null, m.status === 'active'
+                      ? h('button', { class: 'aowl-ghost aowl-xs', onClick: () => release(m.id) }, 'Release')
+                      : null),
+                  ]))),
+              ]),
+              h('p', { class: 'aowl-muted' },
+                'Releasing a machine frees its seat immediately. The build on that machine stops working when its ' +
+                'current token expires.'),
+            ])
+          : null,
+      ])
+    }
+
+    function row(k, v) {
+      return h('tr', null, [h('td', null, k), h('td', { colspan: 2 }, v)])
+    }
+  },
+}
+
+// ---------------------------------------------------------------------------
+// <ThanksPanel /> -- the page Stripe returns to. The key is minted by the
+// webhook, not by this page, so it polls until the webhook has landed rather
+// than pretending a redirect is a payment.
+// ---------------------------------------------------------------------------
+const ThanksPanel = {
+  setup() {
+    const state = ref('waiting')   // waiting | ready | slow | error
+    const licenceKey = ref('')
+    const product = ref('')
+    const copied = ref(false)
+
+    onMounted(async () => {
+      const order = new URLSearchParams(location.search).get('order')
+      if (!order) { state.value = 'error'; return }
+      for (let i = 0; i < 40; i++) {
+        try {
+          const r = await api(`/order?order=${encodeURIComponent(order)}`, { method: 'GET' })
+          product.value = r.product_name || r.product || ''
+          if (r.ready) {
+            const c = await api(`/claim?order=${encodeURIComponent(order)}`, { method: 'GET' })
+            licenceKey.value = c.key || ''
+            state.value = c.key ? 'ready' : 'slow'
+            return
+          }
+        } catch { /* keep waiting */ }
+        await new Promise((r) => setTimeout(r, 1500))
+      }
+      state.value = 'slow'
+    })
+
+    const copy = () => {
+      navigator.clipboard?.writeText(licenceKey.value)
+      copied.value = true
+      setTimeout(() => { copied.value = false }, 1600)
+    }
+
+    return () => {
+      if (state.value === 'error') {
+        return h('p', { class: 'aowl-err' }, 'No order in this link. If you were charged, message us on Discord with the email you used.')
+      }
+      if (state.value === 'waiting') {
+        return h('div', { class: 'aowl-thanks' }, [
+          h('h3', null, 'Payment received — minting your key…'),
+          h('p', { class: 'aowl-muted' }, 'This normally takes a couple of seconds. Do not close the page.'),
+        ])
+      }
+      if (state.value === 'slow') {
+        return h('div', { class: 'aowl-thanks' }, [
+          h('h3', null, 'Your key is on its way by email'),
+          h('p', null, 'The purchase went through. The key was either already shown once, or Stripe is taking longer than usual — check your inbox, then Discord if it does not arrive.'),
+        ])
+      }
+      return h('div', { class: 'aowl-thanks' }, [
+        h('h3', null, `Thanks — here is your ${product.value} key`),
+        h('div', { class: 'aowl-key' }, [
+          h('code', null, licenceKey.value),
+          h('button', { class: 'aowl-ghost aowl-xs', onClick: copy }, copied.value ? 'Copied' : 'Copy'),
+        ]),
+        h('p', { class: 'aowl-warn' },
+          'This is the only time this page will show it. A copy has been emailed to you; it is not recoverable from here.'),
+        h('p', null, [
+          'Next: ',
+          h('a', { href: '/store/license' }, 'open your licence page'),
+          ' to download the build and activate a machine.',
+        ]),
+      ])
+    }
+  },
+}
+
+export function registerStore(app) {
+  app.component('BuyButton', BuyButton)
+  app.component('StoreGrid', StoreGrid)
+  app.component('LicensePanel', LicensePanel)
+  app.component('ThanksPanel', ThanksPanel)
+}
