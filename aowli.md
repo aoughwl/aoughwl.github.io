@@ -102,7 +102,7 @@ frame captures.
 | [Engines](aowli/engines) | Tree-walker vs VM, the shared value/primitive/IO layer, `.s.aif` input, differential testing, corpus parity. |
 | [Debugging](aowli/debugging) | aowlidbg reference: `--break` vs `--break-func`, `--trace` vs `--trace-depth` vs `--trace-profile`, when to use which. |
 | [Debugging a real bug](aowli/debugging-a-real-bug) | Case study — a real off-by-one in `aoughwl/css`, found via `--break-func` frame captures, no print statements. |
-| [aowli-release](docs/aowli-release) | Public binaries: hardening, distribution, usage. |
+| [aowli-release](docs/aowli-release) | Prebuilt binaries: hardening, distribution, usage. |
 
 ## Status
 
