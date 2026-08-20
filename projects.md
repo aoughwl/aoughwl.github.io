@@ -8,7 +8,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
 | [aowlsem](docs/aowlsem) — semantic analysis: `.p.aif` → typed `.s.aif` (symbols, overloads, generics) | `aoughwl/aowlsem` | public |
 | [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aowli` | private |
-| [aowli-release](docs/aowli-release) — prebuilt, binary-only distribution of aowli (`aowli-interp`, `aowli-dbg`) | `aoughwl/aowli-release` | public |
+| [aowli-release](docs/aowli-release) — prebuilt, binary-only distribution of aowli (`aowli-interp`, `aowli-dbg`) | `aoughwl/aowli-release` | private |
 | [aowljs](docs/aowljs) — `.s.aif` → native-JavaScript backend | `aoughwl/aowljs` | public |
 | [aowljs-js](docs/aowljs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aowljs-js` | public |
 | [aowlc](docs/aowlc) — `.c.aif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |

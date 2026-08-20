@@ -106,7 +106,7 @@ so on the page. The scoreboard, including what is missing and why, is the
 
 | Target | Repo | Notes |
 |:--|:--|:--|
-| **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(public binaries)* | tree-walker and bytecode VM, diffed against native; source is private, the binaries are not. |
+| **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(prebuilt binaries)* | tree-walker and bytecode VM, diffed against native; the source is private and the builds come from the [store](/store/aowli). |
 | **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc`. No GC; ARC is baked in. |
 | **JavaScript** | [aowljs](/docs/aowljs) | typed IR → native JS; near-native speed, readable output. |
 | **JS / WASM** | [aowlweb](/docs/aowlweb) | the faithful browser runtime, with an async runtime. |
@@ -118,7 +118,7 @@ so on the page. The scoreboard, including what is missing and why, is the
 | Project | What it is |
 |:--|:--|
 | **[▶ Playground](https://aoughwl.github.io/playground/)** | the toolchain in your browser — edit, parse, type-check, run. |
-| **[aowlcode](/docs/aowlcode)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain (`trace`/`debug` backed by the public [aowli-release](/docs/aowli-release)). |
+| **[aowlcode](/docs/aowlcode)** | Claude Code plugin + MCP server: compact, structured agent access to the toolchain (`trace`/`debug` backed by [aowli-release](/docs/aowli-release)). |
 | **[aowllsp](/docs/aowllsp)** | Language Server + VSCode extension: as-you-type diagnostics, type-directed completion. |
 | **[aowlsuggest](/docs/aowlsuggest)** | diagnostics, quick-fixes and editor integration built on `aowlparser`'s `check`. |
 | **[aowlfmt](/docs/aowlfmt)** | layout formatter that proves it changed nothing but whitespace before writing your file. |
