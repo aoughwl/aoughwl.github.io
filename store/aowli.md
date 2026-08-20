@@ -10,7 +10,8 @@ the exact artifact the native backend consumes — plus `aowli-dbg`, an
 interactive stepping debugger that runs the program once and stays paused
 between commands. The [documentation is public](/aowli); the source is not.
 
-<BuyButton product="aowli" price="999" interval="month" label="Subscribe" />
+<BuyButton product="aowli" price="999" interval="month" label="Subscribe"
+  demo="https://aoughwl.github.io/playground/" demoLabel="Try it now — free" />
 
 ## What the subscription buys
 

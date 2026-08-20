@@ -73,6 +73,10 @@ const BuyButton = {
     price: { type: [String, Number], default: null },
     interval: { type: String, default: '' },
     label: { type: String, default: 'Buy' },
+    // Optional second button beside the first: somewhere to try the thing
+    // before paying for it. Anything with a free demo can use it.
+    demo: { type: String, default: '' },
+    demoLabel: { type: String, default: 'Try it now' },
   },
   setup(props) {
     const busy = ref(false)
@@ -127,13 +131,20 @@ const BuyButton = {
 
     return () =>
       h('div', { class: 'aowl-buy' }, [
-        h('button', {
-          class: 'aowl-buy-btn',
-          disabled: busy.value || state.value !== 'ready',
-          onClick: buy,
-        }, [
-          h('span', { class: 'aowl-buy-label' }, label.value),
-          shown.value ? h('span', { class: 'aowl-buy-price' }, shown.value) : null,
+        h('div', { class: 'aowl-buy-row' }, [
+          h('button', {
+            class: 'aowl-buy-btn',
+            disabled: busy.value || state.value !== 'ready',
+            onClick: buy,
+          }, [
+            h('span', { class: 'aowl-buy-label' }, label.value),
+            shown.value ? h('span', { class: 'aowl-buy-price' }, shown.value) : null,
+          ]),
+          // A real navigation, not a router link: the playground is a separate
+          // app under /playground, and client-side routing lands on the 404.
+          props.demo
+            ? h('a', { class: 'aowl-try', href: props.demo, target: '_self' }, props.demoLabel)
+            : null,
         ]),
         h('p', { class: 'aowl-buy-note' }, state.value === 'unavailable'
           ? [
