@@ -18,9 +18,9 @@ between commands. The [documentation is public](/aowli); the source is not.
 | | |
 |---|---|
 | **The binaries** | `aowli-interp` and `aowli-dbg`, with `SHA256SUMS.txt`. Hardened: obfuscated typed IR, fail-closed licence gate, stripped symbol table. |
-| **A licence that does not expire under you** | The free builds carry a fixed expiry date baked in at build time. A subscription build re-licences itself while the subscription is live, so it never stops working mid-project. |
+| **Builds with room on the clock** | Every build carries an expiry compiled into it and refuses to run past it. Subscribers get the current build, reissued with a fresh window well before the old one runs out. |
 | **Every update, immediately** | Correctness fixes land here first. No version to buy again. |
-| **Three machines** | Activate up to three at a time; release one from your [licence page](/store/license) to move it. |
+| **Use it anywhere you work** | The key is what gates the download, not the binary. There is no activation step and no machine to release — install it on the machines you use. |
 | **The debugger** | `--session` progressive mode: step / next / finish, live breakpoints added mid-run, path-addressable `--expand` drill-down, budgeted value rendering. Also what the [aowlcode](/docs/aowlcode) plugin's `debug_session` tool drives. |
 | **Support** | Discord, from the person who wrote it. |
 
@@ -35,8 +35,8 @@ the expiry compiled into it, and its GitHub Release, assets and checksums are
 not going anywhere.
 
 What the subscription changes is *going forward*: new correctness releases, and
-a build whose licence is renewed rather than fixed, are what you are paying
-for. If the free v0.3.5 does what you need, keep it — it is honestly still
+and a build reissued with a fresh expiry before the last one lapses, are what
+you are paying for. If the free v0.3.5 does what you need, keep it — it is honestly still
 there.
 
 ## Why a subscription and not a one-off
@@ -66,14 +66,16 @@ machines still on it.
 
 - Linux x86-64. The binaries are self-contained.
 - A `.s.aif` to run — i.e. a nimony toolchain, which is free.
-- A network connection now and then. Activation is once; after that it runs
-  offline and re-checks the subscription when it happens to be online.
+- No network at all to run it. The key is checked when you download, not when
+  you execute; the binary itself never phones home.
 
 ## After subscribing
 
 1. Your key appears on screen and arrives by email.
 2. Open your [licence page](/store/license), paste the key, download the build.
-3. Run `aowli-interp activate <your-key>` once, then use it offline.
+3. Extract it and run `bin/aowli-interp <module.s.aif>`. There is nothing to
+   activate and nothing to register — check the archive against
+   `SHA256SUMS.txt` and it is ready.
 
 Questions before you subscribe: **timbuktu_guy** on
 [Discord](https://discord.gg/nxa3W7w4rJ).
