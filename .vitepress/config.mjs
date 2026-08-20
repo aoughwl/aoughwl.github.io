@@ -101,6 +101,7 @@ const sidebar = [
           { text: 'Debugging', link: '/aowli/debugging' },
           { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
           { text: 'aowli-release (public binaries)', link: '/docs/aowli-release' },
+          { text: 'Get a licence — $9.99/mo', link: '/store/aowli' },
         ],
       },
       { text: 'Runtime — aowlrt', link: '/docs/aowlrt' },
@@ -210,6 +211,8 @@ const sidebar = [
     text: 'STORE',
     items: [
       { text: 'What is for sale', link: '/store/' },
+      { text: 'aowlspt — $19.99/mo', link: '/store/aowlspt' },
+      { text: 'aowli — $9.99/mo', link: '/store/aowli' },
       { text: 'Your licence', link: '/store/license' },
     ],
   },
