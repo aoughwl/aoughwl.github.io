@@ -66,12 +66,19 @@ const BuyButton = {
     const busy = ref(false)
     const error = ref('')
     const live = ref(null)
+    // 'loading' until the catalogue answers, then 'ready' or 'unavailable'.
+    // A product that is not in the catalogue is not on sale -- the store may
+    // not be wired up yet, or it may have been withdrawn. Either way the button
+    // must not invite a click it cannot honour, and it flips to ready on its
+    // own the moment the API starts answering.
+    const state = ref('loading')
 
     onMounted(async () => {
       try {
         const r = await api('/catalog', { method: 'GET' })
         live.value = (r.products || []).find((p) => p.id === props.product) || null
-      } catch { /* fall back to the front-matter price */ }
+      } catch { /* leave live null */ }
+      state.value = live.value ? 'ready' : 'unavailable'
     })
 
     const shown = computed(() => {
@@ -79,8 +86,14 @@ const BuyButton = {
       return props.price != null ? money(Number(props.price)) : ''
     })
 
+    const label = computed(() => {
+      if (busy.value) return 'Opening checkout…'
+      if (state.value === 'unavailable') return 'Not on sale yet'
+      return props.label
+    })
+
     const buy = async () => {
-      if (busy.value) return
+      if (busy.value || state.value !== 'ready') return
       busy.value = true
       error.value = ''
       try {
@@ -95,14 +108,25 @@ const BuyButton = {
 
     return () =>
       h('div', { class: 'aowl-buy' }, [
-        h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: buy }, [
-          h('span', { class: 'aowl-buy-label' }, busy.value ? 'Opening checkout…' : props.label),
+        h('button', {
+          class: 'aowl-buy-btn',
+          disabled: busy.value || state.value !== 'ready',
+          onClick: buy,
+        }, [
+          h('span', { class: 'aowl-buy-label' }, label.value),
           shown.value ? h('span', { class: 'aowl-buy-price' }, shown.value) : null,
         ]),
-        h('p', { class: 'aowl-buy-note' }, [
-          'Card payment through Stripe. ',
-          h('a', { href: '/store/license' }, 'Already bought it?'),
-        ]),
+        h('p', { class: 'aowl-buy-note' }, state.value === 'unavailable'
+          ? [
+              'Not available to buy yet. ',
+              h('a', { href: 'https://discord.gg/nxa3W7w4rJ', target: '_blank', rel: 'noopener' },
+                'Ask on Discord'),
+              ' for access in the meantime.',
+            ]
+          : [
+              'Card payment through Stripe. ',
+              h('a', { href: '/store/license' }, 'Already bought it?'),
+            ]),
         error.value ? h('p', { class: 'aowl-err' }, error.value) : null,
       ])
   },
