@@ -26,18 +26,14 @@ between commands. The [documentation is public](/aowli); the source is not.
 
 It does **not** buy the source. `aoughwl/aowli` stays private.
 
-## What happens to the free build
+## If you already have a build
 
-**Nothing is taken away from anybody who already has one.**
-[`aoughwl/aowli-release`](https://github.com/aoughwl/aowli-release) stays
-public and stays up. **v0.3.5 is the last free build**; it keeps working until
-the expiry compiled into it, and its GitHub Release, assets and checksums are
-not going anywhere.
+**Nothing is taken away from anybody who already has one.** A build you have
+downloaded keeps working until the expiry compiled into it, subscription or
+not. Nothing checks in, and nothing reaches back to switch it off.
 
-What the subscription changes is *going forward*: new correctness releases, and
-and a build reissued with a fresh expiry before the last one lapses, are what
-you are paying for. If the free v0.3.5 does what you need, keep it — it is honestly still
-there.
+What the subscription buys is *going forward*: new correctness releases, and a
+build reissued with a fresh expiry before the last one lapses.
 
 ## Why a subscription and not a one-off
 
