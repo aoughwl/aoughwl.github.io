@@ -2,16 +2,16 @@
 repo: aoughwl/aowli-release
 ---
 
-# aowli-release — public binaries for the aowli interpreter
+# aowli-release — prebuilt binaries for the aowli interpreter
 
 > ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
 
 A prebuilt, **binary-only** distribution of [aowli](../aowli), the typed-AIF
 interpreter for Nimony. The source stays private in `aoughwl/aowli`; this repo
-ships only the built binaries, hardened for public distribution.
+ships only the built binaries, hardened for distribution.
 
-> **Now public** — anyone can access, download, and use it. Issues are welcome:
-> [github.com/aoughwl/aowli-release/issues](https://github.com/aoughwl/aowli-release/issues).
+> **Builds come from the [store](/store/aowli).** The repository itself is not
+> open to the public; what it produces is the archive a licence downloads.
 
 [[toc]]
 
@@ -118,7 +118,7 @@ aowli source paths and no internal proc/type names.
 ## Distribution
 
 Shipped as a **GitHub Release**,
-[v0.3.1](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.1), with the
+v0.3.1, with the
 binaries as release assets. Each build lists a SHA256 and a VirusTotal-by-hash
 link so the asset can be verified independently of trusting the download host.
 

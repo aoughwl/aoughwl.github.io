@@ -100,7 +100,7 @@ const sidebar = [
           { text: 'Engines', link: '/aowli/engines' },
           { text: 'Debugging', link: '/aowli/debugging' },
           { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
-          { text: 'aowli-release (public binaries)', link: '/docs/aowli-release' },
+          { text: 'aowli-release (prebuilt binaries)', link: '/docs/aowli-release' },
           { text: 'Get a licence — $9.99/mo', link: '/store/aowli' },
         ],
       },
