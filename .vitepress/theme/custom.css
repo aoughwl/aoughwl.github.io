@@ -214,6 +214,77 @@
   .vp-doc th, .vp-doc td { padding: 6px 8px; }
 }
 
+/* ---- Tables on phones: stacked, not squeezed -------------------------------
+   A markdown table on a 390px screen has no good column layout. Sharing the
+   width gives every column four characters and turns each cell into a vertical
+   ribbon of single words; the alternative most sites pick — a horizontal
+   scroller — hides half the content behind a gesture nobody knows is there.
+
+   So below 640px a row stops being a row and becomes a card: cells stack, and
+   each one is captioned with its column heading (stamped on as `data-th` by
+   labelTables(), because `content: attr()` can only read the element's own
+   attributes and the heading lives in another row).
+
+   Two-column tables written `| | |` — the key/value shape used all over these
+   docs — have no headings to show, so they get a simpler treatment: the first
+   cell is the label, the rest is the value. */
+@media (max-width: 640px) {
+  .vp-doc table[data-labelled] {
+    display: block;
+    width: 100%;
+    margin: 1rem 0;
+    border: 0;
+    font-size: 0.86em;      /* readable again: the squeeze is what needed 0.78 */
+    overflow: visible;      /* nothing to scroll any more */
+  }
+  .vp-doc table[data-labelled] thead { display: none; }
+  .vp-doc table[data-labelled] tbody { display: block; width: 100%; }
+
+  .vp-doc table[data-labelled] tbody tr {
+    display: block;
+    margin: 0 0 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 8px;
+    background: var(--vp-c-bg-soft);
+  }
+  .vp-doc table[data-labelled] tbody tr:last-child { margin-bottom: 0; }
+
+  .vp-doc table[data-labelled] tbody td {
+    display: block;
+    width: auto;
+    padding: 0.2rem 0;
+    border: 0;
+    /* Right-aligned numeric columns look wrong once stacked. */
+    text-align: left !important;
+  }
+  .vp-doc table[data-labelled] tbody td:empty { display: none; }
+
+  /* Captioned cells, for tables that have real headings. */
+  .vp-doc table[data-labelled='1'] tbody td[data-th]::before {
+    content: attr(data-th);
+    display: block;
+    margin-bottom: 0.1rem;
+    font-size: 0.82em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--vp-c-text-3);
+  }
+  .vp-doc table[data-labelled='1'] tbody td + td { margin-top: 0.5rem; }
+
+  /* Headless key/value tables: first cell is the title of the card. */
+  .vp-doc table[data-labelled='0'] tbody td:first-child {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: var(--vp-c-text-1);
+  }
+  .vp-doc table[data-labelled='0'] tbody td + td { color: var(--vp-c-text-2); }
+
+  /* Long identifiers are the one thing that can still overflow a 390px card. */
+  .vp-doc table[data-labelled] tbody td code { overflow-wrap: anywhere; }
+}
+
 /* ---- Search: fills the reading column, flush with the page text ----
    No max-width and no left padding, so its left edge is the doc's left edge and
    it grows to whatever the sidebar/margins leave — the same width as the page. */

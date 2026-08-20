@@ -247,7 +247,30 @@ export default {
       h1.insertBefore(a, anchor)
     }
 
-    const run = () => requestAnimationFrame(() => { decorateSidebar(); linkifyTitle(); fixHardLinks() })
+    // Tables carry their column headings down into each cell, so a phone can
+    // stack a row into a card and still say what each value IS. Doing it in CSS
+    // alone is impossible -- `content: attr()` can only read an attribute on the
+    // element itself, and the heading lives in a different row.
+    const labelTables = () => {
+      document.querySelectorAll('.vp-doc table').forEach((table) => {
+        const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim())
+        // A markdown table always has a header row; ours are frequently written
+        // `| | |` to suppress it, which yields empty strings. Those tables get
+        // no labels rather than a row of blanks.
+        const useful = heads.some((h) => h.length > 0)
+        table.dataset.cols = String(heads.length || 0)
+        table.dataset.labelled = useful ? '1' : '0'
+        if (!useful) return
+        table.querySelectorAll('tbody tr').forEach((tr) => {
+          [...tr.children].forEach((td, i) => {
+            const h = heads[i]
+            if (h) td.setAttribute('data-th', h)
+          })
+        })
+      })
+    }
+
+    const run = () => requestAnimationFrame(() => { decorateSidebar(); linkifyTitle(); fixHardLinks(); labelTables() })
     const orig = router.onAfterRouteChanged
     router.onAfterRouteChanged = (to) => { orig?.(to); run() }
     if (document.readyState !== 'loading') run()
