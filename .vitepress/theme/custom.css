@@ -217,24 +217,34 @@
 /* ---- Tables, from 641px up ------------------------------------------------
    VitePress ships a boxed grid: every cell outlined, alternate rows filled,
    header on a grey band. On a dark page that reads as a spreadsheet dropped
-   into an essay, and it competes with the prose either side of it.
+   into an essay.
 
-   This keeps the data and drops the furniture. Horizontal rules only, no fill,
-   and the first column flush with the body text so a table lines up with the
-   paragraph above it instead of starting 16px to its right.
+   The first attempt at fixing it went too far the other way -- horizontal rules
+   only, flush with the prose -- and the result was worse in a way that is worth
+   recording: this page ALREADY separates things with rules (under every h2,
+   between sections), so a table made of rules stopped announcing itself as a
+   table at all. You could not tell where one started.
 
-   The empty-header case is the one that was actually broken: these docs write
+   So it is a card instead, which is the language the rest of the site already
+   speaks: the store cards, the licence panel, and these same tables once they
+   stack on a phone. One surface, one border, rows divided inside it. That reads
+   as a distinct object at a glance without outlining every cell.
+
+   The empty-header case is the bug underneath all of this: these docs write
    `| | |` constantly for key/value tables, and markdown still emits a <thead>
-   full of empty <th>. Padding and a background made that render as a blank
-   grey band above every one of them. labelTables() marks those tables
-   data-labelled="0" and this hides their header outright. */
+   full of empty <th>, which rendered as a blank grey band above every one of
+   them. labelTables() marks those data-labelled="0" and the header is hidden. */
 @media (min-width: 641px) {
   .vp-doc table {
-    display: table;              /* block was for the scroller; see below */
+    display: table;
     width: 100%;
     margin: 1.25rem 0 1.5rem;
-    border-collapse: collapse;
-    overflow: visible;
+    border: 1px solid var(--vp-c-border);
+    border-radius: 10px;
+    border-collapse: separate;   /* `collapse` discards the radius */
+    border-spacing: 0;
+    overflow: hidden;            /* clip the corner cells to the radius */
+    background: var(--vp-c-bg-soft);
     font-size: 14.5px;
     line-height: 1.55;
   }
@@ -243,10 +253,10 @@
   .vp-doc table[data-labelled='0'] thead { display: none; }
 
   .vp-doc th {
-    padding: 0 16px 8px;
+    padding: 10px 16px;
     border: 0;
     border-bottom: 1px solid var(--vp-c-divider);
-    background: none;
+    background: var(--vp-c-bg);
     color: var(--vp-c-text-3);
     font-size: 12px;
     font-weight: 600;
@@ -256,20 +266,20 @@
   }
 
   .vp-doc td {
-    padding: 9px 16px;
+    padding: 10px 16px;
     border: 0;
     border-top: 1px solid var(--vp-c-divider);
     vertical-align: top;
   }
+  /* The first body row sits directly under the header's own border, or under
+     the card's edge when there is no header. Either way it needs no second
+     line of its own. */
+  .vp-doc tbody tr:first-child td { border-top: 0; }
 
-  /* Flush with the prose on the left, and no dangling padding on the right. */
-  .vp-doc th:first-child, .vp-doc td:first-child { padding-left: 0; }
-  .vp-doc th:last-child, .vp-doc td:last-child { padding-right: 0; }
-
-  /* No zebra. Alternating fills on a near-black page read as banding rather
-     than as rows; a hover tint does the same job only when you need it. */
+  /* No zebra. Alternating fills this dark read as banding rather than as rows;
+     a hover tint does the same job only when you want it. */
   .vp-doc tr { background: none !important; }
-  .vp-doc tbody tr:hover { background: var(--vp-c-bg-soft) !important; }
+  .vp-doc tbody tr:hover { background: var(--vp-c-bg-elv) !important; }
 
   /* Key/value tables: the left column is a label, so it should read as one. */
   .vp-doc table[data-labelled='0'] td:first-child {
@@ -278,16 +288,9 @@
   }
   .vp-doc table[data-labelled='0'] td + td { color: var(--vp-c-text-2); }
 
-  /* Numbers line up when they are tabular, and only then. */
   .vp-doc td[align='right'], .vp-doc th[align='right'] {
     font-variant-numeric: tabular-nums;
   }
-
-  /* A table too wide to fit still has to go somewhere. `display: table` cannot
-     scroll itself, so the overflow moves to a wrapper VitePress already emits
-     for wide content; failing that the table simply wraps its cells, which is
-     the better failure of the two. */
-  .vp-doc div[class*='table'] { overflow-x: auto; }
 }
 
 /* ---- Tables on phones: stacked, not squeezed -------------------------------
