@@ -219,32 +219,39 @@
    header on a grey band. On a dark page that reads as a spreadsheet dropped
    into an essay.
 
-   The first attempt at fixing it went too far the other way -- horizontal rules
-   only, flush with the prose -- and the result was worse in a way that is worth
-   recording: this page ALREADY separates things with rules (under every h2,
-   between sections), so a table made of rules stopped announcing itself as a
-   table at all. You could not tell where one started.
+   Stripping it back to horizontal rules was tried and was worse: this page
+   already separates things with rules -- under every h2, between sections -- so
+   a table made of rules stopped announcing itself as a table at all.
 
-   So it is a card instead, which is the language the rest of the site already
-   speaks: the store cards, the licence panel, and these same tables once they
-   stack on a phone. One surface, one border, rows divided inside it. That reads
-   as a distinct object at a glance without outlining every cell.
+   So it is a card, which is the language the rest of the site already speaks:
+   the store cards, the licence panel, and these same tables once they stack on
+   a phone. The card is a WRAPPER (.aowl-tw, added by labelTables) rather than
+   the table itself, because `overflow` does not clip cell backgrounds on a
+   `display: table` -- the header's square fill painted straight over the
+   rounded corners -- and because a table too wide for the page then has
+   somewhere to scroll instead of crushing its columns until code spans break
+   mid-token.
 
    The empty-header case is the bug underneath all of this: these docs write
    `| | |` constantly for key/value tables, and markdown still emits a <thead>
    full of empty <th>, which rendered as a blank grey band above every one of
    them. labelTables() marks those data-labelled="0" and the header is hidden. */
+.vp-doc .aowl-tw {
+  margin: 1.25rem 0 1.5rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 10px;
+  background: var(--vp-c-bg-soft);
+  overflow-x: auto;
+}
+
 @media (min-width: 641px) {
-  .vp-doc table {
+  .vp-doc .aowl-tw table {
     display: table;
     width: 100%;
-    margin: 1.25rem 0 1.5rem;
-    border: 1px solid var(--vp-c-border);
-    border-radius: 10px;
-    border-collapse: separate;   /* `collapse` discards the radius */
-    border-spacing: 0;
-    overflow: hidden;            /* clip the corner cells to the radius */
-    background: var(--vp-c-bg-soft);
+    margin: 0;
+    border: 0;
+    border-collapse: collapse;
+    background: none;
     font-size: 14.5px;
     line-height: 1.55;
   }
@@ -271,9 +278,6 @@
     border-top: 1px solid var(--vp-c-divider);
     vertical-align: top;
   }
-  /* The first body row sits directly under the header's own border, or under
-     the card's edge when there is no header. Either way it needs no second
-     line of its own. */
   .vp-doc tbody tr:first-child td { border-top: 0; }
 
   /* No zebra. Alternating fills this dark read as banding rather than as rows;
@@ -291,7 +295,52 @@
   .vp-doc td[align='right'], .vp-doc th[align='right'] {
     font-variant-numeric: tabular-nums;
   }
+
+  /* A path or a symbol broken across two lines is unreadable, and it is what a
+     squeezed column does first. Keep them whole and let the card scroll. */
+  .vp-doc .aowl-tw td code { white-space: nowrap; }
 }
+
+/* ---- Two-column tables stack, at every width -------------------------------
+   Two columns is a label and a thing said about it, not a grid. Side by side it
+   gives the description a narrow ribbon to wrap in while the label column keeps
+   space it does not need; stacked, the label reads as a heading and the
+   description gets the full width. Same shape the phone layout already uses, so
+   a 2-column table looks the same on both and only the outer card changes.
+
+   Marked by labelTables(), which counts the columns. */
+.vp-doc table.aowl-stack { display: block; }
+.vp-doc table.aowl-stack thead { display: none; }
+.vp-doc table.aowl-stack tbody { display: block; }
+
+.vp-doc table.aowl-stack tbody tr {
+  display: block;
+  padding: 11px 16px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+.vp-doc table.aowl-stack tbody tr:first-child { border-top: 0; }
+
+.vp-doc table.aowl-stack td {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  text-align: left !important;   /* a right-aligned column makes no sense stacked */
+}
+.vp-doc table.aowl-stack td:first-child {
+  margin-bottom: 2px;
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+}
+.vp-doc table.aowl-stack td + td { color: var(--vp-c-text-2); }
+.vp-doc table.aowl-stack td:empty { display: none; }
+
+/* Headed 2-column tables get no per-cell captions. Repeating FLAG / EFFECT down
+   twenty rows is louder than the content it is labelling, and in practice a
+   2-column heading pair is redundant with what the cells obviously are. The
+   cost is a table like `| before | after |`, where the headings did carry
+   meaning -- write those as three columns, or as prose. */
+
 
 /* ---- Tables on phones: stacked, not squeezed -------------------------------
    A markdown table on a 390px screen has no good column layout. Sharing the

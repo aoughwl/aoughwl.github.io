@@ -253,13 +253,31 @@ export default {
     // element itself, and the heading lives in a different row.
     const labelTables = () => {
       document.querySelectorAll('.vp-doc table').forEach((table) => {
+        // The card's border, fill and rounding live on a wrapper rather than on
+        // the table, for two reasons: `overflow` does not clip cell backgrounds
+        // on a `display: table` (the header's square fill painted over the
+        // rounded corners), and a table too wide for the page then has
+        // somewhere to scroll instead of crushing its columns until code spans
+        // break mid-token.
+        if (!table.parentElement?.classList.contains('aowl-tw')) {
+          const wrap = document.createElement('div')
+          wrap.className = 'aowl-tw'
+          table.parentElement.insertBefore(wrap, table)
+          wrap.appendChild(table)
+        }
         const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim())
         // A markdown table always has a header row; ours are frequently written
         // `| | |` to suppress it, which yields empty strings. Those tables get
         // no labels rather than a row of blanks.
         const useful = heads.some((h) => h.length > 0)
-        table.dataset.cols = String(heads.length || 0)
+        const cols = heads.length ||
+          (table.querySelector('tbody tr')?.children.length ?? 0)
+        table.dataset.cols = String(cols)
         table.dataset.labelled = useful ? '1' : '0'
+        // Two columns is a label and a thing said about it, not a grid. Those
+        // read better stacked at every width, so they carry the phone layout up
+        // onto the desktop rather than sitting as two narrow columns.
+        table.classList.toggle('aowl-stack', cols === 2)
         if (!useful) return
         table.querySelectorAll('tbody tr').forEach((tr) => {
           [...tr.children].forEach((td, i) => {
