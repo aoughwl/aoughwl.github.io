@@ -214,6 +214,82 @@
   .vp-doc th, .vp-doc td { padding: 6px 8px; }
 }
 
+/* ---- Tables, from 641px up ------------------------------------------------
+   VitePress ships a boxed grid: every cell outlined, alternate rows filled,
+   header on a grey band. On a dark page that reads as a spreadsheet dropped
+   into an essay, and it competes with the prose either side of it.
+
+   This keeps the data and drops the furniture. Horizontal rules only, no fill,
+   and the first column flush with the body text so a table lines up with the
+   paragraph above it instead of starting 16px to its right.
+
+   The empty-header case is the one that was actually broken: these docs write
+   `| | |` constantly for key/value tables, and markdown still emits a <thead>
+   full of empty <th>. Padding and a background made that render as a blank
+   grey band above every one of them. labelTables() marks those tables
+   data-labelled="0" and this hides their header outright. */
+@media (min-width: 641px) {
+  .vp-doc table {
+    display: table;              /* block was for the scroller; see below */
+    width: 100%;
+    margin: 1.25rem 0 1.5rem;
+    border-collapse: collapse;
+    overflow: visible;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  /* A table with no headings has no header row to show. */
+  .vp-doc table[data-labelled='0'] thead { display: none; }
+
+  .vp-doc th {
+    padding: 0 16px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--vp-c-divider);
+    background: none;
+    color: var(--vp-c-text-3);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+
+  .vp-doc td {
+    padding: 9px 16px;
+    border: 0;
+    border-top: 1px solid var(--vp-c-divider);
+    vertical-align: top;
+  }
+
+  /* Flush with the prose on the left, and no dangling padding on the right. */
+  .vp-doc th:first-child, .vp-doc td:first-child { padding-left: 0; }
+  .vp-doc th:last-child, .vp-doc td:last-child { padding-right: 0; }
+
+  /* No zebra. Alternating fills on a near-black page read as banding rather
+     than as rows; a hover tint does the same job only when you need it. */
+  .vp-doc tr { background: none !important; }
+  .vp-doc tbody tr:hover { background: var(--vp-c-bg-soft) !important; }
+
+  /* Key/value tables: the left column is a label, so it should read as one. */
+  .vp-doc table[data-labelled='0'] td:first-child {
+    color: var(--vp-c-text-1);
+    font-weight: 500;
+  }
+  .vp-doc table[data-labelled='0'] td + td { color: var(--vp-c-text-2); }
+
+  /* Numbers line up when they are tabular, and only then. */
+  .vp-doc td[align='right'], .vp-doc th[align='right'] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A table too wide to fit still has to go somewhere. `display: table` cannot
+     scroll itself, so the overflow moves to a wrapper VitePress already emits
+     for wide content; failing that the table simply wraps its cells, which is
+     the better failure of the two. */
+  .vp-doc div[class*='table'] { overflow-x: auto; }
+}
+
 /* ---- Tables on phones: stacked, not squeezed -------------------------------
    A markdown table on a 390px screen has no good column layout. Sharing the
    width gives every column four characters and turns each cell into a vertical
