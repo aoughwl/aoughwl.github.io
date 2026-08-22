@@ -66,7 +66,7 @@ wipe it costs $20. Decide which one you are.
 1. Your key appears on screen and arrives by email.
 2. Open your [licence page](/store/license), paste the key, download the build.
 3. Extract, and run `install\aowlspt-install.exe activate <your-key>` — see
-   [Installing](/docs/aowlspt) for the full walk-through.
+   [Installing](/docs/aowlspt/installation) for the full walk-through.
 
 Cancelling is one button on that same licence page, and it takes effect at the
 end of the month you have already paid for.

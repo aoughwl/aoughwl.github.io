@@ -31,6 +31,11 @@ const money = (cents, currency = 'usd') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase(), maximumFractionDigits: cents % 100 ? 2 : 0 })
     .format(cents / 100)
 
+// What a buy button says while the shop is shut. The Worker sends its own copy
+// in `payments_message` / `cta`; this is what shows before it answers, and if
+// it never does.
+const COMING_SOON = 'Coming very soon'
+
 const SHORT_INTERVAL = { month: 'mo', year: 'yr', week: 'wk', day: 'day' }
 
 /** `$19.99/mo`, or just `$39.99` for something bought once. */
@@ -82,21 +87,36 @@ const BuyButton = {
     const busy = ref(false)
     const error = ref('')
     const live = ref(null)
-    // 'loading' until the catalogue answers, then 'ready' or 'unavailable'.
-    // A product that is not in the catalogue is not on sale -- the store may
-    // not be wired up yet, or it may have been withdrawn. Either way the button
-    // must not invite a click it cannot honour, and it flips to ready on its
-    // own the moment the API starts answering.
+    // 'loading' until the catalogue answers, then one of:
+    //   'ready'        -- on sale, the button opens Stripe
+    //   'closed'       -- listed and priced, but payments are not open yet
+    //   'unavailable'  -- not in the catalogue at all
+    // Only 'ready' is clickable, and it is the state we refuse to guess: an
+    // unreachable API, a catalogue that omits payments_enabled, anything short
+    // of an explicit yes leaves the button saying "coming very soon". A button
+    // that opens a checkout the Worker answers with 503 is worse than one that
+    // is honest about not being open yet.
     const state = ref('loading')
+    const closedMessage = ref(COMING_SOON)
 
     onMounted(async () => {
+      let open = false
       try {
         const r = await api('/catalog', { method: 'GET' })
         const product = (r.products || []).find((p) => p.id === props.product)
         const plans = product?.plans || []
         live.value = props.plan ? plans.find((p) => p.id === props.plan) : plans[0]
-      } catch { /* leave live null */ }
-      state.value = live.value ? 'ready' : 'unavailable'
+        // The global switch and the per-plan flag must both say yes. The Worker
+        // stamps both, so requiring both means a page cannot miss the switch by
+        // reading only one of them.
+        open = r.payments_enabled === true && live.value?.purchasable !== false
+        closedMessage.value = live.value?.cta || r.payments_message || COMING_SOON
+      } catch {
+        // Offline, blocked, a 500 -- we do not know that the shop is open, so
+        // it is shut. The front-matter price still shows.
+        open = false
+      }
+      state.value = open ? 'ready' : live.value ? 'closed' : 'unavailable'
     })
 
     const shown = computed(() => {
@@ -109,6 +129,10 @@ const BuyButton = {
 
     const label = computed(() => {
       if (busy.value) return 'Opening checkout…'
+      // 'loading' answers the same way as 'closed': until the catalogue says
+      // the shop is open, the honest label is the closed one, so the button
+      // never flashes "Subscribe" and then takes it away.
+      if (state.value === 'closed' || state.value === 'loading') return closedMessage.value
       if (state.value === 'unavailable') return 'Not on sale yet'
       return props.label
     })
@@ -133,8 +157,11 @@ const BuyButton = {
       h('div', { class: 'aowl-buy' }, [
         h('div', { class: 'aowl-buy-row' }, [
           h('button', {
-            class: 'aowl-buy-btn',
+            class: 'aowl-buy-btn' + (state.value === 'ready' ? '' : ' aowl-soon'),
             disabled: busy.value || state.value !== 'ready',
+            // `disabled` already stops the click; aria-disabled says the same
+            // thing to a screen reader meeting the label out of context.
+            'aria-disabled': state.value !== 'ready' ? 'true' : null,
             onClick: buy,
           }, [
             h('span', { class: 'aowl-buy-label' }, label.value),
@@ -146,7 +173,15 @@ const BuyButton = {
             ? h('a', { class: 'aowl-try', href: props.demo, target: '_self' }, props.demoLabel)
             : null,
         ]),
-        h('p', { class: 'aowl-buy-note' }, state.value === 'unavailable'
+        h('p', { class: 'aowl-buy-note' }, state.value === 'closed' || state.value === 'loading'
+          ? [
+              'Not open for sale yet — the price above is what it will cost. ',
+              h('a', { href: 'https://discord.gg/nxa3W7w4rJ', target: '_blank', rel: 'noopener' },
+                'Ask on Discord'),
+              ' to hear when it opens. ',
+              h('a', { href: '/store/license' }, 'Already bought it?'),
+            ]
+          : state.value === 'unavailable'
           ? [
               'Not available to buy yet. ',
               h('a', { href: 'https://discord.gg/nxa3W7w4rJ', target: '_blank', rel: 'noopener' },
