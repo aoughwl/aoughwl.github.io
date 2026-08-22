@@ -251,6 +251,7 @@ const sidebar = [
             items: [
               { text: 'Architecture', link: '/docs/aowlspt/architecture' },
               { text: 'Reaching into IL2CPP', link: '/docs/aowlspt/il2cpp' },
+              { text: 'The live inspector', link: '/docs/aowlspt/inspector' },
               { text: 'The game server', link: '/docs/aowlspt/emulator' },
               { text: 'How we know things — the method', link: '/docs/aowlspt/method' },
               { text: 'Traps and hard-won facts', link: '/docs/aowlspt/pitfalls' },
