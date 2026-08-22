@@ -302,8 +302,8 @@ mod panel is drawn by hand from a detour on `IDXGISwapChain::Present` — the sa
 place Steam and Discord draw. `abi/aowlspt_overlay.h` is 4,619 lines of
 header-only C and D3D11. Insert toggles it.
 
-Whether it draws, and whether it steals input, is one of the fifteen open
-questions: a wndproc subclass cannot intercept `GetAsyncKeyState`, DirectInput
-or `GetRawInputBuffer`, and if Tarkov polls that way then input reaches the game
-while the panel is open. The overlay README carries the only explicit
-*(unverified)* marking in it.
+Input is the delicate part: a wndproc subclass cannot intercept
+`GetAsyncKeyState`, DirectInput or `GetRawInputBuffer`, so a game that polls
+that way keeps receiving input while the panel is open. That is the property to
+check on any client build, and it is checked by opening the panel rather than by
+reading the code.

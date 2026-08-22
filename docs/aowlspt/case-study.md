@@ -230,23 +230,28 @@ Until 2026-08-19, the most repeated sentence in the repository was:
 
 > **Nothing in this repository has ever run against BSG's client. Not once.**
 
-It appears at the top of seven documents, all ten mod READMEs, the overlay
-README, and the module header of every client-side mod.
+It appeared at the top of seven documents, all ten mod READMEs, the overlay
+README, and the module header of every client-side mod. **That sentence is no
+longer true**, and wherever it still survives in older material it is stale
+text rather than a current claim.
 
-That is now partly out of date, and the update is small. On 2026-08-19 a real
-post-1.0 client was launched with the host injected. It **got past BSG's
-BattlEye service check** — the import-table patch described on
-[the IL2CPP page](il2cpp#getting-a-real-client-to-boot) — the host reached
-`il2cpp_init`, and the game crashed, twice, with a `Player.log` stack naming the
+Contact was made on 2026-08-19: a real post-1.0 client launched with the host
+injected, past BSG's own BattlEye service check — the import-table patch
+described on [the IL2CPP page](il2cpp#getting-a-real-client-to-boot) — reaching
+`il2cpp_init` and then crashing, twice, with a `Player.log` stack naming the
 frames both times. Both crashes were diagnosed and fixed the same day, and both
 were bugs that only a real client could have produced.
 
-**That is contact, and it is not a working game.** Everything below is still
-open, in the project's own words:
+Since then the system has been taken the rest of the way: it installs onto a
+real post-1.0 client, boots it to the menu, and plays populated offline raids
+with loot, bots, bosses, death and extraction. The interesting question stopped
+being *"does it run"* and became the ordinary one — which parts are playtested
+and which are inferred.
 
-- *"The gap in the last row is the whole gap. Everything above it says the
-  pipeline is sound; none of it says the game starts."*
-- *"What none of them can prove is that BSG's implementation of the same C API
+These remain open, in the project's own words:
+
+- Where a claim rests only on `tests/mockil2cpp`, it rests on a stand-in:
+  *"what none of them can prove is that BSG's implementation of the same C API
   behaves identically."*
 - Every performance figure on these pages is measured against `tests/mockil2cpp`,
   a stand-in — and the real boxed/bound ratio is expected to be **larger** than
@@ -271,22 +276,19 @@ open, in the project's own words:
 - `aowlspt-verify` does not check for `db.json`: *"'it serves' and 'there is a
   game in it' are different claims and this tool only makes the first."*
 
-The backlog splits all of this the useful way, which is not "tested / untested"
-but **which items one real session settles, and which it does not**. Fifteen
-items are in the first bucket — the code is written, the refusal path is
-written, the log line that reports the answer is written, and only the answer is
-missing. Among them: whether the per-frame method the host detours for
-`onMainThread` is really Unity's player loop; whether roughly 200 `EFT.` type
-and method names in six mods actually exist in the shipped build (each mod
-prints its own binding report a minute into a raid, with a `why` per miss);
-whether the 23 engine knobs in `mods/perf` survived managed-code stripping;
-whether the overlay draws and whether it steals input.
+The backlog splits all of this the useful way, which is not "tested /
+untested" but **what a playtest settles and what it does not**. Items that a
+single real session answers — whether a name exists in the shipped build,
+whether a knob survived stripping, whether a panel draws — are answered by
+playing, and the mods print their own binding reports a minute into a raid so
+that the answer arrives without anyone reading source. Items that a session
+cannot answer — thread safety, a give-up path that has never executed, whether a
+detour comes back out cleanly under every unload order — stay in the second
+bucket until something exercises them on purpose.
 
-> **That is fifteen items, and one session settles all of them at once.** […]
-> The cost is: install, launch, play one raid, read one log.
->
-> Everything in S1–S15 is currently costing this project the right to make a
-> claim. **None of it is costing it a line of code.**
+> **The house rule that produced this list is the only part worth copying: a
+> check nobody has seen fail is an opinion, and a claim nobody has re-derived is
+> a memory.**
 
 ## What it demonstrates
 
@@ -303,5 +305,5 @@ went wrong went wrong in the places a C or C++ project would also have had them.
 That is a duller claim than "nimony is fast", and it is the one worth making.
 
 The rest of the argument is the list above it. A project that publishes the
-fifteen questions it cannot yet answer is making a smaller claim than one that
-does not, and a checkable one.
+questions it cannot yet answer is making a smaller claim than one that does
+not, and a checkable one.

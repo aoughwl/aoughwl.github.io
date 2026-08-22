@@ -1,167 +1,97 @@
 ---
 repo: savannt/aowlspt
+title: aowlspt — mods for post-1.0 Escape From Tarkov
 ---
 
-# aowlspt — a game modding platform, written in aowl
+# aowlspt
 
-A modding pipeline for post-1.0 **Escape From Tarkov**, in aowl/nimony, front to
-back: a native client host injected into the game, a backend server, an in-game
-overlay, one C ABI, one build command — and a from-scratch Tarkov server
-emulator written *as a mod on top of it*, using nothing a mod cannot use.
+**Mods for post-1.0 Escape From Tarkov.** A native mod host, a game server that
+speaks the real client's protocol, a launcher, a mod manager, and a set of mods
+— offline, single-player, on your own machine.
 
-```nim
-import aowlspt
-import aowlspt/game
+Tarkov 1.0 moved the client to IL2CPP. There are no managed assemblies left, so
+BepInEx does not load, Harmony has nothing to patch, and every mod written for
+the Mono era stopped working. The usual answer is to roll your client back to a
+pre-1.0 build. aowlspt does the other thing: **it mods the client you actually
+own.**
 
-var Player = gameType("EFT.Player")
-var world = whenReady("EFT.GameWorld")
-
-proc onUpdate(elapsedMs: int64): Status =
-  if world.ready():                      # true once, when the game exists
-    info "health " & $Player.get("Health").asFloat()
-    discard Player.invoke("Heal", 50)
-
-    discard hookArgs("EFT.Player::ApplyDamage",
-      proc (target, args: string): HookResult =
-        info "damage: " & args           # the arguments the game passed
-        stopWith("0.0"))                 # and the original never runs
-  Ok
-
-exportMod(guid = "you.mod", name = "Mod", author = "you", version = "1.0.0",
-          sptRange = "*", sides = {sideClient}, onUpdate = onUpdate)
-```
-
-> **Private repo, public docs.** The code lives at `savannt/aowlspt` and is
-> private. The build is **[$19.99 a month](/store/aowlspt)** — every update,
-> three machines, the mods, cancel whenever. Questions first: Discord
-> **timbuktu_guy**.
-
-[[toc]]
+→ **[Install it](/docs/aowlspt/installation)** ·
+**[First run](/docs/aowlspt/getting-started)** ·
+**[What it does](/docs/aowlspt/features)** ·
+**[Mods](/docs/aowlspt/mods)** ·
+**[Get a licence — $19.99/mo](/store/aowlspt)**
 
 ---
 
-## Why it is on this site
-
-Every other page here documents a piece of the toolchain. This one documents
-something the toolchain *built* — and it is the largest such thing, so it is
-also the most direct answer available to "can you write a real program in
-nimony." The numbers, measured 2026-08-19:
+## What you get
 
 | | |
-|---|---:|
-| nimony source in the repository | **139,587 lines** across **202 modules** |
-| of which: mods | 68,209 lines, 119 modules |
-| of which: tooling (`aowl` and the gate binaries) | 34,194 lines, 24 modules |
-| of which: hosts + backend + the mod library | 23,090 lines |
-| header-only C, hand-written, under all of it | **12,855 lines** across 15 headers |
-| documentation in the repository | 13,491 lines of Markdown |
-| `aowl test`, end to end on a quiet tree | **143 checks, 0 errors** |
-
-Every host, the backend, the installer, the build tool, the release tool, every
-gate binary and every mod is nimony. **One C# program is left** —
-`tools/SptReflect`, which reads SPT's assembly metadata and is managed because
-the thing it reads is.
-
-The case for reading it as a case study is on its [own page](aowlspt/case-study):
-what the language made easy, what it made hard, what broke, and — the part that
-matters most — the long list of things this project says it has **not** proven.
-
-## What it is
-
-Post-1.0 Tarkov changed the client's scripting backend. Pre-1.0 clients are
-**Mono**: `Assembly-CSharp.dll` is an ordinary .NET assembly, BepInEx loads into
-the Mono runtime, and Harmony patches methods by name. Post-1.0 clients are
-**IL2CPP** — no managed assemblies at all, only `GameAssembly.dll` and
-`global-metadata.dat`. Nothing built for one loads into the other, and the whole
-existing modding ecosystem is built for the one that is gone.
-
-The usual answer is to roll the client backwards to a pre-1.0 build. aowlspt's
-installer refuses to do that, and `--force` does not enable it. So it does the
-other thing: it hosts mods in the post-1.0 client directly, as a native DLL
-driving IL2CPP's own exported C API, with no BepInEx, no Il2CppInterop, no
-generated proxy assemblies and no second runtime in the process.
-
-That decision is what shapes everything else. There is no managed layer to hide
-in, so the reach into the game is **native x64 inline detours** and a **bound
-method-pointer fast path** — and the price of every one of those is measured
-rather than asserted.
-
-## Map
-
-| Page | Covers |
 |---|---|
-| [Architecture](aowlspt/architecture) | **Start here.** Three hosts, one ABI; how a mod is loaded, ticked and unloaded; where C stops and nimony starts. |
-| [The C ABI](aowlspt/abi) | `abi/aowlspt_abi.h` — revision 5. The three exported symbols, `AowlHostApi`, `AowlModApi`, the size-watermark versioning rule, and the five design rules behind it. |
-| [The mod API](aowlspt/api) | The nimony surface every mod imports: `aowlspt`, `aowlspt/game`, `aowlspt/server`, `aowlspt/json`, `aowlspt/fast`, `aowlspt/il2cpp`. The full reference. |
-| [Reaching into IL2CPP](aowlspt/il2cpp) | The detour engine, the typed patch frame, the fast path — with the measured cost of each — and the import-table patch that got a real client to boot. |
-| [The emulator](aowlspt/emulator) | A Tarkov server written as a mod. What it serves, what it refuses, and the generated coverage table that keeps both honest. |
-| [Case study](aowlspt/case-study) | What this proves about nimony, the gate culture behind the numbers, and everything it does **not** prove. |
+| **Offline raids** | Every map, with bots, generated loot, extracts and death handling. No server but yours. |
+| **A working progression loop** | Profiles, the stash, traders and trading, quests with their conditions evaluated, the hideout and its production queue, the flea market, insurance, mail, skills, the scav. |
+| **Bot AI worth fighting** | SAIN, rewritten natively: layered decisions, personalities, cover use, squad behaviour. MoreBots raises the population; Black Division adds a hostile PMC faction. |
+| **The mods people actually run** | FOV fix, classic (no-inertia) movement, physical weapon sway, Path To Tarkov, a graphics overhaul, high-res PBR textures, resource packs, engine performance settings. |
+| **In-game settings** | A settings page per mod, edited while the game runs, persisted back to the mod's `config.json`. |
+| **A mod manager** | Enable and disable mods live — on the server while it serves, and on the client while the game is running. Mod lists are files you can commit and send someone. |
+| **A mod API** | Write mods against one small C ABI, build them with one command, and test them without launching Tarkov. |
 
-## The gate
+The full list, with what is playtested and what is still being tuned, is on
+[Features](/docs/aowlspt/features).
+
+## Install it
 
 ```
-aowl test
+aowlspt-install install --source D:\Games\Tarkov --target D:\Aowlspt --payload payload
+aowl importdb --from D:\SPT --out D:\Aowlspt\aowlspt
+aowlspt-launch --root D:\Aowlspt
 ```
 
-**143 checks, 0 errors**, measured end to end on a quiet tree on 2026-08-19 —
-with `aowl.exe` rebuilt first, which matters, because the gate does not rebuild
-itself and an earlier run that day silently used a binary predating every phase
-it was meant to exercise.
+Three commands, once. Your existing install is only ever read — everything is
+built into a second directory. The long version, including what each refusal
+means, is on [Installation](/docs/aowlspt/installation).
 
-Each of those checks is a named external step. Underneath them sit the suites,
-each reporting its own count, each with a loopback port of its own so that none
-of them can pass against a server somebody already had running:
+## Who this is for
 
-| suite | checks | what it drives |
-|---|---:|---|
-| `soak`, 24 closed play cycles | 915 | the emulator over a long session, checked by invariant |
-| `emutest` | 577 | the emulator through the client's boot sequence, against a fixture database |
-| `livectl` | 213 | a mod disabled and re-enabled while the backend is serving |
-| `realtest` | 168 (1 skipped) | the emulator against a **39.40 MiB** database imported from a real SPT install |
-| `fuzzwire` | 152 | what the server does when the client is hostile |
-| `sain` selftest | 124 | the rewritten bot decision layer, with no Tarkov under it |
-| `framelen` | 102 | hostile `Content-Length` framing |
-| `modclient` | 90 | the manager reading the client host's ledger |
-| `firstrun` | 64 | a synthetic vanilla client → install → importdb → verify → boot → restart |
-| `pttguard` | 62 | Path To Tarkov's graph against the real database |
-| `wstest` | 62 | the notifier websocket: does a push reach the session |
-| `hostharness` | 28 verdicts | the client host against a stand-in IL2CPP runtime |
-| `ovsync` | 24 | the client host's poll actually reaching the backend |
-| `tickfault` | 22 | a mod whose `on_update` fails |
-| `ws_stall` | 15 | a websocket peer that stops reading |
-| `aowl-coverage --check` | 12 | the coverage document against the code |
-| `detour_race` | 11 | a patch installed under live callers |
-| `storeguard` | 9 | a reader holding a key across a commit |
+- **Players** who want a modded single-player Tarkov on a post-1.0 client, and
+  are willing to run an installer and import a database once.
+- **Mod authors** who want to reach a post-1.0 client at all — hooks, live
+  objects, fields by name, and a per-frame fast path, with no BepInEx
+  underneath. Start at
+  [For mod developers](/docs/aowlspt/for-mod-developers).
 
-Two of those rows are worth more than their size. `hostharness` is counted as
-**28 verdicts** and not by `grep -c '^ok'`, which answers 31 — three of those
-lines are the harness reporting its own staging before it has read a line of the
-host's log. And `storeguard`'s 9 is annotated with the fact that **2 of them
-fail against the store as it was**, because a handle that never sees a change is
-trivially never torn. That annotation is the house style, and it is the subject
-of [the case study](aowlspt/case-study#a-check-nobody-has-seen-fail-is-an-opinion).
+## Scope, plainly
 
-## The honest part, up front
+- **Single-player and offline only.** PvE. The client this produces plays
+  against a backend on your own machine.
+- **It must never talk to BSG's live service.** The installer does not carry
+  BattlEye across and the launcher does not start it. Injecting a DLL into a
+  process that is talking to BSG's servers has consequences for your account.
+  These tools will not stop you pointing the client somewhere else, and they
+  will not help you either.
+- **Your existing install is only ever read.** If it goes wrong, delete the
+  second directory.
+- **You need an SPT install** to import the game's item, trader, quest and map
+  data from. This project does not distribute BSG's data. Without that step the
+  server starts, answers every route, and has nothing in it.
+- **Windows only.**
 
-> **`aowl test` runs the client host against `tests/mockil2cpp`, a stand-in that
-> exports the same C API as `GameAssembly.dll`.** Resolve, call-with-arguments,
-> live objects, fields and patching are all exercised for real against it. What
-> that cannot establish is that BSG's implementation behaves identically. Every
-> performance figure on these pages is measured against that stand-in.
+## Getting the build
 
-Until 2026-08-19 the most repeated sentence in the repository was *"Nothing in
-this repository has ever run against BSG's client. Not once."* — it appears at
-the top of seven documents, all ten mod READMEs, the overlay README and the
-module header of every client-side mod.
+The code lives at `savannt/aowlspt` and is private; the documentation here is
+public. The build is **[$19.99 a month](/store/aowlspt)** — every update, three
+machines, the mods, cancel whenever. Questions first: Discord
+**timbuktu_guy**.
 
-That sentence is now **partly** stale, and the correction is small and worth
-stating precisely rather than rounding up. On 2026-08-19 a real post-1.0 client
-was launched with the host injected. It got past BSG's own BattlEye service
-check, the host reached `il2cpp_init`, and the game **crashed** — with a stack
-in `Player.log` naming the exact frames. The crash was diagnosed and the cause
-fixed the same day.
+## Where to go next
 
-So: contact was established, and one bug that only a real client could have
-produced was found and closed. **The game has not been shown to boot and play.**
-The fifteen questions the backlog says one real session would settle are still
-fifteen questions. Both halves of that are on the [case study](aowlspt/case-study#what-is-not-proven).
+| | |
+|---|---|
+| [Installation](/docs/aowlspt/installation) | Requirements, the commands, and what lands where. |
+| [Getting started](/docs/aowlspt/getting-started) | Your first launch: the launcher, the profile, the menu, the first raid. |
+| [Features](/docs/aowlspt/features) | What the system does today, and what is still being tuned. |
+| [Mods](/docs/aowlspt/mods) | Every mod that ships, and what each one is for. |
+| [Configuration](/docs/aowlspt/configuration) | The in-game settings pages, `config.json`, and where each file lives. |
+| [Troubleshooting](/docs/aowlspt/troubleshooting) | The failures people hit, in the order they hit them. |
+| [FAQ](/docs/aowlspt/faq) | Short answers: pre-1.0, multiplayer, BattlEye, SPT, updates, uninstalling. |
+| [For mod developers](/docs/aowlspt/for-mod-developers) | What a mod is, the build command, and the shortest path to a running one. |
+| [Under the hood](/docs/aowlspt/architecture) | The internals: the hosts, the ABI, IL2CPP, the game server, the engineering record. |
