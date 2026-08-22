@@ -25,6 +25,22 @@
 .aowl-buy-btn:disabled { opacity: 0.55; cursor: progress; }
 .aowl-buy-btn.aowl-sm { padding: 0.5rem 0.95rem; font-size: 14px; }
 
+/* The shop is shut. This is not a button waiting on the network -- it is an
+   announcement shaped like a button, so drop the brand fill and the `progress`
+   cursor and let it read as a label that happens to carry the price. */
+.aowl-buy-btn.aowl-soon,
+.aowl-buy-btn.aowl-soon:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+}
+.aowl-buy-btn.aowl-soon:disabled { opacity: 1; cursor: default; }
+.aowl-buy-btn.aowl-soon:active { transform: none; }
+.aowl-buy-btn.aowl-soon .aowl-buy-price {
+  border-left-color: var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+}
+
 .aowl-buy-price {
   padding-left: 0.75rem;
   border-left: 1px solid rgba(255, 255, 255, 0.35);
