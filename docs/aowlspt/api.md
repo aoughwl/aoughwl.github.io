@@ -9,6 +9,7 @@ submodules sit on top of it and none of them reaches around it.
 | `aowlspt` | 1,493 | everything — logging, config, routes, events, timers, `call`, `patch`, the store, the typed frame, `exportMod` |
 | `aowlspt/game` | 913 | the client-side high-level API: types, live objects, hooks |
 | `aowlspt/server` | 778 | the backend-side high-level API: routes, the database, config, JSON building |
+| `aowlspt/settings` | 232 | declaring the config keys a mod has, so the MODS tab can draw them |
 | `aowlspt/json` | 690 | reading and editing a document without rebuilding it |
 | `aowlspt/fast` | 1,370 | the per-frame path: bind once, then call |
 | `aowlspt/il2cpp` | 754 | the binding to the IL2CPP runtime's own C API |
@@ -380,6 +381,60 @@ Every route the emulator answers goes out as `{"err":0,"errmsg":null,"data":…}
 | `broadcast` | `proc (name: string; payload: ...): Status` |
 | `onEvent` | `proc (name: string; handler: EventHandler): Status` |
 | `afterMs` / `everyMs` | `proc (ms: int; handler: TickHandler): Status` |
+
+---
+
+## `aowlspt/settings` — declaring what your config keys are
+
+A `config.json` says what a value *is*, never what it *means*. This module is
+where a mod says the rest once — the type, the range, the human label, whether
+the key is actually wired to anything — so the **MODS** tab in Tarkov's own
+settings screen can draw the right native control for it and write an edit back
+to the same file the mod already reads.
+
+```nim
+import aowlspt/settings
+
+declareSettings(@[
+  floatSetting("opticFovMulti", "Optic FOV multiplier", 1.0,
+               lo = 0.5, hi = 2.0, step = 0.01, category = "FOV",
+               description = "FOV scale while aiming a magnified sight"),
+  boolSetting("changeMouseSensitivity", "Scale mouse sensitivity", true,
+              category = "Sensitivity"),
+  enumSetting("quality", "Texture quality", "high", @["low", "medium", "high"]),
+  keybindSetting("zoomToggleKey", "Toggle-zoom key", "M",
+                 category = "Toggle zoom", implemented = false,
+                 description = "Read but not wired yet")])
+```
+
+One builder per control:
+
+| builder | control drawn |
+|---|---|
+| `boolSetting(key, label, default)` | a toggle |
+| `intSetting(key, label, default, lo, hi, step)` | a stepped slider |
+| `floatSetting(key, label, default, lo, hi, step)` | a slider |
+| `enumSetting(key, label, default, options)` | a dropdown |
+| `stringSetting(key, label, default)` | a text field |
+| `keybindSetting(key, label, default)` | a key-capture box |
+
+Every builder takes the same optional trailing arguments: `category` (the
+section the row groups under on your subtab), `description` (one sentence of
+help), and `implemented` (`false` draws the row greyed with the reason, for a
+key that is carried but not yet acted on).
+
+| | |
+|---|---|
+| `declareSettings(settings)` | register the schema. Call it from `onLoad`. |
+| `declaredSettings()` | what this mod declared |
+| `declaredSchemaJson()` / `schemaJson(settings)` | the schema as the UI fetches it |
+| `applySetting(key, valueJson)` | apply one edit, persisting through `config.json` |
+| `applySettingFromBody(body)` | the same, from the JSON body of an edit request |
+
+The declaration is pure data and never touches the runtime, so a mod that
+declares a schema and does nothing else is still a no-op mod. This is the
+replacement for the BepInEx `ConfigEntry` / ConfigurationManager pattern; nine
+of the shipped mods already use it.
 
 ---
 

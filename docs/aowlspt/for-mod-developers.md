@@ -65,10 +65,50 @@ everywhere.
 
 ## In-game settings
 
-Declare your mod's settings once and the F12 page draws the right control for
-each value, persists the edit back to your `config.json`, and hot-applies it
-where you support that. See [Configuration](/docs/aowlspt/configuration) for the
-player-facing side.
+Declare your mod's settings once, in code, next to the handler that reads them.
+They are then drawn as **real Tarkov controls** in the **MODS** tab of the
+game's own settings screen — your mod gets a subtab — and an edit is persisted
+back to your `config.json` and hot-applied where you support that.
+
+```nim
+import aowlspt/settings
+
+proc onLoad(): Status =
+  loadConfig()
+  declareSettings(@[
+    floatSetting("opticFovMulti", "Optic FOV multiplier", 1.0,
+                 lo = 0.5, hi = 2.0, step = 0.01, category = "FOV",
+                 description = "FOV scale while aiming a magnified sight"),
+    boolSetting("changeMouseSensitivity", "Scale mouse sensitivity", true,
+                category = "Sensitivity"),
+    keybindSetting("zoomToggleKey", "Toggle-zoom key", "M",
+                   category = "Toggle zoom", implemented = false,
+                   description = "Read but not wired yet")])
+  Ok
+```
+
+The declaration is pure data — a mod that declares a schema and does nothing
+else is still a no-op mod. `category` groups rows into sections on your subtab;
+`implemented = false` draws the row greyed with your reason next to it, which is
+how a half-ported capability stays honest instead of shipping a control that
+does nothing.
+
+**If you are coming from BepInEx**, this replaces the `ConfigEntry` /
+ConfigurationManager / F12-overlay pattern. There is no overlay and no separate
+config window: you declare the schema, and the settings live where a player
+already looks for settings. Nine of the mods that ship with aowlspt already use
+it.
+
+See [`aowlspt/settings`](/docs/aowlspt/api) for the full surface, and
+[Configuration](/docs/aowlspt/configuration) for the player-facing side.
+
+## Debugging a running client
+
+Alongside the simulator there is a **live inspector** — a diagnostics tool that
+queries the game client while it is running, so you can ask what a screen
+actually contains, or what a value actually is, without a rebuild-and-relaunch
+cycle for every question. It is a developer tool and is off unless you turn it
+on in `aowlspt-host.json`.
 
 ## Publishing a mod
 

@@ -17,7 +17,7 @@ These are the system, not content.
 |---|---|---|
 | **Tarkov game server** — `aowl.tarkov` | server | Profiles, the stash, traders and trading, the flea market, quests with their conditions evaluated, the hideout and its production queue, raids with generated loot, bots and scavs, skills, insurance, mail. Written entirely on the public mod API. |
 | **Mod manager** — `aowl.manager` | server | Reads the registry, resolves it against your selection, and serves the answer — including *why* a mod is not loading — under `/aowlspt/mods`. |
-| **Settings hub** | client | The in-game settings pages behind F12: one page per mod, drawn from what each mod declares. |
+| **Settings hub** | client | The **MODS** tab in Tarkov's own settings screen: a subtab per mod, drawn as native game controls from what each mod declares. |
 
 ## Feel and visuals
 
@@ -26,7 +26,7 @@ These are the system, not content.
 | **FOV Fix** — `aowl.fovfix` | client | Fontaine's *Fontaine-FOVFix*, rewritten natively. Optic and non-optic FOV multipliers, camera distance offsets, a zoom toggle. CC BY-NC-SA 3.0. |
 | **Classic Movement** — `aowl.classicmovement` | client | TheBoogle's *Old Tarkov Movement*: no inertia, quick tilting, no bush slowdown, optional nostalgia mode — and the same for bots. MIT. |
 | **SPT-SWAY** — `com.savannt.sptsway` | client | Five physically modelled sources of weapon sway — respiration, cardiac, tremor, postural drift, weapon inertia — summed, scaled by the shooter's condition and the weapon, and pushed into the game's own rotation springs. |
-| **Graphics** — `aowl.graphics` | client | A togglable full-frame post-processing stack: tonemapping, exposure, contrast, saturation, temperature. Ported and expanded from `TarkovGraphics`. Defaults are still being tuned against real raids. |
+| **Graphics** — `aowl.graphics` | client | A togglable full-frame post-processing stack: tonemapping, exposure, contrast, saturation, temperature. Ported and expanded from `TarkovGraphics`. The game's own PostFX controls are folded in as a subtab of the Graphics tab. Defaults are still being tuned against real raids. |
 | **Textures** — `aowl.textures` | client | High-res PBR texture replacement from [ambientcg](https://ambientcg.com) sets, with a quality tier and a VRAM budget. |
 | **Resource packs** | client | Swapping whole packs of game resources, with a drive-grade setting so a slow disk is not asked to do a fast disk's job. |
 | **Performance** — `aowl.perf` | client | Engine-level quality, HUD, application and time settings, plus a frame sampler. |

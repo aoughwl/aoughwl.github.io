@@ -1,8 +1,8 @@
 # Configuration
 
-Two ways to change how aowlspt behaves: the in-game settings pages, and the
-`config.json` beside each mod. They are the same values — the settings page
-writes back to the file.
+Two ways to change how aowlspt behaves: the **MODS** tab in Tarkov's own
+settings screen, and the `config.json` beside each mod. They are the same
+values — the settings tab writes back to the file.
 
 [[toc]]
 
@@ -21,16 +21,27 @@ Everything this project owns is under `<install>\aowlspt\`:
 | `db.json` | the imported game database. |
 | `aowlspt-host.log`, `aowlspt-backend.log` | the two logs. |
 
-## In-game settings — F12
+## In-game settings — the MODS tab
 
-**F12** opens the settings panel. It carries one page per mod, the game server's
-own settings, and the full server config surface (28 pages, 323 values).
+Open Tarkov's settings screen the way you always have. It now has a sixth tab,
+**MODS**, beside Game, Graphics, Sound, Controls and PostFX, and inside it a
+subtab per mod, plus the game server's own settings and the full server config
+surface.
 
-A mod declares its settings once, and the panel draws the right control for each
+The rows there are the game's own controls — the same sliders, toggles,
+dropdowns and key-capture boxes the rest of the settings screen uses — not a
+separate overlay drawn over the game. Nothing to learn, and nothing that stops
+working when you resize the window.
+
+**PostFX moved.** The post-processing controls are now a subtab of the
+**Graphics** tab rather than a tab of their own.
+
+A mod declares its settings once, and the tab draws the right control for each
 value, persists your edit back to that mod's `config.json`, and hot-applies it
 where the mod supports that. Anything the system does not yet back is marked
-**not implemented yet** on the page rather than silently doing nothing — a
-control that lies is worse than a control that is honest about being inert.
+**not implemented yet** and drawn greyed, with the reason, rather than silently
+doing nothing — a control that lies is worse than a control that is honest
+about being inert.
 
 ## The admin panel — F6
 

@@ -40,14 +40,19 @@ Served by the game server that ships with the system:
 | **Textures** | High-res PBR texture replacement, with a quality tier and a VRAM budget. |
 | **Resource packs** | Swapping whole packs of game resources, with a drive-grade setting so a slow disk is not asked to do a fast disk's job. |
 | **Performance** | Engine-level quality, HUD, application and time settings, plus a frame sampler. |
-| **Graphics** | A togglable full-frame post-processing stack: tonemapping, exposure, contrast, saturation, temperature. *Defaults are still being tuned against real raids.* |
+| **Graphics** | A togglable full-frame post-processing stack, with the game's own PostFX controls folded in as a subtab: tonemapping, exposure, contrast, saturation, temperature. *Defaults are still being tuned against real raids.* |
 
 ## Running the thing
 
-- **In-game settings.** **F12** gives one settings page per mod, plus the game
-  server's own settings and the full server config surface (28 pages, 323
-  values). Edits persist back to that mod's `config.json` and hot-apply where
-  the mod supports it.
+- **In-game settings, in the game's own screen.** Tarkov's settings screen
+  grows a sixth tab — **MODS** — beside Game, Graphics, Sound, Controls and
+  PostFX. It carries a subtab per mod, plus the game server's own settings and
+  the full server config surface. The rows are real Tarkov controls, not an
+  overlay drawn on top. Edits persist back to that mod's `config.json` and
+  hot-apply where the mod supports it.
+- **PostFX now lives under Graphics.** The post-processing controls are a
+  subtab of the Graphics tab rather than a tab of their own, which is what
+  makes room for MODS.
 - **A mod manager.** Turn mods on and off — on the server while it is serving,
   and on the client while the game is running. Your selection is a file, and so
   is a named mod list, so "my raid night setup" is something you can send
@@ -68,8 +73,14 @@ Served by the game server that ships with the system:
   handles, fields by name, hooks that read their arguments and can suppress the
   original, and a bind-once fast path for per-frame code.
 - **Reach into the server**: routes, the database, the notifier websocket.
+- **A settings API**: declare what your mod's config keys are, and they are
+  drawn as native Tarkov controls in the MODS tab. No overlay, no F12 config
+  menu of your own to write.
 - **A simulator** that loads your mod with no game and no server behind it, so
   the edit-build-run loop is about a second.
+- **A live inspector** — a diagnostics tool for developers debugging the game
+  client while it runs, so a question about the running game does not cost a
+  rebuild.
 
 → [For mod developers](/docs/aowlspt/for-mod-developers).
 
