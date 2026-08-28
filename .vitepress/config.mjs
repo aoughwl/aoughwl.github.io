@@ -200,6 +200,7 @@ const sidebar = [
           { text: 'Getting started', link: '/docs/aowlspt/getting-started' },
           { text: 'Features', link: '/docs/aowlspt/features' },
           { text: 'Mods', link: '/docs/aowlspt/mods' },
+          { text: 'Bot AI', link: '/docs/aowlspt/bot-ai' },
           { text: 'Configuration', link: '/docs/aowlspt/configuration' },
           { text: 'Troubleshooting', link: '/docs/aowlspt/troubleshooting' },
           { text: 'FAQ', link: '/docs/aowlspt/faq' },

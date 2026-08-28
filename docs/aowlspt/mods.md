@@ -35,9 +35,8 @@ These are the system, not content.
 
 | mod | side | what it does |
 |---|---|---|
-| **SAIN** — `aowl.sain` | server + client | Solarint's SAIN, rewritten: layered decisions, per-bot personalities, real cover use, searching that looks like searching, squads that behave like squads. ~64,000 lines of BepInEx C# reimplemented against the native API. |
-| **MoreBots** — `aowl.morebots` | server + client | Two jobs, as upstream had them: the bot-type and faction API other mods register against, and the mod that raises how many bots a map runs. CC BY-NC-SA 4.0. |
-| **Black Division** — `aowl.blackdivision` | server | A hostile PMC faction — six roles with their own names, gear, difficulty and spawn behaviour — on top of MoreBots. MIT. |
+| **Bot AI** — `aowl.sain` | server + client | The enemy-behaviour driver, and one mod with a nested family. Layered decisions, per-bot personalities, real cover use, searching that looks like searching, squads that behave like squads. Its **Population** (`aowl.morebots`) and **Waypoints** (`aowl.waypoints`) layers, and the folded-in ORBIT encircle behaviour, all render as sub-pages of one Bot AI tab rather than as competing mods. The design of Solarint's SAIN, rewritten native. **[Full page →](/docs/aowlspt/bot-ai)** |
+| **Black Division** — `aowl.blackdivision` | server | A hostile PMC faction — six roles with their own names, gear, difficulty and spawn behaviour — registered through Bot AI's Population API. MIT. |
 | **Icebreaker** — `aowl.icebreaker` | server | The nuclear icebreaker BOREAS, locked in arctic ice: a map, delivered by rebinding the dormant `suburbs` location slot. MIT. |
 | **Path To Tarkov** — `aowl.pathtotarkov` | server | The deploy screen stops being a teleporter. You are standing somewhere, you may only go where that place connects to, and the map you climb out onto is where you now are. |
 
@@ -45,7 +44,9 @@ These are the system, not content.
 
 | mod | side | what it does |
 |---|---|---|
-| **Admin panel** | client | **F6** for an in-game menu of togglable cheat modes: ESP, god mode, infinite stamina, no recoil, no weight, instant heal, unlimited ammo, thermal and night vision, fly, teleport. ESP and god mode default on; everything else off. |
+| **Admin panel** — `aowl.admin` | client | **F6** for an in-game menu of togglable cheat modes: ESP, god mode, infinite stamina, no recoil, no weight, instant heal, unlimited ammo, thermal and night vision, fly, teleport. ESP and god mode default on; everything else off. It lives on F6, not in the settings screen. |
+| **Maps** — `aowl.maps` | server + client | One position feed, three views of it: an in-game map, a radar, and on-screen direction indicators, drawn on the overlay. Real terrain art from calibrated map tiles served by the backend. One file touches the game, and it resolves no name and installs no detour — it borrows the world pointer the host already holds and reads guarded offsets. |
+| **Debug** — `aowl.debug` | client | The **F3** overlay — a draggable, Minecraft-style info panel (fps, frame time, map, raid, bots, position) whose every line, position and hotkey is a setting instead of a hand edit — plus a **per-mod profiler** that funnels each mod's per-frame work into named `prof` lines on the panel. |
 
 ## Mod lists
 
@@ -66,7 +67,7 @@ the game starts. See [Configuration](/docs/aowlspt/configuration).
 
 ## A note on the registry
 
-The registry does not yet name every mod that ships — the graphics,
-resource-pack, admin and settings-hub mods have no entry yet. If a mod is
-installed but not listed, the manager reports it as an unmanaged stray rather
-than pretending it is not there.
+The registry does not yet name every mod that ships — the resource-pack and
+settings-hub mods have no player-facing entry yet. If a mod is installed but not
+listed, the manager reports it as an unmanaged stray rather than pretending it is
+not there.

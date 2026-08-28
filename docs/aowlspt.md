@@ -90,6 +90,7 @@ machines, the mods, cancel whenever. Questions first: Discord
 | [Getting started](/docs/aowlspt/getting-started) | Your first launch: the launcher, the profile, the menu, the first raid. |
 | [Features](/docs/aowlspt/features) | What the system does today, and what is still being tuned. |
 | [Mods](/docs/aowlspt/mods) | Every mod that ships, and what each one is for. |
+| [Bot AI](/docs/aowlspt/bot-ai) | The enemy-behaviour driver, and how SAIN, population, waypoints and ORBIT fold into one mod. |
 | [Configuration](/docs/aowlspt/configuration) | The in-game settings pages, `config.json`, and where each file lives. |
 | [Troubleshooting](/docs/aowlspt/troubleshooting) | The failures people hit, in the order they hit them. |
 | [FAQ](/docs/aowlspt/faq) | Short answers: pre-1.0, multiplayer, BattlEye, SPT, updates, uninstalling. |
