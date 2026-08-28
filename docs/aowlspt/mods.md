@@ -35,7 +35,7 @@ These are the system, not content.
 
 | mod | side | what it does |
 |---|---|---|
-| **Bot AI** — `aowl.sain` | server + client | The enemy-behaviour driver, and one mod with a nested family. Layered decisions, per-bot personalities, real cover use, searching that looks like searching, squads that behave like squads. Its **Population** (`aowl.morebots`) and **Waypoints** (`aowl.waypoints`) layers, and the folded-in ORBIT encircle behaviour, all render as sub-pages of one Bot AI tab rather than as competing mods. The design of Solarint's SAIN, rewritten native. **[Full page →](/docs/aowlspt/bot-ai)** |
+| **Bot AI** — `aowl.sain` | server + client | The enemy-behaviour driver, and one mod with a nested family. Layered decisions, per-bot personalities, real cover use, searching that looks like searching, squads that behave like squads. Its **Population** (`aowl.morebots`) and **Patrols** (`aowl.waypoints`) layers, and the folded-in flanking behaviour, all render as sub-pages of one Bot AI tab rather than as competing mods. A from-scratch native rewrite of the layered enemy-AI design. **[Full page →](/docs/aowlspt/bot-ai)** |
 | **Black Division** — `aowl.blackdivision` | server | A hostile PMC faction — six roles with their own names, gear, difficulty and spawn behaviour — registered through Bot AI's Population API. MIT. |
 | **Icebreaker** — `aowl.icebreaker` | server | The nuclear icebreaker BOREAS, locked in arctic ice: a map, delivered by rebinding the dormant `suburbs` location slot. MIT. |
 | **Path To Tarkov** — `aowl.pathtotarkov` | server | The deploy screen stops being a teleporter. You are standing somewhere, you may only go where that place connects to, and the map you climb out onto is where you now are. |
@@ -54,7 +54,7 @@ These are the system, not content.
 |---|---|
 | `aowl.list.core` | The mod manager and the game server. The minimum that can serve. |
 | `aowl.list.vanillaplus` | Core plus the mods that change how the game feels without changing what is in it: FOV, sway, classic movement, performance, textures. **The default for a fresh install.** |
-| `aowl.list.raidnight` | Vanilla Plus with the bots turned up: MoreBots, SAIN, Black Division, Icebreaker and Path To Tarkov on top. |
+| `aowl.list.raidnight` | Vanilla Plus with the bots turned up: Bot AI, Black Division, Icebreaker and Path To Tarkov on top. |
 | `aowl.list.headless` | Raid Night as a server operator wants it: the same content, with the client-only feel mods switched off. |
 
 ## Turning mods on and off

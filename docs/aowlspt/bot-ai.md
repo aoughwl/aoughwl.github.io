@@ -22,23 +22,23 @@ under a single Bot AI tab rather than as four competing entries.
 |---|---|---|---|
 | **Bot AI** | `aowl.sain` | the per-bot decision driver — the brain each AI thinks with | its own tab |
 | **Population** | `aowl.morebots` | how many bots a map runs, and the bot-type/faction API other mods register against | `Bot AI › Population` |
-| **Waypoints** | `aowl.waypoints` | the patrol graph the movement layer walks between fights | folds in under Bot AI |
-| **ORBIT** | — folded, no id | where on the map bots *want* to be, and how a squad encircles | folded in two places (below) |
+| **Patrols** | `aowl.waypoints` | the patrol graph the movement layer walks between fights | folds in under Bot AI |
+| **Flanking** | — folded, no id | where on the map bots *want* to be, and how a squad encircles | folded in two places (below) |
 
 `aowl.morebots` and `aowl.waypoints` are marked `internal` in the registry: they
 are not strays and not separate products, so the mod manager keeps them off the
 player list while still keying deploy verification and the selection store off
-their guids. ORBIT is not in the registry at all, because it is not a binary you
-load — it is behaviour compiled into the two mods that already ship.
+their guids. The flanking layer is not in the registry at all, because it is not
+a binary you load — it is behaviour compiled into the two mods that already ship.
 
 ## How the layers fold together
 
-The design started as four SPT mods that each did their own thing. Ported
-straight across they would be four things fighting over the same bot objects,
-four offset tables to invalidate on every Tarkov update, and four places a bad
-read kills the client. Folded, they are **one guarded driver reading a single
-shared GameWorld gate, with the others as policy layers over it** — which is the
-whole reason to do it this way rather than shipping four racing ports.
+The design started as four separate bot mods that each did their own thing.
+Ported straight across they would be four things fighting over the same bot
+objects, four offset tables to invalidate on every Tarkov update, and four places
+a bad read kills the client. Folded, they are **one guarded driver reading a
+single shared GameWorld gate, with the others as policy layers over it** — which
+is the whole reason to do it this way rather than shipping four racing ports.
 
 ```
                          Bot AI  (aowl.sain)
@@ -46,11 +46,11 @@ whole reason to do it this way rather than shipping four racing ports.
                                   │
    ┌──────────────┬──────────────┼──────────────┬──────────────┐
    │              │              │              │              │
-Population      Waypoints       ORBIT          ORBIT         botnav
-(morebots)    (patrol graph)  (per-bot flank) (map policy)  (shared API)
-how many /    where to        core/flank.nim  emu/orbit.nim  the channel
-where they    patrol between   — the squad     — where on the the driver and
-spawn         fights           encircle order  map to want    waypoints share
+Population       Patrols       Flanking       Flanking       botnav
+(morebots)    (patrol graph)  (per-bot)       (map policy)  (shared API)
+how many /    where to        the squad       where on the  the channel
+where they    patrol between  encircle order  map to want   the driver and
+spawn         fights          per bot         to be         patrols share
 ```
 
 **Bot AI is the driver.** `core/decide.nim` runs one priority cascade — self-care
@@ -62,30 +62,29 @@ limit and scav-wave slots from a stock baseline, and it is the bot-type and
 faction API that mods like Black Division register against. It loads before the
 driver, so the driver is deciding for the bots Population put on the map.
 
-**Waypoints supplies the patrol graph.** Ten maps of patrol geometry — zones and
+**Patrols supplies the patrol graph.** Ten maps of patrol geometry — zones and
 patrol routes — served from the backend, so a bot with nothing to fight has
 somewhere to walk that is not a straight line to the nearest wall. The driver's
-movement layer walks that graph; Waypoints is the data behind it.
+movement layer walks that graph; Patrols is the data behind it.
 
-**ORBIT is folded in two places, and is a standalone mod in neither.** ORBIT's
+**Flanking is folded in two places, and is a standalone mod in neither.** The
 idea is that bots should have somewhere on the map they *want* to be, and that a
 squad should converge on a target from more than one angle. Post-1.0 that splits
 cleanly along the thread boundary:
 
 - **the map-level half** — *where on this map should bots want to be* — is a
-  server-side spawn and AI policy in `mods/tarkov/emu/orbit.nim`. It re-derives
-  ORBIT's cell grid, anchor and coverage roll from `db.json`, which the backend
-  already owns, instead of from a scene scan the client cannot do.
+  server-side spawn and AI policy in the backend. It re-derives the cell grid,
+  anchor and coverage roll from `db.json`, which the backend already owns,
+  instead of from a scene scan the client cannot do.
 - **the per-bot half** — *how does this bot encircle right now* — is the flank
   order the driver issues in `mods/sain/core/flank.nim`: step off the direct
   bearing by a fixed radius, on the side the bot is already displaced towards and
   *away from the nearest squadmate*, so two bots of a squad go opposite ways. A
   pincer that falls out of one dot product, with no communication at all.
 
-The two halves talk over **`botnav`**, the navigation channel Bot AI and
-Waypoints share: the map policy publishes where bots should orbit, the driver
-turns that into a destination per bot, and the game's own pathing takes it from
-there.
+The two halves talk over **`botnav`**, the navigation channel Bot AI and Patrols
+share: the map policy publishes where bots should converge, the driver turns that
+into a destination per bot, and the game's own pathing takes it from there.
 
 ## Why the decision loop reaches bots the way it does
 
@@ -112,9 +111,9 @@ calling convention are in
 
 ## What the driver actually decides
 
-The decision loop is a from-scratch rewrite of the design SAIN
-(Solarint, maintained by ArchangelWTF) established for pre-1.0 Tarkov — the
-design, against a native ABI, not a translation of the C#. What it drives:
+The decision loop is a from-scratch rewrite, against a native ABI, of the layered
+enemy-AI design established for pre-1.0 Tarkov — the design, not a translation of
+any code. What it drives:
 
 - **Layered decisions.** Self-care over squad over solo combat, one cascade,
   three simultaneous outputs — a movement goal, an aim goal, and a fire decision.
@@ -155,7 +154,7 @@ Tarkov's own settings screen and edited while the game runs:
 |---|---|
 | **Bot AI** | difficulty, aggression, hearing and vision acuity, personality mix, cover and search behaviour |
 | **Bot AI › Population** | how many bots a map runs — overall cap, per-zone limit, scav-wave slots |
-| patrol behaviour | how bots move between fights, over the Waypoints patrol graph |
+| **Bot AI › Patrols** | how bots move between fights, over the patrol graph |
 
 Edits persist back to each layer's `config.json` the same way every other mod's
 do. The full story of the settings pages, where each file lives, and how a change
@@ -170,3 +169,13 @@ made in-game reaches the running mod is on
 | [Configuration](/docs/aowlspt/configuration) | The in-game settings pages and the `config.json` behind them. |
 | [Reaching into IL2CPP](/docs/aowlspt/il2cpp) | Why by-name is fatal, and the byte-verified path the driver uses instead. |
 | [Architecture](/docs/aowlspt/architecture) | The hosts, the guard pattern, and the shared GameWorld gate. |
+
+---
+
+::: info Credits
+The **Population** layer includes a port of the MoreBotsAPI bot-type and faction
+API (© TacticalToaster, licensed CC BY-NC-SA 4.0); the **Patrols** layer ships
+patrol-point data ported from SPT-Waypoints 1.3.4 (© 2023 DrakiaXYZ, MIT; points
+contributed by Solarint). Full licence text travels with each layer in the
+product's `mods/*/LICENSE` files.
+:::
