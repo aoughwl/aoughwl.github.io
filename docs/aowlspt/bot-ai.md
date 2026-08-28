@@ -170,5 +170,3 @@ made in-game reaches the running mod is on
 | [Configuration](/docs/aowlspt/configuration) | The in-game settings pages and the `config.json` behind them. |
 | [Reaching into IL2CPP](/docs/aowlspt/il2cpp) | Why by-name is fatal, and the byte-verified path the driver uses instead. |
 | [Architecture](/docs/aowlspt/architecture) | The hosts, the guard pattern, and the shared GameWorld gate. |
-</content>
-</invoke>
