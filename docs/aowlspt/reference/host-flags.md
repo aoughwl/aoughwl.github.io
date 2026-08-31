@@ -15,81 +15,83 @@ off, so it misreports every `readBoolKeyDef` flag (`forceOfflinePractice`,
 for one, defaults **on**). This page is generated from the call sites instead.
 :::
 
-**68 keys total** — 63 bool, 1 int, 4 string.
+**70 keys total** — 65 bool, 1 int, 4 string.
 
 
 ## Every key
 
 | Key | Type | Default | Live value | Read at |
 | --- | --- | --- | --- | --- |
-| `aowlUi` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7919` |
-| `aowlUiProof` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7920` |
-| `autoRaidMap` | string | `""` | `"Woods"` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7864` |
-| `botAiActivate` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7627`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1002`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:392` |
-| `botDiag` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7614`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1000`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:389` |
-| `botNav` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7638`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1001`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:391` |
-| `bridgeDeepScan` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7600` |
-| `bridgeDisableDrain` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:6931` |
-| `bridgeSettingsProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7605` |
-| `bridgeUiProbe` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7472` |
+| `aowlUi` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8228` |
+| `aowlUiProof` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8229` |
+| `autoRaidMap` | string | `""` | `"Woods"` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8173` |
+| `botAiActivate` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7936`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1002`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:392` |
+| `botDiag` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7923`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1000`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:389` |
+| `botNav` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7947`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1001`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:391` |
+| `bridgeDeepScan` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7903` |
+| `bridgeDisableDrain` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7218` |
+| `bridgeSettingsProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7908` |
+| `bridgeUiProbe` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7775` |
 | `cameraApi` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/camera.nim:905` |
 | `cameraFreeCam` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/camera.nim:906` |
 | `cameraFreeCamEngage` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/camera.nim:770` |
-| `codeGenAudit` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7488`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1017` |
-| `codeGenResolve` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7575` |
-| `debugEsp` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8025`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:991`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:388` |
-| `debugUi` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8024`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:990`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:387` |
+| `codeGenAudit` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7791`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1017` |
+| `codeGenResolve` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7878` |
+| `debugEsp` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8341`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:991`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:388` |
+| `debugUi` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8340`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:990`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:387` |
 | `drainProfiler` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/drainprof.nim:250` |
-| `espProvider` | string | `""` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7945` |
-| `forceOfflinePractice` | bool | `true` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7839` |
+| `espProvider` | string | `""` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8254` |
+| `forceOfflinePractice` | bool | `true` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8148` |
 | `frameMeter` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/frametime.nim:156` |
-| `hostCrumbs` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7519` |
-| `il2cppGates` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7482` |
-| `imageCdnRedirect` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8287`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1007` |
-| `inspectorOverlay` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8147` |
-| `inspectorSliceMs` | int | `12` | `200` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8119` |
-| `launchProfileId` | string | `""` | `"00000000000a00000000004f"` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7781` |
-| `liveInspector` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8111`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1012` |
-| `liveInspectorWrite` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8112`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1013` |
-| `managedInvokeProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7998` |
-| `modSettingsRender` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7694` |
-| `nameIndex` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7545` |
-| `natEsp` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7953` |
-| `natEspDiag` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7961` |
-| `nativeUi` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7908` |
-| `nativeUiImageProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7915` |
-| `nativeUiKit` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7926` |
-| `nativeUiKitProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7927` |
-| `nativeUiProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7909` |
-| `osCloseFix` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7138`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:994`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:393` |
-| `overlayCursorFree` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7819` |
-| `overlayStateSignal` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7813` |
-| `regionProjector` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7506` |
-| `settingsBindProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7664`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:398` |
-| `settingsColorWidget` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7991` |
-| `settingsModsTab` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7723` |
-| `settingsNativeLifecycle` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7764`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1016` |
-| `settingsPages` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7689`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1015`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:399` |
-| `settingsPostFxRows` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8207` |
-| `settingsPostFxSubtab` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8189` |
-| `settingsRelabelProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7663`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:397` |
-| `settingsUiProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7651`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1014`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:396` |
-| `sharedRegion` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7489` |
-| `singleplayerRebrand` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7847` |
-| `unityPostProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7490` |
-| `unlimitedBots` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7620`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:999`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:390` |
-| `uxAutoRaid` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7862` |
-| `uxBetaNotice` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8232` |
+| `hostCrumbs` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7822` |
+| `il2cppGates` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7785` |
+| `imageCdnRedirect` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8603`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1007` |
+| `inspectorOverlay` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8463` |
+| `inspectorSliceMs` | int | `12` | `200` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8435` |
+| `launchProfileId` | string | `""` | `"00000000000a00000000004f"` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8090` |
+| `liveInspector` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8427`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1012` |
+| `liveInspectorWrite` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8428`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1013` |
+| `managedInvokeProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8314` |
+| `modSettingsRender` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8003` |
+| `nameIndex` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7848` |
+| `natEsp` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8262` |
+| `natEspDiag` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8270` |
+| `nativeInvUi` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8307` |
+| `nativeUi` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8217` |
+| `nativeUiImageProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8224` |
+| `nativeUiKit` | bool | `off` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8235` |
+| `nativeUiKitProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8236` |
+| `nativeUiProof` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8218` |
+| `osCloseFix` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7425`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:994`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:393` |
+| `overlayCursorFree` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8128` |
+| `overlayStateSignal` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8122` |
+| `playerActuation` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/pact.nim:1304` |
+| `regionProjector` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7809` |
+| `settingsBindProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7973`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:398` |
+| `settingsColorWidget` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8300` |
+| `settingsModsTab` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8032` |
+| `settingsNativeLifecycle` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8073`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1016` |
+| `settingsPages` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7998`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1015`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:399` |
+| `settingsPostFxRows` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8523` |
+| `settingsPostFxSubtab` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8505` |
+| `settingsRelabelProbe` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7972`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:397` |
+| `settingsUiProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7960`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:1014`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:396` |
+| `sharedRegion` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7792` |
+| `singleplayerRebrand` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8156` |
+| `unityPostProbe` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7793` |
+| `unlimitedBots` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7929`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:999`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:390` |
+| `uxAutoRaid` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8171` |
+| `uxBetaNotice` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8548` |
 | `uxBetaOverlay` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/betanotice.nim:91` |
 | `uxBetaOverlayPos` | string | `""` | _(absent — falls back to the default)_ | `host/Aowlspt.Host.Il2Cpp/betanotice.nim:102` |
-| `uxHideModeButton` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8070` |
-| `uxHideSeasons` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8231` |
-| `uxMenuModeText` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8071`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:993`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:395` |
-| `uxNativeRaid` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7882` |
-| `uxNativeRaidDrive` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7883` |
-| `uxSkipModeScreen` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:7780` |
-| `uxVersionBrand` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8159`<br>`host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8171`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:992`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:394` |
-| `uxVersionBrandWrite` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8160` |
+| `uxHideModeButton` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8386` |
+| `uxHideSeasons` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8547` |
+| `uxMenuModeText` | bool | `off` | `false` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8387`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:993`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:395` |
+| `uxNativeRaid` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8191` |
+| `uxNativeRaidDrive` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8192` |
+| `uxSkipModeScreen` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8089` |
+| `uxVersionBrand` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8475`<br>`host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8487`<br>`host/Aowlspt.Host.Il2Cpp/modstab.nim:992`<br>`host/Aowlspt.Host.Il2Cpp/settingspages.nim:394` |
+| `uxVersionBrandWrite` | bool | `off` | `true` | `host/Aowlspt.Host.Il2Cpp/aowlhost.nim:8476` |
 
 ## Cross-check against the deployed config
 
@@ -120,5 +122,6 @@ Each falls back to the default in the table above.
 - `espProvider` (default `""`)
 - `hostCrumbs` (default `off`)
 - `inspectorOverlay` (default `off`)
+- `nativeInvUi` (default `off`)
 - `nativeUiKit` (default `off`)
 - `uxBetaOverlayPos` (default `""`)

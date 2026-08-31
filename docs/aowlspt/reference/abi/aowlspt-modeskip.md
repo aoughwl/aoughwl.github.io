@@ -3,7 +3,7 @@
 
 # `aowlspt_modeskip.h`
 
-Source: [`abi/aowlspt_modeskip.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_modeskip.h) — 372 lines, 21 file-scope functions.
+Source: [`abi/aowlspt_modeskip.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_modeskip.h) — 382 lines, 22 file-scope functions.
 
 ## What this header owns
 
@@ -159,24 +159,25 @@ rather than pressing if quiet never arrives.
 
 | Signature | Line |
 | --- | --- |
-| `void aowl_msk_fn(int32_t i)` | 208 |
-| `char aowl_msk_name(int32_t i)` | 235 |
-| `uint32_t aowl_msk_rva(int32_t i)` | 239 |
-| `int32_t aowl_msk_target_count(void)` | 243 |
-| `int32_t aowl_msk_base_ok(void)` | 244 |
-| `int32_t aowl_msk_ok_count(void)` | 245 |
-| `int32_t aowl_msk_bad_count(void)` | 246 |
-| `int32_t aowl_msk_off_status(void)` | 248 |
-| `int32_t aowl_msk_off_nickname(void)` | 249 |
-| `int32_t aowl_msk_off_side(void)` | 250 |
-| `int32_t aowl_msk_off_profileid(void)` | 251 |
-| `int32_t aowl_msk_readable(const void* p, size_t n)` | 260 |
-| `void aowl_msk_read_ptr(void* base, int32_t off)` | 272 |
-| `int32_t aowl_msk_read_i32(void* base, int32_t off)` | 280 |
-| `int32_t aowl_msk_str_copy(void* s, char* out, int32_t cap)` | 297 |
-| `int32_t aowl_msk_profile_is(void* profileData, const char* want)` | 322 |
-| `int32_t aowl_msk_profile_id(void* profileData, char* out, int32_t cap)` | 334 |
-| `int32_t aowl_msk_profile_nick(void* profileData, char* out, int32_t cap)` | 338 |
-| `int32_t aowl_msk_profile_status(void* profileData)` | 342 |
-| `int32_t aowl_msk_profile_side(void* profileData)` | 345 |
-| `void aowl_msk_call_submit(void* fn, void* controller, uint64_t gameMode, void* profileData)` | 365 |
+| `void aowl_msk_fn(int32_t i)` | 212 |
+| `char aowl_msk_name(int32_t i)` | 244 |
+| `uint32_t aowl_msk_rva(int32_t i)` | 248 |
+| `int32_t aowl_msk_target_count(void)` | 252 |
+| `int32_t aowl_msk_base_ok(void)` | 253 |
+| `int32_t aowl_msk_ok_count(void)` | 254 |
+| `int32_t aowl_msk_bad_count(void)` | 255 |
+| `int32_t aowl_msk_profull_count(void)` | 256 |
+| `int32_t aowl_msk_off_status(void)` | 258 |
+| `int32_t aowl_msk_off_nickname(void)` | 259 |
+| `int32_t aowl_msk_off_side(void)` | 260 |
+| `int32_t aowl_msk_off_profileid(void)` | 261 |
+| `int32_t aowl_msk_readable(const void* p, size_t n)` | 270 |
+| `void aowl_msk_read_ptr(void* base, int32_t off)` | 282 |
+| `int32_t aowl_msk_read_i32(void* base, int32_t off)` | 290 |
+| `int32_t aowl_msk_str_copy(void* s, char* out, int32_t cap)` | 307 |
+| `int32_t aowl_msk_profile_is(void* profileData, const char* want)` | 332 |
+| `int32_t aowl_msk_profile_id(void* profileData, char* out, int32_t cap)` | 344 |
+| `int32_t aowl_msk_profile_nick(void* profileData, char* out, int32_t cap)` | 348 |
+| `int32_t aowl_msk_profile_status(void* profileData)` | 352 |
+| `int32_t aowl_msk_profile_side(void* profileData)` | 355 |
+| `void aowl_msk_call_submit(void* fn, void* controller, uint64_t gameMode, void* profileData)` | 375 |

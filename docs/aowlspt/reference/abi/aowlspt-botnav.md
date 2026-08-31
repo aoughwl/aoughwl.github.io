@@ -3,7 +3,7 @@
 
 # `aowlspt_botnav.h`
 
-Source: [`abi/aowlspt_botnav.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_botnav.h) — 496 lines, 33 file-scope functions.
+Source: [`abi/aowlspt_botnav.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_botnav.h) — 508 lines, 35 file-scope functions.
 
 ## What this header owns
 
@@ -186,23 +186,25 @@ The full recon that produced every number here, with disassembly, is in
 | `int32_t aowl_bn_off_moving(void)` | 169 |
 | `int32_t aowl_bn_off_movectx(void)` | 170 |
 | `int32_t aowl_bn_off_prevpos(void)` | 171 |
-| `void aowl_botnav_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 196 |
-| `void aowl_botnav_target_at(int32_t i)` | 228 |
-| `char aowl_botnav_target_name(int32_t i)` | 238 |
-| `int32_t aowl_botnav_target_count(void)` | 243 |
-| `int32_t aowl_bn_slot_readable(void* at, size_t n)` | 247 |
-| `int32_t aowl_bn_sane(void* p)` | 268 |
-| `int32_t aowl_botnav_read_i32(void* p, int32_t off, int32_t* ok)` | 273 |
-| `void aowl_botnav_read_ptr(void* p, int32_t off, int32_t* ok)` | 284 |
-| `int32_t aowl_botnav_read_u8(void* p, int32_t off, int32_t* ok)` | 295 |
-| `double aowl_botnav_read_f32(void* p, int32_t off, int32_t* ok)` | 307 |
-| `int32_t aowl_botnav_read_v3(void* p, int32_t off, double* out)` | 319 |
-| `int32_t aowl_botnav_read_str(void* p, int32_t off, char* out, int32_t cap)` | 333 |
-| `void aowl_bn_gotopoint_fn(void)` | 381 |
-| `void aowl_bn_stopmove_fn(void)` | 384 |
-| `void aowl_bn_setspeed_fn(void)` | 387 |
-| `int32_t aowl_botnav_can_command(void* botOwner)` | 399 |
-| `int32_t aowl_botnav_goto(void* botOwner, double x, double y, double z, double reachDist, int32_t slowAtTheEnd, int32_t force)` | 429 |
-| `int32_t aowl_botnav_stop(void* botOwner)` | 457 |
-| `int32_t aowl_botnav_set_speed(void* botOwner, double speed)` | 472 |
-| `int32_t aowl_botnav_calls_ok(void)` | 490 |
+| `void aowl_botnav_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 200 |
+| `void aowl_botnav_target_at(int32_t i)` | 238 |
+| `char aowl_botnav_target_name(int32_t i)` | 248 |
+| `int32_t aowl_botnav_target_count(void)` | 253 |
+| `int32_t aowl_botnav_profull_count(void)` | 254 |
+| `int32_t aowl_botnav_mismatch_count(void)` | 255 |
+| `int32_t aowl_bn_slot_readable(void* at, size_t n)` | 259 |
+| `int32_t aowl_bn_sane(void* p)` | 280 |
+| `int32_t aowl_botnav_read_i32(void* p, int32_t off, int32_t* ok)` | 285 |
+| `void aowl_botnav_read_ptr(void* p, int32_t off, int32_t* ok)` | 296 |
+| `int32_t aowl_botnav_read_u8(void* p, int32_t off, int32_t* ok)` | 307 |
+| `double aowl_botnav_read_f32(void* p, int32_t off, int32_t* ok)` | 319 |
+| `int32_t aowl_botnav_read_v3(void* p, int32_t off, double* out)` | 331 |
+| `int32_t aowl_botnav_read_str(void* p, int32_t off, char* out, int32_t cap)` | 345 |
+| `void aowl_bn_gotopoint_fn(void)` | 393 |
+| `void aowl_bn_stopmove_fn(void)` | 396 |
+| `void aowl_bn_setspeed_fn(void)` | 399 |
+| `int32_t aowl_botnav_can_command(void* botOwner)` | 411 |
+| `int32_t aowl_botnav_goto(void* botOwner, double x, double y, double z, double reachDist, int32_t slowAtTheEnd, int32_t force)` | 441 |
+| `int32_t aowl_botnav_stop(void* botOwner)` | 469 |
+| `int32_t aowl_botnav_set_speed(void* botOwner, double speed)` | 484 |
+| `int32_t aowl_botnav_calls_ok(void)` | 502 |

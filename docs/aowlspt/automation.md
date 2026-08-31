@@ -1,5 +1,20 @@
 # Automation
 
+::: tip Looking for the complete API?
+This page is the **overview** — why automation exists here and what the pieces
+are. The exhaustive material is in the reference section:
+
+- **[The automation library API](./reference/automation/api)** — every verb with
+  its arguments, returns and failure modes; the loadout wire JSON field by
+  field; the pact refusal table; the four-outcome counter line.
+- **[The verb index](./reference/automation/verbs)** — every signature,
+  extracted from `tools/autoscript.nim` itself.
+- **[The reference scripts](./reference/automation/scripts)** — the working
+  examples, in full.
+- **[Player actuation](./reference/automation/player-actuation)** and
+  **[the inspector verb reference](./reference/automation/inspector-verbs)**.
+:::
+
 Driving the client without a human at the keyboard — launching it, navigating
 its menus, entering and leaving a raid, proving that something happened, and
 acting inside a raid.

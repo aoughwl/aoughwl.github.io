@@ -3,7 +3,7 @@
 
 # `aowlspt_debugui.h`
 
-Source: [`abi/aowlspt_debugui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_debugui.h) — 1090 lines, 68 file-scope functions.
+Source: [`abi/aowlspt_debugui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_debugui.h) — 1105 lines, 69 file-scope functions.
 
 ## What this header owns
 
@@ -256,44 +256,45 @@ take the client down.
 | `int32_t aowl_du_off_tmp_maxvislines(void)` | 260 |
 | `int32_t aowl_du_off_tmp_page(void)` | 261 |
 | `int32_t aowl_du_off_tmp_margin(void)` | 262 |
-| `void aowl_du_fn_full(int32_t i)` | 601 |
-| `void aowl_du_fn(int32_t i)` | 640 |
-| `char aowl_du_name(int32_t i)` | 653 |
-| `uint32_t aowl_du_rva(int32_t i)` | 657 |
-| `int32_t aowl_du_target_count(void)` | 661 |
-| `int32_t aowl_du_ok_count(void)` | 666 |
-| `int32_t aowl_du_bad_count(void)` | 667 |
-| `int32_t aowl_du_tried_count(void)` | 671 |
-| `void aowl_du_preloader_update_target(void)` | 692 |
-| `uint32_t aowl_du_preloader_update_rva(void)` | 718 |
-| `void aowl_du_call_v_pb(void* fn, void* self, int32_t b)` | 735 |
-| `void aowl_du_call_p_v(void* fn)` | 741 |
-| `void aowl_du_call_p_p(void* fn, void* self)` | 750 |
-| `void aowl_du_call_setvec2(void* fn, void* self, double x, double y)` | 761 |
-| `int32_t aowl_du_world_to_screen(void* fn, void* cam, double wx, double wy, double wz)` | 793 |
-| `uint64_t aowl_du_call_u_p(void* fn, void* self)` | 817 |
-| `double aowl_du_vec2_x(uint64_t packed)` | 821 |
-| `double aowl_du_vec2_y(uint64_t packed)` | 824 |
-| `int32_t aowl_du_call_i_p(void* fn, void* self)` | 830 |
-| `double aowl_du_call_f_p(void* fn, void* self)` | 835 |
-| `int32_t aowl_du_call_sret_p(void* fn, void* self, int32_t nfloats)` | 850 |
-| `int32_t aowl_du_call_sret_p_v3(void* fn, void* self, double ax, double ay, double az, int32_t nfloats)` | 875 |
-| `double aowl_du_sret_0(void)` | 894 |
-| `double aowl_du_sret_1(void)` | 895 |
-| `double aowl_du_sret_2(void)` | 896 |
-| `double aowl_du_sret_3(void)` | 897 |
-| `void aowl_du_call_setvec3(void* fn, void* self, double x, double y, double z)` | 904 |
-| `int32_t aowl_du_string_len(void* s)` | 915 |
-| `double aowl_du_screen_x(void)` | 927 |
-| `double aowl_du_screen_y(void)` | 928 |
-| `double aowl_du_screen_z(void)` | 929 |
-| `int32_t aowl_du_writable(void* p, int32_t off, size_t n)` | 942 |
-| `int32_t aowl_du_write_i32(void* p, int32_t off, int32_t v)` | 961 |
-| `int32_t aowl_du_write_u8(void* p, int32_t off, int32_t v)` | 966 |
-| `int32_t aowl_du_write_f32(void* p, int32_t off, double v)` | 972 |
-| `int32_t aowl_du_write_color(void* p, int32_t off, double r, double g, double b, double a)` | 980 |
-| `int32_t aowl_du_key_edge(int32_t vk)` | 1006 |
-| `int32_t aowl_du_foreground(void)` | 1032 |
-| `void aowl_du_fps_sample(void)` | 1061 |
-| `double aowl_du_fps(void)` | 1086 |
-| `int64_t aowl_du_frame_no(void)` | 1087 |
+| `void aowl_du_fn_full(int32_t i)` | 605 |
+| `void aowl_du_fn(int32_t i)` | 648 |
+| `char aowl_du_name(int32_t i)` | 661 |
+| `uint32_t aowl_du_rva(int32_t i)` | 665 |
+| `int32_t aowl_du_target_count(void)` | 669 |
+| `int32_t aowl_du_profull_count(void)` | 670 |
+| `int32_t aowl_du_ok_count(void)` | 675 |
+| `int32_t aowl_du_bad_count(void)` | 676 |
+| `int32_t aowl_du_tried_count(void)` | 680 |
+| `void aowl_du_preloader_update_target(void)` | 701 |
+| `uint32_t aowl_du_preloader_update_rva(void)` | 733 |
+| `void aowl_du_call_v_pb(void* fn, void* self, int32_t b)` | 750 |
+| `void aowl_du_call_p_v(void* fn)` | 756 |
+| `void aowl_du_call_p_p(void* fn, void* self)` | 765 |
+| `void aowl_du_call_setvec2(void* fn, void* self, double x, double y)` | 776 |
+| `int32_t aowl_du_world_to_screen(void* fn, void* cam, double wx, double wy, double wz)` | 808 |
+| `uint64_t aowl_du_call_u_p(void* fn, void* self)` | 832 |
+| `double aowl_du_vec2_x(uint64_t packed)` | 836 |
+| `double aowl_du_vec2_y(uint64_t packed)` | 839 |
+| `int32_t aowl_du_call_i_p(void* fn, void* self)` | 845 |
+| `double aowl_du_call_f_p(void* fn, void* self)` | 850 |
+| `int32_t aowl_du_call_sret_p(void* fn, void* self, int32_t nfloats)` | 865 |
+| `int32_t aowl_du_call_sret_p_v3(void* fn, void* self, double ax, double ay, double az, int32_t nfloats)` | 890 |
+| `double aowl_du_sret_0(void)` | 909 |
+| `double aowl_du_sret_1(void)` | 910 |
+| `double aowl_du_sret_2(void)` | 911 |
+| `double aowl_du_sret_3(void)` | 912 |
+| `void aowl_du_call_setvec3(void* fn, void* self, double x, double y, double z)` | 919 |
+| `int32_t aowl_du_string_len(void* s)` | 930 |
+| `double aowl_du_screen_x(void)` | 942 |
+| `double aowl_du_screen_y(void)` | 943 |
+| `double aowl_du_screen_z(void)` | 944 |
+| `int32_t aowl_du_writable(void* p, int32_t off, size_t n)` | 957 |
+| `int32_t aowl_du_write_i32(void* p, int32_t off, int32_t v)` | 976 |
+| `int32_t aowl_du_write_u8(void* p, int32_t off, int32_t v)` | 981 |
+| `int32_t aowl_du_write_f32(void* p, int32_t off, double v)` | 987 |
+| `int32_t aowl_du_write_color(void* p, int32_t off, double r, double g, double b, double a)` | 995 |
+| `int32_t aowl_du_key_edge(int32_t vk)` | 1021 |
+| `int32_t aowl_du_foreground(void)` | 1047 |
+| `void aowl_du_fps_sample(void)` | 1076 |
+| `double aowl_du_fps(void)` | 1101 |
+| `int64_t aowl_du_frame_no(void)` | 1102 |

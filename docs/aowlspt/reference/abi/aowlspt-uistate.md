@@ -3,7 +3,7 @@
 
 # `aowlspt_uistate.h`
 
-Source: [`abi/aowlspt_uistate.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_uistate.h) — 225 lines, 11 file-scope functions.
+Source: [`abi/aowlspt_uistate.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_uistate.h) — 235 lines, 12 file-scope functions.
 
 ## What this header owns
 
@@ -101,13 +101,14 @@ THE EIGHT RULES
 | Signature | Line |
 | --- | --- |
 | `void aowl_ui_publish_mask(uint32_t mask)` | 111 |
-| `void aowl_ui_fn(int32_t i)` | 150 |
-| `void aowl_ui_settings_probe_body(void* a)` | 184 |
-| `void aowl_ui_settings_probe_guarded(void* a)` | 208 |
-| `int32_t aowl_ui_st_verified(void)` | 213 |
-| `int32_t aowl_ui_st_rejected(void)` | 214 |
-| `int32_t aowl_ui_st_faults(void)` | 215 |
-| `int32_t aowl_ui_st_off(void)` | 216 |
-| `int32_t aowl_ui_st_last_open(void)` | 217 |
-| `void aowl_ui_st_set_self(void* p)` | 218 |
-| `void aowl_ui_st_fault(void)` | 219 |
+| `int32_t aowl_ui_profull_count(void)` | 150 |
+| `void aowl_ui_fn(int32_t i)` | 155 |
+| `void aowl_ui_settings_probe_body(void* a)` | 194 |
+| `void aowl_ui_settings_probe_guarded(void* a)` | 218 |
+| `int32_t aowl_ui_st_verified(void)` | 223 |
+| `int32_t aowl_ui_st_rejected(void)` | 224 |
+| `int32_t aowl_ui_st_faults(void)` | 225 |
+| `int32_t aowl_ui_st_off(void)` | 226 |
+| `int32_t aowl_ui_st_last_open(void)` | 227 |
+| `void aowl_ui_st_set_self(void* p)` | 228 |
+| `void aowl_ui_st_fault(void)` | 229 |

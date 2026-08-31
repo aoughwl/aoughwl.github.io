@@ -3,7 +3,7 @@
 
 # `aowlspt_navui.h`
 
-Source: [`abi/aowlspt_navui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_navui.h) — 715 lines, 30 file-scope functions.
+Source: [`abi/aowlspt_navui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_navui.h) — 723 lines, 30 file-scope functions.
 
 ## What this header owns
 
@@ -84,6 +84,7 @@ a guarantee, which is exactly why it goes through the snapshot anyway.
 - `AOWL_NAV_NO_MODULE`
 - `AOWL_NAV_NO_QUERY`
 - `AOWL_NAV_OK`
+- `AOWL_NAV_PRO_FULL`
 - `AOWL_NAV_SEL_INTERACT`
 - `AOWL_NAV_SIG_MISMATCH`
 - `AOWL_NAV_SS_CURRENTTAB`
@@ -125,12 +126,12 @@ a guarantee, which is exactly why it goes through the snapshot anyway.
 | `int32_t aowl_nav_off_onvalue(void)` | 596 |
 | `int32_t aowl_nav_off_cachedptr(void)` | 597 |
 | `int32_t aowl_nav_is_stub(const unsigned char* p)` | 609 |
-| `void aowl_nav_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 639 |
-| `int32_t aowl_nav_last_reason(void)` | 683 |
-| `int32_t aowl_nav_actual_valid(void)` | 684 |
-| `int32_t aowl_nav_actual_at(int32_t i)` | 685 |
-| `int32_t aowl_nav_expected_at(int32_t t, int32_t i)` | 689 |
-| `void aowl_nav_target_at(int32_t i)` | 695 |
-| `char aowl_nav_target_name(int32_t i)` | 702 |
-| `uint32_t aowl_nav_target_rva(int32_t i)` | 707 |
-| `int32_t aowl_nav_target_count(void)` | 712 |
+| `void aowl_nav_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 642 |
+| `int32_t aowl_nav_last_reason(void)` | 691 |
+| `int32_t aowl_nav_actual_valid(void)` | 692 |
+| `int32_t aowl_nav_actual_at(int32_t i)` | 693 |
+| `int32_t aowl_nav_expected_at(int32_t t, int32_t i)` | 697 |
+| `void aowl_nav_target_at(int32_t i)` | 703 |
+| `char aowl_nav_target_name(int32_t i)` | 710 |
+| `uint32_t aowl_nav_target_rva(int32_t i)` | 715 |
+| `int32_t aowl_nav_target_count(void)` | 720 |

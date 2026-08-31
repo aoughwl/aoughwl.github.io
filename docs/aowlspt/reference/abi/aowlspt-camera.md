@@ -3,7 +3,7 @@
 
 # `aowlspt_camera.h`
 
-Source: [`abi/aowlspt_camera.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_camera.h) — 441 lines, 21 file-scope functions.
+Source: [`abi/aowlspt_camera.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_camera.h) — 455 lines, 22 file-scope functions.
 
 ## What this header owns
 
@@ -164,24 +164,25 @@ one here would DISARM it.
 
 | Signature | Line |
 | --- | --- |
-| `HMODULE aowl_cam_ga(void)` | 275 |
-| `int32_t aowl_cam_module_ready(void)` | 278 |
-| `int32_t aowl_cam_wait_count(void)` | 279 |
-| `void aowl_cam_fn(int32_t i)` | 281 |
-| `char aowl_cam_name(int32_t i)` | 309 |
-| `uint32_t aowl_cam_rva(int32_t i)` | 313 |
-| `int32_t aowl_cam_target_count(void)` | 317 |
-| `int32_t aowl_cam_ok_count(void)` | 318 |
-| `int32_t aowl_cam_bad_count(void)` | 319 |
-| `int32_t aowl_cam_reason(void)` | 320 |
-| `char aowl_cam_reason_text(void)` | 323 |
-| `double aowl_cam_get_f(void* fn, void* self)` | 350 |
-| `int32_t aowl_cam_get_f_ok(void* fn, void* self)` | 361 |
-| `int32_t aowl_cam_set_f(void* fn, void* self, double v)` | 372 |
-| `int32_t aowl_cam_get_v(void* fn, void* self, int32_t nfloats)` | 386 |
-| `double aowl_cam_v0(void)` | 404 |
-| `double aowl_cam_v1(void)` | 405 |
-| `double aowl_cam_v2(void)` | 406 |
-| `double aowl_cam_v3(void)` | 407 |
-| `int32_t aowl_cam_set_v(void* fn, void* self, double x, double y, double z, double w)` | 413 |
-| `int32_t aowl_cam_key_down(int32_t vk)` | 435 |
+| `HMODULE aowl_cam_ga(void)` | 279 |
+| `int32_t aowl_cam_module_ready(void)` | 282 |
+| `int32_t aowl_cam_wait_count(void)` | 283 |
+| `void aowl_cam_fn(int32_t i)` | 285 |
+| `char aowl_cam_name(int32_t i)` | 322 |
+| `uint32_t aowl_cam_rva(int32_t i)` | 326 |
+| `int32_t aowl_cam_target_count(void)` | 330 |
+| `int32_t aowl_cam_ok_count(void)` | 331 |
+| `int32_t aowl_cam_bad_count(void)` | 332 |
+| `int32_t aowl_cam_reason(void)` | 333 |
+| `int32_t aowl_cam_profull_count(void)` | 334 |
+| `char aowl_cam_reason_text(void)` | 337 |
+| `double aowl_cam_get_f(void* fn, void* self)` | 364 |
+| `int32_t aowl_cam_get_f_ok(void* fn, void* self)` | 375 |
+| `int32_t aowl_cam_set_f(void* fn, void* self, double v)` | 386 |
+| `int32_t aowl_cam_get_v(void* fn, void* self, int32_t nfloats)` | 400 |
+| `double aowl_cam_v0(void)` | 418 |
+| `double aowl_cam_v1(void)` | 419 |
+| `double aowl_cam_v2(void)` | 420 |
+| `double aowl_cam_v3(void)` | 421 |
+| `int32_t aowl_cam_set_v(void* fn, void* self, double x, double y, double z, double w)` | 427 |
+| `int32_t aowl_cam_key_down(int32_t vk)` | 449 |

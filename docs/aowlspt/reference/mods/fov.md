@@ -375,6 +375,18 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
 
+### `adsMaxFights`
+
+- **Default:** `3`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `adsWriteFovField`
+
+- **Default:** `true`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
 ### `enableFovWrite`
 
 - **Default:** `true`

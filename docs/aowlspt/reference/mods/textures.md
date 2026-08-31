@@ -129,7 +129,7 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 
 ### `packRoot`
 
-- **Default:** `"C:/Users/savant/Projects/TarkovTextures"`
+- **Default:** `"<HOME>/Projects/TarkovTextures"`
 
 Absolute path to where the replacement images live. The committed manifest stores paths relative to the TarkovTextures root (e.g. ambientcg/Metal/.../Foo_2K-JPG_Color.jpg), so packRoot must point at that root — or at a self-contained pack assembled by build_pack.py --copy, whose manifest is pack-relative. Empty falls back to the mod's own data/pack. For deployment see README.md: run build_pack.py --copy &lt;install&gt;/mods/textures/data/pack and set packRoot to that (or leave empty to use the data/pack fallback).
 

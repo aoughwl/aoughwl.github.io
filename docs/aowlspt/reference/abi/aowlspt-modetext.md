@@ -3,7 +3,7 @@
 
 # `aowlspt_modetext.h`
 
-Source: [`abi/aowlspt_modetext.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_modetext.h) — 229 lines, 11 file-scope functions.
+Source: [`abi/aowlspt_modetext.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_modetext.h) — 239 lines, 12 file-scope functions.
 
 ## What this header owns
 
@@ -110,14 +110,15 @@ Same discipline as `aowl_mi2_fn` and `aowl_bridge_settings_target_at`:
 
 | Signature | Line |
 | --- | --- |
-| `void aowl_mtx_fn(int32_t i)` | 160 |
-| `char aowl_mtx_name(int32_t i)` | 190 |
-| `uint32_t aowl_mtx_rva(int32_t i)` | 194 |
-| `int32_t aowl_mtx_target_count(void)` | 198 |
-| `int32_t aowl_mtx_base_ok(void)` | 199 |
-| `int32_t aowl_mtx_ok_count(void)` | 200 |
-| `int32_t aowl_mtx_bad_count(void)` | 201 |
-| `int32_t aowl_mtx_off_mode_text(void)` | 203 |
-| `int32_t aowl_mtx_off_corner_label(void)` | 204 |
-| `void aowl_mtx_call_v_pp(void* fn, void* self, void* a0)` | 217 |
-| `void aowl_mtx_call_v_p(void* fn, void* self)` | 223 |
+| `void aowl_mtx_fn(int32_t i)` | 164 |
+| `char aowl_mtx_name(int32_t i)` | 199 |
+| `uint32_t aowl_mtx_rva(int32_t i)` | 203 |
+| `int32_t aowl_mtx_target_count(void)` | 207 |
+| `int32_t aowl_mtx_profull_count(void)` | 208 |
+| `int32_t aowl_mtx_base_ok(void)` | 209 |
+| `int32_t aowl_mtx_ok_count(void)` | 210 |
+| `int32_t aowl_mtx_bad_count(void)` | 211 |
+| `int32_t aowl_mtx_off_mode_text(void)` | 213 |
+| `int32_t aowl_mtx_off_corner_label(void)` | 214 |
+| `void aowl_mtx_call_v_pp(void* fn, void* self, void* a0)` | 227 |
+| `void aowl_mtx_call_v_p(void* fn, void* self)` | 233 |

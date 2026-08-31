@@ -3,7 +3,7 @@
 
 # `aowlspt_prologue.h`
 
-Source: [`abi/aowlspt_prologue.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_prologue.h) — 177 lines, 10 file-scope functions.
+Source: [`abi/aowlspt_prologue.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_prologue.h) — 330 lines, 18 file-scope functions.
 
 ## What this header owns
 
@@ -77,19 +77,34 @@ rather than comparing against a zeroed row.
 
 - `AOWLSPT_PROLOGUE_H`
 - `AOWL_PRO_MAX_BYTES`
+- `AOWL_PRO_MAX_DROPPED`
 - `AOWL_PRO_MAX_ROWS`
+- `AOWL_PRO_R_MISMATCH`
+- `AOWL_PRO_R_NO_MODULE`
+- `AOWL_PRO_R_OK`
+- `AOWL_PRO_R_SHORT`
+- `AOWL_PRO_R_TABLE_FULL`
+- `AOWL_PRO_R_UNREADABLE`
 
 ## Functions
 
 | Signature | Line |
 | --- | --- |
-| `AowlProRow aowl_pro_find(uint32_t rva)` | 89 |
-| `AowlProRow aowl_pro_capture(uint32_t rva)` | 101 |
-| `int32_t aowl_pro_prime(uint32_t rva)` | 128 |
-| `int32_t aowl_pro_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 145 |
-| `int32_t aowl_pro_have(uint32_t rva)` | 164 |
-| `int32_t aowl_pro_rows_used(void)` | 170 |
-| `int32_t aowl_pro_primed_count(void)` | 171 |
-| `int32_t aowl_pro_lazy_count(void)` | 172 |
-| `int32_t aowl_pro_full_count(void)` | 173 |
-| `int32_t aowl_pro_bad_count(void)` | 174 |
+| `AowlProRow aowl_pro_find(uint32_t rva)` | 146 |
+| `AowlProRow aowl_pro_capture(uint32_t rva)` | 158 |
+| `int32_t aowl_pro_prime(uint32_t rva)` | 198 |
+| `int32_t aowl_pro_verify(uint32_t rva, const unsigned char* sig, int32_t siglen)` | 215 |
+| `int32_t aowl_pro_last_reason(void)` | 238 |
+| `int32_t aowl_pro_last_was_table_full(void)` | 242 |
+| `char aowl_pro_reason_text(int32_t code)` | 246 |
+| `char aowl_pro_last_reason_text(void)` | 260 |
+| `int32_t aowl_pro_have(uint32_t rva)` | 266 |
+| `int32_t aowl_pro_rows_used(void)` | 272 |
+| `int32_t aowl_pro_primed_count(void)` | 273 |
+| `int32_t aowl_pro_lazy_count(void)` | 274 |
+| `int32_t aowl_pro_full_count(void)` | 275 |
+| `int32_t aowl_pro_bad_count(void)` | 276 |
+| `int32_t aowl_pro_capacity(void)` | 277 |
+| `int32_t aowl_pro_dropped_count(void)` | 278 |
+| `uint32_t aowl_pro_dropped_at(int32_t i)` | 279 |
+| `char aowl_pro_health_line(void)` | 293 |

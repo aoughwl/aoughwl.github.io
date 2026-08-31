@@ -267,9 +267,369 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
 
+### `lootWeightAmmoBoxes`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightFood`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightElectronics`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightValuables`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightWeapons`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightKnives`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightMods`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightMagazines`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightArmor`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightHelmets`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightRigs`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightBackpacks`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightGrenades`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightContainers`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightStims`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightTools`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootWeightSpecial`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
 ### `lootCategoryWeights`
 
 - **Default:** `""`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootCurrencyRoubles`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootCurrencyDollars`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `lootCurrencyEuros`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `moneyStackMultiplier`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `moneyStackMin`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `moneyStackMax`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearEnabled`
+
+- **Default:** `true`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearMultiplier`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootMultiplier`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootMaxItems`
+
+- **Default:** `24`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSpareMagazines`
+
+- **Default:** `4`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botWeaponModChance`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botEquipmentModChance`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearScav`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearUsec`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearBear`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearRaider`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearRogue`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearBoss`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearFollower`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearCultist`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botGearOther`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootScav`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootUsec`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootBear`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootRaider`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootRogue`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootBoss`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootFollower`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootCultist`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botLootOther`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotHeadwear`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotEarpiece`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotFaceCover`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotArmorVest`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotEyewear`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotArmBand`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotTacticalVest`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotBackpack`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotPrimaryWeapon`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotSecondaryWeapon`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotHolster`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `botSlotScabbard`
+
+- **Default:** `1.0`
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
 
@@ -336,6 +696,66 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 ### `fleaSellRequiresFoundInRaid`
 
 - **Default:** `false`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `stashRows`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `stashCols`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `stashResult`
+
+- **Default:** `""`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `progressionExperience`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `raidTimeMultiplier`
+
+- **Default:** `1.0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `raidTimeMinutes`
+
+- **Default:** `0`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `extractsAlwaysAvailable`
+
+- **Default:** `false`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `extractsNoRequirements`
+
+- **Default:** `false`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `extractsNoTimeWindow`
+
+- **Default:** `false`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `raidTuneResult`
+
+- **Default:** `""`
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
 
@@ -542,6 +962,24 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 - **Default:** `0.75`
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
+
+### `orbitQuestPoi`
+
+- **Default:** `true`
+
+Merge mods/waypoints' patrol geometry (8,556 hand-authored, on-navmesh points across 10 maps) into ORBIT's anchor catalogue as questPoi anchors. These are the only anchors whose coordinates were authored on the navmesh rather than being the centroid of a grid cell. Set false to use the spawn layers only.
+
+### `orbitQuestAnchors`
+
+- **Default:** `8`
+
+How many questPoi anchors the quest layer may claim out of the 24-anchor budget. The layer runs LAST, so it fills what the loot and spawn layers left.
+
+### `orbitQuestBias`
+
+- **Default:** `1.25`
+
+How much a questPoi anchor outweighs the best spawn-derived anchor AFTER the quest layer is rescaled onto the same scale. 1.0 means no preference. Not a raw multiplier: the layers count different things (patrol points per cell run to the hundreds, spawn points to single digits) so a raw multiplier would be a takeover, not a preference.
 
 ### `orbitPersonalityRat`
 

@@ -8,7 +8,7 @@ each compiled into the host DLL and bound from nimony with `importc` +
 `header`. There is no `.c` file and no export table — the unit of interface
 is a file-scope `static` function, and a header owns its own state.
 
-66 headers, 1843 file-scope functions, 47378 lines of C in total.
+69 headers, 1939 file-scope functions, 49194 lines of C in total.
 
 ::: tip Read the header, not just this table
 Most of these headers open with a long design note explaining *why* the
@@ -28,14 +28,14 @@ decision.
 | [`aowlspt_botai.h`](./abi/aowlspt-botai) | 12 | 273 | BOT AI ACTIVATION RESCUE for the post-1.0 EFT host. |
 | [`aowlspt_botcap.h`](./abi/aowlspt-botcap) | 6 | 185 | OFFLINE SCAV-CAP LIFT for the post-1.0 EFT host. |
 | [`aowlspt_botdiag.h`](./abi/aowlspt-botdiag) | 19 | 190 | READ-ONLY GameWorld bot/player census for the post-1.0 EFT host. |
-| [`aowlspt_botnav.h`](./abi/aowlspt-botnav) | 33 | 496 | NATIVE BOT NAVIGATION API for the post-1.0 EFT host. |
+| [`aowlspt_botnav.h`](./abi/aowlspt-botnav) | 35 | 508 | NATIVE BOT NAVIGATION API for the post-1.0 EFT host. |
 | [`aowlspt_bridge.h`](./abi/aowlspt-bridge) | 18 | 544 | Getting host-side work onto Unity's main thread. |
 | [`aowlspt_callrva.h`](./abi/aowlspt-callrva) | 20 | 615 | Calling a game method AT A STATIC RVA, from a mod. |
-| [`aowlspt_camera.h`](./abi/aowlspt-camera) | 21 | 441 | The C half of the host CAMERA API. |
+| [`aowlspt_camera.h`](./abi/aowlspt-camera) | 22 | 455 | The C half of the host CAMERA API. |
 | [`aowlspt_codegen.h`](./abi/aowlspt-codegen) | 16 | 456 | Resolve a compiled method address from IL2CPP's OWN per-assembly code table, at run time, when `MethodInfo.methodPointer` is null. |
 | [`aowlspt_components.h`](./abi/aowlspt-components) | 12 | 255 | Ask an object WHAT COMPONENTS IT HAS. |
-| [`aowlspt_cursor.h`](./abi/aowlspt-cursor) | 42 | 659 | Free the mouse cursor while an aowlspt overlay panel is open, and put back EXACTLY what the game had when the last one closes. |
-| [`aowlspt_debugui.h`](./abi/aowlspt-debugui) | 68 | 1090 | The C half of the in-game, UNITY-NATIVE debug overlay: a Minecraft-F3-style info panel and in-world markers over AI bots. |
+| [`aowlspt_cursor.h`](./abi/aowlspt-cursor) | 43 | 669 | Free the mouse cursor while an aowlspt overlay panel is open, and put back EXACTLY what the game had when the last one closes. |
+| [`aowlspt_debugui.h`](./abi/aowlspt-debugui) | 69 | 1105 | The C half of the in-game, UNITY-NATIVE debug overlay: a Minecraft-F3-style info panel and in-world markers over AI bots. |
 | [`aowlspt_detour.h`](./abi/aowlspt-detour) | 46 | 1886 | X64 inline hooks, for `AowlHostApi.patch`. |
 | [`aowlspt_drainprof.h`](./abi/aowlspt-drainprof) | 26 | 276 | THE DRAIN PROFILER. A per-rider QPC bracket over every rider on the host's two per-frame drains, so "where does the frame go" is answered by reading ONE log line instead of relaunching the game. |
 | [`aowlspt_fast.h`](./abi/aowlspt-fast) | 27 | 800 | Calling a game method without boxing anything. |
@@ -52,21 +52,24 @@ decision.
 | [`aowlspt_inspect.h`](./abi/aowlspt-inspect) | 40 | 447 | The native half of the LIVE INSPECTOR / REPL. |
 | [`aowlspt_inspoverlay.h`](./abi/aowlspt-inspoverlay) | 14 | 154 | The native backing for the F2 LIVE INSPECTOR OVERLAY. |
 | [`aowlspt_invoke2.h`](./abi/aowlspt-invoke2) | 29 | 521 | DIRECT invocation of managed IL2CPP methods by static RVA, with no reflection anywhere. |
+| [`aowlspt_invui.h`](./abi/aowlspt-invui) | 41 | 499 | The shared surface for the NATIVE INVENTORY / ITEM-SPAWNER screen: our inventory on one side, a searchable "everything" stash on the other, and a mint that moves a row from the right side into the left. |
 | [`aowlspt_keycode.h`](./abi/aowlspt-keycode) | 3 | 400 | UnityEngine.KeyCode, name &lt;-&gt; ordinal. |
 | [`aowlspt_live.h`](./abi/aowlspt-live) | 9 | 180 | The revision-3 live-object entry points, for the one host that has live objects. |
 | [`aowlspt_lock.h`](./abi/aowlspt-lock) | 2 | 83 | One process-wide lock, and nothing else. |
-| [`aowlspt_modeskip.h`](./abi/aowlspt-modeskip) | 21 | 372 | Never show the character/mode selection screen. |
-| [`aowlspt_modetext.h`](./abi/aowlspt-modetext) | 11 | 229 | The main menu's bottom-right GAME MODE label, made host/mod-controlled. |
+| [`aowlspt_modeskip.h`](./abi/aowlspt-modeskip) | 22 | 382 | Never show the character/mode selection screen. |
+| [`aowlspt_modetext.h`](./abi/aowlspt-modetext) | 12 | 239 | The main menu's bottom-right GAME MODE label, made host/mod-controlled. |
 | [`aowlspt_nameindex.h`](./abi/aowlspt-nameindex) | 18 | 660 | Name -&gt; code-RVA lookup from a generated offline index. |
 | [`aowlspt_natesp.h`](./abi/aowlspt-natesp) | 67 | 817 | The NATIVE uGUI ESP's pure-C half. |
-| [`aowlspt_nativeui.h`](./abi/aowlspt-nativeui) | 84 | 1458 | The NATIVE UNITY UI CONSTRUCTION LAYER. |
-| [`aowlspt_natraid.h`](./abi/aowlspt-natraid) | 22 | 451 | NATIVE RAID ENTRY: the byte-verified target table, the call thunks, and the guarded scalar read/write primitives. |
-| [`aowlspt_navui.h`](./abi/aowlspt-navui) | 30 | 715 | UI NAVIGATION TARGETS for the live inspector. |
+| [`aowlspt_nativeui.h`](./abi/aowlspt-nativeui) | 85 | 1475 | The NATIVE UNITY UI CONSTRUCTION LAYER. |
+| [`aowlspt_natraid.h`](./abi/aowlspt-natraid) | 23 | 468 | NATIVE RAID ENTRY: the byte-verified target table, the call thunks, and the guarded scalar read/write primitives. |
+| [`aowlspt_navui.h`](./abi/aowlspt-navui) | 30 | 723 | UI NAVIGATION TARGETS for the live inspector. |
 | [`aowlspt_net.h`](./abi/aowlspt-net) | 71 | 2881 | Sockets and zlib for the backend server. |
 | [`aowlspt_notify.h`](./abi/aowlspt-notify) | 5 | 105 | The revision-5 notification push, for the one host that has a socket to push down. |
 | [`aowlspt_overlay.h`](./abi/aowlspt-overlay) | 214 | 12318 | An in-game overlay for post-1.0 Tarkov, drawn by hand. |
+| [`aowlspt_pact.h`](./abi/aowlspt-pact) | 33 | 852 | IN-RAID ACTUATION OF THE LOCAL PLAYER ("pact"). |
 | [`aowlspt_profile.h`](./abi/aowlspt-profile) | 43 | 643 | The per-mod / per-rider PROFILER's shared surface. |
-| [`aowlspt_prologue.h`](./abi/aowlspt-prologue) | 10 | 177 | ORIGINAL prologue bytes, snapshotted once, before any detour is installed. |
+| [`aowlspt_prologue.h`](./abi/aowlspt-prologue) | 18 | 330 | ORIGINAL prologue bytes, snapshotted once, before any detour is installed. |
+| [`aowlspt_raidstart.h`](./abi/aowlspt-raidstart) | 4 | 189 | The TRUE deploy signal for the shared raid-phase latch. |
 | [`aowlspt_rdcache.h`](./abi/aowlspt-rdcache) | 12 | 222 | A CACHE in front of the readability syscall, for the host's per-frame GAME-DATA reads only. |
 | [`aowlspt_region.h`](./abi/aowlspt-region) | 70 | 1709 | THE SHARED PER-FRAME REGION. |
 | [`aowlspt_regproj.h`](./abi/aowlspt-regproj) | 20 | 323 | THE HOST'S PROJECTOR FOR THE SHARED REGION. |
@@ -79,7 +82,7 @@ decision.
 | [`aowlspt_symtab.h`](./abi/aowlspt-symtab) | 0 | 948 | GENERATED. DO NOT EDIT. |
 | [`aowlspt_tls.h`](./abi/aowlspt-tls) | 14 | 373 | A TLS transport shim under the backend's HTTP loop. |
 | [`aowlspt_ui.h`](./abi/aowlspt-ui) | 50 | 812 | The BACKEND-AGNOSTIC, RETAINED-MODE widget core. |
-| [`aowlspt_uistate.h`](./abi/aowlspt-uistate) | 11 | 225 | A MOD-FACING "which blocking UI surface is open" signal. |
+| [`aowlspt_uistate.h`](./abi/aowlspt-uistate) | 12 | 235 | A MOD-FACING "which blocking UI surface is open" signal. |
 | [`aowlspt_unitypp.h`](./abi/aowlspt-unitypp) | 11 | 504 | Unity Post Processing Stack v2, READ-ONLY DISCOVERY. |
 | [`aowlspt_uxpatch.h`](./abi/aowlspt-uxpatch) | 16 | 525 | Two small client-side UX fixes for the injected host. |
 | [`aowlspt_visible.h`](./abi/aowlspt-visible) | 10 | 149 | THE PURE ARITHMETIC BEHIND "is it actually on screen". |

@@ -19,12 +19,20 @@ authoritative. Where a fact cannot be extracted mechanically, these pages say
 - **[The C ABI](./abi)** — every `abi/aowlspt_*.h`, what it owns, its
   functions, types and constants.
 - **[Mods](./mods)** — every mod, every settings key, every doc comment.
+- **[The mod API](./api)** — every exported symbol of
+  `aowl/src/aowlspt/*.nim`, with its signature and the line it came from.
+- **[Automation](./automation/api)** — the script library: the narrative
+  reference, the generated verb index, and the reference scripts in full.
+- **[The fact store](./facts)** — what has actually been measured about
+  the live client, and the scrubbed full dump.
 
 ## Regenerating
 
 ```bash
 cd aowlspt
-python tools/gendocs.py --out ../aoughwl.github.io/docs/aowlspt/reference
+python tools/gendocs.py \
+  --out    ../aoughwl.github.io/docs/aowlspt/reference \
+  --public ../aoughwl.github.io/public/aowlspt
 ```
 
 `--check` exits non-zero if the output would change, which is what a CI step

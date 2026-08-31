@@ -1,5 +1,17 @@
 # The mod API
 
+::: tip The complete, generated reference is [here](./reference/api)
+This page is the **orientation**: what the modules are for and how they fit
+together, written for someone who has not opened the source. It is hand-written,
+so treat any specific number on it as indicative.
+
+Every exported symbol — signature, doc comment and the `file:line` it came from
+— lives in **[the generated API reference](./reference/api)**, extracted from
+`aowl/src/aowlspt/*.nim` by `tools/gendocs.py`. Where the two disagree, the
+generated pages are the ones to believe: they were read out of the source, not
+typed by hand.
+:::
+
 The nimony surface a mod is written against. `aowl/src/aowlspt.nim` is 1,493
 lines and is what `import aowlspt` gives you: the ABI, made ordinary. The
 submodules sit on top of it and none of them reaches around it.

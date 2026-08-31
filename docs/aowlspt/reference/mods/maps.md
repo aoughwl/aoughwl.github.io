@@ -21,6 +21,12 @@ _UNKNOWN — this key carries no doc comment in `config.json`._
 
 _UNKNOWN — this key carries no doc comment in `config.json`._
 
+### `diagVerbose`
+
+- **Default:** `false`
+
+_UNKNOWN — this key carries no doc comment in `config.json`._
+
 ### `hz`
 
 - **Default:** `10`

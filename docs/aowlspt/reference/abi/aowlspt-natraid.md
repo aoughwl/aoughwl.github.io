@@ -3,7 +3,7 @@
 
 # `aowlspt_natraid.h`
 
-Source: [`abi/aowlspt_natraid.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_natraid.h) — 451 lines, 22 file-scope functions.
+Source: [`abi/aowlspt_natraid.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_natraid.h) — 468 lines, 23 file-scope functions.
 
 ## What this header owns
 
@@ -84,31 +84,33 @@ MUST be included AFTER `aowlspt_shim.h` (aowl_is_readable) and
 - `AOWL_NR_WHY_NOT_EXEC`
 - `AOWL_NR_WHY_NO_MODULE`
 - `AOWL_NR_WHY_OK`
+- `AOWL_NR_WHY_PROFULL`
 - `AOWL_NR_WHY_UNTRIED`
 
 ## Functions
 
 | Signature | Line |
 | --- | --- |
-| `int32_t aowl_nr_disabled(void)` | 183 |
-| `void aowl_nr_note_fault(void)` | 186 |
-| `int32_t aowl_nr_fault_count(void)` | 187 |
-| `int32_t aowl_nr_target_count(void)` | 188 |
-| `char aowl_nr_name(int32_t i)` | 190 |
-| `uint32_t aowl_nr_rva(int32_t i)` | 194 |
-| `int32_t aowl_nr_why_of(int32_t i)` | 198 |
-| `char aowl_nr_why_text(int32_t w)` | 202 |
-| `void aowl_nr_fn(int32_t i)` | 218 |
-| `void aowl_nr_prime_all(void)` | 250 |
-| `void aowl_nr_call_getter(void* fn, void* self)` | 266 |
-| `void aowl_nr_call_void(void* fn, void* self)` | 270 |
-| `int32_t aowl_nr_try_get_location(void* fn, void* locSettings, void* idStr, void** out)` | 297 |
-| `int32_t aowl_nr_try_get_location_by_id(void* fn, void* self, void* idStr, void** out)` | 310 |
-| `void aowl_nr_set_selected_location(void* fn, void* self, void* loc)` | 323 |
-| `void aowl_nr_string(const char* s)` | 352 |
-| `int32_t aowl_nr_string_export_ok(void)` | 380 |
-| `int32_t aowl_nr_read_i32(void* base, int32_t off, int32_t* out)` | 388 |
-| `int32_t aowl_nr_read_u8(void* base, int32_t off, int32_t* out)` | 396 |
-| `void aowl_nr_read_ptr(void* base, int32_t off)` | 404 |
-| `int32_t aowl_nr_writable(void* p, SIZE_T n)` | 416 |
-| `int32_t aowl_nr_write_i32_checked(void* base, int32_t off, int32_t v)` | 436 |
+| `int32_t aowl_nr_disabled(void)` | 186 |
+| `void aowl_nr_note_fault(void)` | 189 |
+| `int32_t aowl_nr_fault_count(void)` | 190 |
+| `int32_t aowl_nr_target_count(void)` | 191 |
+| `int32_t aowl_nr_profull_count(void)` | 192 |
+| `char aowl_nr_name(int32_t i)` | 199 |
+| `uint32_t aowl_nr_rva(int32_t i)` | 203 |
+| `int32_t aowl_nr_why_of(int32_t i)` | 207 |
+| `char aowl_nr_why_text(int32_t w)` | 211 |
+| `void aowl_nr_fn(int32_t i)` | 227 |
+| `void aowl_nr_prime_all(void)` | 267 |
+| `void aowl_nr_call_getter(void* fn, void* self)` | 283 |
+| `void aowl_nr_call_void(void* fn, void* self)` | 287 |
+| `int32_t aowl_nr_try_get_location(void* fn, void* locSettings, void* idStr, void** out)` | 314 |
+| `int32_t aowl_nr_try_get_location_by_id(void* fn, void* self, void* idStr, void** out)` | 327 |
+| `void aowl_nr_set_selected_location(void* fn, void* self, void* loc)` | 340 |
+| `void aowl_nr_string(const char* s)` | 369 |
+| `int32_t aowl_nr_string_export_ok(void)` | 397 |
+| `int32_t aowl_nr_read_i32(void* base, int32_t off, int32_t* out)` | 405 |
+| `int32_t aowl_nr_read_u8(void* base, int32_t off, int32_t* out)` | 413 |
+| `void aowl_nr_read_ptr(void* base, int32_t off)` | 421 |
+| `int32_t aowl_nr_writable(void* p, SIZE_T n)` | 433 |
+| `int32_t aowl_nr_write_i32_checked(void* base, int32_t off, int32_t v)` | 453 |

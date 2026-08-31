@@ -3,7 +3,7 @@
 
 # `aowlspt_nativeui.h`
 
-Source: [`abi/aowlspt_nativeui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_nativeui.h) — 1458 lines, 84 file-scope functions.
+Source: [`abi/aowlspt_nativeui.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_nativeui.h) — 1475 lines, 85 file-scope functions.
 
 ## What this header owns
 
@@ -342,6 +342,7 @@ marshalling buffers are file-scope and not re-entrant.
 - `AOWL_NU_WHY_NOT_EXEC`
 - `AOWL_NU_WHY_NO_MODULE`
 - `AOWL_NU_WHY_OK`
+- `AOWL_NU_WHY_PROFULL`
 
 ## Types
 
@@ -355,85 +356,86 @@ marshalling buffers are file-scope and not re-entrant.
 | --- | --- |
 | `char aowl_nu_target_name(int32_t i)` | 568 |
 | `uint32_t aowl_nu_target_rva(int32_t i)` | 572 |
-| `int32_t aowl_nu_base_ok(void)` | 614 |
-| `int32_t aowl_nu_why_of(int32_t i)` | 617 |
-| `int32_t aowl_nu_mismatch_count(void)` | 624 |
-| `int32_t aowl_nu_disabled(void)` | 635 |
-| `void aowl_nu_note_fault(void)` | 638 |
-| `int32_t aowl_nu_fault_count(void)` | 639 |
-| `int32_t aowl_nu_target_count(void)` | 640 |
-| `int32_t aowl_nu_ok_count(void)` | 641 |
-| `int32_t aowl_nu_bad_count(void)` | 642 |
-| `char aowl_nu_name(int32_t i)` | 644 |
-| `uint32_t aowl_nu_rva(int32_t i)` | 648 |
-| `void aowl_nu_fn_full(int32_t i)` | 664 |
-| `void aowl_nu_fn(int32_t i)` | 728 |
-| `int64_t aowl_nu_cache_hit_count(void)` | 747 |
-| `int64_t aowl_nu_cache_verify_count(void)` | 748 |
-| `void aowl_nu_prime_all(void)` | 753 |
-| `void aowl_nu_call_v_pp(void* fn, void* self, void* a0)` | 788 |
-| `void aowl_nu_call_v_pb(void* fn, void* self, int32_t a0)` | 792 |
-| `void aowl_nu_call_v_pi(void* fn, void* self, int32_t a0)` | 796 |
-| `void aowl_nu_call_v_pf(void* fn, void* self, float a0)` | 800 |
-| `void aowl_nu_call_v_ppb(void* fn, void* self, void* a0, int32_t a1)` | 804 |
-| `void aowl_nu_call_p_p(void* fn, void* self)` | 808 |
-| `void aowl_nu_call_p_pp(void* fn, void* self, void* a0)` | 812 |
-| `void aowl_nu_call_p_s1(void* fn, void* a0)` | 816 |
-| `void aowl_nu_call_v_s1(void* fn, void* a0)` | 820 |
-| `void aowl_nu_call_v_s2(void* fn, void* a0, void* a1)` | 824 |
-| `int32_t aowl_nu_call_b_p(void* fn, void* self)` | 828 |
-| `int32_t aowl_nu_call_i_p(void* fn, void* self, int32_t defVal)` | 836 |
-| `int32_t aowl_nu_call_b_s1(void* fn, void* a0)` | 840 |
-| `int32_t aowl_nu_call_b_si(void* fn, int32_t a0)` | 852 |
-| `void aowl_nu_call_generic0(void* fn, void* self, void* mi)` | 859 |
-| `void aowl_nu_v2in_set(float x, float y)` | 880 |
-| `void aowl_nu_v2in_ptr(void)` | 881 |
-| `void aowl_nu_v2out_ptr(void)` | 882 |
-| `float aowl_nu_v2out_x(void)` | 884 |
-| `float aowl_nu_v2out_y(void)` | 885 |
-| `void aowl_nu_rect_ptr(void)` | 886 |
-| `void aowl_nu_c4in_set(float r, float g, float b, float a)` | 894 |
-| `void aowl_nu_c4in_ptr(void)` | 897 |
-| `void aowl_nu_v3out_ptr(void)` | 908 |
-| `float aowl_nu_v3out_x(void)` | 911 |
-| `float aowl_nu_v3out_y(void)` | 912 |
-| `float aowl_nu_v3out_z(void)` | 913 |
-| `float aowl_nu_rect_x(void)` | 915 |
-| `float aowl_nu_rect_y(void)` | 916 |
-| `float aowl_nu_rect_w(void)` | 917 |
-| `float aowl_nu_rect_h(void)` | 918 |
-| `int32_t aowl_nu_rect_contains(float rx, float ry, float rw, float rh, float px, float py)` | 923 |
-| `int32_t aowl_nu_rect_renderable(float w, float h)` | 937 |
-| `char aowl_nu_kind_name(int32_t k)` | 1040 |
-| `char aowl_nu_kind_evidence(int32_t k)` | 1044 |
-| `uint32_t aowl_nu_kind_slot_rva(int32_t k)` | 1048 |
-| `int32_t aowl_nu_kind_attested(int32_t k)` | 1052 |
-| `int32_t aowl_nu_kind_count(void)` | 1056 |
-| `int32_t aowl_nu_slot_state(int32_t k)` | 1057 |
-| `void aowl_nu_ref_klass(int32_t k)` | 1061 |
-| `void aowl_nu_got_klass(int32_t k)` | 1065 |
-| `void aowl_nu_data_ptr(uint32_t rva)` | 1080 |
-| `void aowl_nu_kind_mi(int32_t k)` | 1093 |
-| `int32_t aowl_nu_token_kind(uint32_t tok)` | 1122 |
-| `uint32_t aowl_nu_token_index(uint32_t tok)` | 1123 |
-| `int32_t aowl_nu_is_cold_token(uintptr_t v)` | 1129 |
-| `void aowl_nu_warm_slot(int32_t k, void* metaInitFn)` | 1147 |
-| `void aowl_nu_klass_of(void* obj)` | 1186 |
-| `int32_t aowl_nu_ref_set(int32_t k, void* liveInstance)` | 1202 |
-| `int32_t aowl_nu_verdict(int32_t attested, void* refKlass, void* gotKlass)` | 1224 |
-| `int32_t aowl_nu_slot_judge(int32_t k, void* got)` | 1232 |
-| `void aowl_nu_exports_init(void)` | 1274 |
-| `void aowl_nu_intern(const char* s)` | 1284 |
-| `int32_t aowl_nu_intern_count(void)` | 1308 |
-| `int32_t aowl_nu_intern_overflowed(void)` | 1309 |
-| `int32_t aowl_nu_own(void* go)` | 1326 |
-| `int32_t aowl_nu_owned_count(void)` | 1332 |
-| `void aowl_nu_owned_at(int32_t i)` | 1337 |
-| `void aowl_nu_owned_clear(void)` | 1341 |
-| `void aowl_nu_disown(void* go)` | 1348 |
-| `void aowl_nu_object_new(void* klass)` | 1369 |
-| `int32_t aowl_nu_region_ok(void* p, int32_t size, int32_t needWrite)` | 1400 |
-| `int32_t aowl_nu_is_writable(void* p, int32_t size)` | 1419 |
-| `void aowl_nu_get_ref(void* obj, int32_t off)` | 1423 |
-| `int32_t aowl_nu_set_ref(void* obj, int32_t off, void* val)` | 1433 |
-| `float aowl_nu_get_f32(void* obj, int32_t off, int32_t* ok)` | 1446 |
+| `int32_t aowl_nu_base_ok(void)` | 621 |
+| `int32_t aowl_nu_why_of(int32_t i)` | 624 |
+| `int32_t aowl_nu_mismatch_count(void)` | 631 |
+| `int32_t aowl_nu_disabled(void)` | 642 |
+| `void aowl_nu_note_fault(void)` | 645 |
+| `int32_t aowl_nu_fault_count(void)` | 646 |
+| `int32_t aowl_nu_target_count(void)` | 647 |
+| `int32_t aowl_nu_profull_count(void)` | 648 |
+| `int32_t aowl_nu_ok_count(void)` | 649 |
+| `int32_t aowl_nu_bad_count(void)` | 650 |
+| `char aowl_nu_name(int32_t i)` | 652 |
+| `uint32_t aowl_nu_rva(int32_t i)` | 656 |
+| `void aowl_nu_fn_full(int32_t i)` | 672 |
+| `void aowl_nu_fn(int32_t i)` | 745 |
+| `int64_t aowl_nu_cache_hit_count(void)` | 764 |
+| `int64_t aowl_nu_cache_verify_count(void)` | 765 |
+| `void aowl_nu_prime_all(void)` | 770 |
+| `void aowl_nu_call_v_pp(void* fn, void* self, void* a0)` | 805 |
+| `void aowl_nu_call_v_pb(void* fn, void* self, int32_t a0)` | 809 |
+| `void aowl_nu_call_v_pi(void* fn, void* self, int32_t a0)` | 813 |
+| `void aowl_nu_call_v_pf(void* fn, void* self, float a0)` | 817 |
+| `void aowl_nu_call_v_ppb(void* fn, void* self, void* a0, int32_t a1)` | 821 |
+| `void aowl_nu_call_p_p(void* fn, void* self)` | 825 |
+| `void aowl_nu_call_p_pp(void* fn, void* self, void* a0)` | 829 |
+| `void aowl_nu_call_p_s1(void* fn, void* a0)` | 833 |
+| `void aowl_nu_call_v_s1(void* fn, void* a0)` | 837 |
+| `void aowl_nu_call_v_s2(void* fn, void* a0, void* a1)` | 841 |
+| `int32_t aowl_nu_call_b_p(void* fn, void* self)` | 845 |
+| `int32_t aowl_nu_call_i_p(void* fn, void* self, int32_t defVal)` | 853 |
+| `int32_t aowl_nu_call_b_s1(void* fn, void* a0)` | 857 |
+| `int32_t aowl_nu_call_b_si(void* fn, int32_t a0)` | 869 |
+| `void aowl_nu_call_generic0(void* fn, void* self, void* mi)` | 876 |
+| `void aowl_nu_v2in_set(float x, float y)` | 897 |
+| `void aowl_nu_v2in_ptr(void)` | 898 |
+| `void aowl_nu_v2out_ptr(void)` | 899 |
+| `float aowl_nu_v2out_x(void)` | 901 |
+| `float aowl_nu_v2out_y(void)` | 902 |
+| `void aowl_nu_rect_ptr(void)` | 903 |
+| `void aowl_nu_c4in_set(float r, float g, float b, float a)` | 911 |
+| `void aowl_nu_c4in_ptr(void)` | 914 |
+| `void aowl_nu_v3out_ptr(void)` | 925 |
+| `float aowl_nu_v3out_x(void)` | 928 |
+| `float aowl_nu_v3out_y(void)` | 929 |
+| `float aowl_nu_v3out_z(void)` | 930 |
+| `float aowl_nu_rect_x(void)` | 932 |
+| `float aowl_nu_rect_y(void)` | 933 |
+| `float aowl_nu_rect_w(void)` | 934 |
+| `float aowl_nu_rect_h(void)` | 935 |
+| `int32_t aowl_nu_rect_contains(float rx, float ry, float rw, float rh, float px, float py)` | 940 |
+| `int32_t aowl_nu_rect_renderable(float w, float h)` | 954 |
+| `char aowl_nu_kind_name(int32_t k)` | 1057 |
+| `char aowl_nu_kind_evidence(int32_t k)` | 1061 |
+| `uint32_t aowl_nu_kind_slot_rva(int32_t k)` | 1065 |
+| `int32_t aowl_nu_kind_attested(int32_t k)` | 1069 |
+| `int32_t aowl_nu_kind_count(void)` | 1073 |
+| `int32_t aowl_nu_slot_state(int32_t k)` | 1074 |
+| `void aowl_nu_ref_klass(int32_t k)` | 1078 |
+| `void aowl_nu_got_klass(int32_t k)` | 1082 |
+| `void aowl_nu_data_ptr(uint32_t rva)` | 1097 |
+| `void aowl_nu_kind_mi(int32_t k)` | 1110 |
+| `int32_t aowl_nu_token_kind(uint32_t tok)` | 1139 |
+| `uint32_t aowl_nu_token_index(uint32_t tok)` | 1140 |
+| `int32_t aowl_nu_is_cold_token(uintptr_t v)` | 1146 |
+| `void aowl_nu_warm_slot(int32_t k, void* metaInitFn)` | 1164 |
+| `void aowl_nu_klass_of(void* obj)` | 1203 |
+| `int32_t aowl_nu_ref_set(int32_t k, void* liveInstance)` | 1219 |
+| `int32_t aowl_nu_verdict(int32_t attested, void* refKlass, void* gotKlass)` | 1241 |
+| `int32_t aowl_nu_slot_judge(int32_t k, void* got)` | 1249 |
+| `void aowl_nu_exports_init(void)` | 1291 |
+| `void aowl_nu_intern(const char* s)` | 1301 |
+| `int32_t aowl_nu_intern_count(void)` | 1325 |
+| `int32_t aowl_nu_intern_overflowed(void)` | 1326 |
+| `int32_t aowl_nu_own(void* go)` | 1343 |
+| `int32_t aowl_nu_owned_count(void)` | 1349 |
+| `void aowl_nu_owned_at(int32_t i)` | 1354 |
+| `void aowl_nu_owned_clear(void)` | 1358 |
+| `void aowl_nu_disown(void* go)` | 1365 |
+| `void aowl_nu_object_new(void* klass)` | 1386 |
+| `int32_t aowl_nu_region_ok(void* p, int32_t size, int32_t needWrite)` | 1417 |
+| `int32_t aowl_nu_is_writable(void* p, int32_t size)` | 1436 |
+| `void aowl_nu_get_ref(void* obj, int32_t off)` | 1440 |
+| `int32_t aowl_nu_set_ref(void* obj, int32_t off, void* val)` | 1450 |
+| `float aowl_nu_get_f32(void* obj, int32_t off, int32_t* ok)` | 1463 |

@@ -3,7 +3,7 @@
 
 # `aowlspt_cursor.h`
 
-Source: [`abi/aowlspt_cursor.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_cursor.h) — 659 lines, 42 file-scope functions.
+Source: [`abi/aowlspt_cursor.h`](https://github.com/aoughwl/aowlspt/blob/main/abi/aowlspt_cursor.h) — 669 lines, 43 file-scope functions.
 
 ## What this header owns
 
@@ -235,35 +235,36 @@ omitted entirely, which is what `tests/overlayhost/cursortest.c` does.
 | `void aowl_cur_did_hold(AowlCurState* st)` | 363 |
 | `void aowl_cur_did_restore(AowlCurState* st)` | 366 |
 | `void aowl_cur_fault(AowlCurState* st)` | 371 |
-| `void aowl_cur_fn(int32_t i)` | 425 |
-| `char aowl_cur_name(int32_t i)` | 452 |
-| `uint32_t aowl_cur_rva(int32_t i)` | 456 |
-| `int32_t aowl_cur_target_count(void)` | 460 |
-| `int32_t aowl_cur_base_ok(void)` | 461 |
-| `int32_t aowl_cur_ok_count(void)` | 462 |
-| `int32_t aowl_cur_bad_count(void)` | 463 |
-| `int32_t aowl_cur_get_lock(void)` | 471 |
-| `int32_t aowl_cur_get_vis(void)` | 476 |
-| `int32_t aowl_cur_set_lock(int32_t v)` | 482 |
-| `int32_t aowl_cur_set_vis(int32_t v)` | 488 |
-| `void aowl_cursor_panels(int32_t mask, uint32_t nowMs)` | 510 |
-| `void aowl_cur_publish_host(uint32_t mask, uint64_t nowMs)` | 522 |
-| `int32_t aowl_cur_st_panels(void)` | 527 |
-| `int32_t aowl_cur_st_mask(void)` | 528 |
-| `uint32_t aowl_cur_live_mask_now(void)` | 533 |
-| `int32_t aowl_cur_st_have_saved(void)` | 541 |
-| `int32_t aowl_cur_st_saved_lock(void)` | 542 |
-| `int32_t aowl_cur_st_saved_vis(void)` | 543 |
-| `int32_t aowl_cur_st_off(void)` | 544 |
-| `int32_t aowl_cur_st_faults(void)` | 545 |
-| `int64_t aowl_cur_st_frees(void)` | 546 |
-| `int64_t aowl_cur_st_restores(void)` | 547 |
-| `int64_t aowl_cur_st_reasserts(void)` | 548 |
-| `int64_t aowl_cur_st_ticks(void)` | 549 |
-| `void aowl_cur_st_enable(int32_t on)` | 550 |
-| `int32_t aowl_cur_st_enabled(void)` | 551 |
-| `int32_t aowl_cur_act(void)` | 560 |
-| `int32_t aowl_cur_cur_lock(void)` | 561 |
-| `int32_t aowl_cur_cur_vis(void)` | 562 |
-| `int32_t aowl_cur_readback(void)` | 563 |
-| `void aowl_cur_tick_body(void* a)` | 572 |
+| `void aowl_cur_fn(int32_t i)` | 429 |
+| `char aowl_cur_name(int32_t i)` | 461 |
+| `uint32_t aowl_cur_rva(int32_t i)` | 465 |
+| `int32_t aowl_cur_target_count(void)` | 469 |
+| `int32_t aowl_cur_base_ok(void)` | 470 |
+| `int32_t aowl_cur_ok_count(void)` | 471 |
+| `int32_t aowl_cur_bad_count(void)` | 472 |
+| `int32_t aowl_cur_profull_count(void)` | 473 |
+| `int32_t aowl_cur_get_lock(void)` | 481 |
+| `int32_t aowl_cur_get_vis(void)` | 486 |
+| `int32_t aowl_cur_set_lock(int32_t v)` | 492 |
+| `int32_t aowl_cur_set_vis(int32_t v)` | 498 |
+| `void aowl_cursor_panels(int32_t mask, uint32_t nowMs)` | 520 |
+| `void aowl_cur_publish_host(uint32_t mask, uint64_t nowMs)` | 532 |
+| `int32_t aowl_cur_st_panels(void)` | 537 |
+| `int32_t aowl_cur_st_mask(void)` | 538 |
+| `uint32_t aowl_cur_live_mask_now(void)` | 543 |
+| `int32_t aowl_cur_st_have_saved(void)` | 551 |
+| `int32_t aowl_cur_st_saved_lock(void)` | 552 |
+| `int32_t aowl_cur_st_saved_vis(void)` | 553 |
+| `int32_t aowl_cur_st_off(void)` | 554 |
+| `int32_t aowl_cur_st_faults(void)` | 555 |
+| `int64_t aowl_cur_st_frees(void)` | 556 |
+| `int64_t aowl_cur_st_restores(void)` | 557 |
+| `int64_t aowl_cur_st_reasserts(void)` | 558 |
+| `int64_t aowl_cur_st_ticks(void)` | 559 |
+| `void aowl_cur_st_enable(int32_t on)` | 560 |
+| `int32_t aowl_cur_st_enabled(void)` | 561 |
+| `int32_t aowl_cur_act(void)` | 570 |
+| `int32_t aowl_cur_cur_lock(void)` | 571 |
+| `int32_t aowl_cur_cur_vis(void)` | 572 |
+| `int32_t aowl_cur_readback(void)` | 573 |
+| `void aowl_cur_tick_body(void* a)` | 582 |
