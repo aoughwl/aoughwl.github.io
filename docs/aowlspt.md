@@ -21,6 +21,19 @@ own.**
 **[Mods](/docs/aowlspt/mods)** ·
 **[Get a licence — $19.99/mo](/store/aowlspt)**
 
+::: tip Looking for exhaustive detail?
+The **[Reference](/docs/aowlspt/reference/)** section is generated directly from
+source — [every host config flag](/docs/aowlspt/reference/host-flags) with its
+type, default and read site; [every ABI header](/docs/aowlspt/reference/abi)
+with its functions and design notes; [every mod](/docs/aowlspt/reference/mods)
+with every settings key.
+
+See also **[Automation](/docs/aowlspt/automation)** for driving the client
+without a human, **[the method](/docs/aowlspt/method)** for how this project
+decides something is true, and **[traps](/docs/aowlspt/pitfalls)** for the
+hard-won facts that keep being rediscovered.
+:::
+
 ---
 
 ## What you get

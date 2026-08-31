@@ -1,5 +1,12 @@
 import { defineConfig } from 'vitepress'
 
+// The aowlspt REFERENCE sidebar is generated, not written here. `tools/gendocs.py`
+// in the aowlspt repo emits both the reference pages and this sidebar.json from
+// the actual source -- the ABI headers, the readBoolKey call sites, the mod
+// config files -- so a new header or a new mod appears in the navigation without
+// anyone editing this file. Do not hand-edit it; run gendocs.py instead.
+import aowlsptReference from '../docs/aowlspt/reference/sidebar.json' with { type: 'json' }
+
 // ---------------------------------------------------------------------------
 // Sidebar tree. Region headers (OVERVIEW / INTERFACE / COMPILER / EMITTERS /
 // RUNTIME / TOOLS / LIBRARIES / GAMES) are top-level groups, ordered the way a program
@@ -202,8 +209,15 @@ const sidebar = [
           { text: 'Mods', link: '/docs/aowlspt/mods' },
           { text: 'Bot AI', link: '/docs/aowlspt/bot-ai' },
           { text: 'Configuration', link: '/docs/aowlspt/configuration' },
+          { text: 'Automation', link: '/docs/aowlspt/automation' },
           { text: 'Troubleshooting', link: '/docs/aowlspt/troubleshooting' },
           { text: 'FAQ', link: '/docs/aowlspt/faq' },
+          {
+            text: 'Reference (generated)',
+            link: '/docs/aowlspt/reference/',
+            collapsed: true,
+            items: aowlsptReference,
+          },
           {
             text: 'For mod developers',
             link: '/docs/aowlspt/for-mod-developers',
@@ -221,6 +235,8 @@ const sidebar = [
               { text: 'Architecture', link: '/docs/aowlspt/architecture' },
               { text: 'Reaching into IL2CPP', link: '/docs/aowlspt/il2cpp' },
               { text: 'The game server', link: '/docs/aowlspt/emulator' },
+              { text: 'How we know things — the method', link: '/docs/aowlspt/method' },
+              { text: 'Traps and hard-won facts', link: '/docs/aowlspt/pitfalls' },
               { text: 'The engineering record', link: '/docs/aowlspt/engineering-record' },
               { text: 'Case study — nimony at scale', link: '/docs/aowlspt/case-study' },
             ],
