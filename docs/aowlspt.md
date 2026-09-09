@@ -1,9 +1,38 @@
 ---
 repo: savannt/aowlspt
-title: aowlspt — mods for post-1.0 Escape From Tarkov
+title: aowlspt — mods for post-1.0 Escape From Tarkov (deprecated)
 ---
 
-# aowlspt
+# aowlspt — deprecated
+
+::: danger Deprecated — folded into Jester
+**aowlspt is no longer where this work happens.** It has been folded into
+**[Jester](/docs/jester)**, the modding engine: a small Unity host, mods written
+in [aowlmony](/docs/aowlmony) and hot-swapped while the game runs, with the
+whole boundary between a mod and the engine being
+[220 host calls](/docs/jester/host-surface).
+
+What that means for the Tarkov work specifically:
+
+- The **bot AI** — the layered decision ladder, personalities, hearing, vision,
+  suppression, search, squads and cover scoring — is a Jester mod. It was
+  written as pure logic over numbers, which is why it could move at all.
+- Content comes in through Jester's **[importers](/docs/jester/importers)**: a
+  mod claims a scheme, reads the player's own installed copy of a game on their
+  own machine, and publishes a catalog. Nothing is bundled and nothing is
+  redistributed — and each game's licence governs what a player may extract.
+- The **settings schema**, the inventory and quest-condition maths, and the
+  world model port the same way: as mods, over the same
+  [catalogs](/docs/jester/catalogs).
+
+Nothing that reaches into a running Tarkov client — the injection and detour
+layers, the IL2CPP work, the server emulator — moves. That is prior art for
+Jester's own host rather than code to port, and it is the reason this section is
+kept rather than deleted.
+
+**These pages stay up, unchanged, as the record of how it was done.** They are
+no longer maintained. Start at **[Jester](/docs/jester)**.
+:::
 
 **Mods for post-1.0 Escape From Tarkov.** A native mod host, a game server that
 speaks the real client's protocol, a launcher, a mod manager, and a set of mods

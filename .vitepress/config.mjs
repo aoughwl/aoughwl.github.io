@@ -213,7 +213,7 @@ const sidebar = [
         ],
       },
       {
-        text: 'Tarkov modding — aowlspt',
+        text: 'Tarkov modding — aowlspt (deprecated)',
         link: '/docs/aowlspt',
         collapsed: true,
         items: [

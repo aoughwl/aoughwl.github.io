@@ -33,3 +33,4 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowlhl](docs/aowlhl) — shared High-Level IR | `aoughwl/aowlhl` | early scaffold · private |
 | [aowlabi](docs/aowlabi) — shared value-representation / ABI truth (layout, heap-block spec, marshal matrix) | `aoughwl/aowlabi` | private |
 | [Jester](docs/jester) — Unity turned into a game you mod while it is running: a small host, a 220-call boundary, everything else a mod | `savannt/jester` | private repo · public docs |
+| [aowlspt](docs/aowlspt) — mods for post-1.0 Escape From Tarkov (native host, game server, launcher, mods) | `savannt/aowlspt` | **deprecated** · folded into [Jester](docs/jester); pages kept |
