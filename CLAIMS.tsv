@@ -1,0 +1,82 @@
+# CLAIMS.tsv -- every number this site states about the toolchain, and the
+# command that printed it.
+#
+#   npm run claims          # the cheap rows -- seconds
+#   npm run claims:all      # also the real gates, in the sibling checkouts
+#   npm run claims:sweep    # numbers on the swept pages with no row here
+#
+# WHY THIS LIVES HERE, of all places. This is where the worst instance happened.
+# The site said aowlsem was "498/498 byte-exact modules with the entire
+# std/system checking clean". 498 was never a module count: it is
+# aowlsem/REQUIREMENTS.md's hconv-SITE census -- "all 54 modules | oracle 527 |
+# ours 498" -- reworded. The real module figure that day was 46/55. It stood for
+# weeks, on the page a reader trusts most, and nothing could catch it because no
+# test reads prose.
+#
+# It is also the only place in the toolchain that makes CROSS-REPO claims: these
+# pages quote aowlsem's gates, aowlc's, aowli's, aowlparser's, aowlhexer's and
+# aowlmony's. A number is furthest from its gate exactly here, which is why the
+# SOURCE column of most rows is `cd ~/<repo> && <its gate>`. The gate lives in
+# the repo, the claim lives here, and this file is the wire between them.
+#
+# THE CHEAP ROWS ARE DENOMINATORS AND VERSIONS, deliberately. Every defect this
+# toolchain has had was one of the two drifting: aowlc's corpus grew 77 -> 78 and
+# its README did not follow; aowlsem's grew past the 31 its README quoted; and
+# aowli's release reads v0.3.5 on aowli.md, v0.3.3 on blog.md, v0.3.2 and v0.3.1
+# on the release page, while `git tag` in aowli says v0.3.2 is the newest. A
+# numerator costs a corpus run. A denominator is `ls` and a version is `git tag`.
+#
+# WHAT IT WILL NOT DO. It never rewrites a number. When a gate disagrees it
+# prints what the gate said and stops, because pasting an unmeasured figure is
+# the original defect. It also refuses to read a REFUSED gate as a
+# disagreement: aowlsem's idxchecksum.sh exits 2 with "the ARTIFACTS are stale",
+# aowli's lanes print "THIS RUN IS NOT EVIDENCE", aowlparser's stress.sh answers
+# `pass=0 ... oracle-skip=225` when its nifler oracle is absent. Those rows carry
+# GUARD regexes and come back UNVERIFIABLE. A zero that means "no oracle" read as
+# a measurement is exactly how a confident wrong correction gets written.
+#
+# PLATFORM rows are never run. aowlsem's moddiff.baseline is a LINUX measurement
+# and this box is Windows; module ids are content-hashed and the trees differ, so
+# the module SETS differ. The two numbers are not two readings of one thing.
+#
+# UNATTRIBUTED rows fail the run on purpose -- no command produces them at all.
+# That is the 498/498 class, and the fix for one is to measure it or delete it,
+# never to write something that sounds right. Seven are listed today; each note
+# carries the command that would settle it. They are the ranked debt.
+#
+# ONE ENVIRONMENT NOTE, because it is the difference between a green run and a
+# confidently wrong one: put /c/msys64/ucrt64/bin FIRST in PATH before
+# `npm run claims`. Without it msys2's cc1.exe exits 127 with no output, aowlc's
+# npm test answers `0/24 passed`, and a checker without the `gcc failed` guard
+# would call 21/24 wrong. It is guarded, so it reports UNVERIFIABLE instead --
+# but the guarded answer is not a measurement either.
+#
+# Columns: FILE <TAB> ANCHOR <TAB> CLASS <TAB> NUMBER <TAB> SOURCE <TAB> EXTRACT <TAB> GUARD
+docs/aowlsem.md	**924 pass / 17 fail of 941**	EXPENSIVE	924	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/diff.sh	differential: (\d+) pass	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	of 941**, with 0 INFRA	GATE	941	git -C ~/aowlsem.ghfresh ls-tree -r --name-only HEAD tests/corpus | grep -c '[.]nim$'	^\s*(\d+)\s*$
+docs/aowlsem.md	**31 byte-exact / 21 differing / 0 rejected / 4 canonfail of 56**	EXPENSIVE	31	cd ~/aowlsem.ghfresh && bash tests/moddiff.sh --fresh	(\d+) exact	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	**89 differing tokens** over ~92,600 canon lines	EXPENSIVE	89	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/sysdiff.sh	(\d+) differing	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	**19/19** byte-exact and agreeing	EXPENSIVE	19/19	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/consteval.sh	consteval[^\n]*?(\d+/\d+)	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	per module | **35/56** |	EXPENSIVE	35/56	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/idxchecksum.sh	idxchecksum[^\n]*?(\d+/\d+)	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	| 41/43 pairs, 86/98 indices |	EXPENSIVE	41/43	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/compose.sh	compose[^\n]*?(\d+/\d+)	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlsem.md	has **47 of 55** modules at zero differing tokens	PLATFORM	47 of 55	a LINUX baseline, read from aowlsem's tests/moddiff.baseline (re-baselined 2026-08-19). Module ids are content-hashed and the Windows and Linux trees differ, so the module SETS differ: a Windows run is not a newer reading of this number, it is a different measurement. The page already says so. Never refresh it from a Windows box.
+docs/aowlsem.md	stood at "498/498 byte-exact modules	HISTORICAL	498/498	the retraction. 498 was aowlsem/REQUIREMENTS.md's hconv-site census (all 54 modules | oracle 527 | ours 498) reworded into a module count; the real figure was 46/55. It is quoted here as the wrong number it was, and 'correcting' it would delete the correction.
+docs/aowlc.md	over 78 examples**	GATE	78	cd ~/aowlc && n=$(ls examples/*.nim | wc -l) && m=$(ls -d examples/*/ | while read d; do [ -f "$d/main.nim" ] && echo x; done | wc -l) && echo corpus=$((n+m))	corpus=(\d+)
+docs/aowlc.md	and `npm test` **21/24	GATE	21/24	cd ~/aowlc && npm test	(\d+/\d+) passed, \d+ skipped	gcc failed|cc1|COMPILE-FAIL
+docs/aowlc.md	runs all 21 cases (18 harnessed procs + 3 whole-module builds)	GATE	21	cd ~/aowlc && npm test 2>&1 | grep -c '^  ok '	^\s*(\d+)\s*$	gcc failed|cc1|COMPILE-FAIL
+aowli.md	**Tree-walker: 432 / 469 runnable (92%)**	EXPENSIVE	432 / 469	cd ~/aowli && bash tests/run.sh all	PASSED (\d+) / TOTAL_RUNNABLE (\d+)	QUICK LANE ONLY|NOT A CORPUS RESULT|NOT EVIDENCE
+aowli.md	**Both engines lockstep: 358 PASS-BOTH.**	EXPENSIVE	358	cd ~/aowli && bash tests/crosscheck.sh all	AGREE-PASS (\d+)	QUICK LANE ONLY|NOT A CORPUS RESULT|NOT EVIDENCE
+aowli.md	**[aowli-release](docs/aowli-release)** (v0.3.2	GATE	v0.3.2	git -C ~/aowli tag --sort=-v:refname | grep '^v' | head -1	^(v[\d.]+)$
+docs/aowli-release.md	full differential corpus stays at **77/77**	UNATTRIBUTED	77/77	no aowli lane prints 77/77. tests/run.sh all prints 'PASSED N / TOTAL_RUNNABLE M' over 491 corpus cases in 53 categories; tests/crosscheck.sh all prints AGREE-PASS/AGREE-FAIL/DIVERGE. 77 matches no denominator, and this page also says 423-program (:68) while aowli.md says 469 (:113). Three corpus sizes, none dated. Settle it by naming the lane and pasting its own line.
+docs/aowli-release.md	(520/520 tokens on the reference `.p.nif`)	UNATTRIBUTED	520/520	no script in aowli or aowlsem prints a 520-token comparison. It reads like a one-off token diff against a native compile. Name the command or drop it.
+docs/aowli-release.md	across a 423-program differential corpus	UNATTRIBUTED	423-program	a v0.3.0-era corpus size presented as a live property, and repeated on index.md. aowli's corpus is 491 cases in 53 categories today, and tests/run.sh prints its own scope line saying so. Quote that line rather than a remembered number.
+index.md	across a 423-program differential corpus	UNATTRIBUTED	423-program	the same v0.3.0-era number as docs/aowli-release.md, on the landing page, undated. See that row.
+docs/aowlhexer.md	(`fib(20)=6765`, `ack(3,4)=125`, `fib(25)=75025`)	UNATTRIBUTED	6765	neither aowlhexer gate runs a produced binary: tests/differential.sh and tests/game.sh both stop at byte-comparing the lowering, and 'fib'/'ack' appear in no script in that repo. Filed the same way in aowlhexer's own CLAIMS.tsv.
+docs/aowlhexer.md	The 25 lowering passes under `src/`	GATE	25	ls ~/aowlhexer/src/*.nim | wc -l	^\s*(\d+)\s*$
+docs/aowlparser.md	`jsonfast`: 963–2248 MB/s	UNATTRIBUTED	963–2248 MB/s	contradicted by its own subpage: docs/aowlparser/json-reader.md's table peaks at 2872 MB/s and its prose says 'never below 1.6 GB/s'. Neither 963 nor 2248 appears there. aowlparser's tests/json/bench.sh is what would settle it, on named hardware.
+docs/aowlparser/testing.md	| nimony/src | `stress.sh …/nimony/src` | 184 / 184 |	EXPENSIVE	184 / 184	cd ~/aowlparser.ghfresh && bash tests/stress.sh ~/nimony/src	total=(\d+)\s+pass=(\d+)	oracle-skip=[1-9]|oracle not found
+docs/aowlparser/testing.md	| curated corpus | `tests/diff.sh` | 172 / 172 | 156 | 0 |	EXPENSIVE	172 / 172	cd ~/aowlparser.ghfresh && bash tests/diff.sh	corpus: (\d+)\s+PASS: (\d+)	oracle not found|ERROR:
+docs/aowlmony.md	its `consteval` gate reads 19/19 byte-exact under both	EXPENSIVE	19/19	cd ~/aowlsem.ghfresh && STALE_OK=1 bash tests/consteval.sh	consteval[^\n]*?(\d+/\d+)	NOT EVIDENCE|are stale|did not run|PARTIAL RUN|oracle-skip=[1-9]|oracle not found
+docs/aowlmony.md	**24 ok / 16 fail on Windows**	EXPENSIVE	24	cd ~/aowlmony && npm test	^(\d+)/\d+ passed	no bin/aowlmony-ng|run ./build.sh
+blog.md	The "498/498" corpus figure in this post and the	HISTORICAL	498/498	the correction banner. The three occurrences of 498/498 below it are left as written, by decision; this row exists so nobody 'fixes' them.
+blog.md	**64/64** diagnostics	UNATTRIBUTED	64/64	inside a post whose 2026-09-09 banner corrects only 498/498. aowlsem's diagnostics gate is tests/diag_gate.sh and its dated records read 176/176; 64 is not its denominator on any record in that repo. Extend the banner to cover it, or attribute it.

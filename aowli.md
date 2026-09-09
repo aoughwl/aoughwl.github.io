@@ -15,7 +15,7 @@ independent engines run it and agree byte-for-byte.
 </div>
 
 > The source above is private. A prebuilt, binary-only distribution —
-> **[aowli-release](docs/aowli-release)** (v0.3.5, obfuscated + licence-gated +
+> **[aowli-release](docs/aowli-release)** (v0.3.2, obfuscated + licence-gated +
 > stripped) — carries `aowli-interp`/`aowli-dbg`, which run typed AIF with no
 > build step and are what the [aowlcode](docs/aowlcode) plugin's `trace`/`debug`
 > tools drive. Builds come from the [store](store/aowli).

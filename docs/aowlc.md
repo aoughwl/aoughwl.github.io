@@ -111,8 +111,10 @@ every wide string, so every Windows path reached the OS one character short);
 (importc "DWORD") …)` widened to 64 bits and `WIN32_FIND_DATA` misaligned; and a
 bare signed literal under `shl`, undefined behaviour in C (`1 shl 40` answered
 256). The two-printer gate (`test/twoprinters.sh`, both printers vs nimony on
-program behaviour) reads **67/68 over 78 examples** — the one miss is a
-pre-existing `aowlc.js` divergence on `e2e_exceptions` — and `npm test` **21/24
+program behaviour) reads **68/68 over 78 examples**, 10 of them skipped for
+having no output to compare — re-run 2026-09-09 on Windows, warm cache, 40s wall,
+`aowlc two-printer: 68/68 agree with nimony in BOTH printers`. This line said
+67/68, and the `e2e_exceptions` divergence it named agrees now — and `npm test` **21/24
 on Windows**, the three misses being Linux-generated `dlfcn.h` fixtures (same
 commit).
 
