@@ -307,3 +307,10 @@ That is a duller claim than "nimony is fast", and it is the one worth making.
 The rest of the argument is the list above it. A project that publishes the
 questions it cannot yet answer is making a smaller claim than one that does
 not, and a checkable one.
+
+## Deeper
+
+The manual is the artefact this case study is about: 63 documents written
+alongside the code, in
+[the aowlspt repository](https://github.com/aoughwl/aowlspt). Start at
+[the manual](/docs/aowlspt/manual/).

@@ -179,3 +179,19 @@ patrol-point data ported from SPT-Waypoints 1.3.4 (© 2023 DrakiaXYZ, MIT; point
 contributed by Solarint). Full licence text travels with each layer in the
 product's `mods/*/LICENSE` files.
 :::
+
+## Deeper
+
+[Bot navigation — IL2CPP recon](/docs/aowlspt/manual/botnav) and
+[SAIN driver — the RVA table](/docs/aowlspt/manual/sain-rva) are the offline
+address work this mod is built on — the second is the table that let the driver
+stop resolving game methods by name every tick, which is the thing that kills
+the client.
+
+Two further documents, both carrying banners of their own:
+[Squad-shared objectives](/docs/aowlspt/manual/bot-ai-objectives) is a design
+that was never built, and it records a state this page does not — that at the
+time it was written the driver was not yet moving bots.
+[SPT 4.1.5 bot control](/docs/aowlspt/manual/spt415-bot-control) is a parallel
+study against a **different client** — stock, pre-1.0, Mono, with BepInEx — and
+should not be read as describing aowlspt.

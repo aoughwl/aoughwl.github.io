@@ -107,23 +107,27 @@ for a raid must read the latch.
 
 ## The declarative automation library
 
-::: info Status: UNDER CONSTRUCTION — nothing has landed as of this writing
-A declarative Nimony scripting and gear-minting layer is being built. No
-commits exist on `feat-automation-lib` beyond its branch point, so this section
-deliberately documents **nothing**: describing an intended API as though it
-shipped is exactly the failure this documentation is built to avoid.
+::: tip It landed — and the reference is in the manual
+This section used to say that nothing had landed, and refused to describe an
+API that did not exist yet. It exists now:
+**[The automation library — API reference](/docs/aowlspt/manual/automation-api)**
+is the complete reference for the script grammar, the gear-minting verbs, the
+failure modes and the three-valued verdict lines. A test is one script; running
+it starts the whole stack, mints the gear, drives menu entry, actuates the
+player and prints a verdict.
 
-When it lands, this section will document its script grammar, its gear-minting
-verbs, its failure modes, and its verdict lines — generated from source where
-the shape allows.
+[The automation library](/docs/aowlspt/manual/automation-library) is the earlier
+design of the same thing, kept for its reasoning. Where the two disagree, the
+API reference is the later document and wins.
 :::
 
 ## In-raid input actuation
 
-::: info Status: UNDER CONSTRUCTION — nothing has landed as of this writing
-A layer for actuating input inside a raid — as distinct from the menu
-navigation the inspector already does — is being built in parallel. It is not
-yet present in the tree.
+::: tip It landed — and the reference is in the manual
+This too used to say nothing had landed. In-raid actuation of the local player,
+as distinct from the menu navigation the inspector does, is `pact`:
+**[Actuating the local player](/docs/aowlspt/manual/player-actuation)** is what
+it can drive and what it deliberately will not.
 :::
 
 ## Rules for anything automated here
@@ -154,3 +158,12 @@ say why.
 reports an artifact path. It does not deploy and it does not start or stop the
 game: a human may be playing, several agents may be building concurrently, and
 every deploy must verify markers first.
+
+## Deeper
+
+[The live inspector — verb reference](/docs/aowlspt/manual/inspector-verbs) is
+every verb the inspector answers;
+[the live inspector as a product](/docs/aowlspt/manual/inspector-product) is the
+argument for treating it as one. **[Headless and unattended
+running](/docs/aowlspt/manual/headless)** answers the question people ask next,
+and the answer is no — with what is possible instead.

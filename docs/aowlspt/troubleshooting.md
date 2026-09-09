@@ -141,3 +141,11 @@ pointers held across a frame while the collector moves things.
 
 Bring the two logs and what you ran to Discord — **timbuktu_guy**, or the
 [server](https://discord.gg/nxa3W7w4rJ).
+
+## Deeper
+
+This page is the player's list. [Debugging a native
+mod](/docs/aowlspt/manual/debugging) is the developer's: four levels, starting
+at `aowl doctor` and ending at the real host under a debugger. The one item
+they share — PATH order, `cc1`, the wrong `libgcc` — is written the same way in
+both, and for the same reason.

@@ -106,3 +106,11 @@ running.
 - [Configuration](/docs/aowlspt/configuration) — where the settings live.
 - [Troubleshooting](/docs/aowlspt/troubleshooting) — when it does not do the above.
 - [For mod developers](/docs/aowlspt/for-mod-developers) — writing your own.
+
+## Deeper
+
+[Getting past character-select](/docs/aowlspt/manual/autoenter) explains who
+answers the screen you are about to see, and
+[starting an offline raid natively](/docs/aowlspt/manual/native-raid-start)
+explains the one below it. If the first launch does not go the way this page
+says, [Troubleshooting](/docs/aowlspt/troubleshooting) is the list.

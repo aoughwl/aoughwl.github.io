@@ -34,6 +34,14 @@ What is left is the runtime's own C API. Unity's IL2CPP runtime exports it from
 of which **9** are marked `Essential` and a missing one is named at boot rather
 than discovered as a fault later.
 
+::: warning Two counts, two instruments
+[Traps](/docs/aowlspt/pitfalls) and the gate header say **241** `il2cpp_*`
+exports; the probe above says **242** exported functions. The two came off
+different instruments — the probe's export list and
+`abi/aowlspt_il2cpp_gates.h` — and were never reconciled into one figure. Both
+are quoted as their own source states them.
+:::
+
 ## Getting the host into the process
 
 `aowlspt-launch` starts the game **suspended**, `LoadLibrary`s the host DLL into
@@ -307,3 +315,16 @@ Input is the delicate part: a wndproc subclass cannot intercept
 that way keeps receiving input while the panel is open. That is the property to
 check on any client build, and it is checked by opening the panel rather than by
 reading the code.
+
+## Deeper
+
+The working notes behind this page are in the manual:
+[The post-1.0 client host](/docs/aowlspt/manual/il2cpp) is the longer version of
+what you have just read;
+[the interaction layer](/docs/aowlspt/manual/interaction-layer-map) is the
+complete map of the seam where the host touches the running client, with every
+claim tagged measured or inferred;
+[the boot flow](/docs/aowlspt/manual/boot-flow-map) traces the client from
+process start; and
+[decrypting `global-metadata.dat`](/docs/aowlspt/manual/metadata-decrypt) is how
+the names were got at in the first place.

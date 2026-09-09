@@ -71,3 +71,14 @@ The registry does not yet name every mod that ships — the resource-pack and
 settings-hub mods have no player-facing entry yet. If a mod is installed but not
 listed, the manager reports it as an unmanaged stray rather than pretending it is
 not there.
+
+## Deeper
+
+[Changing the mod set while everything runs](/docs/aowlspt/manual/modmanager) is
+the mechanism behind the live enable and disable on this page — including the
+part it is honest about, that the client-side half was wired end to end against
+the stand-in rather than proven against BSG's client.
+[Getting a new mod to stay loaded](/docs/aowlspt/manual/mod-enable-path) is the
+checklist for when it does not, and
+[what a mod may do on the load path](/docs/aowlspt/manual/mod-perf) is the
+budget every shipped mod is held to.

@@ -1,5 +1,5 @@
 ---
-repo: savannt/aowlspt
+repo: aoughwl/aowlspt
 title: aowlspt — mods for post-1.0 Escape From Tarkov (deprecated)
 ---
 
@@ -30,8 +30,23 @@ layers, the IL2CPP work, the server emulator — moves. That is prior art for
 Jester's own host rather than code to port, and it is the reason this section is
 kept rather than deleted.
 
-**These pages stay up, unchanged, as the record of how it was done.** They are
-no longer maintained. Start at **[Jester](/docs/jester)**.
+**These pages stay up as the record of how it was done.** They are no longer
+maintained. Start at **[Jester](/docs/jester)**.
+:::
+
+::: tip The source is public now
+The code is at **[github.com/aoughwl/aowlspt](https://github.com/aoughwl/aowlspt)**,
+under the
+**[PolyForm Noncommercial License 1.0.0](https://github.com/aoughwl/aowlspt/blob/main/LICENSE)**
+— read it, build it, learn from it, do anything with it that is not for
+commercial advantage.
+
+With it come its own 63 engineering documents, published here as
+**[the manual](/docs/aowlspt/manual/)**: the ABI reference, the IL2CPP work, the
+RVA tables resolved offline, the emulator's coverage audit, the boot-flow and
+screen maps, and the decision records for the things that were shelved. They
+are working notes, not tutorials — but they are precise, and they are why this
+section is worth keeping.
 :::
 
 **Mods for post-1.0 Escape From Tarkov.** A native mod host, a game server that
@@ -117,12 +132,18 @@ means, is on [Installation](/docs/aowlspt/installation).
   server starts, answers every route, and has nothing in it.
 - **Windows only.**
 
-## Getting the build
+## The code
 
-The code lives at `savannt/aowlspt` and is private; the documentation here is
-public. The build is **[$19.99 a month](/store/aowlspt)** — every update, three
-machines, the mods, cancel whenever. Questions first: Discord
-**timbuktu_guy**.
+The repository is
+**[github.com/aoughwl/aowlspt](https://github.com/aoughwl/aowlspt)**, public,
+under the
+[PolyForm Noncommercial License 1.0.0](https://github.com/aoughwl/aowlspt/blob/main/LICENSE):
+free for anything that is not commercial. Every page in
+[the manual](/docs/aowlspt/manual/) links back to the files it describes.
+
+A built, installable copy is still **[$19.99 a month](/store/aowlspt)** — every
+update, three machines, the mods, cancel whenever — but nothing obliges you to
+take it; the source is there. Questions first: Discord **timbuktu_guy**.
 
 ## Where to go next
 
@@ -138,3 +159,4 @@ machines, the mods, cancel whenever. Questions first: Discord
 | [FAQ](/docs/aowlspt/faq) | Short answers: pre-1.0, multiplayer, BattlEye, SPT, updates, uninstalling. |
 | [For mod developers](/docs/aowlspt/for-mod-developers) | What a mod is, the build command, and the shortest path to a running one. |
 | [Under the hood](/docs/aowlspt/architecture) | The internals: the hosts, the ABI, IL2CPP, the game server, the engineering record. |
+| [The manual](/docs/aowlspt/manual/) | All 63 of the repository's own engineering documents, published as they stand. |

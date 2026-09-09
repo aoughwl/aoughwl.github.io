@@ -1,8 +1,8 @@
 # Configuration
 
-Two ways to change how aowlspt behaves: the **MODS** tab in Tarkov's own
-settings screen, and the `config.json` beside each mod. They are the same
-values — the settings tab writes back to the file.
+Two ways to change how aowlspt behaves: the in-game settings surface, and the
+`config.json` beside each mod. They are the same values — the settings surface
+writes back to the file.
 
 [[toc]]
 
@@ -21,27 +21,28 @@ Everything this project owns is under `<install>\aowlspt\`:
 | `db.json` | the imported game database. |
 | `aowlspt-host.log`, `aowlspt-backend.log` | the two logs. |
 
-## In-game settings — the MODS tab
+## In-game settings
 
-Open Tarkov's settings screen the way you always have. It now has a sixth tab,
-**MODS**, beside Game, Graphics, Sound, Controls and PostFX, and inside it a
-subtab per mod, plus the game server's own settings and the full server config
-surface.
+A mod declares its settings once. The settings surface reads that declaration,
+draws the right control for each value, persists your edit back to that mod's
+`config.json`, and hot-applies it where the mod supports that. Anything the
+system does not yet back is marked **not implemented yet** and drawn greyed,
+with the reason, rather than silently doing nothing — a control that lies is
+worse than a control that is honest about being inert.
 
-The rows there are the game's own controls — the same sliders, toggles,
-dropdowns and key-capture boxes the rest of the settings screen uses — not a
-separate overlay drawn over the game. Nothing to learn, and nothing that stops
-working when you resize the window.
+::: warning What shipped, and what did not
+An earlier version of this page described a sixth **MODS** tab inside Tarkov's
+own settings screen, with the post-processing controls folded into **Graphics**.
+That work was **[shelved before
+1.0](/docs/aowlspt/manual/shelved-native-settings)** — the code is still in the
+tree, every flag that turns it on defaults to off, and three measured defects
+were never closed. It does not ship, and this page should not have said it did.
 
-**PostFX moved.** The post-processing controls are now a subtab of the
-**Graphics** tab rather than a tab of their own.
-
-A mod declares its settings once, and the tab draws the right control for each
-value, persists your edit back to that mod's `config.json`, and hot-applies it
-where the mod supports that. Anything the system does not yet back is marked
-**not implemented yet** and drawn greyed, with the reason, rather than silently
-doing nothing — a control that lies is worse than a control that is honest
-about being inert.
+What ships is the overlay and the browser page at
+`/aowlspt/ui/page/settings`, both of which read and write the same
+[HTTP settings routes](/docs/aowlspt/manual/ui-api) — one schema, declared by
+the mod that owns the setting, with no settings logic in any UI.
+:::
 
 ## The admin panel — F6
 
@@ -85,3 +86,14 @@ Your choices live in the mod manager's store and end up in
 `aowlspt-selection.json`, not in the registry and not in any `config.json`. The
 `--list` you installed with seeds the first run and is not consulted again once
 you have changed anything. See [Mods](/docs/aowlspt/mods).
+
+## Deeper
+
+[In-game settings and the config schema](/docs/aowlspt/manual/settings) is the
+long version: the feasibility spike that chose an overlay over driving the
+game's own screen, the schema a mod declares, and the SPT config surface.
+[The settings UI API](/docs/aowlspt/manual/ui-api) is the route reference.
+[The settings screen map](/docs/aowlspt/manual/settings-ui-map) is what was
+found inside Tarkov's own screen, and
+[Shelved: native in-game settings](/docs/aowlspt/manual/shelved-native-settings)
+is why that was left alone.

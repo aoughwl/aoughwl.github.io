@@ -247,3 +247,10 @@ is a function here that will answer", which is all it ever established.
 > against a second copy of the same arithmetic.
 
 It has already caught one error.
+
+## Deeper
+
+[The C ABI](/docs/aowlspt/manual/abi) is the repository's own account: why the
+block is versioned by size rather than by a version number, what each revision
+added, what may never change, and the gates that hold it. This page is the
+header reference; that one is the reasoning.

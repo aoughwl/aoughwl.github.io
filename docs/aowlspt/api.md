@@ -21,7 +21,7 @@ submodules sit on top of it and none of them reaches around it.
 | `aowlspt` | 1,493 | everything — logging, config, routes, events, timers, `call`, `patch`, the store, the typed frame, `exportMod` |
 | `aowlspt/game` | 913 | the client-side high-level API: types, live objects, hooks |
 | `aowlspt/server` | 778 | the backend-side high-level API: routes, the database, config, JSON building |
-| `aowlspt/settings` | 232 | declaring the config keys a mod has, so the MODS tab can draw them |
+| `aowlspt/settings` | 232 | declaring the config keys a mod has, so a settings surface can draw them |
 | `aowlspt/json` | 690 | reading and editing a document without rebuilding it |
 | `aowlspt/fast` | 1,370 | the per-frame path: bind once, then call |
 | `aowlspt/il2cpp` | 754 | the binding to the IL2CPP runtime's own C API |
@@ -532,3 +532,13 @@ rather than discovered later:
 
 The README reports **242 exported functions** on the post-1.0 client
 `tools/il2cppprobe.nim` was run against. 62 is what aowlspt binds of them.
+
+## Deeper
+
+[Writing a mod](/docs/aowlspt/manual/modding) is the repository's own manual for
+this API — the longest document in the set, and the one to read before writing
+anything real. [The C ABI](/docs/aowlspt/manual/abi) is what it sits on,
+[Three gaps in the mod API](/docs/aowlspt/manual/api-gaps) is what it cannot
+express and what closing that would cost, and
+[The settings UI API](/docs/aowlspt/manual/ui-api) is the HTTP side of
+`aowlspt/settings`.

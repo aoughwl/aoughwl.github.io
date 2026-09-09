@@ -171,3 +171,14 @@ answer:
 This is why [the measurement discipline](./method) insists on asserting a
 property of the finished state, and on **INCONCLUSIVE** as a first-class
 verdict.
+
+## Deeper
+
+Everything on this page was distilled out of two documents in the manual.
+[The interaction layer](/docs/aowlspt/manual/interaction-layer-map) is the map
+of the seam these traps live in — every claim tagged measured, with the
+instrument, or inferred. [The main-menu UI map](/docs/aowlspt/manual/ui-map) is
+where the shared-RVA and three-state-offset facts come from. Between them,
+[SAIN driver — the RVA table](/docs/aowlspt/manual/sain-rva) and
+[FOV — static RVAs](/docs/aowlspt/manual/fov-rva) are what "byte-verified static
+address" looks like written out in full.

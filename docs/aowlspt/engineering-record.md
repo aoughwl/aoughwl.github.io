@@ -125,3 +125,12 @@ repository: until 2026-08-19 the most repeated sentence in the project was
 appeared at the top of seven documents, all ten mod READMEs, the overlay README
 and the module header of every client-side mod. **That sentence is no longer
 true**, and wherever it still survives it is stale text, not a current claim.
+
+## Deeper
+
+[Backlog](/docs/aowlspt/manual/backlog) is the other half of this record: every
+thing the repository said it had not done, frozen at the point the project
+ended. [1.0 release readiness](/docs/aowlspt/manual/release-readiness) is the
+audit taken just before it, and
+[Three gaps in the mod API](/docs/aowlspt/manual/api-gaps) is the clearest
+single example of a limitation written down rather than worked around.

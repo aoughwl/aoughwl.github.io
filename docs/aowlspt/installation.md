@@ -162,3 +162,16 @@ install\aowlspt-install.exe uninstall --target D:\Aowlspt
 
 It is driven by the manifest the install wrote, so it removes exactly what was
 created. Your original install was never touched.
+
+## Deeper
+
+[Installing](/docs/aowlspt/manual/install) is the repository's own installation
+document. It is the same install seen from inside the checkout, so it starts a
+step earlier — building the payload — and its **step numbers do not line up
+with the ones above**. Read it for the refusal table, the hard-link story and
+`firstrun.exe`, not for step-by-step parity with this page.
+
+[Importing a real database](/docs/aowlspt/manual/importdb) is what `aowl
+importdb` actually does, and
+[the pre-1.0 database against post-1.0](/docs/aowlspt/manual/post1-data-delta)
+is what survives that trip and what does not.

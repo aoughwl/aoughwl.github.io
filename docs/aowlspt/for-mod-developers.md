@@ -136,3 +136,12 @@ Worked examples live in `examples/`: `hello` (the plumbing end to end),
 `clientprobe` and `highlevel` (reaching into a post-1.0 client, raw and typed),
 `backend` and `gameserver` (routes, database, config), and `lesson` — every part
 of the API in the order a mod needs it.
+
+## Deeper
+
+[Writing a mod](/docs/aowlspt/manual/modding) is the full manual — types, calls,
+hooks, per-frame code, the traps. [Debugging a native
+mod](/docs/aowlspt/manual/debugging) is the four levels of debugging, from
+`aowl doctor` up to the real host, and
+[the in-game debug overlay](/docs/aowlspt/manual/debug-overlay) is what you get
+to look at while it runs.

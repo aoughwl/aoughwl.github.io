@@ -44,15 +44,15 @@ Served by the game server that ships with the system:
 
 ## Running the thing
 
-- **In-game settings, in the game's own screen.** Tarkov's settings screen
-  grows a sixth tab — **MODS** — beside Game, Graphics, Sound, Controls and
-  PostFX. It carries a subtab per mod, plus the game server's own settings and
-  the full server config surface. The rows are real Tarkov controls, not an
-  overlay drawn on top. Edits persist back to that mod's `config.json` and
-  hot-apply where the mod supports it.
-- **PostFX now lives under Graphics.** The post-processing controls are a
-  subtab of the Graphics tab rather than a tab of their own, which is what
-  makes room for MODS.
+- **In-game settings.** One settings surface, carrying a page per mod plus the
+  game server's own settings and the full server config surface. Edits persist
+  back to that mod's `config.json` and hot-apply where the mod supports it.
+  Every surface — the in-game one, the browser page at
+  `/aowlspt/ui/page/settings` — reads and writes the same
+  [HTTP routes](/docs/aowlspt/manual/ui-api), so there is one schema and no UI
+  holds settings logic of its own. The attempt to draw these as rows inside
+  Tarkov's *own* settings screen was
+  [shelved before 1.0](/docs/aowlspt/manual/shelved-native-settings).
 - **A mod manager.** Turn mods on and off — on the server while it is serving,
   and on the client while the game is running. Your selection is a file, and so
   is a named mod list, so "my raid night setup" is something you can send
@@ -73,9 +73,9 @@ Served by the game server that ships with the system:
   handles, fields by name, hooks that read their arguments and can suppress the
   original, and a bind-once fast path for per-frame code.
 - **Reach into the server**: routes, the database, the notifier websocket.
-- **A settings API**: declare what your mod's config keys are, and they are
-  drawn as native Tarkov controls in the MODS tab. No overlay, no F12 config
-  menu of your own to write.
+- **A settings API**: declare what your mod's config keys are, and every
+  settings surface draws, persists and hot-applies them. No config menu of your
+  own to write.
 - **A simulator** that loads your mod with no game and no server behind it, so
   the edit-build-run loop is about a second.
 - **A live inspector** — a diagnostics tool for developers debugging the game

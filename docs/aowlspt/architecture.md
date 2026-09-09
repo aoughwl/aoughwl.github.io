@@ -214,3 +214,20 @@ sorted names, no build time inside — so two people building the same tree can
 compare hashes. The archive is then reopened and verified from its own central
 directory: the shape is checked against the file, not against the list the
 writer was handed.
+
+## Deeper
+
+[The shape of aowlspt](/docs/aowlspt/manual/architecture) is the repository's
+own version of this page — the same structure, five times the detail, and the
+reasoning behind each seam. Around it:
+[the C ABI](/docs/aowlspt/manual/abi),
+[the wire format](/docs/aowlspt/manual/wire),
+[mod-to-mod capabilities](/docs/aowlspt/manual/capabilities), and
+[what a client-side call costs](/docs/aowlspt/manual/perf).
+
+One caution when reading it. That document opens by saying that nothing in the
+repository had ever been run against BSG's client and that every figure in it is
+against the stand-in. That was true when it was written; later documents —
+[the interaction layer](/docs/aowlspt/manual/interaction-layer-map) above all —
+are written from live sessions and dated crashes. The pages carry their own
+dates; trust the later one.

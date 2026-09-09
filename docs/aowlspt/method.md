@@ -106,3 +106,14 @@ project keeps paying for — `docs/SAIN_RVA.md` currently asserts a blocker that
 was fixed weeks ago, and that stale claim has cost real time more than once.
 That is why the [reference section](./reference/) is generated from source
 rather than written by hand.
+
+## Deeper
+
+The manual is what this method produced. Three pages show it working:
+[the interaction layer](/docs/aowlspt/manual/interaction-layer-map), which tags
+every claim measured or inferred and ends each section in a testable assertion;
+[emulator coverage](/docs/aowlspt/manual/emulator-coverage), where a document
+that could not see its own subject was replaced by a program that reads both
+sides; and
+[every refusal, re-audited](/docs/aowlspt/manual/emulator-refusals), which takes
+each "we cannot do this" back to the evidence and asks whether it is still true.

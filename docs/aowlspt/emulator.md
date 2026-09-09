@@ -64,15 +64,24 @@ class, so the method list is the complete demand side: **226 methods**, of which
 
 | | operations | |
 |---|---:|---|
-| served, and shaped against the reference DTO | **129** | a route or an item-event arm of its own |
-| served, deliberately empty or flattened | **21** | answered by a stock stub, and named individually |
-| not served | **61** | 404s; the client retries or does without |
+| served, and shaped against the reference DTO | **132** | a route or an item-event arm of its own |
+| served, deliberately empty or flattened | **20** | answered by a stock stub, and named individually |
+| not served | **59** | 404s; the client retries or does without |
 | client-facing operations | **211** | |
 
 **Those three numbers are generated.** `tools/coverage.nim` computes them by
 reading `docs/coverage-rows.json` and `mods/tarkov/tarkov.nim` itself, writes
 them into the document between explicit markers, and `aowl test` runs
 `aowl-coverage --check`, which fails if they are stale. Nobody edits them.
+
+This page quoted 129/21/61 until the repository was published; that was a stale
+copy of an earlier generator run, and the figures above are now the ones inside
+the generated block in
+[Emulator coverage](/docs/aowlspt/manual/emulator-coverage). That page is the
+full audit — every operation, named, with what it costs the player when it is
+not served — and
+[Every refusal, re-audited](/docs/aowlspt/manual/emulator-refusals) takes each
+deliberate 404 back to the database to ask whether its reason still holds.
 
 The history of that decision is the interesting part. The hand-joined passes
 before the generator existed read 127/24/60, then 122/25/64, 119/26/66,
@@ -145,3 +154,11 @@ friends, the SPT launcher's own routes, trader clothing, cultist recipes. And
 one concurrency window is documented rather than closed — two writers on the
 same item-event counter can still both read, both pass, and both write:
 *"**that narrows the window and does not close it.**"*
+
+## Deeper
+
+[The emulator](/docs/aowlspt/manual/emulator) and
+[the backend](/docs/aowlspt/manual/backend) are the repository's own accounts of
+the two halves. [The backend, made fast](/docs/aowlspt/manual/perf-server) is
+the performance work, and [the wire format](/docs/aowlspt/manual/wire) is what
+goes over the socket.

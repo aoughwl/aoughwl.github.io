@@ -125,3 +125,12 @@ Every build runs a full automated gate, from the ABI's layout under the real
 compiler to every mod in the registry loaded into one backend at once. The
 engineering record, including what the tests can and cannot establish, is under
 [Under the hood](/docs/aowlspt/architecture).
+
+## Deeper
+
+Longer answers to some of the above live in the manual:
+[Headless and unattended running](/docs/aowlspt/manual/headless) for "can I run
+it without a screen", [Distribution](/docs/aowlspt/manual/distribution) and
+[Beta distribution](/docs/aowlspt/manual/beta-distribution) for how the build
+was meant to reach people, and [Backlog](/docs/aowlspt/manual/backlog) for
+everything that was never finished.
