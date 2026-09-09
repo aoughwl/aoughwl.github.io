@@ -199,6 +199,20 @@ const sidebar = [
     text: 'GAMES',
     items: [
       {
+        text: 'Modding engine — Jester',
+        link: '/docs/jester',
+        collapsed: true,
+        items: [
+          { text: 'Getting started', link: '/docs/jester/getting-started' },
+          { text: 'The mod API', link: '/docs/jester/mod-api' },
+          { text: 'Catalogs', link: '/docs/jester/catalogs' },
+          { text: 'The UI library', link: '/docs/jester/ui' },
+          { text: 'Importers', link: '/docs/jester/importers' },
+          { text: 'Networking', link: '/docs/jester/networking' },
+          { text: 'The host surface', link: '/docs/jester/host-surface' },
+        ],
+      },
+      {
         text: 'Tarkov modding — aowlspt',
         link: '/docs/aowlspt',
         collapsed: true,

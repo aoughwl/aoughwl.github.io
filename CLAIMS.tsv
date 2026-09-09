@@ -80,3 +80,18 @@ docs/aowlmony.md	its `consteval` gate reads 19/19 byte-exact under both	EXPENSIV
 docs/aowlmony.md	**24 ok / 16 fail on Windows**	EXPENSIVE	24	cd ~/aowlmony && npm test	^(\d+)/\d+ passed	no bin/aowlmony-ng|run ./build.sh
 blog.md	The "498/498" corpus figure in this post and the	HISTORICAL	498/498	the correction banner. The three occurrences of 498/498 below it are left as written, by decision; this row exists so nobody 'fixes' them.
 blog.md	**64/64** diagnostics	UNATTRIBUTED	64/64	inside a post whose 2026-09-09 banner corrects only 498/498. aowlsem's diagnostics gate is tests/diag_gate.sh and its dated records read 176/176; 64 is not its denominator on any record in that repo. Extend the banner to cover it, or attribute it.
+#
+# Jester (savannt/jester, private) is a sibling checkout like the rest: its gates
+# run in ~/Documents/infiniteless-next. The two counts below are the spine of that
+# section -- "the boundary is N host calls" is the claim the whole design rests on,
+# and it moved once already: HOST-SURFACE.md's 205 was measured before the content-
+# update table (15 calls) existed, and the site said 220 from the first day because
+# these rows were run rather than remembered. The GUARD on each is the missing-
+# checkout case: with no jester tree the greps print nothing and 0 would otherwise
+# read as a measurement.
+docs/jester.md	The boundary is **220 host calls**	GATE	220	cd ~/Documents/infiniteless-next && P=Packages/com.infiniteless.runtime && echo hostcalls=$({ grep -ohE 'case "infiniteless_[a-z0-9_]+"' $P/Runtime/Native/AowliHostBridge.cs; grep -ohE 'case Prefix \+ "[a-z0-9_]+"' $P/Runtime/Networking/HttpHostCalls.cs $P/Runtime/Networking/NetworkHostCalls.cs $P/Runtime/Unity/ImportHostCalls.cs $P/Runtime/Unity/ContentHostCalls.cs; } | wc -l)	hostcalls=(\d+)	No such file or directory
+docs/jester/host-surface.md	**220 host calls.** The C# dispatch	GATE	220	cd ~/Documents/infiniteless-next && P=Packages/com.infiniteless.runtime && echo hostcalls=$({ grep -ohE 'case "infiniteless_[a-z0-9_]+"' $P/Runtime/Native/AowliHostBridge.cs; grep -ohE 'case Prefix \+ "[a-z0-9_]+"' $P/Runtime/Networking/HttpHostCalls.cs $P/Runtime/Networking/NetworkHostCalls.cs $P/Runtime/Unity/ImportHostCalls.cs $P/Runtime/Unity/ContentHostCalls.cs; } | wc -l)	hostcalls=(\d+)	No such file or directory
+docs/jester.md	are the same 220 names	GATE	220	cd ~/Documents/infiniteless-next && echo sdkdecls=$(grep -rhoE 'importc: *"infiniteless_[a-z0-9_]+"' Packages/com.infiniteless.runtime/ModSdk/ | grep -oE 'infiniteless_[a-z0-9_]+' | sort -u | wc -l)	sdkdecls=(\d+)	No such file or directory
+docs/jester/host-surface.md	**511 exported procs across 20 modules**	GATE	511	cd ~/Documents/infiniteless-next && echo sdkprocs=$(grep -rhcE '^(proc|func|iterator|template|macro) [a-zA-Z]+\*' Packages/com.infiniteless.runtime/ModSdk/*.nim | awk '{s+=$1} END {print s}')	sdkprocs=(\d+)	No such file or directory
+docs/jester/mod-api.md	**511 exported procs across 20 modules**	GATE	511	cd ~/Documents/infiniteless-next && echo sdkprocs=$(grep -rhcE '^(proc|func|iterator|template|macro) [a-zA-Z]+\*' Packages/com.infiniteless.runtime/ModSdk/*.nim | awk '{s+=$1} END {print s}')	sdkprocs=(\d+)	No such file or directory
+docs/jester/networking.md	`PASS: 100000 parts built and saved`	EXPENSIVE	100000	cd ~/Documents/infiniteless-next && dotnet run --project Tests/Infiniteless.Network.Tests	PASS: (\d+) parts built and saved	FAIL|did not run|could not
