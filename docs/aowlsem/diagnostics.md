@@ -3,7 +3,7 @@
 `aowlsem`'s error engine: a **side channel** that carries stable codes, real
 source spans with caret underlines, edit-distance "did you mean" suggestions, and
 a band of **opinion lints** that flag code the reference compiler silently
-accepts — all without changing a single byte of the typed `.s.aif` it emits.
+accepts — all without changing a single byte of the typed `.s.nif` it emits.
 
 [[toc]]
 
@@ -17,8 +17,9 @@ emitting typed AIF. Two consequences follow directly:
 
 - **One run reports every independent error** in the module, not just the first.
 - **The byte-exact output is invariant.** A valid program yields zero
-  diagnostics; the differential corpus (498/498 modules matching the reference's
-  typed output) is untouched by the diagnostic layer.
+  diagnostics; the differential corpus (its current, dated verdict is on the
+  [aowlsem page](../aowlsem#measured-status)) is untouched by the
+  diagnostic layer.
 
 Only *genuine* errors (severity `error`) also populate the legacy flat error
 channel and set the failing exit code. **Opinion lints and idiom hints — things

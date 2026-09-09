@@ -6,8 +6,8 @@ repo: aoughwl/aowlhexer
 
 > ▶️ **[Try `aoughwl/aowlhexer` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlhexer)** — clones the repo into the in-browser IDE, no install.
 
-`aowlhexer` lowers a semantically-checked AIF module (`.s.aif`) to the C-shaped
-`.c.aif` that the native backend prints — injecting ARC, lifting closures,
+`aowlhexer` lowers a semantically-checked AIF module (`.s.nif`) to the C-shaped
+`.c.nif` that the native backend prints — injecting ARC, lifting closures,
 inlining iterators, lowering exceptions, and monomorphising generics along the
 way. It started from `hexer` in nimony and is being taken over pass by pass.
 
@@ -23,9 +23,9 @@ printers:
 | `iterinliner` | iterators inlined |
 | `eraiser` | exceptions → error-code plumbing |
 | `inliner` / `dce2` / `constparams` | inlining, dead-code elimination, const-param specialisation |
-| `lengcgen` | emit the sized, ARC'd, monomorphised `.c.aif` |
+| `lengcgen` | emit the sized, ARC'd, monomorphised `.c.nif` |
 
-Because ARC is injected here, every backend that consumes `.c.aif` gets
+Because ARC is injected here, every backend that consumes `.c.nif` gets
 **deterministic memory management for free** — which is exactly why
 [aowlc](aowlc) can be a printer.
 
@@ -48,7 +48,7 @@ more precise — never looser:
 | `lambdalifting` | Capturing a `var T` / `out T` parameter in a closure is now a lowering-time error. That capture aliases the *caller's* storage, so an environment that outlives the call dangles. The reference leaves it as a TODO; sem catches the common cases, this is the backstop. |
 | `mover` | The "other usage" that blocks a sink was recorded *after* the cursor had advanced past it, so the diagnostic pointed at a closing paren. It's now captured at the use site. |
 
-So the `.c.aif` is near-identical to `hexer`'s rather than identical by
+So the `.c.nif` is near-identical to `hexer`'s rather than identical by
 construction: a program that captures a `var` parameter is rejected here and
 accepted there.
 

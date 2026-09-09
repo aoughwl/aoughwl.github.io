@@ -21,9 +21,9 @@ proc semType(c: var SemContext; dest: var TokenBuf; cur: Cursor): Type
 
 Three arguments, one invariant:
 
-- **`cur`** — a read-only cursor into the **parse-form** AIF (`.p.aif`) being
+- **`cur`** — a read-only cursor into the **parse-form** AIF (`.p.nif`) being
   consumed.
-- **`dest`** — the **typed** AIF (`.s.aif`) being produced; the routine *writes*
+- **`dest`** — the **typed** AIF (`.s.nif`) being produced; the routine *writes*
   its lowered output here.
 - **return `Type`** — the checked/inferred type of what it just consumed.
 
@@ -111,8 +111,8 @@ parse buffer and the checked `system` buffer, it:
 
 1. **Loads `system`** (unless `--noSystem`) so builtin types and routines
    (`string`, `&`, `$`, `seq`, the arithmetic magics…) resolve.
-2. **Resolves the import graph** from the module's `.p.deps.aif`: each imported
-   module's already-checked `.s.aif` is loaded and its exported types / procs /
+2. **Resolves the import graph** from the module's `.p.deps.nif`: each imported
+   module's already-checked `.s.nif` is loaded and its exported types / procs /
    converters / templates registered. `from X import`, `import X except`, and
    re-exports are followed transitively across the whole closure.
 3. **Inlines every `include`** into one flat `(stmts …)` before checking.
@@ -143,7 +143,7 @@ independent stages?* Today they are **one fused stage**, by design:
     the seam that lets aowlsem carry richer errors than the reference without
     diverging its output. See [Diagnostics](diagnostics).
   - **The high-level optimizer** (`aowlsem opt`, `optcore.nim`) is a **separate
-    pass** over an already-checked `.s.aif`. It does not run inside `m`.
+    pass** over an already-checked `.s.nif`. It does not run inside `m`.
   - **Instantiation** reuses the checker: `requestInstance` copies + substitutes
     a generic body and hands it back to `semStmt`, so there is no parallel
     "instantiate" implementation to keep in sync with the checker.
@@ -180,10 +180,10 @@ routine checks its table first and computes-then-stores on a miss.
 ```
  .nim / .aowl ─► aowlparser ─► aowlsem ─► aowlhexer ─► aowlc / aowljs / aowli
     source         parse       semcheck    lower        code / interpret
-                              (.p.aif→.s.aif)
+                              (.p.nif→.s.nif)
 ```
 
 `aowlsem` is the typing seam of the toolchain: everything downstream reads the
-symbols, resolved overloads and generic instances it writes into `.s.aif`. The
+symbols, resolved overloads and generic instances it writes into `.s.nif`. The
 format on both sides is [AIF, which is NIF](../aif) byte-for-byte, so the typed
 output is interchangeable with the reference compiler's own.

@@ -1,8 +1,8 @@
-# The `.p.aif` format
+# The `.p.nif` format
 
 What aowlparser emits — enough to read a parse-dialect AIF by eye. This is the
 untyped wire form the nimony frontend consumes; the semantic pass later turns it
-into the typed `.s.aif`.
+into the typed `.s.nif`.
 
 [[toc]]
 
@@ -10,7 +10,7 @@ into the typed `.s.aif`.
 
 ## Shape
 
-A `.p.aif` is a whitespace-insignificant tree of parenthesised nodes. Three
+A `.p.nif` is a whitespace-insignificant tree of parenthesised nodes. Three
 token kinds appear:
 
 - **Trees** — `(tag …children…)`. The tag is the first atom after `(`, glued to

@@ -11,7 +11,7 @@ implementations of one semantics, not two features.
 
 | | |
 |---|---|
-| Input | The compiler's post-semcheck typed AIF (`.s.aif`) — the exact artifact the native backend consumes. No separate parser, no separate type system. |
+| Input | The compiler's post-semcheck typed AIF (`.s.nif`) — the exact artifact the native backend consumes. No separate parser, no separate type system. |
 | `seq`/`string`/`Table` | Library types built on raw `alloc` in native nimony. aowli **intercepts** the procs that implement them as "natives" and substitutes its own boxed value model (seq, string, array, set, object) instead of running the pointer code. |
 | Memory | The interpreter never touches raw memory — every aggregate is a boxed value the engines share. |
 | I/O | Shared primitive layer for stdout/stdin so both engines produce identical program output, not just identical control flow. |
@@ -67,10 +67,10 @@ correctness gap in the interpreter.
 `--emit-run` (env `AIFI_EMIT_RUN=PATH`) serializes an *execution* back into
 AIF: a **run rung** token stream recording every binding, loop iteration, and
 value the program produced, each atom carrying an `(at …)` back-pointer to the
-`.s.aif` node it evaluated.
+`.s.nif` node it evaluated.
 
 ```
-source AIF (.p.aif) → typed AIF (.s.aif) → the run (run rung)
+source AIF (.p.nif) → typed AIF (.s.nif) → the run (run rung)
 ```
 
 The value walker underneath walks each runtime value off its cell/object
@@ -79,8 +79,8 @@ structure rather than stringifying it — aggregates keep their real fields
 ref/ptr identity is deduped, so sharing is explicit and cycles terminate.
 Emission is gated behind an off-by-default flag; a normal run's stdout stays
 byte-identical. The browser [playground](https://aoughwl.github.io/playground/)
-surfaces this in its **Run** tab, alongside the Parsed (`.p.aif`) and Typed
-(`.s.aif`) rungs.
+surfaces this in its **Run** tab, alongside the Parsed (`.p.nif`) and Typed
+(`.s.nif`) rungs.
 
 ## Tracing
 

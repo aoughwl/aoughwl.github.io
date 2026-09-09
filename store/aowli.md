@@ -61,7 +61,7 @@ machines still on it.
 ## Requirements
 
 - Linux x86-64. The binaries are self-contained.
-- A `.s.aif` to run — i.e. a nimony toolchain, which is free.
+- A `.s.nif` to run — i.e. a nimony toolchain, which is free.
 - No network at all to run it. The key is checked when you download, not when
   you execute; the binary itself never phones home.
 
@@ -69,7 +69,7 @@ machines still on it.
 
 1. Your key appears on screen and arrives by email.
 2. Open your [licence page](/store/license), paste the key, download the build.
-3. Extract it and run `bin/aowli-interp <module.s.aif>`. There is nothing to
+3. Extract it and run `bin/aowli-interp <module.s.nif>`. There is nothing to
    activate and nothing to register — check the archive against
    `SHA256SUMS.txt` and it is ready.
 

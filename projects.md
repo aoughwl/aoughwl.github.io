@@ -5,13 +5,13 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 
 | Project | Repo | Status |
 |---|---|---|
-| [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.aif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
-| [aowlsem](docs/aowlsem) — semantic analysis: `.p.aif` → typed `.s.aif` (symbols, overloads, generics) | `aoughwl/aowlsem` | public |
-| [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.aif` | `aoughwl/aowli` | private |
+| [aowlparser](docs/aowlparser) — Nim/Nimony source → `.p.nif` parser (byte-identical to `nifler`) | `aoughwl/aowlparser` | public |
+| [aowlsem](docs/aowlsem) — semantic analysis: `.p.nif` → typed `.s.nif` (symbols, overloads, generics) | `aoughwl/aowlsem` | public |
+| [aowli](aowli) — two-engine interpreter (tree-walker + bytecode VM) for typed `.s.nif` | `aoughwl/aowli` | private |
 | [aowli-release](docs/aowli-release) — prebuilt, binary-only distribution of aowli (`aowli-interp`, `aowli-dbg`) | `aoughwl/aowli-release` | private |
-| [aowljs](docs/aowljs) — `.s.aif` → native-JavaScript backend | `aoughwl/aowljs` | public |
+| [aowljs](docs/aowljs) — `.s.nif` → native-JavaScript backend | `aoughwl/aowljs` | public |
 | [aowljs-js](docs/aowljs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aowljs-js` | public |
-| [aowlc](docs/aowlc) — `.c.aif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |
+| [aowlc](docs/aowlc) — `.c.nif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |
 | [aowlhexer](docs/aowlhexer) — the lowering pass (ARC/closures/exceptions/mono) | `aoughwl/aowlhexer` | private |
 | [aowlmony](docs/aowlmony) — the driver: `.nim` → {native \| interpret \| web} over the whole stack | `aoughwl/aowlmony` | public |
 | [aowlrt](docs/aowlrt) — the aowl system module + runtime (strings/seqs/ARC) for native linking | `aoughwl/aowlrt` | public · scaffolding |

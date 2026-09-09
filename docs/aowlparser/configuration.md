@@ -1,7 +1,7 @@
 # Configuration
 
 Every option below is **off / neutral by default**, so a plain
-`aowlparser p in.nim out.p.aif` produces the same tree as native `nifler` —
+`aowlparser p in.nim out.p.nif` produces the same tree as native `nifler` —
 byte-identical across the nimony compiler source, structure-identical everywhere
 tested (bar the one-line `(.vendor "aowlparser")` header, which aowlparser always
 stamps as its own; see [Coverage](known-gaps)).
@@ -11,7 +11,7 @@ apart from `--curly` (which only *adds* accepted syntax) and the opt-in
 input acceptance, add diagnostics, or move I/O.
 
 ```
-usage: aowlparser [OPTIONS] p <in.nim> [out.p.aif]
+usage: aowlparser [OPTIONS] p <in.nim> [out.p.nif]
 ```
 
 [[toc]]
@@ -187,7 +187,7 @@ relative or absolute path. `off` records the path exactly as given.
 
 ## I/O
 
-By default aowlparser reads a file and writes `<in>.p.aif` (or the given output
+By default aowlparser reads a file and writes `<in>.p.nif` (or the given output
 path). For pipelines and the JS build it can use the standard streams instead:
 
 | flag | effect |
@@ -200,25 +200,25 @@ path). For pipelines and the JS build it can use the standard streams instead:
 
 ```sh
 # default — nifler-compatible, spaces only
-aowlparser p mod.nim mod.p.aif
+aowlparser p mod.nim mod.p.nif
 
 # accept a tab-indented file (8-column tabs), same tree as the space version
-aowlparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.aif
+aowlparser --tabs:tabs --tab-width:8 p tabbed.nim tabbed.p.nif
 
 # lint a file: require a final newline, LF endings, no trailing spaces
-aowlparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.aif
+aowlparser --final-newline:require --newline:lf --trailing-whitespace:warn p mod.nim mod.p.nif
 
 # CI gate — fail on any illegal byte
-aowlparser --strict p mod.nim mod.p.aif || echo "rejected"
+aowlparser --strict p mod.nim mod.p.nif || echo "rejected"
 
 # a pipeline: stdin -> stdout, with a recorded filename for line-info
-cat mod.nim | aowlparser --stdin --stdout --filename:mod.nim p > mod.p.aif
+cat mod.nim | aowlparser --stdin --stdout --filename:mod.nim p > mod.p.nif
 
 # guard against pathological nesting
-aowlparser --max-depth:400 p untrusted.nim out.p.aif
+aowlparser --max-depth:400 p untrusted.nim out.p.nif
 
 # brace blocks plus tab indentation, mixed freely
-aowlparser --curly --tabs:both p editor_dialect.nim out.p.aif
+aowlparser --curly --tabs:both p editor_dialect.nim out.p.nif
 ```
 
 ## Design note: the default is always native `nifler`

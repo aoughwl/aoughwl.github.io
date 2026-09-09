@@ -10,13 +10,13 @@ expected output; nifler is the oracle.
 
 ## Two levels of match
 
-For each input the harness runs nifler and aowlparser and compares the `.p.aif`:
+For each input the harness runs nifler and aowlparser and compares the `.p.nif`:
 
 - **Structural** (the pass criterion) — `tests/canon.py` strips line-info
   (`@…`/`~…`) and comment suffixes and normalises whitespace; the token trees
   must then be identical. String contents are preserved: AIF escapes every marker
   byte inside strings, so a `@` in `"a@b"` is never read as line-info.
-- **Exact** — the `.p.aif` bytes are identical, line-info included. This is the
+- **Exact** — the `.p.nif` bytes are identical, line-info included. This is the
   check that the relative line-info model is right, not just structurally
   plausible.
 

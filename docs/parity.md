@@ -21,7 +21,7 @@ parts that aren't green.
 | Stage | ours | vs. | from scratch | byte parity |
 |:--|:--|:--|:--:|:--|
 | **parse** | [aowlparser](aowlparser) | `nifler` | ✅ | **byte-exact** on the whole compiler tree (184/184); 91–283 files byte-exact on the stdlib, **100% structural** everywhere |
-| **semcheck** | [aowlsem](aowlsem) | `nimsem` | ✅ | **498/498** corpus modules byte-exact against the reference oracle, `std/system` checking clean; remaining gaps are whole constructs, not diff noise |
+| **semcheck** | [aowlsem](aowlsem) | `nimsem` | ✅ | corpus **924/941** byte-exact (15 of the 17 misses are oracle-side); own dependency closure **31 of 56** modules byte-exact; `std/system` semchecks with **89 differing tokens** over ~92,600 lines — all Windows, 2026-09-09, aowlsem commit `d4955d3e`. Linux `moddiff` baseline: 47 of 55 (2026-08-19). Not comparable across platforms. |
 | **lower** | [aowlhexer](aowlhexer) | `hexer` | ⏳ | runs the reference's 25 passes with **two of our own fixes** on top (below), so it is near-identical rather than identical by construction; the from-scratch rewrite is next |
 | **C codegen** | [aowlc](aowlc) | `lengc` | ✅ | end-to-end correct today (runs, ASan-clean); text byte-parity with `lengc` is the active push |
 | **interpret / VM** | [aowli](/aowli) | *(new)* | ✅ | two independent engines that agree with each other and with native across a 423-program differential corpus — zero in-scope divergence (aowli **v0.3.3**) |
@@ -33,7 +33,7 @@ parts that aren't green.
 
 The front of the pipeline is done. `aowlparser` is diffed against native
 `nifler`: *structural* means the token trees match with line info stripped,
-*byte-exact* means the `.p.aif` files are identical including every offset.
+*byte-exact* means the `.p.nif` files are identical including every offset.
 
 | corpus | files | structural | byte-exact |
 |:--|--:|--:|--:|
@@ -49,8 +49,15 @@ one by one rather than left as a mystery — see
 ## Semantic checker
 
 `aowlsem` is a clean-room replacement for `nimsem`, and it is the stage where
-parity is currently being ground out construct by construct. The corpus stands
-at **498/498 modules byte-exact**, including all of `std/system`.
+parity is currently being ground out construct by construct. The dated gate
+verdicts live on the [aowlsem page](aowlsem#measured-status);
+on Windows on 2026-09-09 they read corpus 924/941, `moddiff` 31 exact of 56,
+`sysdiff` 89 differing tokens over all of `std/system`.
+
+> **Correction, 2026-09-09.** This page said "498/498 modules byte-exact,
+> including all of `std/system`" from 2026-07-28. That number was an `hconv`-site
+> census from aowlsem's `REQUIREMENTS.md`, not a module count, and `std/system`
+> was not — and is not yet — byte-exact. The aowlsem page has the full note.
 
 What's left is not a long tail of near-misses. Differential runs over the whole
 nimcache oracle set point at specific missing features — anonymous sum-type
@@ -62,7 +69,7 @@ modules. Details on the [aowlsem page](aowlsem).
 ## Lowering
 
 `aowlhexer` still runs the reference compiler's 25 lowering passes, so its
-`.c.aif` matches by construction almost everywhere. There are two deliberate
+`.c.nif` matches by construction almost everywhere. There are two deliberate
 exceptions, both in places the reference marks its own code as unfinished:
 
 - **Captured `var` / `out` parameters are now rejected.** A closure that captures

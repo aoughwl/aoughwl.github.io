@@ -1,7 +1,7 @@
 # Lowering reference
 
-What `aowlsem` turns each construct into. The parse form (`.p.aif`) carries bare
-identifiers and source shapes; the semchecked form (`.s.aif`) carries mangled
+What `aowlsem` turns each construct into. The parse form (`.p.nif`) carries bare
+identifiers and source shapes; the semchecked form (`.s.nif`) carries mangled
 symbols, resolved overloads, concrete types, and explicit conversions. This page
 catalogs the canonical transformations, in AIF's parenthesised form.
 

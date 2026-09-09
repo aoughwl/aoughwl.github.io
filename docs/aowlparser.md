@@ -6,7 +6,7 @@ repo: aoughwl/aowlparser
 
 > ▶️ **[Try `aoughwl/aowlparser` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlparser)** — clones the repo into the in-browser IDE, no install.
 
-Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.aif`).
+Pure-nimony recursive-descent parser: Nim source to parse-dialect AIF (`.p.nif`).
 Produces the same output as the classic compiler's `nifler`, but is self-hosted —
 no dependency on the classic Nim compiler, so it compiles through the nimony JS
 backend and runs in the browser. Output is byte-identical to `nifler` except the
@@ -31,7 +31,7 @@ on the Nim-2 classic compiler and does not compile under nimony.
 ## Conformance
 
 Differential-tested against native `nifler`. *Structural* = token trees equal with
-line-info stripped; *byte-exact* = identical `.p.aif` including line-info, modulo
+line-info stripped; *byte-exact* = identical `.p.nif` including line-info, modulo
 the `(.vendor)` line.
 
 | corpus | files | structural | byte-exact |
@@ -140,7 +140,7 @@ changes the emitted AIF.
 | [Grammar coverage](aowlparser/grammar) | lexer / expression / statement / section / type constructs reproduced |
 | [Dialects](aowlparser/dialects) | nine byte-exact front ends on one core — nim, css, html, py, js, json, vds, md, yaml |
 | [JSON reader](aowlparser/json-reader) | `jsonfast`: 963–2248 MB/s, held to CPython on 10k files and 494k prefixes |
-| [The .p.aif format](aowlparser/output-format) | header directives, base62 line-info suffix, operator escaping, tag vocabulary |
+| [The .p.nif format](aowlparser/output-format) | header directives, base62 line-info suffix, operator escaping, tag vocabulary |
 | [Browser & JS](aowlparser/browser) | client-side build, the `globalThis.__np_*` contract, `webdiag` |
 | [Differential testing](aowlparser/testing) | oracle harness, `canon.py`, structural vs byte-exact |
 | [Configuration](aowlparser/configuration) | `--curly` block bodies, whitespace policy switches |

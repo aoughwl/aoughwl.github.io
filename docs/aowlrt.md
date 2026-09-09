@@ -3,10 +3,10 @@
 > ▶️ **[Try `aoughwl/aowlrt` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aowlrt)** — clones the repo into the in-browser IDE, no install.
 
 `aowlrt` is the hand-written C runtime that supplies the `system` / `syncio`
-symbols a post-[aowlhexer](aowlhexer) `.c.aif` references, so real programs —
+symbols a post-[aowlhexer](aowlhexer) `.c.nif` references, so real programs —
 `echo`, strings, seqs, `ref`/variant objects, inheritance with method dispatch,
 ARC — link and run **natively** through [aowlc](aowlc) with **no** nimony
-`system.c.aif`.
+`system.c.nif`.
 
 Repo **`aoughwl/aowlrt`** (public). Status: **working** — `echo "hello"` and 43
 other programs compile to native binaries and pass a **44/44** acceptance suite,
@@ -20,10 +20,10 @@ the eventual aowl-source `system` module (Phase 2).
 ## Why it exists
 
 By the time [aowlhexer](aowlhexer) has lowered a program, ARC calls and runtime
-operations are *injected* into the `.c.aif`: they reference runtime symbols
+operations are *injected* into the `.c.nif`: they reference runtime symbols
 (`write`, the string/seq structs, `=destroy`, `allocFixed`, `arcInc`, …) that
 must exist at link time. Nimony satisfies them by compiling its `system` module
-to `.c.aif`; aowlrt provides them as an aowl-owned C layer instead.
+to `.c.nif`; aowlrt provides them as an aowl-owned C layer instead.
 
 ## Linking
 
@@ -53,7 +53,7 @@ the module hash and are bridged by the shim. Any runtime symbol aowlrt doesn't
 cover is printed as a coverage gap and the build fails — never silently stubbed.
 
 ```
-.c.aif ──aowlc printer──▶ C ──inject shim──▶ gcc + runtime/aowlrt.c ──▶ native binary
+.c.nif ──aowlc printer──▶ C ──inject shim──▶ gcc + runtime/aowlrt.c ──▶ native binary
 ```
 
 `aowlrt-cc` compiles with `-Werror=implicit-function-declaration`: a runtime
@@ -160,11 +160,11 @@ array/flexarray `aconstr` as a plain aggregate, `flexarray` *definitions* as rea
 ## Testing
 
 ```sh
-npm test            # build every example .c.aif natively + assert output (node + gcc)
-npm run test:regen  # regenerate each .c.aif from its .nim first (needs nimony)
+npm test            # build every example .c.nif natively + assert output (node + gcc)
+npm run test:regen  # regenerate each .c.nif from its .nim first (needs nimony)
 ```
 
-44 programs assert native output; each runs from a committed `.c.aif` or
+44 programs assert native output; each runs from a committed `.c.nif` or
 `--regen` from `.nim`. 44/44, ASan/UBSan/LSan-clean.
 
 ## Not covered

@@ -84,8 +84,9 @@ boundary rather than trusted to behave.
 ## How far along it is
 
 The parser is done: byte-exact on the whole compiler tree, 0 crashes and 0 hangs
-across four corpora. The checker stands at 498/498 corpus modules byte-exact,
-including all of `std/system`. Lowering still runs the reference passes and says
+across four corpora. The checker's gates read 924/941 corpus cases byte-exact and
+`std/system` semchecked to within 89 tokens (Windows, 2026-09-09; the dated table
+is on the [aowlsem page](/docs/aowlsem#measured-status)). Lowering still runs the reference passes and says
 so on the page. The scoreboard, including what is missing and why, is the
 **[parity page](/docs/parity)**.
 
@@ -95,9 +96,9 @@ so on the page. The scoreboard, including what is missing and why, is the
 
 | Stage | Repo | What it is |
 |:--|:--|:--|
-| **parse** | [aowlparser](/docs/aowlparser) | Nim/Nimony source → `.p.aif`; byte-identical to `nifler`, self-hosted, browser-ready. |
-| **semcheck** | [aowlsem](/docs/aowlsem) | `.p.aif` → typed `.s.aif`: symbols, overloads, generic instantiation. |
-| **lower** | [aowlhexer](/docs/aowlhexer) *(private)* | `.s.aif` → `.c.aif`: ARC, closures, iterators, exceptions, monomorphisation. |
+| **parse** | [aowlparser](/docs/aowlparser) | Nim/Nimony source → `.p.nif`; byte-identical to `nifler`, self-hosted, browser-ready. |
+| **semcheck** | [aowlsem](/docs/aowlsem) | `.p.nif` → typed `.s.nif`: symbols, overloads, generic instantiation. |
+| **lower** | [aowlhexer](/docs/aowlhexer) *(private)* | `.s.nif` → `.c.nif`: ARC, closures, iterators, exceptions, monomorphisation. |
 | **drive** | [Pipeline Driver](/docs/aowlmony) | one command: `.nim` → { native · interpret · web } over the whole stack. |
 | **runtime** | [aowlrt](/docs/aowlrt) | strings / seqs / ARC / GC the native + JS backends link against. |
 | **HL-IR** | [aowlhl](/docs/aowlhl) | the shared high-level IR that feeds the TypeScript / Python emitters. |
@@ -107,7 +108,7 @@ so on the page. The scoreboard, including what is missing and why, is the
 | Target | Repo | Notes |
 |:--|:--|:--|
 | **interpret / VM** | [aowli](/aowli) · [aowli-release](/docs/aowli-release) *(prebuilt binaries)* | tree-walker and bytecode VM, diffed against native; the source is private and the builds come from the [store](/store/aowli). |
-| **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.aif` → C, linked with `gcc`. No GC; ARC is baked in. |
+| **native C** | [aowlc](/docs/aowlc) | post-hexer `.c.nif` → C, linked with `gcc`. No GC; ARC is baked in. |
 | **JavaScript** | [aowljs](/docs/aowljs) | typed IR → native JS; near-native speed, readable output. |
 | **JS / WASM** | [aowlweb](/docs/aowlweb) | the faithful browser runtime, with an async runtime. |
 | **TypeScript** | [aowlts](/docs/aowlts) | idiomatic TypeScript. |
@@ -124,7 +125,7 @@ so on the page. The scoreboard, including what is missing and why, is the
 | **[aowlfmt](/docs/aowlfmt)** | layout formatter that proves it changed nothing but whitespace before writing your file. |
 | **[aowltest](/docs/aowltest)** | test runner that skips any test whose transitive input hash is unchanged, and prints the cache hit rate it achieved. |
 | **[aowlhost](/docs/aowlhost)** | runs an aowl module as a plugin under a capability policy — default grant is nothing, and a denied filesystem call is halted at the native boundary. |
-| **[aowllens](/docs/aiflens)** | reads typed `.s.aif` and emits JSON — decls, outline, members, type-at-position — which is what the LSP runs on. |
+| **[aowllens](/docs/aiflens)** | reads typed `.s.nif` and emits JSON — decls, outline, members, type-at-position — which is what the LSP runs on. |
 | **[net stack](/docs/net-stack)** | `tcp · net · tls · http · compress · serve · ws · requests` — TLS 1.3, dual-stack IPv6, HTTP/2 server, WebSocket, HTTP/3 client. |
 | **[LLM stack](/docs/llm-stack)** | [anthropic](/docs/llm-stack/anthropic) · [openai](/docs/llm-stack/openai) — typed clients for the Messages and Chat Completions APIs, each with a headless `-p` CLI. |
 | **[web](/docs/web) · [html](/docs/html) · [css](/docs/css)** | a declarative HTML+CSS DSL, a typed HTML5 registry, and an MDN-typed CSS engine. |

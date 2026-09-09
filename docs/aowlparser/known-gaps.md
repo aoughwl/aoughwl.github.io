@@ -61,5 +61,5 @@ fix-its and related locations — see [Configuration → Diagnostics](configurat
 
 aowlparser is syntactic only. Type and semantic errors (undeclared names, type
 mismatches, effect violations) surface later, from the semantic pass over the
-typed `.s.aif`. Semantic suggestions (e.g. `x == 5` used as a statement, `&&` for
+typed `.s.nif`. Semantic suggestions (e.g. `x == 5` used as a statement, `&&` for
 `and`) belong to a separate lint layer, not the parser.

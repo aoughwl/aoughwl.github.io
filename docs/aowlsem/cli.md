@@ -9,28 +9,28 @@ The `aowlsem` command-line surface and the programmatic `semcheck*` entry point.
 ## Commands
 
 ```sh
-aowlsem m <in.p.aif> <out.s.aif> [flags]     # semcheck a module
-aowlsem opt <in.s.aif> <out.s.aif>           # run the high-level optimizer
-aowlsem passthrough <in.aif> [out.aif]       # load + re-emit (smoke test)
+aowlsem m <in.p.nif> <out.s.nif> [flags]     # semcheck a module
+aowlsem opt <in.s.nif> <out.s.nif>           # run the high-level optimizer
+aowlsem passthrough <in.nif> [out.nif]       # load + re-emit (smoke test)
 ```
 
 `-` or an empty output path writes to **stdout**. Diagnostics are written to
-**stderr** *after* a complete `.s.aif` has been emitted, so downstream tooling
+**stderr** *after* a complete `.s.nif` has been emitted, so downstream tooling
 still receives a usable artifact even when a module has errors — see
 [Diagnostics](diagnostics).
 
 ### `m` — semcheck a module
 
-Reads parse-dialect AIF (`.p.aif`, from [aowlparser](../aowlparser)) and writes
-typed AIF (`.s.aif`) ready for [aowlhexer](../aowlhexer).
+Reads parse-dialect AIF (`.p.nif`, from [aowlparser](../aowlparser)) and writes
+typed AIF (`.s.nif`) ready for [aowlhexer](../aowlhexer).
 
 | Flag | Meaning |
 |---|---|
-| `--sys:<system.s.aif>` | Supply the checked `system` module explicitly. |
-| `--imp:<module.s.aif>` | Add an already-checked imported module (repeatable). |
+| `--sys:<system.s.nif>` | Supply the checked `system` module explicitly. |
+| `--imp:<module.s.nif>` | Add an already-checked imported module (repeatable). |
 | `--path:<dir>` / `-p:<dir>` | Add a module search path (repeatable). |
 | `--base:<dir>` | The project base directory (for path-relative module resolution). |
-| `--nimcache:<dir>` | Where the driver placed the parsed `.p.aif` inputs (defaults to the input's directory). |
+| `--nimcache:<dir>` | Where the driver placed the parsed `.p.nif` inputs (defaults to the input's directory). |
 | `--noSystem` | Do not auto-load `system`. |
 | `--diagnostics:json` | Emit diagnostics as a JSON array (see [Diagnostics → JSON](diagnostics#json-output--the-tooling-seam)). |
 | `--macros:<mode>` | How a compile-time plugin is executed — `auto` (default), `interp`, `compiled`, `off`. Append `,verbose` to report each step. |
@@ -45,7 +45,7 @@ the host module's own declarations, and both are selected by `--macros:`.
 | Mode | What runs the plugin |
 |---|---|
 | `auto` | Interpret it; fall back to a native build if that fails. |
-| `interp` | Semcheck the generated module to `.s.aif` and run it under [aowli](../aowli-release). Nothing is linked, so this is the cheap path — and the only one available before a native toolchain exists. |
+| `interp` | Semcheck the generated module to `.s.nif` and run it under [aowli](../aowli-release). Nothing is linked, so this is the cheap path — and the only one available before a native toolchain exists. |
 | `compiled` | Build a host-native binary. |
 | `off` | No plugins: the shape matcher and the constant folds alone. |
 
@@ -76,8 +76,8 @@ With `--path:` and `--nimcache:` set, `aowlsem m` resolves the module's **entire
 import graph itself** — it is a real drop-in for the reference `nimsem`, not a
 stage that needs its dependencies spoon-fed:
 
-1. reads the module's `.p.deps.aif`,
-2. auto-loads `system` and each imported module's already-checked `.s.aif`
+1. reads the module's `.p.deps.nif`,
+2. auto-loads `system` and each imported module's already-checked `.s.nif`
    (following `from X import`, `import X except`, and re-exports transitively
    across the whole closure),
 3. inlines every `include` into one flat module,
@@ -87,12 +87,12 @@ Explicit `--sys:` / `--imp:` override the auto-loaded choices.
 
 ```sh
 # resolves the whole graph on its own:
-aowlsem m app.p.aif app.s.aif --path:$LIB --nimcache:$NC
+aowlsem m app.p.nif app.s.nif --path:$LIB --nimcache:$NC
 ```
 
 ### `opt` — high-level optimizer
 
-Runs a pass over an already-checked `.s.aif` (`optcore.nim`) and reports the node
+Runs a pass over an already-checked `.s.nif` (`optcore.nim`) and reports the node
 count before and after. It is **separate from `m`** — semantic output is
 unaffected by it.
 
@@ -103,7 +103,7 @@ round-trip; no checking.
 
 ## Exit behavior
 
-The typed `.s.aif` is written **first**, then diagnostics to stderr. Only genuine
+The typed `.s.nif` is written **first**, then diagnostics to stderr. Only genuine
 **errors** (not the advisory opinion lints) set a failing exit code — matching
 the reference compiler, so `aowlsem` slots into a build that keys off the exit
 status while still emitting a usable artifact for tooling on the error path.
@@ -130,14 +130,14 @@ proc semcheck*(input: var TokenBuf; sysBuf: var TokenBuf; sysSuffix: string;
                impModNames: seq[string] = @[]): TokenBuf
 ```
 
-- **`input`** — the parsed `.p.aif` buffer to check.
+- **`input`** — the parsed `.p.nif` buffer to check.
 - **`sysBuf` / `sysSuffix`** — an already-parsed `system` module whose exported
   types register in an outer scope (an empty suffix means "no system").
 - **`modSuffix`** — this module's mangle suffix (its content-addressed module
   id), baked into the symbols it defines.
 - **`impBufs` / `impSuffixes` / `impModNames`** — parallel arrays of the
   already-checked imported modules, their suffixes, and their source names.
-- **returns** — the semchecked `.s.aif` as a `TokenBuf`.
+- **returns** — the semchecked `.s.nif` as a `TokenBuf`.
 
 The output **shares the input's pools**, so subtrees copied from the parse form
 (a template body, a generic instance) keep their interned string/tag ids and the
@@ -149,6 +149,6 @@ buffer, calls `semcheck*`, writes the result, then renders diagnostics.
 ## AIF on both sides
 
 Input and output are both [AIF, which is NIF](../aif) byte-for-byte — the parse
-dialect (`.p.aif`) in, the semchecked dialect (`.s.aif`) out. The typed output is
+dialect (`.p.nif`) in, the semchecked dialect (`.s.nif`) out. The typed output is
 interchangeable with the reference compiler's own `nimsem` output, which is what
 makes the byte-exact differential test possible.

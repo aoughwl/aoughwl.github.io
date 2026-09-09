@@ -8,19 +8,64 @@ repo: aoughwl/aowlsem
 
 `aowlsem` is the semantic checker of the aoughwl toolchain, a clean-room
 replacement for the reference compiler's `nimsem`. It reads the parse dialect of
-AIF (`.p.aif`, from [aowlparser](aowlparser)) and writes typed, symbol-resolved
-AIF (`.s.aif`) ready for the lowering stage ([aowlhexer](aowlhexer)). It resolves
+AIF (`.p.nif`, from [aowlparser](aowlparser)) and writes typed, symbol-resolved
+AIF (`.s.nif`) ready for the lowering stage ([aowlhexer](aowlhexer)). On disk the
+files are `.nif` — AIF names the format, not an extension (see [AIF](aif)). It resolves
 names, checks types, picks overloads, instantiates generics, and synthesizes
 lifetime hooks — **checking and lowering fused in one demand-driven pass**.
 
 ```
- .p.aif ──► aowlsem ──► .s.aif
+ .p.nif ──► aowlsem ──► .s.nif
  (parse)   (semcheck)  (typed)
 ```
 
-It is ~20.8k lines of self-hosted Nimony. Its byte-exact differential corpus
-stands at **498/498** modules matching the reference compiler's own typed output,
-with the entire `std/system` checking clean.
+It is ~51k lines of self-hosted Nimony (`wc -l` over `src/*.nim` and
+`src/sem/*.nim`, 2026-09-09).
+
+## Measured status
+
+> **Correction, 2026-09-09.** From 2026-07-28 until today this page said the
+> differential corpus stood at "498/498 byte-exact modules, with the entire
+> `std/system` checking clean". That number was never a module count. 498 is a
+> census of identical-nested `hconv` sites (oracle 527, ours 498) lifted from a
+> table in aowlsem's `REQUIREMENTS.md` and mis-transcribed as a corpus score;
+> the real module figure at the time was 46 of 55 byte-exact on the Linux
+> `moddiff` gate. The table below is what the gates themselves print, with
+> where and when each number was measured. Every number on this page carries a
+> date and a source from now on; treat one without as stale.
+
+Measured on **Windows, 2026-09-09**, at aowlsem commit `d4955d3e` — the figures
+are its commit message and `COVERAGE.md`. Windows and Linux runs are **not
+comparable**: module ids are content-hashed and the module sets differ, so the
+Linux baselines are listed separately below rather than mixed in.
+
+| gate | what it asserts | verdict |
+|---|---|---|
+| `tests/diff.sh` | corpus cases byte-exact against `nimsem` | **924 pass / 17 fail of 941**, with 0 INFRA / TIMEOUT / CRASH. 15 of the 17 are oracle-side — `nimsem` itself produces no output for the `sumtype_*` / `variant_*` cluster (an assertion inside `nifcursors.nim`) and one case is `std/posix` on a non-POSIX host. The two that are aowlsem's own are `include_fragment` and `macro_arg_infix` (15 tokens). |
+| `tests/moddiff.sh --fresh` | aowlsem's own dependency closure, module by module, against the oracle's nimcache | **31 byte-exact / 21 differing / 0 rejected / 4 canonfail of 56** |
+| `tests/sysdiff.sh` | all of `std/system` | **89 differing tokens** over ~92,600 canon lines. It semchecks `system` end to end; it is not yet byte-exact. |
+| `tests/consteval.sh` | compile-time `const` evaluation, both executors | **19/19** byte-exact and agreeing. Two days earlier this read 0/18: the entire CTFE subsystem was inert on Windows behind six swallowed errors (commit `e2b63cf1`). |
+| `tests/idxchecksum.sh` | the emitted `.s.idx.nif` checksum equals the oracle's, per module | **35/56** |
+| `tests/compose.sh` | | 41/43 pairs, 86/98 indices |
+
+When any `diff.sh` bucket is INFRA, TIMEOUT or CRASH the script prints
+`DEGRADED, not a clean green` in place of a pass count — that verdict is real
+and, if it is the latest one, it is the number this page should show.
+
+Linux, as recorded in the repo: `tests/moddiff.baseline` (last re-baselined
+2026-08-19) has **47 of 55** modules at zero differing tokens.
+
+On a real program: every module of a shipping Unity game's seven mods semchecks
+canon-exact at **0 differing tokens** (re-measured after each change above;
+`COVERAGE.md`, 2026-09-09).
+
+Recent fixes worth knowing about, because each was a whole missing rule rather
+than a token nicety: there was no int→float widening (`floatNeedsHconv`) at all;
+`defined(x)` was a hardcoded POSIX list, so on Windows every `when` took the
+POSIX branch until aowlsem grew a real host/target profile (`--os:`, `--cpu:`,
+`-d:` in `nimsem`'s spelling); and the CTFE revival above. A wall-clock/step
+bound on compile-time evaluation (`tests/ceguard.sh`, E1000 on a runaway
+`const`) is in the working tree and not yet committed at the time of writing.
 
 ## Model
 
@@ -55,7 +100,7 @@ error[E0300]: undeclared field `zz` on `Point`
    = did you mean `x`?
 ```
 
-Diagnostics are a **side channel**: they are written to stderr after the `.s.aif`
+Diagnostics are a **side channel**: they are written to stderr after the `.s.nif`
 is emitted, and recording one never alters the typed output — a valid program
 yields zero. There are **36 codes** in two bands: genuine **errors** the
 reference compiler also rejects, and a band of advisory **opinion lints**
@@ -67,7 +112,7 @@ page](aowlsem/diagnostics).
 ## Usage
 
 ```sh
-aowlsem m <in.p.aif> <out.s.aif> --path:<lib> --nimcache:<nc>   # semcheck a module
+aowlsem m <in.p.nif> <out.s.nif> --path:<lib> --nimcache:<nc>   # semcheck a module
 ```
 
 With `--path:` and `--nimcache:` set, `aowlsem m` resolves the module's whole
@@ -77,9 +122,10 @@ the programmatic `semcheck*` entry point are on the [CLI & API page](aowlsem/cli
 ## What it checks
 
 Everything below is checked construct by construct against the reference
-compiler's own output. The `tests/corpus/` suite — 498 modules, all byte-exact —
-is the concrete list. What each construct lowers to, with worked
-`.p.aif → .s.aif` examples, is on the [Lowering reference](aowlsem/lowering).
+compiler's own output. The `tests/corpus/` suite — 941 cases on 2026-09-09; the
+verdict is in the status table above — is the concrete list. What each construct
+lowers to, with worked `.p.nif → .s.nif` examples, is on the
+[Lowering reference](aowlsem/lowering).
 
 #### Declarations and bindings
 
@@ -163,13 +209,13 @@ interpreted under [aowli](aowli-release), or built native. See
 
 #### Modules
 
-`import` resolution against checked `.s.aif`, including `from X import`,
+`import` resolution against checked `.s.nif`, including `from X import`,
 `import X except` and transitive re-exports. `include` inlining. `system`
 loading.
 
 ## Optimizer
 
-`aowlsem opt` runs a high-level pass over an already-checked `.s.aif` and reports
+`aowlsem opt` runs a high-level pass over an already-checked `.s.nif` and reports
 the node count before and after. It is a **separate pass** from `m`, so semantic
 output is unaffected.
 
@@ -180,7 +226,7 @@ output is unaffected.
 | [Architecture](aowlsem/architecture) | the fused check+lower model, demand-driven engine, the nine include-fragments, `SemContext`, the prescan, and the *"can the two systems be split?"* answer |
 | [Diagnostics](aowlsem/diagnostics) | side-channel design, all 36 codes in two bands (errors vs opinion lints), rustc-grade rendering, "did you mean", JSON seam, comparison to the reference |
 | [CLI & API](aowlsem/cli) | `m` / `opt` / `passthrough`, flags, self-resolving imports, exit behavior, and the `semcheck*` programmatic entry |
-| [Lowering reference](aowlsem/lowering) | worked `.p.aif → .s.aif` transformations for every major construct |
+| [Lowering reference](aowlsem/lowering) | worked `.p.nif → .s.nif` transformations for every major construct |
 
 ## Pipeline
 
@@ -190,6 +236,6 @@ output is unaffected.
 ```
 
 aowlsem is the typing seam: everything downstream reads the symbols, resolved
-overloads and generic instances it writes into `.s.aif`. The format on both sides
+overloads and generic instances it writes into `.s.nif`. The format on both sides
 is [AIF, which is NIF](aif) byte-for-byte, so the typed output is interchangeable
 with the reference compiler's own.

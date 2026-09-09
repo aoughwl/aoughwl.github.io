@@ -95,9 +95,26 @@ nimony's real frontend + hexer:
 - objects / unions / enums / arrays / proc-types (type declarations)
 - a self-contained C prelude (`NI`/`NU`/`NF`/`NC8`/`NB8`/`NIM_TRUE`/…) — no nimony runtime needed for the core
 
-Not yet lowered here: the full **system runtime** (strings/seqs/`echo`, GC
-objects), which lives in the 54 KB `system` `.c.nif` module. Anything aowlc can't
-print raises `aowlc: unsupported …`, so gaps are visible, never silently wrong.
+The **system runtime** is lowered too — strings, seqs, `echo`, exceptions, GC
+objects and method dispatch run end to end (aowlc README, 2026-08-06); an earlier
+version of this page said it was not. Anything aowlc can't print raises
+`aowlc: unsupported …`, so a gap is visible rather than silently wrong.
+
+Where it stands, dated: on 2026-09-09 aowlc built a 1,178-line real program —
+Windows FFI, closures, SHA-256, `startProcess` — to a working binary whose
+published artifacts are byte-identical to the shipped tool's (~120 files, zero
+differences; aowlc commit `1f5e9c3`). It could not the day before. Six emitter
+defects were fixed on the way, and the ones that mattered were silent: unsigned
+literals emitted with C's 32-bit `u` suffix (`~255u` masked off the last byte of
+every wide string, so every Windows path reached the OS one character short);
+`bitsOf` reading the *last* child of a sized type, so a pragma-carrying `(u 32
+(importc "DWORD") …)` widened to 64 bits and `WIN32_FIND_DATA` misaligned; and a
+bare signed literal under `shl`, undefined behaviour in C (`1 shl 40` answered
+256). The two-printer gate (`test/twoprinters.sh`, both printers vs nimony on
+program behaviour) reads **67/68 over 78 examples** — the one miss is a
+pre-existing `aowlc.js` divergence on `e2e_exceptions` — and `npm test` **21/24
+on Windows**, the three misses being Linux-generated `dlfcn.h` fixtures (same
+commit).
 
 ## Verified end-to-end
 

@@ -97,7 +97,7 @@ Batch mode and the zero-overhead default path are byte-for-byte unchanged. Via
 ## Via aowlcode
 
 The `trace`/`debug`/`debug_session` MCP tools wrap this exact binary pipeline
-(compile → locate `.s.aif` → run `aowli-interp`/`aowli-dbg`) with structured JSON
+(compile → locate `.s.nif` → run `aowli-interp`/`aowli-dbg`) with structured JSON
 returns and binary resolution through `$AOWLI_BIN_DIR` → `~/.aowl/bin` →
 `~/aowli/bin` → `PATH`. Full args/returns/failure-mode reference:
 [aowlcode → Execution](../docs/aowlcode/execution).

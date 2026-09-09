@@ -27,7 +27,7 @@ stdout.
 
 | Global | Type | Meaning |
 |:--|:--|:--|
-| `__np_out` | string | the produced `.p.aif` bytes |
+| `__np_out` | string | the produced `.p.nif` bytes |
 | `__np_diag` | string | JSON array of syntactic diagnostics |
 
 Each diagnostic is `{"line": L, "col": C, "message": "…"}` with **line 1-based and
@@ -78,5 +78,5 @@ tokens, serialized into `__np_diag`.
 
 ---
 
-For the format these bundles produce, see [The .p.aif format](output-format); for
+For the format these bundles produce, see [The .p.nif format](output-format); for
 the CLI equivalents of the `__np_*` inputs, see [Configuration](configuration).

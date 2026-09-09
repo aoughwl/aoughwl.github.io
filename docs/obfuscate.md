@@ -50,7 +50,7 @@ This is the structural replacement for the old source renamer: same effect
 (defined names → opaque), but it cannot corrupt a string or a comment because it
 never sees characters — only tokens.
 
-### Typed layer (`.s.nif` / `.s.aif`)
+### Typed layer (`.s.nif` / `.s.nif`)
 
 The sem-checked tree the interpreter and backends run. Identifiers are `Symbol`s
 carrying `base.disamb.module`, so renaming is **symbol-precise**: a definition and

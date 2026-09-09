@@ -136,6 +136,12 @@ to plain interpretation rather than risk a wrong answer.
 
 ## 2026-07-28 — aowlsem: generic ref objects reach byte-identity, and value-object method dispatch
 
+> **Correction, 2026-09-09.** The "498/498" corpus figure in this post and the
+> one below was never a module count — it was a census of `hconv` sites from
+> aowlsem's `REQUIREMENTS.md`, mis-read as a corpus score — and `std/system` was
+> not byte-exact. The posts are left as written; the dated, measured numbers are
+> on the [aowlsem page](/docs/aowlsem#measured-status).
+
 *Tuesday, July 28, 2026*
 
 [aowlsem](/docs/aowlsem) — the from-scratch semantic checker that replaces the
