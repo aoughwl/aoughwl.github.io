@@ -193,14 +193,21 @@ Its `u`/`v` window says which part of the picture goes in the box, in 0..1 with
 less, and the part that survived a clip when the caller has cropped the box.
 That is how an icon is cropped instead of squashed.
 
-## What mod code cannot recover
+## What mod code could not recover, and no longer has to
 
-Two things, and both are host gaps rather than design choices:
+Two things were host gaps rather than design choices, and **host surface 1.5.0
+closed both**:
 
-- **the scroll wheel.** There is no host call for it, so a scroll region is
-  driven by a scrollbar or by keys.
-- **glyph-level clipping.** Text is dropped by whole lines, so a scrolling list
-  cannot show a half-row.
+- **the scroll wheel.** `infiniteless_mouse_wheel` reports notches on either
+  axis, with the available/problem pair beside it, because a wheel that reads
+  zero for ever and a wheel nobody turned are the same number. A scroll region
+  no longer needs a scrollbar or keys to be driven.
+- **glyph-level clipping.** The scissor is a clip pushed into the *recording*
+  rather than a GL state call — drawing is replayed after a camera renders, so
+  by the time a GL call would run the frame is over. Each command remembers the
+  clip standing over it and the replay cuts that command's own quads, so a
+  glyph is cut exactly like a rectangle. A scrolling list shows a half-row, and
+  a text field scrolls sideways instead of spilling.
 
 Line and polygon drawing, rotated text, and any font other than the built-in one
-are missing too.
+are still missing.

@@ -38,8 +38,8 @@ closed and the compiler could have said `LeftShfit` is not a key.
 
 ## The modules
 
-**511 exported procs across 20 modules**, all of it aowlmony written over the
-same 220 host calls. It costs nothing at the boundary, and it is the part that can
+**771 exported procs across 28 modules**, all of it aowlmony written over the
+same 433 host calls. It costs nothing at the boundary, and it is the part that can
 change without a host build.
 
 | Module | What it is |
@@ -62,6 +62,14 @@ change without a host build.
 | `content` | the content-update channel a self-updating mod drives |
 | `settings` | a settings schema declared as catalog rows, and one screen that draws all of them |
 | `character` | the character controller, which is an SDK module and not a host feature |
+| `animation` | skeletons, bone weights, clips built from keyframes, playback, layers, one joint |
+| `sound` | clips decoded or built sample by sample, one-shots, looping speakers, positional playback, volume buses |
+| `text` | the clipboard, the input method and its caret, and the three timings a person's own settings decide |
+| `window` | the mod's own window: frame, transparency, on top, click-through, place, size, drag |
+| `render` | how often any of it is drawn: frame-rate cap, on-demand interval, idle-when-quiet, wake |
+| `display` | dots per inch, the scale factor a layout multiplies by, and whether it just changed |
+| `desktop` | file dialogs, the tray, one copy at a time, argv, dropped files, menus, global keys |
+| `services` | `provideService` / `callService` / `serves`: one mod asking another a named question |
 
 ## Lifecycle
 
@@ -418,13 +426,12 @@ Stated plainly, because planning around them is cheaper than discovering them.
 - **No rotation or scale readers**, and reflection cannot return a `Vector3` or
   a `Quaternion` either. Rotation composition is Euler-only, which is a
   correctness hazard rather than a wall.
-- **No skinning and no animation.** There is no way to hand a skeleton, bone
-  weights or a clip to anything. This is the largest hole in the surface; a
-  model with a skeleton comes out in its reference pose.
-- **No audio playback from a mod.** An `AudioSource` can be added by reflection,
-  but there is no way to obtain a clip. Voice chat is comms, not game audio.
-- **No mouse wheel**, and text is clipped by whole lines rather than by glyph —
-  the two things the UI library cannot recover in mod code.
+- **No root motion, humanoid retargeting or blend trees.** Skinning, clips and
+  playback landed in surface 1.3.0 and a clip a mod builds is a legacy clip, so
+  Mecanim's own graph is still out of reach.
+- **No compressed audio, streaming, effects or reverb.** Decoding, clips,
+  speakers and buses landed in 1.4.0; what is above them did not. Voice chat is
+  comms, not game audio.
 - **A mod cannot see another mod fail.** The failure record exists and the
   runtime prints it, but nothing reaches a mod, so a shell cannot show which
   mods are broken or offer to reload them.

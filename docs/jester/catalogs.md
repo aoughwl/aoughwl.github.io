@@ -1,8 +1,15 @@
 # Catalogs
 
-The only cross-mod channel there is. Mods cannot import each other and cannot
-pass handles to each other, so everything one mod publishes for another to use
-goes through a catalog — which carries data, and never code.
+The standing cross-mod channel. Mods cannot import each other and cannot pass
+handles to each other, so everything one mod publishes for another to use goes
+through a catalog — which carries data, and never code.
+
+A catalog is a noticeboard: append-only, and read whenever the reader gets round
+to it. That is right for "here is what I contribute" and wrong for "what is this
+worth right now", which is what host surface 1.6.0 added
+[services](/docs/jester/host-surface#services-and-published-pictures) for. The
+two do not overlap: a catalog is standing data, a service is a question asked
+and answered inside one frame.
 
 [[toc]]
 
@@ -188,3 +195,7 @@ own.
   generation of the mod that owns it.
 - **Spawning is interpreted by the engine**, not by the kind's owner. A kind's
   declaring mod cannot decide what it means to place one of its things.
+- ~~**No way to see which catalogs exist.**~~ **Closed in host surface 1.6.0**,
+  which added enumeration over every catalog, its kind and note, and who filled
+  it. Before it, a browser over every catalog of parts could see one only if its
+  provider had opted into some agreed registry.

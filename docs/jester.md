@@ -37,7 +37,8 @@ proc update() =
     discard spawnPart("weapons", "crate", vec3(0.0, 3.0, 0.0))
 ```
 
-→ **[Getting started](/docs/jester/getting-started)** ·
+→ **[The overview, with the engine running in your browser](/jester)** ·
+**[Getting started](/docs/jester/getting-started)** ·
 **[The mod API](/docs/jester/mod-api)** ·
 **[Catalogs](/docs/jester/catalogs)** ·
 **[The host surface](/docs/jester/host-surface)**
@@ -57,11 +58,19 @@ Jester is not an engine fork, a custom renderer, or a Unity plugin. It is a
 Unity project of a few thousand lines that draws nothing and plays nothing. It
 loads an interpreter, hands it a mod, and answers the calls that come back.
 
-The boundary is **220 host calls**. That is the entire contract between a mod
-and Unity, and the C# dispatch tables and the mod-side `importc` declarations
-are the same 220 names — no case without a wrapper, no wrapper without a case,
-and no mod declaring an `importc` of its own. Gameplay never crosses into C#;
-C# never knows what game is running.
+The boundary is **433 host calls**, at host surface version **1.6.0**. That is
+the entire contract between a mod and Unity, and the C# dispatch tables and the
+mod-side `importc` declarations are the same 433 names — no case without a
+wrapper, no wrapper without a case, and no mod declaring an `importc` of its
+own, checked against each other by a gate rather than by hand. Gameplay never
+crosses into C#; C# never knows what game is running. A mod declares the surface
+version it needs and discovery refuses it **by name** if this host cannot serve
+it.
+
+That list is finite and enumerable, and gameplay is interpreted, so a mod cannot
+execute arbitrary machine code by construction. It is **not** a sandbox: a
+capability model over the surface is in progress, and until it lands, read "no
+platform" as *nobody takes a cut*, not *safe to run a stranger's code*.
 
 Because the host is small, it can be frozen. Ship it once, and every game after
 that is content. [What it can and cannot reach today](/docs/jester/host-surface)
@@ -120,6 +129,39 @@ catalog nobody has created yet returns nothing rather than failing, because in a
 system with no load order that is the ordinary state of a catalog before its
 owner arrives.
 
+## Services: asking, rather than reading a noticeboard
+
+A catalog is append-only and read whenever the reader gets round to it, which is
+right for "here is what I contribute" and useless for "what is this worth right
+now". Surface **1.6.0** adds the second channel. A mod registers a service name;
+another mod calls it and gets text back.
+
+```nim
+provideService("voxel.item")          # in the mod that knows
+
+proc serveRequest() =
+  if serviceName() == "voxel.item":
+    answerService(describe(serviceArgument()))
+
+if serves("voxel.item"):              # in the mod that asks
+  let described = callService("voxel.item", "minecraft:stone")
+```
+
+Text in, text out is the whole contract — a typed call would mean the engine
+holding a schema for every service anybody ever invents, which is exactly the
+coupling the mod boundary exists to prevent. `serves()` replaces the loop that
+used to poll a catalog signature waiting for a producer to turn up. Re-entry is
+refused, nesting is capped, and a provider that falls over or unloads mid-answer
+gives the caller an empty string and a sentence rather than ending the frame for
+everyone who asked it anything.
+
+1.6.0 also adds **`published:<mod>/<name>`** — a URI naming a picture another
+mod offered, understood everywhere a `data:` URI already is. Publishing is a
+catalog claim, so it stays the owner's decision, and the file resolves inside
+the publisher's folder: no path from one mod ever names a file in another. It is
+what stops a catalog going quadratic, because a row that had to carry a picture
+can carry a twenty-character name instead.
+
 ## Networking
 
 Peer identity is minted by the server, out of a counter no client can see, so an
@@ -132,6 +174,24 @@ nothing is sent per frame; what travels is one small request, one small answer,
 and a catalog signature, and every peer builds the part itself. Verified with
 real OS processes over real sockets: **100,000 parts, zero events missed**, five
 peers holding one fingerprint. [The whole model](/docs/jester/networking).
+
+## Applications
+
+A player does not have to arrive at the picker. `Jester.exe --app <id>` opens one
+modpack directly, as an application: its own window title (the modpack's name),
+its own taskbar identity, its own icon if its shell mod ships one, and its own
+save directory. Content is never duplicated — mods and modpacks stay the shared
+library every launch reads — so an application is a modpack plus a shortcut, and
+it weighs what its own content weighs rather than shipping a copy of the runtime
+per app.
+
+Nothing that has ever been saved moves, is copied, or is deleted, and the
+consequence is stated rather than hidden: the first `--app` launch of a modpack
+you had previously played from the picker starts with empty state, and
+`--shared-data` is the documented way to go on using the old one. A shortcut
+outlives the content it names, so a bad id is a working game that says what is
+missing — in the window, with the picker behind it — never a black one.
+[The detail](/docs/jester/host-surface#applications).
 
 ## Distribution
 

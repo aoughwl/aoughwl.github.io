@@ -246,13 +246,15 @@ description of the design's posture and not legal advice.
 - **One material per model.** A mesh is one mesh with one material, so a model
   whose faces differ wears the first face's texture on all of them. Submeshes
   are the fix, and the texture path is shaped to follow them.
-- **No skinning and no animation.** A reader can already parse a skeleton and a
-  sequence table; there is nowhere to hand them. A skinned model comes out in
-  its reference pose. This is the largest hole in the whole surface.
+- ~~**No skinning and no animation.**~~ **Closed in host surface 1.3.0.** A
+  reader that parses a skeleton and a sequence table now has somewhere to hand
+  them: bone weights on the mesh builder, clips built from keyframes, and a
+  playback clock. What is still missing there is root motion, humanoid
+  retargeting and blend trees.
 - **The host decodes PNG and JPEG** and nothing else, so a source whose textures
   are block-compressed needs the host to learn that format — it cannot be done
   in the interpreter for the arithmetic above.
 - **The mesh always gets a collider**, cannot be updated in place, and carries
-  no vertex colours, tangents, second UV set or bone weights.
+  no vertex colours, tangents or second UV set.
 - **The ledger cannot be corrected**, because catalog entries are append-only
   for a given id and owner.
