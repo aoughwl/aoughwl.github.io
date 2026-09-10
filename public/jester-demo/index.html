@@ -1,0 +1,247 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Jester in the browser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: dark; --line: #1c2230; --ink: #c3ccdb; --dim: #7c879a;
+          --accent: #5c9df2; --bg: #0a0c11; --panel: #0e1118; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 13px/1.5 ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif; }
+  .wrap { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 14px; padding: 14px; }
+  @media (max-width: 780px) { .wrap { grid-template-columns: 1fr; } }
+  canvas { width: 100%; height: auto; aspect-ratio: 4 / 3; display: block;
+           background: #0b0d12; border: 1px solid var(--line); border-radius: 4px; }
+  h2 { font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+       color: var(--dim); margin: 0 0 6px; font-weight: 600; }
+  .box { border: 1px solid var(--line); border-radius: 4px; background: var(--panel);
+         padding: 10px; margin-bottom: 12px; }
+  button { font: inherit; color: var(--ink); background: #151a24; border: 1px solid var(--line);
+           border-left: 3px solid #2b3446; border-radius: 3px; padding: 6px 9px; cursor: pointer;
+           display: block; width: 100%; text-align: left; margin-bottom: 5px; }
+  button:hover { background: #1c2431; }
+  button[aria-pressed="true"] { border-left-color: var(--accent); background: #1b2a41; color: #eaf1fb; }
+  button:disabled { opacity: .45; cursor: default; }
+  .row { display: flex; gap: 5px; }
+  .row button { margin-bottom: 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre { margin: 0; font-size: 11.5px; line-height: 1.45; overflow: auto; max-height: 300px;
+        background: #080a0e; border: 1px solid var(--line); border-radius: 4px; padding: 9px; }
+  #status { color: var(--dim); font-size: 11.5px; font-family: ui-monospace, Consolas, monospace;
+            padding: 6px 2px 0; word-break: break-all; }
+  #log { font-size: 11px; color: var(--dim); max-height: 92px; overflow: auto;
+         font-family: ui-monospace, Consolas, monospace; white-space: pre-wrap; }
+  .note { font-size: 11.5px; color: var(--dim); margin: 6px 0 0; }
+  ins { background: rgba(92,157,242,.16); color: #cfe1fb; text-decoration: none; }
+  .stage { position: relative; }
+  #over { position: absolute; inset: 0; display: none; place-items: center; text-align: center;
+          background: rgba(6,8,12,.9); border-radius: 4px; padding: 24px; }
+  #over.on { display: grid; }
+  #over p { max-width: 44ch; color: var(--dim); font-size: 12.5px; }
+  #over button { width: auto; display: inline-block; border-left-color: var(--accent); }
+  .meter { height: 4px; background: #131824; border-radius: 2px; overflow: hidden; margin: 7px 0 4px; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .4s linear; }
+</style>
+<div class="wrap">
+  <div>
+    <div class="stage">
+      <canvas id="surface" width="640" height="480" tabindex="0"></canvas>
+      <div id="over">
+        <div>
+          <p id="overtext"></p>
+          <button onclick="location.reload()">reload the page</button>
+        </div>
+      </div>
+    </div>
+    <div id="status">starting</div>
+    <div class="box" style="margin-top:12px">
+      <h2>the source this artifact was built from</h2>
+      <pre id="source">—</pre>
+      <p class="note" id="srcnote"></p>
+    </div>
+  </div>
+  <div>
+    <div class="box">
+      <h2>load a mod</h2>
+      <div id="mods"></div>
+      <div class="row"><button id="unload">unload</button><button id="reload">load again</button></div>
+      <p class="note">A fresh interpreter each time — nothing else on the page stops.</p>
+    </div>
+    <div class="box">
+      <h2>load another build of it</h2>
+      <div id="variants"></div>
+      <p class="note">Three builds of <code>demo.web</code>, from the three
+        sources shown on the left. Each loads into a fresh interpreter: the code
+        changes, <code>frame</code> starts again, and <code>visit</code> does not
+        — that counter goes through <code>remember</code>/<code>save</code>, which
+        is host-side state rather than interpreter memory.</p>
+      <p class="note">On the desktop this is a <em>swap</em> and <code>frame</code>
+        keeps counting too. That path is wired up here and does not work in this
+        browser build — <code>swapHot</code> reports success and the previous body
+        goes on running — so the page does not claim it. The measurement is in
+        <code>boot.js</code>.</p>
+    </div>
+    <div class="box">
+      <h2>interpreted-work budget</h2>
+      <div class="meter"><i id="fuel"></i></div>
+      <p class="note" id="fueltext">—</p>
+      <div class="row" style="margin-top:8px">
+        <button id="pause">pause</button><button id="faster">60 fps</button>
+      </div>
+      <p class="note">The JavaScript backend's value-aggregate storage is a bump
+        pointer that is never rewound, so the page can execute about a gigabyte
+        of interpreted work and then has to be reloaded. Ticking at 10 fps
+        instead of 60 does not free anything — it just spends the budget more
+        slowly. The desktop build does not have this property.</p>
+    </div>
+    <div class="box">
+      <h2>host</h2>
+      <div id="log"></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { boot } from "./boot.js";
+  const canvas = document.getElementById("surface");
+  const statusEl = document.getElementById("status");
+  const logEl = document.getElementById("log");
+  const srcEl = document.getElementById("source");
+  const srcNote = document.getElementById("srcnote");
+
+  const say = (m) => { statusEl.textContent = m; };
+  // aowli's browser build never frees a retired interpreter, so a page that has
+  // loaded several mods eventually hits the bundle's 1 GiB allocation ceiling.
+  // Say that, rather than leaving a canvas that stopped for no visible reason.
+  const explain = (e) => /linear memory/.test(String(e.message))
+    ? "out of memory: this browser build does not free a retired interpreter, so " +
+      "a few mod loads fill its 1 GiB heap. Reload the page to carry on."
+    : e.message;
+  const write = (m) => {
+    logEl.textContent = (logEl.textContent ? logEl.textContent + "\n" : "") + m;
+    logEl.scrollTop = logEl.scrollHeight;
+  };
+
+  const over = document.getElementById("over");
+  const overtext = document.getElementById("overtext");
+  const fuel = document.getElementById("fuel");
+  const fueltext = document.getElementById("fueltext");
+
+  boot(canvas, {
+    status: say,
+    log: write,
+    exhausted: (why) => {
+      over.classList.add("on");
+      overtext.textContent =
+        "The interpreted-work budget is spent: " + why + " Nothing is wrong with " +
+        "the mod - this browser build never rewinds its value-aggregate storage, " +
+        "so a page gets about a gigabyte of interpreted work and then stops.";
+      say("out of interpreted-work budget");
+    },
+  }).then((rt) => {
+    const modsEl = document.getElementById("mods");
+    const varsEl = document.getElementById("variants");
+    const byMod = new Map(), byVar = new Map();
+
+    const SHELL_NOTE = [
+      "The boot shell is the menu the desktop player starts in. Its source is in",
+      "the engine repository; only the compiled artifact ships to the browser.",
+      "",
+      "Arrow keys and Page Up / Page Down move; click a row to select it. It is",
+      "a menu, so the page draws a frame when you do something and not",
+      "otherwise. Press Web Demo above for a mod that animates, and watch the",
+      "budget while it does.",
+    ].join("\n");
+    const showSource = (text, note) => {
+      srcEl.textContent = text;
+      srcNote.textContent = note;
+    };
+    const markMod = (id) => {
+      for (const [k, b] of byMod) b.setAttribute("aria-pressed", String(k === id));
+      for (const [, b] of byVar) b.disabled = id !== "demo.web";
+    };
+
+    for (const mod of rt.payload.mods) {
+      const b = document.createElement("button");
+      b.textContent = mod.name + "  ·  " + mod.id;
+      b.onclick = () => {
+        try {
+          rt.load(mod.id);
+          markMod(mod.id);
+          if (mod.id === "demo.web") pickVariant(rt.payload.variants[0]);
+          else showSource((mod.id === "infiniteless.shell" ? SHELL_NOTE + "\n\n"
+            : "This mod's source is in the engine repository, not in the payload;\n"
+              + "only its compiled artifact ships to the browser.\n\n") +
+            "artifact " + mod.artifact + "\nsha256   " + mod.sha256, "");
+        } catch (e) { say("failed: " + explain(e)); write(String(e.message)); }
+      };
+      byMod.set(mod.id, b);
+      modsEl.appendChild(b);
+    }
+
+    function pickVariant(v) {
+      showSource(v.source, "");
+      for (const [k, b] of byVar) b.setAttribute("aria-pressed", String(k === v.key));
+    }
+
+    for (const v of rt.payload.variants) {
+      const b = document.createElement("button");
+      b.textContent = "load  " + v.title;
+      b.onclick = () => {
+        try {
+          rt.loadBuild(v.src);
+          pickVariant(v);
+          say("loaded the " + v.title + " build — new interpreter, remembered state kept");
+        } catch (e) { say("failed: " + explain(e)); write(String(e.message)); }
+      };
+      byVar.set(v.key, b);
+      varsEl.appendChild(b);
+    }
+
+    document.getElementById("unload").onclick = () => {
+      rt.unload(); markMod(null); say("unloaded — the host is still running, drawing nothing");
+    };
+    document.getElementById("reload").onclick = () => {
+      const id = rt.current ? rt.current.id : "demo.web";
+      try { rt.load(id); markMod(id); }
+      catch (e) { say("failed: " + explain(e)); write(String(e.message)); }
+    };
+
+    // The shell reads the arrow keys, so the canvas has to hold focus.
+    canvas.addEventListener("mousedown", () => canvas.focus());
+    canvas.focus();
+
+    const want = new URLSearchParams(location.search).get("mod") || "infiniteless.shell";
+    rt.load(rt.payload.mods.some((m) => m.id === want) ? want : "infiniteless.shell");
+    markMod(want);
+    showSource(SHELL_NOTE, "");
+
+    const pause = document.getElementById("pause");
+    const faster = document.getElementById("faster");
+    pause.onclick = () => {
+      rt.paused = !rt.paused;
+      pause.textContent = rt.paused ? "resume" : "pause";
+      pause.setAttribute("aria-pressed", String(rt.paused));
+    };
+    faster.onclick = () => {
+      rt.hz = rt.hz === 10 ? 60 : 10;
+      faster.textContent = rt.hz === 10 ? "60 fps" : "10 fps";
+      faster.setAttribute("aria-pressed", String(rt.hz === 60));
+    };
+    const mb = (n) => (n / (1024 * 1024)).toFixed(0);
+    setInterval(() => {
+      if (rt.dead) return;
+      if (rt.asleep && !rt.paused)
+        say("asleep to save the budget — move the pointer over the canvas to wake it");
+      const u = rt.used();
+      fuel.style.width = (100 * u / rt.ceiling).toFixed(1) + "%";
+      fueltext.textContent = mb(u) + " MB of " + mb(rt.ceiling) + " MB spent  ·  " +
+        rt.hz + " fps" + (rt.paused ? "  ·  paused" : "");
+    }, 500);
+    pickVariant(rt.payload.variants[0]);
+    globalThis.__demo = rt;
+  }).catch((e) => {
+    say("failed: " + e.message);
+    globalThis.__inf_fatal = String(e.message);
+    console.error(e);
+  });
+</script>

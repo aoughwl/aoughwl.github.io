@@ -200,9 +200,11 @@ const sidebar = [
     items: [
       {
         text: 'Modding engine — Jester',
-        link: '/docs/jester',
+        link: '/jester',
         collapsed: true,
         items: [
+          { text: 'Overview, and the live demo', link: '/jester' },
+          { text: 'Documentation', link: '/docs/jester' },
           { text: 'Getting started', link: '/docs/jester/getting-started' },
           { text: 'The mod API', link: '/docs/jester/mod-api' },
           { text: 'Catalogs', link: '/docs/jester/catalogs' },
