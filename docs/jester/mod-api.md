@@ -38,8 +38,10 @@ closed and the compiler could have said `LeftShfit` is not a key.
 
 ## The modules
 
-**771 exported procs across 28 modules**, all of it aowlmony written over the
-same 433 host calls. It costs nothing at the boundary, and it is the part that can
+**780 exported procs across 28 modules**, all of it aowlmony written over the
+same 440 host calls — counted at commit `f559ceb` (2026-09-10), which is the
+commit every host-surface figure on this site is pinned to. It costs nothing at
+the boundary, and it is the part that can
 change without a host build.
 
 | Module | What it is |

@@ -23,6 +23,15 @@ const _ab = (globalThis.__leng_ab || (globalThis.__leng_ab = _mkHeap()));
 const _dv = (globalThis.__leng_dv || (globalThis.__leng_dv = new DataView(_ab)));
 const _u8 = (globalThis.__leng_u8 || (globalThis.__leng_u8 = new Uint8Array(_ab)));
 let _brk = 8;                                   // offset 0 reserved as nil
+// The high-water mark of anything mmap has handed out. A frame release may not
+// take _brk below this: those pages belong to the Nim heap and outlive the call.
+let _mmapHigh = 8;
+globalThis.__leng_mark = () => _brk;
+globalThis.__leng_release = (mark) => {
+  if (mark >= _mmapHigh && mark <= _brk) { _brk = mark; return true; }
+  return false;
+};
+globalThis.__leng_brk = () => _brk;
 
 // Growing the linear memory. `mmap` and `allocFixed` share one `_brk`, so BOTH
 // must grow it; `allocFixed` used to bump `_brk` with no bounds check at all,
@@ -112,6 +121,7 @@ function mmap(adr, len, prot, flags, fildes, off){
   const end = p + need;
   if (!_growTo(end)) return -1;                  // MAP_FAILED at the ceiling
   _brk = end;
+  if (end > _mmapHigh) _mmapHigh = end;
   _zero(p, need);                                // MAP_ANONYMOUS: zero-filled
   return p;
 }

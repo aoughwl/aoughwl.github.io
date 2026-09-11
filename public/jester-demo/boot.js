@@ -80,11 +80,23 @@ export async function boot(canvas, ui) {
 
   let running = false, current = null, missing = new Set();
 
-  const callback = (name) => {
+  // THE FRAME STACK. `tools/frame-arena.mjs` exposes a mark and a release over
+  // the bundle's bump pointer; taking a mark before a per-frame callback and
+  // releasing it after gives `allocFixed` the stack discipline its own comment
+  // says it models, and is the whole reason this page no longer has a budget.
+  //
+  // `framed` is false for `start` and `stop`: whatever a mod sets up in `start`
+  // has to outlive the call, and releasing it would hand that memory out again.
+  // The release also refuses itself whenever the Nim heap grew above the mark
+  // during the call - see the tool.
+  const arenaMark = globalThis.__leng_mark, arenaRelease = globalThis.__leng_release;
+  const callback = (name, framed) => {
     globalThis.__inf_has(name);
     if (!globalThis.__inf_bool) { missing.add(name); return; }
+    const at = framed && arenaMark ? arenaMark() : -1;
     globalThis.__inf_call(name);
     if (globalThis.__inf_err) ui.log && ui.log("[" + name + "] " + globalThis.__inf_err);
+    if (at >= 0) arenaRelease(at);
   };
 
   function load(id) {
@@ -154,20 +166,22 @@ export async function boot(canvas, ui) {
     current = null;
   }
 
-  // THE TICK IS THROTTLED, AND THAT IS NOT A PERFORMANCE DECISION.
+  // THE TICK USED TO BE THROTTLED TO 10 fps, AND THAT WAS NOT A PERFORMANCE
+  // DECISION: `allocFixed` is the codegen's storage for value aggregates and the
+  // runtime never rewound it, so a page had a fixed budget of interpreted work
+  // - about a gigabyte - and every frame spent some. Going slower freed nothing;
+  // it only stretched the time before the ceiling arrived.
   //
-  // The JS backend's `allocFixed` is the codegen's storage for value aggregates
-  // and it is a bump pointer that is never rewound - a C-stack model with no
-  // return. So a page has a FIXED BUDGET of interpreted work, about a gigabyte
-  // of it, and every frame spends some. Sixty frames a second spends it in well
-  // under a minute; ten spends it in several. Nothing is freed by going slower,
-  // but the visitor gets more of the demo before the ceiling arrives.
+  // The frame stack above ended that. Measured on this page, same mod, same four
+  // minutes: 627 MB spent before, 7 MB after. So the default is 60 now, and the
+  // throttle is a control rather than a rationing scheme.
   //
   // `allocFixed(0)` returns the current bump pointer without allocating
-  // anything, which is how `used()` below reads the budget exactly rather than
-  // guessing from `ArrayBuffer.byteLength` (which only doubles).
-  let hz = 10, last = 0, paused = false;
-  // Two ways to spend a frame, because the budget above is the real one.
+  // anything, which is how `used()` below reads linear memory exactly rather
+  // than guessing from `ArrayBuffer.byteLength` (which only doubles).
+  let hz = 60, last = 0, paused = false;
+  // Two ways to spend a frame. Neither is about memory any more - a frame that
+  // would be identical to the last one is simply work nobody asked for.
   //   ANIMATED  the mod's picture changes on its own, so every tick is a frame.
   //   ON DEMAND the mod only redraws when something happened - a key, the
   //             pointer, a click, a load, a swap. The boot shell is a menu: a
@@ -187,7 +201,7 @@ export async function boot(canvas, ui) {
     if (dead) return;
     if (paused || document.hidden || offscreen) return;
     // An animated mod goes to sleep when nobody has touched the page for a
-    // while; the picture stays, the budget stops draining.
+    // while. The picture stays; an idle tab stops interpreting.
     const asleep = animated && idleAt > 0 && now > idleAt;
     if (asleep && ui.asleep) ui.asleep(true);
     if (!(animated && !asleep) && dirty <= 0) return;
@@ -196,7 +210,7 @@ export async function boot(canvas, ui) {
     if (dirty > 0) dirty -= 1;
     try {
       host.beginFrame();
-      if (running) { callback("update"); callback("drawGui"); }
+      if (running) { callback("update", true); callback("drawGui", true); }
       host.paint();
       host.endFrame();
     } catch (e) {

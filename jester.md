@@ -63,22 +63,41 @@ this target. It is a bug worth fixing, not a limit worth writing around.
 
 No scene. Nothing 3D exists in this host — no `game_object_create`, no meshes,
 no physics, no character controller, no raycast — so a modpack that draws a
-world would select and then show nothing. Of the 433 host calls a browser can
-serve 373: 120 involve no platform capability at all, 123 map onto a browser API
-directly, 130 need a named substitute, and **60 it cannot serve**. Those figures
+world would select and then show nothing. Of the 440 host calls a browser can
+serve 380: 122 involve no platform capability at all, 125 map onto a browser API
+directly, 133 need a named substitute, and **60 it cannot serve**. Those figures
 are derived rather than typed — `web/triage.mjs` reads the live call list out of
 the C# dispatch table and refuses to print the table at all while any call has
 no verdict.
 
-And it has a budget. The JavaScript backend's storage for value aggregates is a
-bump pointer that is never rewound — a C stack with no return — so a page can
-execute about a gigabyte of interpreted work and then has to be reloaded. The
-gauge in the demo reads the real pointer, not an estimate. At sixty frames a
-second an animated mod spends the gigabyte in half a minute; at ten it takes
-several, and going slower frees nothing, it just spends more slowly. That is why
-the menu draws on demand and the animation sleeps when nobody is looking. The
-desktop build does not have this property; it is a gap in the JS backend rather
-than in the engine.
+It used to have a budget, and now it has a frame stack. The JavaScript backend's
+storage for value aggregates is a bump pointer, and the runtime never rewound
+it — a C stack with no return — so every frame of interpreted work spent a
+little of a 1 GiB ceiling and a page eventually had to be reloaded. Measured on
+this demo: **627 MB gone after four minutes at ten frames a second**, heading for
+the wall.
+
+A bump pointer that models a C stack is a thing you can pop. `boot.js` takes a
+mark before `update` and `drawGui` and releases it after, and refuses the
+release on any frame where the interpreter's own heap grew above that mark,
+because those pages outlive the call. Same mod, same four minutes, the same work
+to within one percent of the draw calls: **7 MB**. The gauge still reads the real
+pointer, because a flat line is the evidence. The tick runs at sixty now rather
+than ten.
+
+What is still not freed is a *retired* interpreter. Loading another mod leaves
+the previous one's state behind — about 1.3 MB a load, measured at 25 MB after
+eighteen. That is hundreds of loads from the ceiling rather than a handful, so
+it is no longer a budget, but it is not nothing and it is not fixed. And the fix
+that *is* in is a patch applied over the generated bundle
+(`tools/frame-arena.mjs`), which is the wrong home for it: it belongs in the JS
+runtime itself, where every embedder would get it. The desktop build has neither
+problem.
+
+[**The browser build's memory**](/docs/jester/browser-memory) is the whole story
+— the diagnosis, the fix, the measurement, the one case the release has to
+refuse, and what is still broken. It is written as a handoff for whoever moves
+it into the runtime.
 
 First load is about 11 MB of JavaScript and artifacts, roughly 1.2 MB over the
 wire after gzip, and cached after that.
@@ -114,7 +133,7 @@ produced this page: every call served, nothing declined, no page errors.
 sandbox, shipped through their platform. Jester takes the other half of the
 idea: a real engine, a real compiled language, no platform, no revenue cut, and
 no built-in game to work around. It is simpler than either — the entire contract
-between a mod and Unity is one list of 433 calls — and more open-ended, because
+between a mod and Unity is one list of 440 calls — and more open-ended, because
 there is no shipped game whose assumptions you are modding around. The host
 boots, loads a shell mod, and the shell picks a modpack. The menu you just used
 is a mod as well.
@@ -151,10 +170,12 @@ answer. A capability model over that surface is in progress; until it lands, rea
 
 **1. The host is a very small Unity game.** Not an engine fork, not a custom
 renderer, not a plugin. It loads an interpreter, hands it a mod, and answers the
-calls that come back. The boundary is 433 host calls at surface version 1.6.0 —
-that is the whole contract — and the C# dispatch table and the mod-side
-`importc` declarations are the same 433 names, checked against each other by a
-gate rather than by hand. A mod declares the surface version it needs and
+calls that come back. The boundary is 440 host calls at surface version 1.8.0,
+**as of commit `f559ceb`, 2026-09-10** — that is the whole contract — and the C#
+dispatch table and the mod-side `importc` declarations are the same 440 names,
+checked against each other by a gate rather than by hand. Every count on this
+page is pinned to that commit, and [the section below](#the-numbers-on-this-page-and-where-they-came-from)
+says why. A mod declares the surface version it needs and
 discovery refuses it by name if this host cannot serve it. Because the host is
 small it can be frozen: ship it once, and every game after that is content.
 
@@ -212,15 +233,27 @@ purpose: a checker that edits the prose to match the gate does not verify the
 claim, it launders it. Run on 2026-09-10 it read **106/106 verified, 0 wrong,
 0 unverifiable**.
 
+**Every count of the host surface below is pinned to commit `f559ceb`
+(2026-09-10), and says so.** The surface is under active development and moves
+several times a day — it moved twice while this page was being edited. A figure
+with no commit beside it is wrong the moment it moves, and re-deriving it every
+time the tree changes only means publishing a number that is stale by the time
+anyone reads it. A figure *with* a commit beside it is true permanently: it will
+still be true when the surface passes five hundred, and a reader can check it by
+looking at that commit. So the pin is the honest form, not a hedge. What does
+not go stale is the derivation, which is why it is still in the right-hand
+column.
+
 | figure | how it was derived |
 | --- | --- |
-| 433 host calls | the gate reads the prefix-family list out of the C# dispatch itself and then counts each family's cases, so a family nobody told it about is still counted |
-| the same 433 names on the mod side | the `importc` declarations under `ModSdk/`, deduplicated — overloads share one host call |
-| surface version 1.6.0 | `HostSurface.Version` |
+| 440 host calls, at `f559ceb` | the gate reads the prefix-family list out of the C# dispatch itself and then counts each family's cases, so a family nobody told it about is still counted. 158 are inline `case` labels and 282 live in 11 prefix-owned tables |
+| the same 440 names on the mod side, at `f559ceb` | the `importc` declarations under `ModSdk/`, deduplicated — overloads share one host call. This is an independent derivation that happens to agree: it reads the mod side of the boundary, the row above reads the host side |
+| surface version 1.8.0, at `f559ceb` | `HostSurface.Version` |
 | 51 mods, 35 modpacks | the committed `mod.json` and `modpack.json` sets; the shipped player prints the same pair into its session log at boot |
 | 155 MB working set, 287 MB private | five launches of the committed IL2CPP player sampled through `System.Diagnostics.Process`; `docs/FOOTPRINT.md` gives the machine, the method and the run-to-run spread |
-| 373 of 433 servable — 120 pure, 123 native, 130 shim, 60 no | `node web/triage.mjs` against `web/triage.tsv`, which refuses to answer while any call is untriaged |
-| about a gigabyte of interpreted work per page load | the demo's gauge reads the JS backend's bump pointer directly, and `tools/measure-demo-life.mjs` drives a headless Chrome at the page until it stops |
+| 380 of 440 servable — 122 pure, 125 native, 133 shim, 60 no, at `f559ceb` | `node web/triage.mjs` against `web/triage.tsv`, which refuses to answer while any call is untriaged. A third independent route to the same 440, and the one that has to name every call rather than count them |
+| 627 MB before the frame stack, 7 MB after | `LIMIT=240000 MOD=demo.web node tools/measure-demo-life.mjs`, run either side of `tools/frame-arena.mjs`: it drives a headless Chrome at the page for four minutes and reports the JS backend's bump pointer, read directly rather than estimated. The two runs made 3948 and 3990 `draw_fill` calls, so it is the same work both times |
+| about 1.3 MB left behind per mod load | `LOADS=6 node tools/measure-demo-life.mjs`, which loads every mod in the payload six times round and reports the pointer after each cycle: 25 MB after eighteen loads |
 | ~11 MB of assets, ~1.2 MB gzipped | the demo's own harness, which serves the page compressed and adds up what Chrome actually fetched |
 
 Numbers that are deliberately absent: no throughput benchmark, no frame time, no

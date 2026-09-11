@@ -80,6 +80,7 @@ const CORE_AREAS = [
   ["aiming", "one ray, its hit, point and distance", (n) => n === "infiniteless_aim" || n.startsWith("infiniteless_aim_")],
   ["rigidbodies", "add with mass, freeze, set velocity", pre("infiniteless_physics_")],
   ["state", "remember and save over scalars", pre("infiniteless_state_")],
+  ["the host itself", "the surface version a mod can ask for, and the SDK stamp discovery judges a mod against", pre("infiniteless_host_")],
   ["the rest", "log, time, delta, camera create, primitives, the mod's own folder, one import read", p("infiniteless_log", "infiniteless_time", "infiniteless_delta_time", "infiniteless_camera_create", "infiniteless_primitive_create", "infiniteless_mod_folder", "infiniteless_import_read_bytes")],
 ];
 

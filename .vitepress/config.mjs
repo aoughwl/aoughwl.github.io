@@ -212,6 +212,7 @@ const sidebar = [
           { text: 'Importers', link: '/docs/jester/importers' },
           { text: 'Networking', link: '/docs/jester/networking' },
           { text: 'The host surface', link: '/docs/jester/host-surface' },
+          { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
         ],
       },
       {

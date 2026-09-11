@@ -1,6 +1,13 @@
-// How long can the browser build run one mod before its 1 GiB linear memory is
-// full? Load the page, leave it alone, and report the wall time and the frame
-// count at the moment the interpreter stops.
+// How much of the browser build's 1 GiB linear memory does running a mod
+// actually spend? Load the page, leave it alone, and report the wall time, the
+// work done and the bump pointer - or, with LOADS=n, load every mod in the
+// payload n times round and report the pointer after each cycle instead.
+//
+//   LIMIT=240000 MOD=demo.web node tools/measure-demo-life.mjs
+//   LOADS=6 node tools/measure-demo-life.mjs
+//
+// Both numbers on /jester came out of this, run either side of
+// tools/frame-arena.mjs.
 "use strict";
 import http from "node:http"; import fs from "node:fs"; import path from "node:path";
 import { spawn } from "node:child_process"; import os from "node:os";
@@ -43,6 +50,27 @@ await send("Page.enable"); await send("Runtime.enable");
 await send("Page.navigate", { url: site });
 while (!(await ev("globalThis.__demo && __demo.running === true"))) await new Promise((r) => setTimeout(r, 100));
 const t0 = Date.now();
+
+// LOADS=n asks the OTHER question. The frame stack in boot.js rewinds what a
+// frame allocates, but a RETIRED interpreter is never freed, and that residue
+// is per load rather than per frame. So: load every mod in the payload, n times
+// round, and print the bump pointer after each cycle.
+if (process.env.LOADS) {
+  const list = JSON.parse(await ev("JSON.stringify(__demo.payload.mods.map(m=>m.id))"));
+  const rows = [];
+  for (let cycle = 0; cycle < Number(process.env.LOADS); cycle++) {
+    for (const id of list) {
+      await ev("__demo.load(" + JSON.stringify(id) + ")");
+      await new Promise((r) => setTimeout(r, 700));
+    }
+    rows.push({ loads: (cycle + 1) * list.length,
+      usedMB: await ev("Math.round(__demo.used()/1048576)") });
+  }
+  console.log(JSON.stringify({ mods: list, rows,
+    died: dead ? String(dead).split(String.fromCharCode(10))[0] : null }, null, 2));
+  ws.close(); chrome.kill(); server.close(); process.exit(0);
+}
+
 const LIMIT = Number(process.env.LIMIT || 300000);
 while (!dead && Date.now() - t0 < LIMIT) {
   await new Promise((r) => setTimeout(r, 1000));

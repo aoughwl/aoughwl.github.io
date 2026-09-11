@@ -58,9 +58,11 @@ Jester is not an engine fork, a custom renderer, or a Unity plugin. It is a
 Unity project of a few thousand lines that draws nothing and plays nothing. It
 loads an interpreter, hands it a mod, and answers the calls that come back.
 
-The boundary is **433 host calls**, at host surface version **1.6.0**. That is
+The boundary is **440 host calls**, at host surface version **1.8.0** — both as
+of commit `f559ceb` (2026-09-10), because the surface moves several times a day
+and a count with no commit beside it is wrong the moment it does. That is
 the entire contract between a mod and Unity, and the C# dispatch tables and the
-mod-side `importc` declarations are the same 433 names — no case without a
+mod-side `importc` declarations are the same 440 names — no case without a
 wrapper, no wrapper without a case, and no mod declaring an `importc` of its
 own, checked against each other by a gate rather than by hand. Gameplay never
 crosses into C#; C# never knows what game is running. A mod declares the surface

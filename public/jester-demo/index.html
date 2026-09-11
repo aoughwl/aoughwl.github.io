@@ -82,17 +82,28 @@
         <code>boot.js</code>.</p>
     </div>
     <div class="box">
-      <h2>interpreted-work budget</h2>
+      <h2>linear memory</h2>
       <div class="meter"><i id="fuel"></i></div>
       <p class="note" id="fueltext">—</p>
       <div class="row" style="margin-top:8px">
-        <button id="pause">pause</button><button id="faster">60 fps</button>
+        <button id="pause">pause</button><button id="slower">10 fps</button>
       </div>
-      <p class="note">The JavaScript backend's value-aggregate storage is a bump
-        pointer that is never rewound, so the page can execute about a gigabyte
-        of interpreted work and then has to be reloaded. Ticking at 10 fps
-        instead of 60 does not free anything — it just spends the budget more
-        slowly. The desktop build does not have this property.</p>
+      <p class="note">This gauge used to be a fuel gauge. The JavaScript
+        backend's storage for value aggregates is a bump pointer, and the
+        runtime never rewound it — so every frame of interpreted work spent a
+        little of a 1 GiB ceiling and the page had to be reloaded. Measured:
+        <strong>627 MB gone after four minutes at 10 fps</strong>.</p>
+      <p class="note">A bump pointer that models a C stack is a thing you can
+        pop. <code>boot.js</code> now takes a mark before <code>update</code> and
+        <code>drawGui</code> and releases it after, and refuses the release
+        whenever the interpreter's own heap grew above that mark. Same four
+        minutes, same number of frames: <strong>7 MB</strong>. The gauge is left
+        here because a flat line is the evidence.</p>
+      <p class="note">What is still not freed is a <em>retired interpreter</em>:
+        loading another mod leaves the previous one's state behind, about 1.3 MB
+        of it — 18 loads measured 25 MB. That is hundreds of loads from the
+        ceiling rather than a handful, so the page no longer treats it as a
+        budget, but it is not nothing and it is not fixed.</p>
     </div>
     <div class="box">
       <h2>host</h2>
@@ -109,12 +120,14 @@
   const srcNote = document.getElementById("srcnote");
 
   const say = (m) => { statusEl.textContent = m; };
-  // aowli's browser build never frees a retired interpreter, so a page that has
-  // loaded several mods eventually hits the bundle's 1 GiB allocation ceiling.
-  // Say that, rather than leaving a canvas that stopped for no visible reason.
+  // The frame stack in boot.js keeps per-frame work from accumulating, but a
+  // retired interpreter is still never freed - about 1.3 MB a load - so the
+  // 1 GiB ceiling is reachable by a page that has been left loading mods for a
+  // very long time. Say so, rather than leaving a canvas that stopped for no
+  // visible reason.
   const explain = (e) => /linear memory/.test(String(e.message))
-    ? "out of memory: this browser build does not free a retired interpreter, so " +
-      "a few mod loads fill its 1 GiB heap. Reload the page to carry on."
+    ? "out of memory: this browser build does not free a retired interpreter, " +
+      "and enough mod loads eventually fill its 1 GiB heap. Reload to carry on."
     : e.message;
   const write = (m) => {
     logEl.textContent = (logEl.textContent ? logEl.textContent + "\n" : "") + m;
@@ -132,10 +145,10 @@
     exhausted: (why) => {
       over.classList.add("on");
       overtext.textContent =
-        "The interpreted-work budget is spent: " + why + " Nothing is wrong with " +
-        "the mod - this browser build never rewinds its value-aggregate storage, " +
-        "so a page gets about a gigabyte of interpreted work and then stops.";
-      say("out of interpreted-work budget");
+        "Linear memory is full: " + why + " Nothing is wrong with the mod - this " +
+        "browser build never frees a retired interpreter, and enough mod loads " +
+        "eventually fill its 1 GiB heap.";
+      say("out of linear memory");
     },
   }).then((rt) => {
     const modsEl = document.getElementById("mods");
@@ -216,22 +229,22 @@
     showSource(SHELL_NOTE, "");
 
     const pause = document.getElementById("pause");
-    const faster = document.getElementById("faster");
+    const slower = document.getElementById("slower");
     pause.onclick = () => {
       rt.paused = !rt.paused;
       pause.textContent = rt.paused ? "resume" : "pause";
       pause.setAttribute("aria-pressed", String(rt.paused));
     };
-    faster.onclick = () => {
-      rt.hz = rt.hz === 10 ? 60 : 10;
-      faster.textContent = rt.hz === 10 ? "60 fps" : "10 fps";
-      faster.setAttribute("aria-pressed", String(rt.hz === 60));
+    slower.onclick = () => {
+      rt.hz = rt.hz === 60 ? 10 : 60;
+      slower.textContent = rt.hz === 60 ? "10 fps" : "60 fps";
+      slower.setAttribute("aria-pressed", String(rt.hz === 10));
     };
     const mb = (n) => (n / (1024 * 1024)).toFixed(0);
     setInterval(() => {
       if (rt.dead) return;
       if (rt.asleep && !rt.paused)
-        say("asleep to save the budget — move the pointer over the canvas to wake it");
+        say("asleep — nobody is looking; move the pointer over the canvas to wake it");
       const u = rt.used();
       fuel.style.width = (100 * u / rt.ceiling).toFixed(1) + "%";
       fueltext.textContent = mb(u) + " MB of " + mb(rt.ceiling) + " MB spent  ·  " +
