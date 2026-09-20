@@ -45,7 +45,7 @@ the host module's own declarations, and both are selected by `--macros:`.
 | Mode | What runs the plugin |
 |---|---|
 | `auto` | Interpret it; fall back to a native build if that fails. |
-| `interp` | Semcheck the generated module to `.s.nif` and run it under [aowli](../aowli-release). Nothing is linked, so this is the cheap path — and the only one available before a native toolchain exists. |
+| `interp` | Semcheck the generated module to `.s.nif` and run it under [aowli](/aowli). Nothing is linked, so this is the cheap path — and the only one available before a native toolchain exists. |
 | `compiled` | Build a host-native binary. |
 | `off` | No plugins: the shape matcher and the constant folds alone. |
 

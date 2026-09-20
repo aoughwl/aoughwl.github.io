@@ -204,7 +204,7 @@ A `const` initialiser, a `when` condition, an array dimension and an enum member
 value are all **evaluated** when no constant fold can compute them — aowlsem
 generates a module from the host's own declarations and runs it. The generated
 module is a plugin exactly as a macro's is, and takes the same two executors:
-interpreted under [aowli](aowli-release), or built native. See
+interpreted under [aowli](/aowli), or built native. See
 [CLI → Compile-time evaluation](aowlsem/cli#compile-time-evaluation).
 
 #### Modules

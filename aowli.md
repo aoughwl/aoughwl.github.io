@@ -14,11 +14,9 @@ independent engines run it and agree byte-for-byte.
 <a href="https://aoughwl.github.io/playground/">Try it in the browser →</a>
 </div>
 
-> The source above is private. A prebuilt, binary-only distribution —
-> **[aowli-release](docs/aowli-release)** (v0.3.2, obfuscated + licence-gated +
-> stripped) — carries `aowli-interp`/`aowli-dbg`, which run typed AIF with no
-> build step and are what the [aowlcode](docs/aowlcode) plugin's `trace`/`debug`
-> tools drive. Builds come from the [store](store/aowli).
+> The source above is private. `aowli-interp` and `aowli-dbg` run typed AIF with
+> no build step and are what the [aowlcode](docs/aowlcode) plugin's `trace` and
+> `debug` tools drive. They are sold as binaries: see the [store](store/aowli).
 
 [[toc]]
 
@@ -102,7 +100,6 @@ frame captures.
 | [Engines](aowli/engines) | Tree-walker vs VM, the shared value/primitive/IO layer, `.s.nif` input, differential testing, corpus parity. |
 | [Debugging](aowli/debugging) | aowlidbg reference: `--break` vs `--break-func`, `--trace` vs `--trace-depth` vs `--trace-profile`, when to use which. |
 | [Debugging a real bug](aowli/debugging-a-real-bug) | Case study — a real off-by-one in `aoughwl/css`, found via `--break-func` frame captures, no print statements. |
-| [aowli-release](docs/aowli-release) | Prebuilt binaries: hardening, distribution, usage. |
 
 ## Status
 

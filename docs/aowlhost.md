@@ -5,7 +5,7 @@ repo: aoughwl/aowlhost
 # aowlhost — run an aowl module as a sandboxed plugin
 
 Runs a compiled aowl/nimony module as a **plugin**, inside a host process that
-embeds the [aowli](aowli-release) engine as a library, under a **capability
+embeds the [aowli](/aowli) engine as a library, under a **capability
 policy**. The default policy grants nothing: a plugin that opens a file, lists a
 directory, spawns a process or reads the environment is halted at the call.
 

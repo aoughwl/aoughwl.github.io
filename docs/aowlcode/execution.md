@@ -90,7 +90,7 @@ Both tools resolve the aowli binaries through `aowli_bin(name)`, in order:
 4. bare name on `PATH`, as a last resort
 
 This plugin is public, so it prefers a **released** binary
-([aoughwl/aowli-release](../aowli-release)) over a private source checkout —
+([aowli](/aowli)) over a private source checkout —
 steps 1–2 before the dev fallback at step 3. A missing/non-executable binary
 returns `{error: "aowli-interp/aowli-dbg binary not found or not executable ..."}`
 naming the path it looked for.

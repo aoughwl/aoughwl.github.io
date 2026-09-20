@@ -118,7 +118,7 @@ compile entirely.
 
 ### aowli v0.3.3 — hybrid mode crosses richer data
 
-[aowli v0.3.3](https://github.com/aoughwl/aowli-release/releases/tag/v0.3.3) extends
+aowli v0.3.3 extends
 the interpreter's optional **hybrid-native** mode, which runs the modules you are
 *not* debugging as real compiled code at full speed while interpreting the one you
 are. Until now only simple signatures (numbers, PODs, strings, flat seqs) could

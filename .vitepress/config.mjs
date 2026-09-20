@@ -9,7 +9,7 @@ import aowlsptReference from '../docs/aowlspt/reference/sidebar.json' with { typ
 
 // ---------------------------------------------------------------------------
 // Sidebar tree. Region headers (OVERVIEW / INTERFACE / COMPILER / EMITTERS /
-// RUNTIME / TOOLS / LIBRARIES / GAMES) are top-level groups, ordered the way a program
+// RUNTIME / TOOLS / LIBRARIES / GAMES / ATTIC) are top-level groups, ordered the way a program
 // travels. Each stage is a link, and any stage that has sub-pages is a
 // { collapsed: true, link, items } group — click the label to open the page,
 // click the chevron to expand. Adding a child page to ANY stage is a one-liner:
@@ -22,6 +22,15 @@ const sidebar = [
       { text: 'Welcome', link: '/' },
       { text: 'Parity', link: '/docs/parity' },
       { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
+    ],
+  },
+  {
+    text: 'STORE',
+    items: [
+      { text: 'What is for sale', link: '/store/' },
+      { text: 'aowli — $9.99/mo', link: '/store/aowli' },
+      { text: 'jester — $19.99/mo (upcoming)', link: '/store/jester' },
+      { text: 'Your licence', link: '/store/license' },
     ],
   },
   {
@@ -107,7 +116,6 @@ const sidebar = [
           { text: 'Engines', link: '/aowli/engines' },
           { text: 'Debugging', link: '/aowli/debugging' },
           { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
-          { text: 'aowli-release (prebuilt binaries)', link: '/docs/aowli-release' },
           { text: 'Get a licence — $9.99/mo', link: '/store/aowli' },
         ],
       },
@@ -215,8 +223,13 @@ const sidebar = [
           { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
         ],
       },
+    ],
+  },
+  {
+    text: 'ATTIC',
+    items: [
       {
-        text: 'Tarkov modding — aowlspt (deprecated)',
+        text: 'aowlspt — Tarkov modding',
         link: '/docs/aowlspt',
         collapsed: true,
         items: [
@@ -397,20 +410,6 @@ const sidebar = [
           },
         ],
       },
-    ],
-  },
-  {
-    text: 'STORE',
-    items: [
-      { text: 'What is for sale', link: '/store/' },
-      { text: 'aowli — $9.99/mo', link: '/store/aowli' },
-      { text: 'jester — $19.99/mo (upcoming)', link: '/store/jester' },
-      { text: 'Your licence', link: '/store/license' },
-    ],
-  },
-  {
-    text: 'DEPRECATED',
-    items: [
       { text: 'nimony-lsp (Nim 2) — nim2-nimony-lsp', link: '/docs/nim2-nimony-lsp' },
     ],
   },
