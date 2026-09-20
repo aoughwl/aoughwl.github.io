@@ -2,14 +2,18 @@
 title: aowlspt licence
 ---
 
-# aowlspt — $19.99/month
+# aowlspt
 
 A modding platform for post-1.0 **Escape From Tarkov**: a native client host
 injected into the game, a backend server, an in-game overlay, one C ABI, one
 build command — and a from-scratch Tarkov server emulator written *as a mod on
 top of it*. The [documentation is public](/docs/aowlspt); the build is not.
 
-<BuyButton product="aowlspt" price="1999" interval="month" label="Subscribe" />
+> **Not for sale.** The subscription described below has been taken down.
+> Existing licences are unaffected — activation, downloads and renewals keep
+> working as documented — but new subscriptions are closed. Ask on
+> [Discord](https://discord.gg/nxa3W7w4rJ) if you have questions about an
+> existing key.
 
 ## What the subscription buys
 

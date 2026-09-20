@@ -110,9 +110,9 @@ No. Windows only.
 
 ## What does it cost?
 
-**$19.99 a month** for the build: every update, three machines, the mods, cancel
-whenever. The documentation is public; the source is not. See
-[the licence page](/store/aowlspt).
+The build is no longer for sale. Existing licences keep working as documented;
+see [the licence page](/store/aowlspt) for details. The documentation here
+stays public; the source is not.
 
 ## How finished is this?
 

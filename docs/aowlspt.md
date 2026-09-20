@@ -62,8 +62,7 @@ own.**
 → **[Install it](/docs/aowlspt/installation)** ·
 **[First run](/docs/aowlspt/getting-started)** ·
 **[What it does](/docs/aowlspt/features)** ·
-**[Mods](/docs/aowlspt/mods)** ·
-**[Get a licence — $19.99/mo](/store/aowlspt)**
+**[Mods](/docs/aowlspt/mods)**
 
 ::: tip Looking for exhaustive detail?
 The **[Reference](/docs/aowlspt/reference/)** section is generated directly from
@@ -141,9 +140,10 @@ under the
 free for anything that is not commercial. Every page in
 [the manual](/docs/aowlspt/manual/) links back to the files it describes.
 
-A built, installable copy is still **[$19.99 a month](/store/aowlspt)** — every
-update, three machines, the mods, cancel whenever — but nothing obliges you to
-take it; the source is there. Questions first: Discord **timbuktu_guy**.
+A built, installable copy is **no longer sold** — see the [store
+page](/store/aowlspt) for what that means for existing licences — but nothing
+obliges you to buy one; the source is there. Questions first: Discord
+**timbuktu_guy**.
 
 ## Where to go next
 

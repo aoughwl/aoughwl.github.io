@@ -395,7 +395,6 @@ const sidebar = [
               },
             ],
           },
-          { text: 'Get a licence — $19.99/mo', link: '/store/aowlspt' },
         ],
       },
     ],
@@ -404,8 +403,8 @@ const sidebar = [
     text: 'STORE',
     items: [
       { text: 'What is for sale', link: '/store/' },
-      { text: 'aowlspt — $19.99/mo', link: '/store/aowlspt' },
       { text: 'aowli — $9.99/mo', link: '/store/aowli' },
+      { text: 'jester — $19.99/mo (upcoming)', link: '/store/jester' },
       { text: 'Your licence', link: '/store/license' },
     ],
   },
