@@ -18,6 +18,29 @@ and its output is **readable**. It's the **Native JS** engine in the
 
 ---
 
+## What aowljs does
+
+It is one tool with several jobs, not just a transpiler:
+
+- **Native-speed JavaScript.** Typed NIF in, real JavaScript out, with nimony
+  values mapped to native JS values so the browser's JIT does the work
+  ([benchmark](#benchmark)).
+- **Readable output.** Functions keep their names and shape, so the result can be
+  read, debugged and diffed like hand-written code ([readable output](#readable-output)).
+- **Fallback instead of failure.** Anything it cannot lower natively falls back
+  rather than emitting wrong code ([coverage and fallback](#coverage-and-fallback)).
+- **FFI through shims.** `importc` calls resolve to JavaScript shims, so programs
+  that touch the outside world still compile ([shims](#shims-the-ffi-importc-path)).
+- **Two fidelity modes.** Fast mode approximates native values; faithful export
+  mode uses native `bigint` for exact 64-bit behaviour with no dependencies
+  ([faithfulness](#faithfulness-export-modes)).
+- **The playground's Native JS engine.** It is the engine you pick in the
+  [playground](https://aoughwl.github.io/playground/), and it ships as a web build
+  (`aowljs_web`) that runs inside the page.
+- **A family member.** The same approach of emitting idiomatic target code from
+  typed NIF is shared with [aowlts](aowlts) (TypeScript) and [aowlpy](aowlpy)
+  (Python), which are exporters in the playground beside it.
+
 ## Two backends, one decision
 
 Nimony reaches the web through two JavaScript emitters that operate at

@@ -5,37 +5,59 @@ description: The pure-Nimony modules behind Titicaca, the Jester web browser, an
 
 # Architecture
 
-Titicaca is a set of plain Nimony modules inside one Jester mod. None of the
-engine modules depend on Unity, a window or a network: they take text and return
-a tree, which is why the same modules run headless under the test runner (see
-[Web Platform Tests](/docs/titicaca/wpt)).
+Titicaca is a set of plain Nimony modules inside one Jester mod. The engine
+modules take text and return a tree; only the mod's entry point talks to the
+host, which is how the same code runs both inside Jester and under the test
+runner.
 
 ## The pipeline
 
-1. **Fetch.** The mod asks the host for bytes over HTTP, with a cache and a
-   cookie jar of its own (`webcache`, `webcookie`).
-2. **Parse.** `webhtml` builds a DOM from HTML; `webxml` does the same for XML and
-   XHTML pages. `weburl` and `webidna` handle URL parsing and internationalised
-   host names, `webencoding` the character sets.
-3. **Style.** `webcsssyntax` tokenises and parses CSS per the CSS Syntax spec
-   (declaration lists, `var()` substitution, unicode ranges). `webselector`
-   parses, matches and serialises Selectors Level 4. `webcss` runs the cascade,
-   including `@namespace`, nesting and named colours.
-4. **Script.** A JavaScript engine: `jslex`, `jsparse`, `jsvalue`, `jsregex`,
-   `jsinterp`. It has its own realms, so an iframe's scripts see the iframe's
-   globals.
-5. **DOM binding.** `jsdom` exposes the DOM to the engine: nodes, events, live
-   collections, `getComputedStyle`, `querySelector`. `webreflect` holds the
-   generated attribute-reflection tables for HTML elements.
-6. **Layout and paint.** `weblayout`, `webtable`, `webgrid`, `webfloat`,
-   `webtext`, `webinnertext`, `webimg`, `websvg` and related modules produce
-   boxes that the mod draws through Jester's UI library.
+1. **Fetch.** The mod asks the host for bytes over HTTP. It keeps its own cache
+   and cookie jar (`webcache`, `webcookie`).
+2. **Decode.** `webencoding` turns bytes into text using the character set from
+   the response, a `<meta>` tag or a byte-order mark.
+3. **Parse.** `webhtml` builds a DOM from HTML. `webxml` parses and serialises XML,
+   and pages served as XHTML take that path. `weburl` and `webidna` parse URLs and
+   internationalised host names.
+4. **Style.** `webcsssyntax` tokenises CSS. `webselector` parses, matches and
+   serialises selectors. `webcss` runs the cascade and computes styles.
+5. **Script.** `jslex`, `jsparse`, `jsvalue`, `jsregex` and `jsinterp` make up the
+   JavaScript engine. `jsdom` binds the DOM into it and `webreflect` supplies the
+   generated attribute-reflection tables.
+6. **Layout.** `weblayout`, `webtext`, `webfloat`, `webtable`, `webgrid`,
+   `webinnertext`, `webimg` and `websvg` turn styled nodes into boxes.
+7. **Paint and input.** The mod draws boxes through Jester's UI library and feeds
+   pointer and keyboard events back into the DOM as real events.
+
+## Module map
+
+| Area | Modules |
+| --- | --- |
+| Entry, chrome | `main`, `webmenu`, `webform` |
+| Networking, storage | `webcache`, `webcookie` |
+| Text and URLs | `weburl`, `webidna`, `webidnadata`, `webencoding`, `webtext` |
+| Markup | `webhtml`, `webxml`, `webmd` |
+| Styling | `webcsssyntax`, `webselector`, `websel`, `webcss` |
+| Script | `jslex`, `jsparse`, `jsvalue`, `jsregex`, `jsinterp`, `jsdom`, `webreflect` |
+| Layout and media | `weblayout`, `webfloat`, `webtable`, `webgrid`, `webmatrix`, `webinnertext`, `webimg`, `websvg` |
 
 ## Design rules
 
-- **Pure Nimony.** No C engine linked in; the whole thing is inspectable and
-  swappable like any other mod.
-- **Spec-shaped modules.** Each module follows one specification, so a test
-  failure points at one place.
-- **Measured, not assumed.** Correctness claims are numbers from the Web
-  Platform Tests, never from self-written tests alone.
+- **Pure Nimony.** The whole thing is inspectable and swappable like any mod.
+- **Spec-shaped modules.** A test failure points at one specification and so at
+  one file.
+- **Generated where the spec is a table.** Attribute reflection and event
+  handler maps are generated from WebIDL rather than typed by hand, so they stay
+  exactly as long as the standard says.
+- **No lying features.** An interface is exposed only when the feature behind it
+  exists. A page that feature-detects a canvas or a worker must not be told yes
+  by a stub.
+- **The runner is the referee.** Anything that cannot be exercised by the test
+  runner is treated as unproven.
+
+## Memory model
+
+The engine runs on Nimony without a garbage collector, so memory discipline is
+part of the design: environments captured by a call are released when the call
+returns, and the test runner runs every test in its own process under a hard
+memory cap. See [Web Platform Tests](/docs/titicaca/wpt) for the containment.

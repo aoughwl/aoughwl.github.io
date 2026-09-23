@@ -34,6 +34,43 @@ const sidebar = [
     ],
   },
   {
+    text: 'JESTER APPS',
+    items: [
+      {
+        text: 'Titicaca — the browser',
+        link: '/docs/titicaca',
+        collapsed: false,
+        items: [
+          { text: 'Overview', link: '/docs/titicaca' },
+          { text: 'Architecture', link: '/docs/titicaca/architecture' },
+          { text: 'JavaScript engine', link: '/docs/titicaca/javascript' },
+          { text: 'The DOM', link: '/docs/titicaca/dom' },
+          { text: 'CSS, selectors, layout', link: '/docs/titicaca/css-and-layout' },
+          { text: 'Networking and security', link: '/docs/titicaca/networking' },
+          { text: 'Web Platform Tests', link: '/docs/titicaca/wpt' },
+          { text: 'Limits and roadmap', link: '/docs/titicaca/limits' },
+          { text: 'Live demo (full page)', link: '/titicaca/' },
+        ],
+      },
+      {
+        text: 'Minecraft',
+        link: '/docs/minecraft',
+        collapsed: false,
+        items: [
+          { text: 'Overview', link: '/docs/minecraft' },
+          { text: 'What works today', link: '/docs/minecraft/state' },
+          { text: 'Architecture', link: '/docs/minecraft/architecture' },
+          { text: 'Importing your game', link: '/docs/minecraft/importing' },
+          { text: 'The network protocol', link: '/docs/minecraft/protocol' },
+          { text: 'Joining a server', link: '/docs/minecraft/joining-a-server' },
+          { text: 'Playing and controls', link: '/docs/minecraft/playing' },
+          { text: 'Testing and diagnostics', link: '/docs/minecraft/testing' },
+          { text: 'Known issues', link: '/docs/minecraft/known-issues' },
+        ],
+      },
+    ],
+  },
+  {
     text: 'INTERFACE',
     items: [
       { text: 'Manager — aowlup', link: '/docs/aowlup' },
@@ -221,32 +258,6 @@ const sidebar = [
           { text: 'Networking', link: '/docs/jester/networking' },
           { text: 'The host surface', link: '/docs/jester/host-surface' },
           { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
-        ],
-      },
-    ],
-  },
-  {
-    text: 'JESTER APPS',
-    items: [
-      {
-        text: 'Titicaca — the browser',
-        link: '/docs/titicaca',
-        collapsed: false,
-        items: [
-          { text: 'Overview', link: '/docs/titicaca' },
-          { text: 'Architecture', link: '/docs/titicaca/architecture' },
-          { text: 'Web Platform Tests', link: '/docs/titicaca/wpt' },
-          { text: 'Live demo (full page)', link: '/titicaca/' },
-        ],
-      },
-      {
-        text: 'Minecraft',
-        link: '/docs/minecraft',
-        collapsed: false,
-        items: [
-          { text: 'Overview', link: '/docs/minecraft' },
-          { text: 'What works today', link: '/docs/minecraft/state' },
-          { text: 'Joining a server', link: '/docs/minecraft/joining-a-server' },
         ],
       },
     ],
