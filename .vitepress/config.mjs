@@ -199,23 +199,6 @@ const sidebar = [
     text: 'GAMES',
     items: [
       {
-        text: 'Modding engine — Jester',
-        link: '/jester',
-        collapsed: true,
-        items: [
-          { text: 'Overview, and the live demo', link: '/jester' },
-          { text: 'Documentation', link: '/docs/jester' },
-          { text: 'Getting started', link: '/docs/jester/getting-started' },
-          { text: 'The mod API', link: '/docs/jester/mod-api' },
-          { text: 'Catalogs', link: '/docs/jester/catalogs' },
-          { text: 'The UI library', link: '/docs/jester/ui' },
-          { text: 'Importers', link: '/docs/jester/importers' },
-          { text: 'Networking', link: '/docs/jester/networking' },
-          { text: 'The host surface', link: '/docs/jester/host-surface' },
-          { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
-        ],
-      },
-      {
         text: 'Tarkov modding — aowlspt (deprecated)',
         link: '/docs/aowlspt',
         collapsed: true,
@@ -395,6 +378,47 @@ const sidebar = [
             ],
           },
           { text: 'Get a licence — $19.99/mo', link: '/store/aowlspt' },
+        ],
+      },
+    ],
+  },
+  {
+    text: 'JESTER',
+    items: [
+      { text: 'Overview, and the live demo', link: '/jester' },
+      { text: 'Documentation', link: '/docs/jester' },
+      { text: 'Getting started', link: '/docs/jester/getting-started' },
+      { text: 'The mod API', link: '/docs/jester/mod-api' },
+      { text: 'Catalogs', link: '/docs/jester/catalogs' },
+      { text: 'The UI library', link: '/docs/jester/ui' },
+      { text: 'Importers', link: '/docs/jester/importers' },
+      { text: 'Networking', link: '/docs/jester/networking' },
+      { text: 'The host surface', link: '/docs/jester/host-surface' },
+      { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
+    ],
+  },
+  {
+    text: 'JESTER APPS',
+    items: [
+      {
+        text: 'Titicaca — the browser',
+        link: '/docs/titicaca',
+        collapsed: false,
+        items: [
+          { text: 'Overview', link: '/docs/titicaca' },
+          { text: 'Architecture', link: '/docs/titicaca/architecture' },
+          { text: 'Web Platform Tests', link: '/docs/titicaca/wpt' },
+          { text: 'Live demo (full page)', link: '/titicaca/' },
+        ],
+      },
+      {
+        text: 'Minecraft',
+        link: '/docs/minecraft',
+        collapsed: false,
+        items: [
+          { text: 'Overview', link: '/docs/minecraft' },
+          { text: 'What works today', link: '/docs/minecraft/state' },
+          { text: 'Joining a server', link: '/docs/minecraft/joining-a-server' },
         ],
       },
     ],
