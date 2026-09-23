@@ -1,0 +1,31 @@
+# Line-ending policy.
+#
+# Git for Windows installs with core.autocrlf=true at the SYSTEM level, so on a
+# Windows checkout git rewrites every LF it believes belongs to a text file into
+# CRLF. Several of the playground's assets are not text: they are LENGTH-FRAMED
+# binary containers whose headers carry an exact <bytelen>. Injecting one CR into
+# such a file desynchronises every frame after it, the reader's walk stops dead,
+# and the playground silently loses its entire pre-semchecked std surface — the
+# default program then reports "undeclared routine `echo`" with nothing wrong in
+# the code. Marking them binary is what stops that from ever happening again.
+#
+# Later rules win, so the catch-all comes FIRST and the binary overrides follow.
+
+# Text: normalise to LF in the repository, and check it out as LF too. The
+# toolchain, the content hashes and the shell scripts all assume LF.
+*               text=auto eol=lf
+
+# Not text. `binary` == `-text -diff`: never translate, never diff as text.
+*.bin           binary
+*.nif           binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.pdf           binary
+*.wasm          binary
+*.zip           binary

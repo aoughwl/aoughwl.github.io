@@ -1,0 +1,46 @@
+--- a/src/aowli/interp.nim	2026-09-23 11:14:54.928498300 -0400
++++ b/src/aowli/interp.nim	2026-09-23 11:15:04.011922000 -0400
+@@ -9089,6 +9089,43 @@
+     if hm.bases[i] == base: return i
+     inc i
+ 
++type
++  HotGlobal* = object
++    ## One module-level variable of a live module, as a host shows it.
++    name*: string     ## the basename as written in the source
++    value*: string    ## `renderValueReadable`, the same rendering the debugger
++                      ## uses for locals, so the two never disagree
++
++proc hotGlobals*(ip: Interp; hm: HotModule; perValueCap = 600): seq[HotGlobal] =
++  ## The MAIN module's globals and their current values, for a state inspector.
++  ##
++  ## Read from `frames[0]` rather than `hm.syms`: `publishTopDecls` records
++  ## routines, types and consts, never a `var`, because a `var` is not republished
++  ## by a swap - it is the thing a swap KEEPS. So the only place a global's value
++  ## lives is its cell in the global frame. That frame also holds every seeded
++  ## system and imported global, so a cell counts as the program's own only when
++  ## its symbol carries the main module's suffix, or none (the raw `.s.nif`
++  ## spelling) - the same pair `hotIsMainModule` tests.
++  ##
++  ## Pure read: no evaluation, no allocation in interpreter memory, safe between
++  ## any two steps.
++  result = @[]
++  discard hm
++  if ip.frames.len == 0: return
++  let g = ip.frames[0]
++  var i = 0
++  while i < g.vars.len and i < g.cells.len:
++    let s = g.vars[i]
++    let modu = extractModule(pool.syms[s])
++    if modu.len == 0 or modu == prog.main.name:
++      let bn = baseName(s)
++      # compiler temporaries (`:tmp`, `` `x ``) are not the user's names
++      if bn.len > 0 and (bn[0] in {'a'..'z', 'A'..'Z', '_'}):
++        let c = g.cells[i]
++        result.add HotGlobal(name: bn,
++          value: (if c != nil: renderValueReadable(c.v, perValueCap) else: "nil"))
++    inc i
++
+ proc hasHot*(hm: HotModule; base: string): bool =
+   result = hotIndex(hm, base) >= 0
+ 

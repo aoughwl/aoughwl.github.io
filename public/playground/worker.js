@@ -43,12 +43,21 @@
 
 // --- load + compile-once the bundles -----------------------------------------
 // aowliMain  = tree-walker (interp.nim): lazy, runs any self-contained .s.nif.
-// aowliVmMain= bytecode VM (compiler.nim + vm.nim): 1.7-2.9x faster on compute,
-//   but its compiler resolves some symbols eagerly (firstParamContainer ->
-//   tryLoadSym), which forces an on-demand module load the self-contained
-//   browser host can't satisfy (seq/Table container ops -> vfs open fails).
-//   So the VM is the FAST PATH and the tree-walker is the always-correct
-//   fallback (see runSnif).
+// aowliVmMain= bytecode VM (compiler.nim + vm.nim): 1.7-2.9x faster on compute
+//   WHERE IT WORKS. Measured in-browser (tools/verify-engines.mjs) it currently
+//   aborts on both programs that gate exercises: a pure-integer proc call hits
+//   "VM value-path hole at opCallIndirect: callee is not a proc value", and the
+//   playground default program hits "[Assertion Failure] expected index tag".
+//   Those are aowli-internal aborts inside this bundle, not host limits, so they
+//   cannot be fixed from this repo — they belong to aowli_vm.js.
+//   The older note here blamed an eager symbol resolve (firstParamContainer ->
+//   tryLoadSym) forcing an on-demand module load the self-contained browser host
+//   cannot satisfy. That path still exists and vmFallbackReason still names it,
+//   but it is NOT what these programs hit.
+//   So: the VM is the fast path, the tree-walker is the always-correct fallback,
+//   runSnif falls back ONLY on an abort (never on a plain quit(), which used to
+//   make every VM run report as tree), and a fallback always says so via
+//   fellBack/fallbackFrom/fallbackReason.
 let semMain = null, aowliMain = null, aowliVmMain = null, stdlibBlob = null, nsCheckFn = null, semJsText = null;
 // aowlsem (the AOWL semantic checker) bundle text. Unlike nimsem it
 // has NO warm-closure model, so we keep only the source and evaluate a fresh
@@ -524,6 +533,51 @@ async function runSem(pnif, semEngine, multi){
   return semCompile(pnif);
 }
 
+// --- the stdlib, framed for a LIVE SESSION -----------------------------------
+//
+// A one-shot Run never needed this. The tree-walker resolves a symbol when it
+// reaches it, and `echo` bottoms out in a native, so a program importing
+// `std/syncio` runs to completion without syncio's artifact ever being loaded.
+//
+// A SESSION does need it. `__sess_boot` publishes the module and loads it the
+// way the desktop host does, which walks the whole tree eagerly and reaches
+// `programs.tryLoadSym` for `write.0.syn1lfpjv` \u2014 a symbol whose module suffix
+// names an artifact nobody put in the VFS. The session then dies with
+// "module not found: module 'syn1lfpjv' has no artifacts at
+// '/w/syn1lfpjv.s.nif'", which is the same shape as the VM's
+// `expected 'index' tag` and has the same answer: put the module where its own
+// symbols say it is.
+//
+// The bytes are already here. `assets/aowlsem-mods.bin` carries every shipped
+// std module's `.s.nif`, because aowlsem is handed them to CHECK against; this
+// hands the same ones to aowli to RUN against, chosen by the same import scan
+// and closed over the same recorded dependencies, so a session loads exactly
+// what the check did and nothing more.
+//
+// THE SYNTHESIZED SIDECAR. `programs.load` reads `<mod>.s.idx.nif`
+// unconditionally and `readIndex` asserts on anything that is not an `(index)`
+// tag \u2014 including the empty string a VFS miss hands back. The asset carries no
+// sidecars, so one is synthesized per module. Empty is CORRECT: the symbols come
+// from the module's own embedded index. Same constant, same reasoning, as
+// `webvfs.publishMainModule`.
+const EMPTY_INDEX_NIF = "(.nif27)\n(index\n)\n";
+async function framedStdModules(pnif){
+  await ensureAowlsemMods();
+  if(!asMods || !asModsByName) return "";
+  const sel = selectAowlModules(pnif);
+  const want = sel.sysSuffix ? [sel.sysSuffix].concat(sel.imps) : sel.imps;
+  let out = "";
+  for(const suffix of want){
+    const mod = asMods.get(suffix);
+    if(!mod) continue;
+    // webvfs frames a module as "<name>\t<len>\n<body>", and the name is the
+    // file `programs.load` will ask for \u2014 which is the module's suffix.
+    out += suffix + ".s.nif\t" + mod.body.length + "\n" + mod.body;
+    out += suffix + ".s.idx.nif\t" + EMPTY_INDEX_NIF.length + "\n" + EMPTY_INDEX_NIF;
+  }
+  return out;
+}
+
 // --- aowli: run a typed .s.nif -----------------------------------------------
 // Both engines read the same __aowli_* input globals and park their result on
 // the same output globals; a run is a fresh scope, so state never carries over.
@@ -555,25 +609,111 @@ function isMemoryError(e){
   return !!e && (e.name === "RangeError" ||
     /bounds of the DataView|out of bounds|Array buffer allocation/i.test(String(e.message || e)));
 }
+// What the bytecode VM prints when IT fails, as opposed to when the PROGRAM
+// fails. These are aowli-internal aborts: a compiler/VM invariant broke, or the
+// VM hit a value path it does not implement yet. They surface as ordinary output
+// plus a nonzero quit, which is exactly why they used to be indistinguishable
+// from a program that legitimately exited 1.
+const VM_ABORT_RE = /\[Assertion Failure\]|value-path hole|unsupported closure|unsupported iterator|not a proc value|unreachable|internal error|illformed/i;
+function vmInternalFailure(){
+  const text = String(globalThis.__aowli_err || "") + "\n" + String(globalThis.__aowli_out || "");
+  const m = text.match(VM_ABORT_RE);
+  if(!m) return "";
+  // Hand back the whole offending line, trimmed — that is the useful part.
+  const line = (text.split(/\r?\n/).find(l => VM_ABORT_RE.test(l)) || m[0]).trim();
+  return line.slice(0, 200);
+}
+
+// SAY WHAT THE ABORT MEANS WHEN WE KNOW. "[Assertion Failure] expected 'index'
+// tag" is a true sentence about nothing a user of this page can act on, and it
+// is the abort EVERY program hits — measured on a seven-line loop — so the
+// Bytecode VM option has in practice been the tree-walker wearing a frightening
+// label.
+//
+// The cause is known and it is NOT in the VM. `webvfs.publishMainModule` stores
+// the main module under the one name its own symbols expand to
+// (`/w/webmod.s.nif`) plus a synthesized empty index, because a NIF module
+// elides its own module suffix and `nifreader` re-appends `thisModule`. Without
+// it the VM's eager `compileModule` reaches `programs.tryLoadSym` for a
+// main-module symbol, misses the VFS, and `readIndex` asserts. The tree-walker
+// never notices, because it resolves those decls from the tree it is already
+// walking.
+//
+// `aowli_vm.js` here was built BEFORE that fix landed: `aowli_session.js`, the
+// most recently built bundle, contains `publishMainModule` and this one does
+// not. Rebuilding it (`WEBMAIN=webmain_vm OUT=.../aowli_vm.js bash
+// tools/session/build.sh`) does remove the abort — measured — and then the VM
+// runs the program and produces no output and no exit code, which is a SECOND
+// and separate defect in compiler.nim / vm.nim. So the rebuild is deliberately
+// not shipped: falling back to a correct answer beats running to a silent one.
+const VM_INDEX_ABORT = /expected 'index' tag/;
+function explainVmAbort(reason){
+  if(!reason) return "";
+  if(VM_INDEX_ABORT.test(reason))
+    return "this build of the bytecode VM predates the webvfs fix that makes a " +
+           "program's own module loadable by name, so it cannot compile any program " +
+           "yet — the tree-walker ran instead, and its answer is the reference one";
+  return reason;
+}
+
+// Re-run on the always-correct tree-walker and LABEL the result, so the caller
+// can tell the user which engine really executed their program, and why.
+function fallBackToTree(snif, stdin, mods, reason){
+  resetAowliGlobals(snif, stdin, mods);
+  aowliMain();
+  const r = collectAowli("tree");
+  r.fellBack = true; r.fallbackFrom = "vm";
+  r.fallbackReason = explainVmAbort(reason) ||
+    "the bytecode VM could not run this program";
+  return r;
+}
+
 function runSnif(snif, stdin, forceTree, mods){
-  // Engine selection: "tree" runs ONLY the tree-walker (the reference engine);
-  // otherwise run the bytecode VM and, if it can't run this program in the
-  // browser host (on-demand symbol load -> vfs open throws, or a quit surfaces
-  // via the exit shim), fall back to the always-correct tree-walker. Where the
-  // VM succeeds its output is identical to the tree-walker's.
+  // Engine selection: "tree" runs ONLY the tree-walker (the reference engine).
+  // Otherwise run the bytecode VM, and fall back to the tree-walker only when the
+  // VM ABORTS — meaning aowli itself failed, not the user's program.
+  //
+  // That distinction is the whole point here. The VM signals "done" by calling
+  // quit(), which the exit shim turns into a throw; this code used to catch that
+  // throw, conclude "the VM cannot run this", and silently re-execute the entire
+  // program on the tree-walker, reporting engine:"tree". That is why selecting
+  // Bytecode VM looked like it did nothing at all. A quit is now honoured as a
+  // real VM result, and only an aowli-internal abort falls back — carrying a
+  // reason, so the footer can say what happened instead of quietly lying.
   resetAowliGlobals(snif, stdin, mods);
   if(forceTree){ aowliMain(); return collectAowli("tree"); }
   try{
     aowliVmMain();
+    const abort = vmInternalFailure();
+    if(abort) return fallBackToTree(snif, stdin, mods, abort);
     return collectAowli("vm");
   }catch(e){
     // Out of memory is a genuine runtime limit, not a "the VM can't compile this"
     // signal — the tree-walker shares the same fixed heap and would just OOM too.
     if(isMemoryError(e)){ e.__oom = true; throw e; }
-    resetAowliGlobals(snif, stdin, mods);
-    aowliMain();
-    return collectAowli("tree");
+    const abort = vmInternalFailure();
+    // A quit with no aowli-internal failure text is the PROGRAM ending, not the
+    // VM giving up. Let it unwind: runAowliResult turns it into a proper
+    // { exitCode, engine:"vm" } result.
+    if(e && e.__isExit && !abort) throw e;
+    return fallBackToTree(snif, stdin, mods, abort || vmFallbackReason(e));
   }
+}
+
+// A short, honest reason why the bytecode VM could not run this program, taken
+// from the exception it actually threw (as opposed to text it printed, which
+// vmInternalFailure covers). The case the header note documents is the eager
+// one: the VM's compiler resolves some symbols up front (firstParamContainer ->
+// tryLoadSym), which asks the host to load ANOTHER module on demand, and the
+// self-contained browser host has no filesystem to load it from.
+function vmFallbackReason(e){
+  const m = String((e && (e.message || e.toString())) || e || "").trim();
+  if(!m) return "the bytecode VM could not run this program";
+  const first = m.split("\n")[0];
+  if(/open|vfs|cannot open|no such file|ENOENT|tryLoadSym/i.test(m))
+    return "the VM needs to load another module on demand, which the in-browser "
+         + "host cannot do (" + first.slice(0, 160) + ")";
+  return first.slice(0, 200);
 }
 
 const OOM_TEXT = "out of memory: this program allocated more than the in-browser "
@@ -606,14 +746,24 @@ function nifjsFallbackReason(e){
 
 // Dispatch a run to the requested engine: "tree" | "vm" | "nifjs". nifjs
 // transpiles to native JS; on any unsupported node it falls back to the VM (then
-// tree), annotating the result with why.
+// tree), annotating the result with why. A fallback can therefore be a CHAIN —
+// nifjs could not compile it, and then the VM aborted too — so the reasons are
+// joined rather than overwritten; a user who picked Native JS and got tree-walk
+// deserves both halves of that story.
+function withFallback(r, from, reason){
+  const prior = r.fellBack && r.fallbackReason ? r.fallbackReason : "";
+  r.fellBack = true;
+  r.fallbackFrom = from;
+  r.fallbackReason = prior ? reason + "; then " + prior : reason;
+  return r;
+}
 function runByEngine(snif, stdin, engine, mods){
   if(engine === "nifjs"){
     if(nifjsApi){
       try{ return { stdout: nifjsApi.run(snif), stderr:"", exitCode:0, engine:"nifjs" }; }
-      catch(e){ const r = runAowliResult(snif, stdin, false, mods); r.fellBack = true; r.fallbackReason = nifjsFallbackReason(e); return r; }
+      catch(e){ return withFallback(runAowliResult(snif, stdin, false, mods), "nifjs", nifjsFallbackReason(e)); }
     }
-    const r = runAowliResult(snif, stdin, false, mods); r.fellBack = true; r.fallbackReason = "nifjs unavailable"; return r;
+    return withFallback(runAowliResult(snif, stdin, false, mods), "nifjs", "nifjs unavailable");
   }
   return runAowliResult(snif, stdin, engine === "tree", mods);
 }
@@ -691,6 +841,15 @@ self.onmessage = (ev) => {
   try{
     if(msg.type === "runrung"){ handleRunRung(msg, id); return; }
     if(msg.type === "debug"){ handleDebug(msg, id); return; }
+    // A LIVE SESSION's semcheck: the same check, plus every module the session
+    // will have to resolve at load time. See `framedStdModules`.
+    if(msg.type === "sessionsem"){
+      runSem(msg.pnif, msg.semEngine, msg.multi).then(async ({ snif, diags, mods })=>{
+        const std = snif ? await framedStdModules(msg.pnif) : "";
+        self.postMessage({ id, ok:true, snif, diags, mods: std + (mods || "") });
+      }).catch(e=> self.postMessage({ id, ok:false, error:String(e && e.message || e) }));
+      return;
+    }
     if(msg.type === "sem"){
       // semEngine: "aowl" (aowlsem, the default) | "nim" (nimsem).
       runSem(msg.pnif, msg.semEngine, msg.multi).then(({ snif, diags, cached })=>{
@@ -704,9 +863,27 @@ self.onmessage = (ev) => {
       // semEngine picks which checker produces the .s.nif that aowli then runs;
       // if aowlsem couldn't check it (empty snif), the ranSem path below reports
       // its diagnostics instead of trying to run nothing.
-      runSem(msg.pnif, msg.semEngine, msg.multi).then(({ snif, diags, mods })=>{
+      runSem(msg.pnif, msg.semEngine, msg.multi).then(async ({ snif, diags, mods })=>{
         if(!snif){ self.postMessage({ id, ok:true, ranSem:true, snif:"", diags, multiCrash:lastMultiCrash||"" }); return; }
-        const res = runByEngine(snif, msg.stdin, engine, mods);
+        // THE BYTECODE VM NEEDS THE MODULES THE TREE-WALKER NEVER ASKED FOR.
+        //
+        // compileModule walks the whole tree eagerly, so it reaches
+        // programs.tryLoadSym for write.0.syn1lfpjv before a single instruction
+        // runs. The tree-walker resolves a symbol when it gets to it, and echo
+        // bottoms out in a native, so it never needs syncio's artifact at all.
+        // Hand them over only for the engine that needs them: framing 790 KB per
+        // run is real work, and changing what the REFERENCE engine loads is a
+        // change to the reference.
+        //
+        // This is the second half of the VM being usable at all. The first was
+        // the bundle (see explainVmAbort); with that fixed and no modules, the VM
+        // did something worse than abort — it ran, printed nothing, and reported
+        // exit 0. Measured on one .s.nif against one rebuilt bundle: no modules ->
+        // silence; modules -> "hello from the vm 41". The native bin/aowli-vm ran
+        // those exact bytes correctly all along, which is what said the VM itself
+        // was never the problem.
+        const forVm = engine === "vm" ? await framedStdModules(msg.pnif) : "";
+        const res = runByEngine(snif, msg.stdin, engine, forVm + (mods || ""));
         res.diags = diags;
         if(lastMultiCrash) res.multiCrash = lastMultiCrash;
         self.postMessage(Object.assign({ id, ok:true }, res));

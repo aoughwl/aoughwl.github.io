@@ -27,32 +27,116 @@ const _dv = (globalThis.__leng_dv || (globalThis.__leng_dv = new DataView(_ab)))
 const _u8 = (globalThis.__leng_u8 || (globalThis.__leng_u8 = new Uint8Array(_ab)));
 let _brk = 8;                                   // offset 0 reserved as nil
 
+// Growing the linear memory. `mmap` and `allocFixed` share one `_brk`, so BOTH
+// must grow it; `allocFixed` used to bump `_brk` with no bounds check at all,
+// and because `TypedArray.prototype.fill` CLAMPS its range to the buffer while
+// `DataView` writes THROW, the bad pointer came back looking zero-filled and
+// only blew up on the first `setUint32` somewhere else entirely. Returns false
+// at the ceiling (or on an old engine, where `_HEAPMAX` was reserved upfront and
+// there is nothing left to grow into).
+function _growTo(end){
+  if (end <= _ab.byteLength) return true;
+  if (!_ab.resizable || end > _HEAPMAX) return false;
+  let want = _ab.byteLength;
+  while (want < end) want *= 2;                  // double until it fits
+  if (want > _HEAPMAX) want = _HEAPMAX;
+  _ab.resize(want);                              // views are length-tracking; they follow
+  return true;
+}
+
+// `_zero(p, n)` is `_u8.fill(0, p, p+n)` WITHOUT that silent clamp, and `_chk`
+// is the same guard for the other range primitives (`copy`/`bytes`/`writeStr`,
+// which likewise truncate or drop out-of-bounds work instead of complaining).
+// One comparison per call, not per byte. An out-of-bounds access is now reported
+// where it happens rather than at whatever DataView touches the pointer next.
+function _chk(what, p, n){
+  if (!(p >= 0 && n >= 0 && p + n <= _ab.byteLength))
+    throw new RangeError(
+      "leng: " + what + " [" + p + ", " + (p + n) + ") outside linear memory of " +
+      _ab.byteLength + " bytes");
+}
+function _zero(p, n){ _chk("zero-fill", p, n); _u8.fill(0, p, p + n); }
+
 // `allocFixed(n)` is the codegen's own storage for value aggregates (a C-stack
 // model: never freed), distinct from the Nim heap that sits on `mmap` below.
-function allocFixed(n){ const p=(_brk+7)&~7; _brk=p+n; _u8.fill(0,p,p+n); return p; }
+// It has no way to report failure to its caller, so exhaustion raises.
+function allocFixed(n){
+  const p = (_brk + 7) & ~7, end = p + n;
+  if (!_growTo(end))
+    throw new RangeError(
+      "leng: out of linear memory (allocFixed " + n + " bytes at " + p +
+      ", ceiling " + _HEAPMAX + ")");
+  _brk = end;
+  _zero(p, n);
+  return p;
+}
 
 // Page primitives for `system/osalloc.nim`: `mmap` hands the Nim allocator a
 // page-aligned, zero-filled region carved from the same buffer (MAP_FAILED = -1
-// on exhaustion, which makes the allocator raise OutOfMem); `munmap` is a no-op
-// (the bump arena does not reclaim whole pages — the Nim allocator still reuses
-// cells within them). Signature matches posix `mmap(adr,len,prot,flags,fd,off)`.
+// on exhaustion, which makes the allocator raise OutOfMem).
+//
+// `munmap` USED TO BE A NO-OP, on the reasoning that the Nim allocator reuses
+// cells within the pages it holds. It does — but it also RETURNS whole chunks
+// and asks for new ones, and against a no-op `munmap` every one of those cycles
+// burned fresh address space. That is a leak with no upper bound and nothing to
+// do with what the program keeps live: measured in the playground, a loop that
+// allocates NOTHING —
+//     var s = 0
+//     for i in 0 ..< 1000000: s += i
+// — died with "out of memory", while the SAME program under native aowli peaked
+// at 4.5 MB and never grew. Raising the heap only moved the cliff.
+//
+// So the freed regions go on a free list and `mmap` serves from it first
+// (first-fit, split on the remainder, adjacent regions coalesced on release).
+// The list is kept sorted by address so coalescing is a neighbour check.
 const _PAGE = 4096;
-function mmap(adr, len, prot, flags, fildes, off){
-  len = Number(len);
-  const p = (_brk + _PAGE - 1) & ~(_PAGE - 1);  // page-align
-  const need = p + len;
-  if (need > _ab.byteLength) {                   // grow the resizable heap on demand
-    if (!_ab.resizable || need > _HEAPMAX) return -1;   // MAP_FAILED at the ceiling
-    let want = _ab.byteLength;
-    while (want < need) want *= 2;               // double until it fits
-    if (want > _HEAPMAX) want = _HEAPMAX;
-    _ab.resize(want);                            // views are length-tracking; they follow
+const _pageUp = n => (n + _PAGE - 1) & ~(_PAGE - 1);
+const _freeRegions = [];                         // [{p, len}], sorted by p, disjoint
+function _carveFree(need){
+  for (let i = 0; i < _freeRegions.length; i++) {
+    const r = _freeRegions[i];
+    if (r.len >= need) {
+      const p = r.p;
+      if (r.len === need) _freeRegions.splice(i, 1);
+      else { r.p += need; r.len -= need; }
+      return p;
+    }
   }
-  _brk = need;
-  _u8.fill(0, p, p + len);                       // MAP_ANONYMOUS: zero-filled
+  return -1;
+}
+function mmap(adr, len, prot, flags, fildes, off){
+  const need = _pageUp(Number(len));
+  const reused = _carveFree(need);
+  if (reused >= 0) {
+    _zero(reused, need);                         // MAP_ANONYMOUS: zero-filled
+    return reused;
+  }
+  const p = _pageUp(_brk);                       // page-align
+  const end = p + need;
+  if (!_growTo(end)) return -1;                  // MAP_FAILED at the ceiling
+  _brk = end;
+  _zero(p, need);                                // MAP_ANONYMOUS: zero-filled
   return p;
 }
-function munmap(adr, len){ return 0; }
+function munmap(adr, len){
+  const p = Number(adr), n = _pageUp(Number(len));
+  if (!(n > 0) || p < 0) return 0;
+  if (p + n === _brk) { _brk = p; return 0; }    // last region: just move the break
+  let i = 0;
+  while (i < _freeRegions.length && _freeRegions[i].p < p) i++;
+  const prev = _freeRegions[i - 1], next = _freeRegions[i];
+  if (prev && prev.p + prev.len === p) {         // coalesce left
+    prev.len += n;
+    if (next && prev.p + prev.len === next.p) {  // …and right, closing the gap
+      prev.len += next.len; _freeRegions.splice(i, 1);
+    }
+  } else if (next && p + n === next.p) {         // coalesce right
+    next.p = p; next.len += n;
+  } else {
+    _freeRegions.splice(i, 0, {p, len: n});
+  }
+  return 0;
+}
 
 const mem = {
   setI8:(p,v)=>_dv.setInt8(p,v), i8:(p)=>_dv.getInt8(p),
@@ -65,9 +149,9 @@ const mem = {
   setU64:(p,v)=>_dv.setBigUint64(p,BigInt(v),true), u64n:(p)=>Number(_dv.getBigUint64(p,true)),
   i64b:(p)=>_dv.getBigInt64(p,true), u64b:(p)=>_dv.getBigUint64(p,true),   // exact 64-bit reads (int64/uint64 -> BigInt)
   setF64:(p,v)=>_dv.setFloat64(p,v,true), f64:(p)=>_dv.getFloat64(p,true),
-  copy:(d,s,n)=>_u8.copyWithin(d,s,s+n),
-  bytes:(p,n)=>_u8.subarray(p,p+n),
-  writeStr:(p,s)=>{ for(let i=0;i<s.length;i++) _u8[p+i]=s.charCodeAt(i); },
+  copy:(d,s,n)=>{ _chk("copy dst",d,n); _chk("copy src",s,n); return _u8.copyWithin(d,s,s+n); },
+  bytes:(p,n)=>{ _chk("bytes",p,n); return _u8.subarray(p,p+n); },
+  writeStr:(p,s)=>{ _chk("writeStr",p,s.length); for(let i=0;i<s.length;i++) _u8[p+i]=s.charCodeAt(i); },
 };
 
 function memcpy(d,s,n){ _u8.copyWithin(Number(d),Number(s),Number(s)+Number(n)); return d; }
@@ -117,9 +201,14 @@ function __atomic_compare_exchange_n(p,exp,des,weak,so,fo){
 // few with libm-specific semantics are spelled out (`round` = half away from
 // zero, unlike `Math.round`'s half-up; `fmod` = `%`; `copysign`/`signbit` honour
 // the sign of -0). The float32 `…f` variants share the double routine (JS has
-// only doubles; the extra precision is harmless). Uncommon libm entries not
-// covered here (erf/gamma/frexp/fpclassify) are simply never referenced unless a
-// program calls them.
+// only doubles; the extra precision is harmless).
+//
+// `fpclassify` + the `FP_*` codes are NOT optional, whatever their reputation as
+// "uncommon libm": std/math's `classify` importc's them, and `classify` is on the
+// path of EVERY float literal (nifbuilder's addFloatLit), so a bare `echo 8.0`
+// died with "fpclassify is not defined" thrown out of the parser bundle, with no
+// diagnostic. The codes must be self-consistent with `fpclassify` below (the
+// lowered `classify` compares against these); glibc values.
 const sqrt=Math.sqrt, cbrt=Math.cbrt, exp=Math.exp, sin=Math.sin, cos=Math.cos,
   tan=Math.tan, asin=Math.asin, acos=Math.acos, atan=Math.atan, atan2=Math.atan2,
   sinh=Math.sinh, cosh=Math.cosh, tanh=Math.tanh, asinh=Math.asinh,
@@ -131,6 +220,19 @@ function round(x){ return x >= 0 ? Math.floor(x + 0.5) : Math.ceil(x - 0.5); }
 function copysign(x,y){ return (y < 0 || Object.is(y,-0)) ? -Math.abs(x) : Math.abs(x); }
 function isnan(x){ return Number.isNaN(x); }
 function signbit(x){ return x < 0 || Object.is(x,-0); }
+const FP_NAN=0, FP_INFINITE=1, FP_ZERO=2, FP_SUBNORMAL=3, FP_NORMAL=4;
+function fpclassify(x){
+  x = Number(x);
+  if(Number.isNaN(x)) return FP_NAN;
+  if(x === Infinity || x === -Infinity) return FP_INFINITE;
+  if(x === 0) return FP_ZERO;                     // covers -0
+  return Math.abs(x) < 2.2250738585072014e-308 ? FP_SUBNORMAL : FP_NORMAL;
+}
+// ⚠️ ONE STATED APPROXIMATION: subnormality is tested against the FLOAT64
+// threshold, so a value that is subnormal as a float32 but normal as a float64
+// classifies as fcNormal. Nothing in the toolchain's float path depends on that
+// distinction; a program calling `classify` on a float32 subnormal would see it.
+const fpclassifyf = fpclassify;
 const sqrtf=sqrt, cbrtf=cbrt, expf=exp, sinf=sin, cosf=cos, tanf=tan, asinf=asin,
   acosf=acos, atanf=atan, atan2f=atan2, sinhf=sinh, coshf=cosh, tanhf=tanh,
   asinhf=asinh, acoshf=acosh, atanhf=atanh, floorf=floor, ceilf=ceil,
@@ -339,40 +441,18 @@ function strtod(p, endptr) {
 }
 
 // --------------------------------------------------------------------------
-// libm FLOAT CLASSIFICATION — the third instance of the same bug, found the
-// same way, and it is reached from the NIF WRITER rather than the reader.
+// libm FLOAT CLASSIFICATION — `fpclassify` + the `FP_*` codes — USED to be
+// shimmed here. It now lives in nimony-web's tests/jsbackend/runtime.js, the
+// file every bundle byte-copies, because the same gap hit bundles that do NOT
+// concatenate this file (the playground's PARSER bundle died on `echo 8.0`).
+// It cannot live in both: two top-level `var FP_NAN` in one bundle is a
+// SyntaxError inside the `new Function(...)` a bundle is loaded with.
 //
-// `std/math` binds C's classification macros directly:
-//
-//     func c_fpclassify[T: SomeFloat](x: T): int {.importc: "fpclassify".}
-//     func c_signbit[T: SomeFloat](x: T): int    {.importc: "signbit".}
-//     func c_isnan[T: SomeFloat](x: T): int      {.importc: "isnan".}
-//     let c_fpNormal {.importc: "FP_NORMAL", header: "<math.h>".}: int   (…and four more)
-//
-// nim_js emits those as plain global reads, and a browser has none of them —
-// so `classify(x)` throws `ReferenceError: fpclassify is not defined` and, once
-// that is shimmed, reads `FP_NORMAL` as another missing global. It surfaces in
-// `addFloatLit` → `emitValueIndexed`: WRITING a float into a NIF buffer, which
-// is why a bundle can parse fine and still die the moment it emits one.
-//
-// The FP_* codes are arbitrary — C only requires them to be distinct — and
-// `classify` compares `fpclassify`'s result against these same names, so the
-// pair below is self-consistent by construction. glibc's values are used so a
-// reader who knows the C header is not surprised.
-//
-// ⚠️ ONE STATED APPROXIMATION: subnormality is tested against the FLOAT64
-// threshold. A `float32` in the JS backend is a JS number too, so a value that
-// is subnormal as a float32 but normal as a float64 classifies as fcNormal
-// here. Nothing in the toolchain's float path depends on that distinction; a
-// program calling `classify` on a float32 subnormal would see it.
-var FP_NAN = 0, FP_INFINITE = 1, FP_ZERO = 2, FP_SUBNORMAL = 3, FP_NORMAL = 4;
-function fpclassify(x) {
-  x = Number(x);
-  if (Number.isNaN(x)) return FP_NAN;
-  if (x === Infinity || x === -Infinity) return FP_INFINITE;
-  if (x === 0) return FP_ZERO;                       // covers -0 too
-  return Math.abs(x) < 2.2250738585072014e-308 ? FP_SUBNORMAL : FP_NORMAL;
-}
+// Why it is needed at all: std/math binds C's classification macros directly
+// (`importc: "fpclassify"`, `let c_fpNormal {.importc: "FP_NORMAL".}`), and it
+// is reached from the NIF WRITER — `addFloatLit` -> `emitValueIndexed` — so a
+// bundle can parse fine and still die the moment it EMITS a float.
+
 // NOT redefined here: `signbit`, `isnan` and `copysign` already live in
 // nimony-web's runtime.js, and `copysignf` is emitted by the compiled modules.
 // A second top-level `function` of the same name is a SyntaxError inside the
@@ -5874,7 +5954,7 @@ mem.setI32((strlit_0_I6941054746023980176_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I6941054746023980176_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I6941054746023980176_semiw27pt1 + 12), "const evaluator output path was not substituted — the placeholder ");
+mem.writeStr((strlit_0_I6941054746023980176_semiw27pt1 + 12), "const evaluator output path was not substituted \xe2\x80\x94 the placeholder ");
 
 mem.setI32(strlit_0_I5411098102852364837_semiw27pt1, 57);
 
@@ -7994,7 +8074,7 @@ mem.setI32((strlit_0_I2747353363966926966_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I2747353363966926966_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I2747353363966926966_semiw27pt1 + 12), "a `set` is a bit vector — its element type must be an ");
+mem.writeStr((strlit_0_I2747353363966926966_semiw27pt1 + 12), "a `set` is a bit vector \xe2\x80\x94 its element type must be an ");
 
 mem.setI32(strlit_0_I17162416539086331339_semiw27pt1, 51);
 
@@ -8018,7 +8098,7 @@ mem.setI32((strlit_0_I5695770610845888459_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5695770610845888459_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5695770610845888459_semiw27pt1 + 12), "proctype.");
+mem.writeStr((strlit_0_I5695770610845888459_semiw27pt1 + 12), "\x08proctype.");
 
 mem.setI32(strlit_0_I18205123775845960279_semiw27pt1, 5);
 
@@ -8290,7 +8370,7 @@ mem.setI32((strlit_0_I12268608913278835208_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I12268608913278835208_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I12268608913278835208_semiw27pt1 + 12), "` is redundant — `");
+mem.writeStr((strlit_0_I12268608913278835208_semiw27pt1 + 12), "` is redundant \xe2\x80\x94 `");
 
 mem.setI32(strlit_0_I15048612997401048822_semiw27pt1, 5);
 
@@ -8322,7 +8402,7 @@ mem.setI32((strlit_0_I14406673170735170997_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I14406673170735170997_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I14406673170735170997_semiw27pt1 + 12), "the constant `true` operand is redundant here — `x and true` is just `x`");
+mem.writeStr((strlit_0_I14406673170735170997_semiw27pt1 + 12), "the constant `true` operand is redundant here \xe2\x80\x94 `x and true` is just `x`");
 
 mem.setI32(strlit_0_I7359539113506336611_semiw27pt1, 75);
 
@@ -8330,7 +8410,7 @@ mem.setI32((strlit_0_I7359539113506336611_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I7359539113506336611_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I7359539113506336611_semiw27pt1 + 12), "the constant `false` operand is redundant here — `x or false` is just `x`");
+mem.writeStr((strlit_0_I7359539113506336611_semiw27pt1 + 12), "the constant `false` operand is redundant here \xe2\x80\x94 `x or false` is just `x`");
 
 mem.setI32(strlit_0_I9499975081539772562_semiw27pt1, 34);
 
@@ -8370,7 +8450,7 @@ mem.setI32((strlit_0_I16821240321488295154_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I16821240321488295154_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I16821240321488295154_semiw27pt1 + 12), "`x div 1` is redundant — it is just `x`");
+mem.writeStr((strlit_0_I16821240321488295154_semiw27pt1 + 12), "`x div 1` is redundant \xe2\x80\x94 it is just `x`");
 
 mem.setI32(strlit_0_I17826125668425376448_semiw27pt1, 57);
 
@@ -8394,7 +8474,7 @@ mem.setI32((strlit_0_I6598528301033406888_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I6598528301033406888_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I6598528301033406888_semiw27pt1 + 12), "this compound assignment is a no-op — ");
+mem.writeStr((strlit_0_I6598528301033406888_semiw27pt1 + 12), "this compound assignment is a no-op \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I5214762889995852143_semiw27pt1, 28);
 
@@ -8434,7 +8514,7 @@ mem.setI32((strlit_0_I15575802798606551946_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15575802798606551946_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15575802798606551946_semiw27pt1 + 12), "` has a constant result — did you mean a signed type?");
+mem.writeStr((strlit_0_I15575802798606551946_semiw27pt1 + 12), "` has a constant result \xe2\x80\x94 did you mean a signed type?");
 
 mem.setI32(strlit_0_I8810989314289738165_semiw27pt1, 15);
 
@@ -8466,7 +8546,7 @@ mem.setI32((strlit_0_I11118254602216302456_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I11118254602216302456_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I11118254602216302456_semiw27pt1 + 12), " — did you mean a wider type or a different literal?");
+mem.writeStr((strlit_0_I11118254602216302456_semiw27pt1 + 12), " \xe2\x80\x94 did you mean a wider type or a different literal?");
 
 mem.setI32(strlit_0_I3486906899469231349_semiw27pt1, 9);
 
@@ -8506,7 +8586,7 @@ mem.setI32((strlit_0_I17583400413432853727_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I17583400413432853727_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I17583400413432853727_semiw27pt1 + 12), " — the literal `");
+mem.writeStr((strlit_0_I17583400413432853727_semiw27pt1 + 12), " \xe2\x80\x94 the literal `");
 
 mem.setI32(strlit_0_I4368628695341845229_semiw27pt1, 32);
 
@@ -8682,7 +8762,7 @@ mem.setI32((strlit_0_I13538590616682888981_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I13538590616682888981_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I13538590616682888981_semiw27pt1 + 12), "an enum is a set of NAMES, not a number — `ord(x)` gives its ");
+mem.writeStr((strlit_0_I13538590616682888981_semiw27pt1 + 12), "an enum is a set of NAMES, not a number \xe2\x80\x94 `ord(x)` gives its ");
 
 mem.setI32(strlit_0_I13954758211821792585_semiw27pt1, 52);
 
@@ -8722,7 +8802,7 @@ mem.setI32((strlit_0_I2017234359942792373_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I2017234359942792373_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I2017234359942792373_semiw27pt1 + 12), "` is signed — ");
+mem.writeStr((strlit_0_I2017234359942792373_semiw27pt1 + 12), "` is signed \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I13138734536573412126_semiw27pt1, 62);
 
@@ -8802,7 +8882,7 @@ mem.setI32((strlit_0_I18092471165094221960_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I18092471165094221960_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I18092471165094221960_semiw27pt1 + 12), "a `distinct` type inherits no operator from its base — ");
+mem.writeStr((strlit_0_I18092471165094221960_semiw27pt1 + 12), "a `distinct` type inherits no operator from its base \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I14176042692033552713_semiw27pt1, 8);
 
@@ -8842,7 +8922,7 @@ mem.setI32((strlit_0_I5699018957117715033_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5699018957117715033_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5699018957117715033_semiw27pt1 + 12), "double negation `not not` is redundant — it yields the original value");
+mem.writeStr((strlit_0_I5699018957117715033_semiw27pt1 + 12), "double negation `not not` is redundant \xe2\x80\x94 it yields the original value");
 
 mem.setI32(strlit_0_I16767900128391730817_semiw27pt1, 8);
 
@@ -9074,7 +9154,7 @@ mem.setI32((strlit_0_I2538522117460460697_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I2538522117460460697_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I2538522117460460697_semiw27pt1 + 12), ": …, ");
+mem.writeStr((strlit_0_I2538522117460460697_semiw27pt1 + 12), ": \xe2\x80\xa6, ");
 
 mem.setI32(strlit_0_I777539088403948518_semiw27pt1, 7);
 
@@ -9082,7 +9162,7 @@ mem.setI32((strlit_0_I777539088403948518_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I777539088403948518_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I777539088403948518_semiw27pt1 + 12), ": …)`");
+mem.writeStr((strlit_0_I777539088403948518_semiw27pt1 + 12), ": \xe2\x80\xa6)`");
 
 mem.setI32(strlit_0_I5954034419392999704_semiw27pt1, 5);
 
@@ -9330,7 +9410,7 @@ mem.setI32((strlit_0_I7230937593902811564_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I7230937593902811564_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I7230937593902811564_semiw27pt1 + 12), "field.");
+mem.writeStr((strlit_0_I7230937593902811564_semiw27pt1 + 12), "\x08field.");
 
 mem.setI32(strlit_0_I2295755591762655973_semiw27pt1, 30);
 
@@ -9658,7 +9738,7 @@ mem.setI32((strlit_0_I4106522650082355960_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I4106522650082355960_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I4106522650082355960_semiw27pt1 + 12), "` is an object — build it with ");
+mem.writeStr((strlit_0_I4106522650082355960_semiw27pt1 + 12), "` is an object \xe2\x80\x94 build it with ");
 
 mem.setI32(strlit_0_I7127554603513646670_semiw27pt1, 22);
 
@@ -9714,7 +9794,7 @@ mem.setI32((strlit_0_I15505563913869779149_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15505563913869779149_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15505563913869779149_semiw27pt1 + 12), "` is an object — read the field ");
+mem.writeStr((strlit_0_I15505563913869779149_semiw27pt1 + 12), "` is an object \xe2\x80\x94 read the field ");
 
 mem.setI32(strlit_0_I13765591312251987667_semiw27pt1, 33);
 
@@ -9778,7 +9858,7 @@ mem.setI32((strlit_0_I3473948917279440801_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3473948917279440801_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3473948917279440801_semiw27pt1 + 12), "`ord` answers a value's position in its type's ordering — ");
+mem.writeStr((strlit_0_I3473948917279440801_semiw27pt1 + 12), "`ord` answers a value's position in its type's ordering \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I17832075583904749581_semiw27pt1, 33);
 
@@ -9850,7 +9930,7 @@ mem.setI32((strlit_0_I11024875898604181108_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I11024875898604181108_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I11024875898604181108_semiw27pt1 + 12), "`high`/`low` name the last and first value of a type — a ");
+mem.writeStr((strlit_0_I11024875898604181108_semiw27pt1 + 12), "`high`/`low` name the last and first value of a type \xe2\x80\x94 a ");
 
 mem.setI32(strlit_0_I15273363485436897253_semiw27pt1, 17);
 
@@ -10026,7 +10106,7 @@ mem.setI32((strlit_0_I16053906621497847181_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I16053906621497847181_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I16053906621497847181_semiw27pt1 + 12), "` — it is not one of the type parameters");
+mem.writeStr((strlit_0_I16053906621497847181_semiw27pt1 + 12), "` \xe2\x80\x94 it is not one of the type parameters");
 
 mem.setI32(strlit_0_I13809691889829398225_semiw27pt1, 46);
 
@@ -10034,7 +10114,7 @@ mem.setI32((strlit_0_I13809691889829398225_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I13809691889829398225_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I13809691889829398225_semiw27pt1 + 12), "a single value is not a collection — pass `[");
+mem.writeStr((strlit_0_I13809691889829398225_semiw27pt1 + 12), "a single value is not a collection \xe2\x80\x94 pass `[");
 
 mem.setI32(strlit_0_I5800981989025890228_semiw27pt1, 17);
 
@@ -10042,7 +10122,7 @@ mem.setI32((strlit_0_I5800981989025890228_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5800981989025890228_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5800981989025890228_semiw27pt1 + 12), "…]` or `@[…]`");
+mem.writeStr((strlit_0_I5800981989025890228_semiw27pt1 + 12), "\xe2\x80\xa6]` or `@[\xe2\x80\xa6]`");
 
 mem.setI32(strlit_0_I6349216852978427344_semiw27pt1, 10);
 
@@ -10090,7 +10170,7 @@ mem.setI32((strlit_0_I4506528843969956938_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I4506528843969956938_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I4506528843969956938_semiw27pt1 + 12), "value — index it (`x[i]`) or pass one element");
+mem.writeStr((strlit_0_I4506528843969956938_semiw27pt1 + 12), "value \xe2\x80\x94 index it (`x[i]`) or pass one element");
 
 mem.setI32(strlit_0_I14412308203176118565_semiw27pt1, 35);
 
@@ -10138,7 +10218,7 @@ mem.setI32((strlit_0_I15104939463898610155_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15104939463898610155_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15104939463898610155_semiw27pt1 + 12), "` — this one holds `");
+mem.writeStr((strlit_0_I15104939463898610155_semiw27pt1 + 12), "` \xe2\x80\x94 this one holds `");
 
 mem.setI32(strlit_0_I18357112411954429895_semiw27pt1, 16);
 
@@ -10154,7 +10234,7 @@ mem.setI32((strlit_0_I12118943967485021898_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I12118943967485021898_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I12118943967485021898_semiw27pt1 + 12), "` — the conversion has to be explicit ");
+mem.writeStr((strlit_0_I12118943967485021898_semiw27pt1 + 12), "` \xe2\x80\x94 the conversion has to be explicit ");
 
 mem.setI32(strlit_0_I5297496279631293488_semiw27pt1, 18);
 
@@ -10178,7 +10258,7 @@ mem.setI32((strlit_0_I12042832326781367824_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I12042832326781367824_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I12042832326781367824_semiw27pt1 + 12), "pass the ADDRESS of a location — `addr x`");
+mem.writeStr((strlit_0_I12042832326781367824_semiw27pt1 + 12), "pass the ADDRESS of a location \xe2\x80\x94 `addr x`");
 
 mem.setI32(strlit_0_I6631203471584759395_semiw27pt1, 35);
 
@@ -10186,7 +10266,7 @@ mem.setI32((strlit_0_I6631203471584759395_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I6631203471584759395_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I6631203471584759395_semiw27pt1 + 12), "` is a `distinct` type — convert ");
+mem.writeStr((strlit_0_I6631203471584759395_semiw27pt1 + 12), "` is a `distinct` type \xe2\x80\x94 convert ");
 
 mem.setI32(strlit_0_I2990438371641968087_semiw27pt1, 20);
 
@@ -10202,7 +10282,7 @@ mem.setI32((strlit_0_I13037960720983874041_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I13037960720983874041_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I13037960720983874041_semiw27pt1 + 12), "(…)`");
+mem.writeStr((strlit_0_I13037960720983874041_semiw27pt1 + 12), "(\xe2\x80\xa6)`");
 
 mem.setI32(strlit_0_I8449435678986450017_semiw27pt1, 9);
 
@@ -10378,7 +10458,7 @@ mem.setI32((strlit_0_I16439945508570195528_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I16439945508570195528_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I16439945508570195528_semiw27pt1 + 12), "` is non-nilable — a `ref`/`ptr`/`cstring`/`proc` parameter ");
+mem.writeStr((strlit_0_I16439945508570195528_semiw27pt1 + 12), "` is non-nilable \xe2\x80\x94 a `ref`/`ptr`/`cstring`/`proc` parameter ");
 
 mem.setI32(strlit_0_I14496447375316844231_semiw27pt1, 37);
 
@@ -10810,7 +10890,7 @@ mem.setI32((strlit_0_I7287018281465592910_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I7287018281465592910_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I7287018281465592910_semiw27pt1 + 12), "this tuple is positional — index it as `t[0]`, `t[1]`, …");
+mem.writeStr((strlit_0_I7287018281465592910_semiw27pt1 + 12), "this tuple is positional \xe2\x80\x94 index it as `t[0]`, `t[1]`, \xe2\x80\xa6");
 
 mem.setI32(strlit_0_I7135258821782777802_semiw27pt1, 6);
 
@@ -10946,7 +11026,7 @@ mem.setI32((strlit_0_I5625029063571138354_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5625029063571138354_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5625029063571138354_semiw27pt1 + 12), "a slice needs a container that carries its own length — an ");
+mem.writeStr((strlit_0_I5625029063571138354_semiw27pt1 + 12), "a slice needs a container that carries its own length \xe2\x80\x94 an ");
 
 mem.setI32(strlit_0_I7029409835307658130_semiw27pt1, 27);
 
@@ -11258,7 +11338,7 @@ mem.setI32((strlit_0_I7719082604779174850_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I7719082604779174850_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I7719082604779174850_semiw27pt1 + 12), "duplicate set element — this value is already in the set literal");
+mem.writeStr((strlit_0_I7719082604779174850_semiw27pt1 + 12), "duplicate set element \xe2\x80\x94 this value is already in the set literal");
 
 mem.setI32(strlit_0_I9074627336133086916_semiw27pt1, 20);
 
@@ -11386,7 +11466,7 @@ mem.setI32((strlit_0_I763182415277881764_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I763182415277881764_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I763182415277881764_semiw27pt1 + 12), "write a global `var` — its answer would depend on when it runs");
+mem.writeStr((strlit_0_I763182415277881764_semiw27pt1 + 12), "write a global `var` \xe2\x80\x94 its answer would depend on when it runs");
 
 mem.setI32(strlit_0_I4161590593734103610_semiw27pt1, 6);
 
@@ -11474,7 +11554,7 @@ mem.setI32((strlit_0_I1891958341420005843_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I1891958341420005843_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I1891958341420005843_semiw27pt1 + 12), "a literal is not stored anywhere — bind it to a `var` first");
+mem.writeStr((strlit_0_I1891958341420005843_semiw27pt1 + 12), "a literal is not stored anywhere \xe2\x80\x94 bind it to a `var` first");
 
 mem.setI32(strlit_0_I11860109029112322240_semiw27pt1, 36);
 
@@ -11498,7 +11578,7 @@ mem.setI32((strlit_0_I3058460682403655669_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3058460682403655669_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3058460682403655669_semiw27pt1 + 12), "expression — bind it to a `var` and take that address");
+mem.writeStr((strlit_0_I3058460682403655669_semiw27pt1 + 12), "expression \xe2\x80\x94 bind it to a `var` and take that address");
 
 mem.setI32(strlit_0_I18219229582326807282_semiw27pt1, 38);
 
@@ -11778,7 +11858,7 @@ mem.setI32((strlit_0_I4917229920600498437_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I4917229920600498437_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I4917229920600498437_semiw27pt1 + 12), "` is already declared in this scope — ");
+mem.writeStr((strlit_0_I4917229920600498437_semiw27pt1 + 12), "` is already declared in this scope \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I438575431944417738_semiw27pt1, 42);
 
@@ -12066,7 +12146,7 @@ mem.setI32((strlit_0_I436862464426405346_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I436862464426405346_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I436862464426405346_semiw27pt1 + 12), "an element of a `string` is a `char` — write `'A'`, or ");
+mem.writeStr((strlit_0_I436862464426405346_semiw27pt1 + 12), "an element of a `string` is a `char` \xe2\x80\x94 write `'A'`, or ");
 
 mem.setI32(strlit_0_I16254823421595842842_semiw27pt1, 22);
 
@@ -12122,7 +12202,7 @@ mem.setI32((strlit_0_I6737422502480276541_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I6737422502480276541_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I6737422502480276541_semiw27pt1 + 12), "global `var` — that IS the side effect");
+mem.writeStr((strlit_0_I6737422502480276541_semiw27pt1 + 12), "global `var` \xe2\x80\x94 that IS the side effect");
 
 mem.setI32(strlit_0_I10389111433724280076_semiw27pt1, 54);
 
@@ -12186,7 +12266,7 @@ mem.setI32((strlit_0_I4340746429970434830_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I4340746429970434830_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I4340746429970434830_semiw27pt1 + 12), "` is non-nilable — prefix its declared ");
+mem.writeStr((strlit_0_I4340746429970434830_semiw27pt1 + 12), "` is non-nilable \xe2\x80\x94 prefix its declared ");
 
 mem.setI32(strlit_0_I11094868945440219393_semiw27pt1, 52);
 
@@ -12210,7 +12290,7 @@ mem.setI32((strlit_0_I3451586975456327041_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3451586975456327041_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3451586975456327041_semiw27pt1 + 12), "a call yields a value, not a location — assign to a ");
+mem.writeStr((strlit_0_I3451586975456327041_semiw27pt1 + 12), "a call yields a value, not a location \xe2\x80\x94 assign to a ");
 
 mem.setI32(strlit_0_I10444018840131289117_semiw27pt1, 22);
 
@@ -12258,7 +12338,7 @@ mem.setI32((strlit_0_I2439018830799694064_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I2439018830799694064_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I2439018830799694064_semiw27pt1 + 12), "this expression produces no value — drop the `discard`");
+mem.writeStr((strlit_0_I2439018830799694064_semiw27pt1 + 12), "this expression produces no value \xe2\x80\x94 drop the `discard`");
 
 mem.setI32(strlit_0_I12906855437410846840_semiw27pt1, 5);
 
@@ -12306,7 +12386,7 @@ mem.setI32((strlit_0_I4861256622677396897_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I4861256622677396897_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I4861256622677396897_semiw27pt1 + 12), "`while false` never executes — its body is dead code");
+mem.writeStr((strlit_0_I4861256622677396897_semiw27pt1 + 12), "`while false` never executes \xe2\x80\x94 its body is dead code");
 
 mem.setI32(strlit_0_I12926404063560827824_semiw27pt1, 50);
 
@@ -12314,7 +12394,7 @@ mem.setI32((strlit_0_I12926404063560827824_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I12926404063560827824_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I12926404063560827824_semiw27pt1 + 12), "a `when` selects on a compile-time `bool` — try ");
+mem.writeStr((strlit_0_I12926404063560827824_semiw27pt1 + 12), "a `when` selects on a compile-time `bool` \xe2\x80\x94 try ");
 
 mem.setI32(strlit_0_I11138769764614852101_semiw27pt1, 51);
 
@@ -12418,7 +12498,7 @@ mem.setI32((strlit_0_I1636901585205558642_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I1636901585205558642_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I1636901585205558642_semiw27pt1 + 12), "stepping to the next value needs an ordinal type — a float ");
+mem.writeStr((strlit_0_I1636901585205558642_semiw27pt1 + 12), "stepping to the next value needs an ordinal type \xe2\x80\x94 a float ");
 
 mem.setI32(strlit_0_I5900042648500935211_semiw27pt1, 17);
 
@@ -12562,7 +12642,7 @@ mem.setI32((strlit_0_I14003533339397311964_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I14003533339397311964_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I14003533339397311964_semiw27pt1 + 12), "a `for` needs a range, a container, or an iterator call — ");
+mem.writeStr((strlit_0_I14003533339397311964_semiw27pt1 + 12), "a `for` needs a range, a container, or an iterator call \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I11594026922427639261_semiw27pt1, 23);
 
@@ -12650,7 +12730,7 @@ mem.setI32((strlit_0_I15599616170587638453_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15599616170587638453_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15599616170587638453_semiw27pt1 + 12), "`{.raises: E.}` names) — `raise IOError`");
+mem.writeStr((strlit_0_I15599616170587638453_semiw27pt1 + 12), "`{.raises: E.}` names) \xe2\x80\x94 `raise IOError`");
 
 mem.setI32(strlit_0_I7441374658447480240_semiw27pt1, 6);
 
@@ -12682,7 +12762,7 @@ mem.setI32((strlit_0_I15136459562073134519_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15136459562073134519_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15136459562073134519_semiw27pt1 + 12), "an `except` filter names a TYPE — the set ");
+mem.writeStr((strlit_0_I15136459562073134519_semiw27pt1 + 12), "an `except` filter names a TYPE \xe2\x80\x94 the set ");
 
 mem.setI32(strlit_0_I3383415169469789769_semiw27pt1, 20);
 
@@ -12706,7 +12786,7 @@ mem.setI32((strlit_0_I3374936832144919879_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3374936832144919879_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3374936832144919879_semiw27pt1 + 12), "` — catch `");
+mem.writeStr((strlit_0_I3374936832144919879_semiw27pt1 + 12), "` \xe2\x80\x94 catch `");
 
 mem.setI32(strlit_0_I15479960387141477956_semiw27pt1, 32);
 
@@ -12762,7 +12842,7 @@ mem.setI32((strlit_0_I5726714495540520359_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5726714495540520359_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5726714495540520359_semiw27pt1 + 12), "or a string — use `if`/`elif` to compare floats");
+mem.writeStr((strlit_0_I5726714495540520359_semiw27pt1 + 12), "or a string \xe2\x80\x94 use `if`/`elif` to compare floats");
 
 mem.setI32(strlit_0_I8527020603817576614_semiw27pt1, 5);
 
@@ -12858,7 +12938,7 @@ mem.setI32((strlit_0_I8425723860086697634_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I8425723860086697634_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I8425723860086697634_semiw27pt1 + 12), "a value may be covered by at most one `of` label — ");
+mem.writeStr((strlit_0_I8425723860086697634_semiw27pt1 + 12), "a value may be covered by at most one `of` label \xe2\x80\x94 ");
 
 mem.setI32(strlit_0_I15052714363260589805_semiw27pt1, 28);
 
@@ -12970,7 +13050,7 @@ mem.setI32((strlit_0_I17936729591772571652_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I17936729591772571652_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I17936729591772571652_semiw27pt1 + 12), "duplicate condition — an earlier branch already tests this, so this branch is unreachable");
+mem.writeStr((strlit_0_I17936729591772571652_semiw27pt1 + 12), "duplicate condition \xe2\x80\x94 an earlier branch already tests this, so this branch is unreachable");
 
 mem.setI32(strlit_0_I15124222778577259913_semiw27pt1, 98);
 
@@ -12978,7 +13058,7 @@ mem.setI32((strlit_0_I15124222778577259913_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I15124222778577259913_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I15124222778577259913_semiw27pt1 + 12), "this `if` condition is always `true` — the branch always runs and any `elif`/`else` is dead code");
+mem.writeStr((strlit_0_I15124222778577259913_semiw27pt1 + 12), "this `if` condition is always `true` \xe2\x80\x94 the branch always runs and any `elif`/`else` is dead code");
 
 mem.setI32(strlit_0_I5654102652891232567_semiw27pt1, 70);
 
@@ -12986,7 +13066,7 @@ mem.setI32((strlit_0_I5654102652891232567_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I5654102652891232567_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I5654102652891232567_semiw27pt1 + 12), "this `if` condition is always `false` — the branch body is dead code");
+mem.writeStr((strlit_0_I5654102652891232567_semiw27pt1 + 12), "this `if` condition is always `false` \xe2\x80\x94 the branch body is dead code");
 
 mem.setI32(strlit_0_I5907787421532985316_semiw27pt1, 70);
 
@@ -13002,7 +13082,7 @@ mem.setI32((strlit_0_I3482970605271504992_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3482970605271504992_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3482970605271504992_semiw27pt1 + 12), "module-level code has nothing to return from — move it into a ");
+mem.writeStr((strlit_0_I3482970605271504992_semiw27pt1 + 12), "module-level code has nothing to return from \xe2\x80\x94 move it into a ");
 
 mem.setI32(strlit_0_I11918889275999857576_semiw27pt1, 40);
 
@@ -13042,7 +13122,7 @@ mem.setI32((strlit_0_I9243570768383923519_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I9243570768383923519_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I9243570768383923519_semiw27pt1 + 12), "this routine has no return type — drop the value, or declare ");
+mem.writeStr((strlit_0_I9243570768383923519_semiw27pt1 + 12), "this routine has no return type \xe2\x80\x94 drop the value, or declare ");
 
 mem.setI32(strlit_0_I5476334871436451528_semiw27pt1, 5);
 
@@ -13138,7 +13218,7 @@ mem.setI32((strlit_0_I3155136376711293009_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3155136376711293009_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3155136376711293009_semiw27pt1 + 12), "an `out` parameter arrives UNINITIALISED — every path out of ");
+mem.writeStr((strlit_0_I3155136376711293009_semiw27pt1 + 12), "an `out` parameter arrives UNINITIALISED \xe2\x80\x94 every path out of ");
 
 mem.setI32(strlit_0_I8774844319857288326_semiw27pt1, 27);
 
@@ -13154,7 +13234,7 @@ mem.setI32((strlit_0_I3833487562798262652_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I3833487562798262652_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I3833487562798262652_semiw27pt1 + 12), "` is not one of nimony's pragmas — declare it ");
+mem.writeStr((strlit_0_I3833487562798262652_semiw27pt1 + 12), "` is not one of nimony's pragmas \xe2\x80\x94 declare it ");
 
 mem.setI32(strlit_0_I8784235866847520763_semiw27pt1, 16);
 
@@ -13930,7 +14010,7 @@ mem.setI32((strlit_0_I49126518497492106_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I49126518497492106_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I49126518497492106_semiw27pt1 + 12), "` is a plain object — give it `of RootObj` ");
+mem.writeStr((strlit_0_I49126518497492106_semiw27pt1 + 12), "` is a plain object \xe2\x80\x94 give it `of RootObj` ");
 
 mem.setI32(strlit_0_I3082596773486252958_semiw27pt1, 45);
 
@@ -14674,7 +14754,7 @@ mem.setI32((strlit_0_I10585233837426442534_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I10585233837426442534_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I10585233837426442534_semiw27pt1 + 12), "`break` leaves the nearest enclosing `while`, `for` or `block` — there is none here");
+mem.writeStr((strlit_0_I10585233837426442534_semiw27pt1 + 12), "`break` leaves the nearest enclosing `while`, `for` or `block` \xe2\x80\x94 there is none here");
 
 mem.setI32(strlit_0_I7110226391112573010_semiw27pt1, 5);
 
@@ -14722,7 +14802,7 @@ mem.setI32((strlit_0_I16070140171486330355_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I16070140171486330355_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I16070140171486330355_semiw27pt1 + 12), "(…)` to say that is ");
+mem.writeStr((strlit_0_I16070140171486330355_semiw27pt1 + 12), "(\xe2\x80\xa6)` to say that is ");
 
 mem.setI32(strlit_0_I17908217481206379097_semiw27pt1, 29);
 
@@ -14970,7 +15050,7 @@ mem.setI32((strlit_0_I17116695865333422218_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I17116695865333422218_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I17116695865333422218_semiw27pt1 + 12), "AcС8Z");
+mem.writeStr((strlit_0_I17116695865333422218_semiw27pt1 + 12), "Ac\xd0\xa18Z");
 
 mem.setI32(strlit_0_I14590457194152064229_semiw27pt1, 27);
 
@@ -14994,7 +15074,7 @@ mem.setI32((strlit_0_I10128779297755347084_semiw27pt1 + 4), 0);
 
 mem.setI32((strlit_0_I10128779297755347084_semiw27pt1 + 8), 0);
 
-mem.writeStr((strlit_0_I10128779297755347084_semiw27pt1 + 12), "a converter is applied implicitly to a single value — use a ");
+mem.writeStr((strlit_0_I10128779297755347084_semiw27pt1 + 12), "a converter is applied implicitly to a single value \xe2\x80\x94 use a ");
 
 mem.setI32(strlit_0_I14028223029929461189_semiw27pt1, 33);
 
@@ -17329,8 +17409,8 @@ function rawParseInt_0_party5a2l1(s_2, b_0) {
               var X60Qx_27 = getQ_10_I5nt6we_diak37ukf(s_2, mem.i32(i_0));
               var c_1 = ((mem.u8At(X60Qx_27) - 48) | 0);
               if ((!overflow_0)) {
-                if (((BigInt.asIntN(64, (-9223372036854775808n + BigInt(c_1))) / 10n) <= res_0)) {
-                  res_0 = BigInt.asIntN(64, (BigInt.asIntN(64, (res_0 * 10n)) - BigInt(c_1)));
+                if (((BigInt.asIntN(64, (-9223372036854775808n + BigInt(c_1))) / 10n) <= BigInt(res_0))) {
+                  res_0 = BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(res_0) * 10n)) - BigInt(c_1)));
                 } else {
                   overflow_0 = true;
                 }
@@ -17361,8 +17441,8 @@ function rawParseInt_0_party5a2l1(s_2, b_0) {
       }
     }
     var X60Qx_31;
-    if ((sign_0 === -1n)) {
-      X60Qx_31 = (res_0 === -9223372036854775808n);
+    if ((BigInt(sign_0) === -1n)) {
+      X60Qx_31 = (BigInt(res_0) === -9223372036854775808n);
     } else {
       X60Qx_31 = false;
     }
@@ -17372,7 +17452,7 @@ function rawParseInt_0_party5a2l1(s_2, b_0) {
     if (overflow_0) {
       result_2 = (-mem.i32(i_0));
     } else {
-      mem.setI64(b_0, BigInt.asIntN(64, (res_0 * sign_0)));
+      mem.setI64(b_0, BigInt.asIntN(64, (BigInt(res_0) * BigInt(sign_0))));
       result_2 = mem.i32(i_0);
     }
   } else {
@@ -17558,14 +17638,14 @@ function rawParseUInt_0_party5a2l1(s_4, b_1) {
           if (X60Qx_5) {
             whileStmtLabel_1: {
               if ((!overflow_1)) {
-                if (((18446744073709551615n / 10n) < mem.u64b(res_2))) {
+                if (((18446744073709551615n / 10n) < BigInt(mem.u64b(res_2)))) {
                   overflow_1 = true;
                 } else {
-                  mem.setU64(res_2, BigInt.asUintN(64, (mem.u64b(res_2) * 10n)));
+                  mem.setU64(res_2, BigInt.asUintN(64, (BigInt(mem.u64b(res_2)) * 10n)));
                   var prev_0 = mem.u64b(res_2);
                   var X60Qx_45 = getQ_10_I5nt6we_diak37ukf(s_4, mem.i32(i_1));
                   inc_0_Ineawm41_party5a2l1(res_2, BigInt(((mem.u8At(X60Qx_45) - 48) | 0)));
-                  if ((mem.u64b(res_2) < prev_0)) {
+                  if ((BigInt(mem.u64b(res_2)) < BigInt(prev_0))) {
                     overflow_1 = true;
                   }
                 }
@@ -17920,7 +18000,7 @@ function parseBiggestFloat_0_party5a2l1(s_6, number_4) {
             whileStmtLabel_1: {
               inc_1_I6wjjge_cmdqs323n1(kdigits_0);
               var X60Qx_86 = getQ_10_I5nt6we_diak37ukf(s_6, mem.i32(i_2));
-              integer_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (integer_0 * 10n)) + BigInt(((mem.u8At(X60Qx_86) - 48) | 0))));
+              integer_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(integer_0) * 10n)) + BigInt(((mem.u8At(X60Qx_86) - 48) | 0))));
               inc_1_I6wjjge_cmdqs323n1(i_2);
               {
                 while (true) {
@@ -18099,7 +18179,7 @@ function parseBiggestFloat_0_party5a2l1(s_6, number_4) {
                 inc_1_I6wjjge_cmdqs323n1(fdigits_0);
                 inc_1_I6wjjge_cmdqs323n1(fracExponent_0);
                 var X60Qx_105 = getQ_10_I5nt6we_diak37ukf(s_6, mem.i32(i_2));
-                integer_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (integer_0 * 10n)) + BigInt(((mem.u8At(X60Qx_105) - 48) | 0))));
+                integer_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(integer_0) * 10n)) + BigInt(((mem.u8At(X60Qx_105) - 48) | 0))));
                 inc_1_I6wjjge_cmdqs323n1(i_2);
                 {
                   while (true) {
@@ -18323,7 +18403,7 @@ function parseBiggestFloat_0_party5a2l1(s_6, number_4) {
     var expNegative_0 = (realExponent_0 < 0);
     var absExponent_0 = abs_0_Iycnqz_party5a2l1(realExponent_0);
     if ((999 < absExponent_0)) {
-      if ((integer_0 === 0n)) {
+      if ((BigInt(integer_0) === 0n)) {
         mem.setF64(number_4, 0.0);
       } else {
         if (expNegative_0) {
@@ -18532,7 +18612,7 @@ function parseBiggestFloat_0_party5a2l1(s_6, number_4) {
 }
 
 function inc_0_Ineawm41_party5a2l1(x_8, y_2) {
-  mem.setU64(x_8, BigInt.asUintN(64, (mem.u64b(x_8) + y_2)));
+  mem.setU64(x_8, BigInt.asUintN(64, (mem.u64b(x_8) + BigInt(y_2))));
 }
 
 function abs_0_Iycnqz_party5a2l1(x_9) {
@@ -18989,7 +19069,7 @@ function addIdent_0_nifjp9lau1(b_12, s_5) {
                   mem.setU8((X60Qdesugar_9 + 31), 0);
                   var X60Qdesugar_10 = allocFixed(32);
                   var X60Qdesugar_11 = 0;
-                  while ((X60Qdesugar_11 < 32n)) {
+                  while ((BigInt(X60Qdesugar_11) < 32n)) {
                     mem.setU8((X60Qdesugar_10 + X60Qdesugar_11), ((mem.u8At((X60Qdesugar_8 + X60Qdesugar_11)) | mem.u8At((X60Qdesugar_9 + X60Qdesugar_11))) >>> 0));
                     X60Qdesugar_11 = ((X60Qdesugar_11 + 1) | 0);
                   }
@@ -19263,7 +19343,7 @@ function addCharLit_0_nifjp9lau1(b_20, c_2) {
 function addIntLit_0_nifjp9lau1(b_21, i_0) {
   addSep_0_nifjp9lau1(b_21);
   let X60Qtmp_3 = allocFixed(8);
-  mem.copy(X60Qtmp_3, dollarQ_1_sysvq0asl(i_0), 8);
+  mem.copy(X60Qtmp_3, dollarQ_1_sysvq0asl(BigInt(i_0)), 8);
   put_0_nifjp9lau1(b_21, X60Qtmp_3);
   nimStrDestroy(X60Qtmp_3);
 }
@@ -19271,7 +19351,7 @@ function addIntLit_0_nifjp9lau1(b_21, i_0) {
 function addUIntLit_0_nifjp9lau1(b_22, u_0) {
   addSep_0_nifjp9lau1(b_22);
   let X60Qtmp_4 = allocFixed(8);
-  mem.copy(X60Qtmp_4, dollarQ_0_sysvq0asl(u_0), 8);
+  mem.copy(X60Qtmp_4, dollarQ_0_sysvq0asl(BigInt(u_0)), 8);
   put_0_nifjp9lau1(b_22, X60Qtmp_4);
   add_1_sysvq0asl(b_22, 117);
   plusQeQ_0_Iz7fdp7_mat7cnfv21((b_22 + 24), 1);
@@ -19405,7 +19485,7 @@ function b62Char_0_nifjp9lau1(d_0) {
 }
 
 function addB62Unsigned_0_nifjp9lau1(b_25, n0_0) {
-  if ((n0_0 === 0n)) {
+  if ((BigInt(n0_0) === 0n)) {
     put_1_nifjp9lau1(b_25, 48);
   } else {
     whileStmtLabel_1: {
@@ -19415,11 +19495,11 @@ function addB62Unsigned_0_nifjp9lau1(b_25, n0_0) {
         mem.setI32(i_6, 0);
         var n_1 = n0_0;
         {
-          while ((0n < n_1)) {
+          while ((0n < BigInt(n_1))) {
             var X60Qx_56 = nimIcheckB(mem.i32(i_6), 11);
-            var X60Qx_57 = b62Char_0_nifjp9lau1(Number(BigInt.asIntN(32, (n_1 % 62n))));
+            var X60Qx_57 = b62Char_0_nifjp9lau1(Number(BigInt.asIntN(32, (BigInt(n_1) % 62n))));
             mem.setU8((buf_0 + X60Qx_56), X60Qx_57);
-            n_1 = (n_1 / 62n);
+            n_1 = (BigInt(n_1) / 62n);
             inc_1_I6wjjge_cmdqs323n1(i_6);
           }
         }
@@ -21767,7 +21847,7 @@ function parse_0_nif3d7mll1(r_0, b_1, parentSeed_0, denseLineInfo_0) {
               var info_8 = allocFixed(16);
               mem.copy(info_8, resolveInfo_0_nif3d7mll1(b_1, tok_1, parents_3), 16);
               var X60Qx_46 = decodeInt_0_nif81dubp1(tok_1);
-              addIntLit_0_nif0bno621(b_1, X60Qx_46);
+              addIntLit_0_nif0bno621(b_1, BigInt(X60Qx_46));
               var X60Qx_47;
               var X60Qx_48 = isValid_0_nif0bno621(info_8);
               if (X60Qx_48) {
@@ -21793,7 +21873,7 @@ function parse_0_nif3d7mll1(r_0, b_1, parentSeed_0, denseLineInfo_0) {
               var info_9 = allocFixed(16);
               mem.copy(info_9, resolveInfo_0_nif3d7mll1(b_1, tok_1, parents_3), 16);
               var X60Qx_51 = decodeUInt_0_nif81dubp1(tok_1);
-              addUIntLit_0_nif0bno621(b_1, X60Qx_51);
+              addUIntLit_0_nif0bno621(b_1, BigInt(X60Qx_51));
               var X60Qx_52;
               var X60Qx_53 = isValid_0_nif0bno621(info_9);
               if (X60Qx_53) {
@@ -22050,7 +22130,7 @@ function emitValueWithLineInfo_0_nif3d7mll1(bld_1, c_0, cur_0, parents_1, tags_0
     case 3:
       {
         var X60Qx_94 = intVal_0_nif0bno621(c_0);
-        addIntLit_0_nifjp9lau1(bld_1, X60Qx_94);
+        addIntLit_0_nifjp9lau1(bld_1, BigInt(X60Qx_94));
         var X60Qx_95 = getQ_7_Ia8i8yp_nif3d7mll1(parents_1, ((mem.i32(parents_1) - 1) | 0));
         emitRelLineInfo_0_nif3d7mll1(bld_1, abs_1, X60Qx_95, pool_1, true);
         inc_0_nif0bno621(c_0);
@@ -22059,7 +22139,7 @@ function emitValueWithLineInfo_0_nif3d7mll1(bld_1, c_0, cur_0, parents_1, tags_0
     case 4:
       {
         var X60Qx_96 = uintVal_0_nif0bno621(c_0);
-        addUIntLit_0_nifjp9lau1(bld_1, X60Qx_96);
+        addUIntLit_0_nifjp9lau1(bld_1, BigInt(X60Qx_96));
         var X60Qx_97 = getQ_7_Ia8i8yp_nif3d7mll1(parents_1, ((mem.i32(parents_1) - 1) | 0));
         emitRelLineInfo_0_nif3d7mll1(bld_1, abs_1, X60Qx_97, pool_1, true);
         inc_0_nif0bno621(c_0);
@@ -22176,14 +22256,14 @@ function emitValueWithoutLineInfo_0_nif3d7mll1(bld_2, c_1, tags_1, pool_2) {
     case 3:
       {
         var X60Qx_104 = intVal_0_nif0bno621(c_1);
-        addIntLit_0_nifjp9lau1(bld_2, X60Qx_104);
+        addIntLit_0_nifjp9lau1(bld_2, BigInt(X60Qx_104));
         inc_0_nif0bno621(c_1);
       }
       break;
     case 4:
       {
         var X60Qx_105 = uintVal_0_nif0bno621(c_1);
-        addUIntLit_0_nifjp9lau1(bld_2, X60Qx_105);
+        addUIntLit_0_nifjp9lau1(bld_2, BigInt(X60Qx_105));
         inc_0_nif0bno621(c_1);
       }
       break;
@@ -22421,7 +22501,7 @@ function emitValueIndexed_0_nif3d7mll1(bld_3, c_2, cur_1, parents_2, tags_2, poo
     case 3:
       {
         var X60Qx_128 = intVal_0_nif0bno621(c_2);
-        addIntLit_0_nifjp9lau1(bld_3, X60Qx_128);
+        addIntLit_0_nifjp9lau1(bld_3, BigInt(X60Qx_128));
         var X60Qx_129 = getQ_7_Ia8i8yp_nif3d7mll1(parents_2, ((mem.i32(parents_2) - 1) | 0));
         emitRelLineInfo_0_nif3d7mll1(bld_3, abs_2, X60Qx_129, pool_3, true);
         inc_0_nif0bno621(c_2);
@@ -22430,7 +22510,7 @@ function emitValueIndexed_0_nif3d7mll1(bld_3, c_2, cur_1, parents_2, tags_2, poo
     case 4:
       {
         var X60Qx_130 = uintVal_0_nif0bno621(c_2);
-        addUIntLit_0_nifjp9lau1(bld_3, X60Qx_130);
+        addUIntLit_0_nifjp9lau1(bld_3, BigInt(X60Qx_130));
         var X60Qx_131 = getQ_7_Ia8i8yp_nif3d7mll1(parents_2, ((mem.i32(parents_2) - 1) | 0));
         emitRelLineInfo_0_nif3d7mll1(bld_3, abs_2, X60Qx_131, pool_3, true);
         inc_0_nif0bno621(c_2);
@@ -24151,7 +24231,7 @@ function readDirectives_0_nif81dubp1(r_10) {
               next_0_nif81dubp1(r_10, tok_0);
               if ((mem.u8At(tok_0) === 8)) {
                 var X60Qx_56 = decodeInt_0_nif81dubp1(tok_0);
-                mem.setI32((r_10 + 60), Number(BigInt.asIntN(32, X60Qx_56)));
+                mem.setI32((r_10 + 60), Number(BigInt.asIntN(32, BigInt(X60Qx_56))));
               }
             } else {
               var X60Qx_57 = eqQ_1_strdllfw2((tok_0 + 4), (() => {
@@ -29077,7 +29157,7 @@ function nimLoad4_0_semiw27pt1(s_2, o_1) {
   let X60Qx_1217 = nimByte_0_semiw27pt1(s_2, ((o_1 + 2) | 0));
   let X60Qx_1218 = nimByte_0_semiw27pt1(s_2, ((o_1 + 1) | 0));
   let X60Qx_1219 = nimByte_0_semiw27pt1(s_2, o_1);
-  result_3 = (((BigInt.asUintN(64, (X60Qx_1216 << 24n)) | BigInt.asUintN(64, (X60Qx_1217 << 16n))) | BigInt.asUintN(64, (X60Qx_1218 << 8n))) | X60Qx_1219);
+  result_3 = (((BigInt.asUintN(64, (BigInt(X60Qx_1216) << 24n)) | BigInt.asUintN(64, (BigInt(X60Qx_1217) << 16n))) | BigInt.asUintN(64, (BigInt(X60Qx_1218) << 8n))) | BigInt(X60Qx_1219));
   return result_3;
 }
 
@@ -29091,7 +29171,7 @@ function nimLoad8_0_semiw27pt1(s_3, o_2) {
   let X60Qx_1225 = nimByte_0_semiw27pt1(s_3, ((o_2 + 2) | 0));
   let X60Qx_1226 = nimByte_0_semiw27pt1(s_3, ((o_2 + 1) | 0));
   let X60Qx_1227 = nimByte_0_semiw27pt1(s_3, o_2);
-  result_4 = (((((((BigInt.asUintN(64, (X60Qx_1220 << 56n)) | BigInt.asUintN(64, (X60Qx_1221 << 48n))) | BigInt.asUintN(64, (X60Qx_1222 << 40n))) | BigInt.asUintN(64, (X60Qx_1223 << 32n))) | BigInt.asUintN(64, (X60Qx_1224 << 24n))) | BigInt.asUintN(64, (X60Qx_1225 << 16n))) | BigInt.asUintN(64, (X60Qx_1226 << 8n))) | X60Qx_1227);
+  result_4 = (((((((BigInt.asUintN(64, (BigInt(X60Qx_1220) << 56n)) | BigInt.asUintN(64, (BigInt(X60Qx_1221) << 48n))) | BigInt.asUintN(64, (BigInt(X60Qx_1222) << 40n))) | BigInt.asUintN(64, (BigInt(X60Qx_1223) << 32n))) | BigInt.asUintN(64, (BigInt(X60Qx_1224) << 24n))) | BigInt.asUintN(64, (BigInt(X60Qx_1225) << 16n))) | BigInt.asUintN(64, (BigInt(X60Qx_1226) << 8n))) | BigInt(X60Qx_1227));
   return result_4;
 }
 
@@ -29100,26 +29180,26 @@ function nimShiftMix_0_semiw27pt1(v_0) {
   let X60Qx_1228 = (!false);
   if ((!true)) {
   }
-  result_5 = (v_0 ^ (v_0 >> 47n));
+  result_5 = (BigInt(v_0) ^ (BigInt(v_0) >> 47n));
   return result_5;
 }
 
 function nimRotR_0_semiw27pt1(v_1, bits_0) {
   let result_6;
-  result_6 = ((v_1 >> BigInt(bits_0)) | BigInt.asUintN(64, (v_1 << BigInt(((64 - bits_0) | 0)))));
+  result_6 = ((BigInt(v_1) >> BigInt(bits_0)) | BigInt.asUintN(64, (BigInt(v_1) << BigInt(((64 - bits_0) | 0)))));
   return result_6;
 }
 
 function nimLen16_0_semiw27pt1(u_0, v_2, mul_0) {
   let result_7;
-  let a_6 = BigInt.asUintN(64, ((u_0 ^ v_2) * mul_0));
-  a_6 = (a_6 ^ (a_6 >> 47n));
-  let b_15 = BigInt.asUintN(64, ((v_2 ^ a_6) * mul_0));
-  b_15 = (b_15 ^ (b_15 >> 47n));
+  let a_6 = BigInt.asUintN(64, ((BigInt(u_0) ^ BigInt(v_2)) * BigInt(mul_0)));
+  a_6 = (BigInt(a_6) ^ (BigInt(a_6) >> 47n));
+  let b_15 = BigInt.asUintN(64, ((BigInt(v_2) ^ BigInt(a_6)) * BigInt(mul_0)));
+  b_15 = (BigInt(b_15) ^ (BigInt(b_15) >> 47n));
   let X60Qx_1229 = (!false);
   if ((!true)) {
   }
-  result_7 = BigInt.asUintN(64, (b_15 * mul_0));
+  result_7 = BigInt.asUintN(64, (BigInt(b_15) * BigInt(mul_0)));
   return result_7;
 }
 
@@ -29131,35 +29211,35 @@ function nimLen0Q_16_0_semiw27pt1(s_4) {
   if ((!true)) {
   }
   if ((8 <= n_4)) {
-    let mul_1 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * lenU_0))));
+    let mul_1 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * BigInt(lenU_0)))));
     let X60Qx_1231 = nimLoad8_0_semiw27pt1(s_4, 0);
-    let a_7 = BigInt.asUintN(64, (X60Qx_1231 + 11160318154034397263n));
+    let a_7 = BigInt.asUintN(64, (BigInt(X60Qx_1231) + 11160318154034397263n));
     let b_16 = nimLoad8_0_semiw27pt1(s_4, ((n_4 - 8) | 0));
-    let X60Qx_1232 = nimRotR_0_semiw27pt1(b_16, 37);
-    let c_468 = BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1232 * mul_1)) + a_7));
-    let X60Qx_1233 = nimRotR_0_semiw27pt1(a_7, 25);
-    let d_2 = BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1233 + b_16)) * mul_1));
+    let X60Qx_1232 = nimRotR_0_semiw27pt1(BigInt(b_16), 37);
+    let c_468 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1232) * BigInt(mul_1))) + BigInt(a_7)));
+    let X60Qx_1233 = nimRotR_0_semiw27pt1(BigInt(a_7), 25);
+    let d_2 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1233) + BigInt(b_16))) * BigInt(mul_1)));
     let X60Qx_1234 = (!false);
     if ((!true)) {
     }
-    let X60Qx_1235 = nimLen16_0_semiw27pt1(c_468, d_2, mul_1);
+    let X60Qx_1235 = nimLen16_0_semiw27pt1(BigInt(c_468), BigInt(d_2), BigInt(mul_1));
     result_8 = X60Qx_1235;
   } else {
     if ((4 <= n_4)) {
-      let mul_2 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * lenU_0))));
+      let mul_2 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * BigInt(lenU_0)))));
       let a_8 = nimLoad4_0_semiw27pt1(s_4, 0);
       let X60Qx_1236 = nimLoad4_0_semiw27pt1(s_4, ((n_4 - 4) | 0));
-      let X60Qx_1237 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (lenU_0 + BigInt.asUintN(64, (a_8 << 3n)))), X60Qx_1236, mul_2);
+      let X60Qx_1237 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt(lenU_0) + BigInt.asUintN(64, (BigInt(a_8) << 3n)))), BigInt(X60Qx_1236), BigInt(mul_2));
       result_8 = X60Qx_1237;
     } else {
       if ((0 < n_4)) {
         let a_9 = nimByte_0_semiw27pt1(s_4, 0);
         let b_17 = nimByte_0_semiw27pt1(s_4, (n_4 >> 1));
         let c_469 = nimByte_0_semiw27pt1(s_4, ((n_4 - 1) | 0));
-        let y_1 = BigInt.asUintN(64, (a_9 + BigInt.asUintN(64, (b_17 << 8n))));
-        let z_1 = BigInt.asUintN(64, (lenU_0 + BigInt.asUintN(64, (c_469 << 2n))));
-        let X60Qx_1238 = nimShiftMix_0_semiw27pt1((BigInt.asUintN(64, (y_1 * 11160318154034397263n)) ^ BigInt.asUintN(64, (z_1 * 14097894508562428199n))));
-        result_8 = BigInt.asUintN(64, (X60Qx_1238 * 11160318154034397263n));
+        let y_1 = BigInt.asUintN(64, (BigInt(a_9) + BigInt.asUintN(64, (BigInt(b_17) << 8n))));
+        let z_1 = BigInt.asUintN(64, (BigInt(lenU_0) + BigInt.asUintN(64, (BigInt(c_469) << 2n))));
+        let X60Qx_1238 = nimShiftMix_0_semiw27pt1((BigInt.asUintN(64, (BigInt(y_1) * 11160318154034397263n)) ^ BigInt.asUintN(64, (BigInt(z_1) * 14097894508562428199n))));
+        result_8 = BigInt.asUintN(64, (BigInt(X60Qx_1238) * 11160318154034397263n));
       } else {
         result_8 = 11160318154034397263n;
       }
@@ -29173,16 +29253,16 @@ function nimLen17Q_32_0_semiw27pt1(s_5) {
   let n_5 = len_4_sysvq0asl(s_5);
   let mul_3 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * BigInt(n_5)))));
   let X60Qx_1239 = nimLoad8_0_semiw27pt1(s_5, 0);
-  let a_10 = BigInt.asUintN(64, (X60Qx_1239 * 13011662864482103923n));
+  let a_10 = BigInt.asUintN(64, (BigInt(X60Qx_1239) * 13011662864482103923n));
   let b_18 = nimLoad8_0_semiw27pt1(s_5, 8);
   let X60Qx_1240 = nimLoad8_0_semiw27pt1(s_5, ((n_5 - 8) | 0));
-  let c_470 = BigInt.asUintN(64, (X60Qx_1240 * mul_3));
+  let c_470 = BigInt.asUintN(64, (BigInt(X60Qx_1240) * BigInt(mul_3)));
   let X60Qx_1241 = nimLoad8_0_semiw27pt1(s_5, ((n_5 - 16) | 0));
-  let d_3 = BigInt.asUintN(64, (X60Qx_1241 * 11160318154034397263n));
-  let X60Qx_1242 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (a_10 + b_18)), 43);
-  let X60Qx_1243 = nimRotR_0_semiw27pt1(c_470, 30);
-  let X60Qx_1244 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (b_18 + 11160318154034397263n)), 18);
-  let X60Qx_1245 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1242 + X60Qx_1243)) + d_3)), BigInt.asUintN(64, (BigInt.asUintN(64, (a_10 + X60Qx_1244)) + c_470)), mul_3);
+  let d_3 = BigInt.asUintN(64, (BigInt(X60Qx_1241) * 11160318154034397263n));
+  let X60Qx_1242 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(a_10) + BigInt(b_18))), 43);
+  let X60Qx_1243 = nimRotR_0_semiw27pt1(BigInt(c_470), 30);
+  let X60Qx_1244 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(b_18) + 11160318154034397263n)), 18);
+  let X60Qx_1245 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1242) + BigInt(X60Qx_1243))) + BigInt(d_3))), BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(a_10) + BigInt(X60Qx_1244))) + BigInt(c_470))), BigInt(mul_3));
   result_9 = X60Qx_1245;
   return result_9;
 }
@@ -29192,48 +29272,48 @@ function nimLen33Q_64_0_semiw27pt1(s_6) {
   let n_6 = len_4_sysvq0asl(s_6);
   let mul_4 = BigInt.asUintN(64, (11160318154034397263n + BigInt.asUintN(64, (2n * BigInt(n_6)))));
   let X60Qx_1246 = nimLoad8_0_semiw27pt1(s_6, 0);
-  let a_11 = BigInt.asUintN(64, (X60Qx_1246 * 11160318154034397263n));
+  let a_11 = BigInt.asUintN(64, (BigInt(X60Qx_1246) * 11160318154034397263n));
   let b_19 = nimLoad8_0_semiw27pt1(s_6, 8);
   let X60Qx_1247 = nimLoad8_0_semiw27pt1(s_6, ((n_6 - 8) | 0));
-  let c_471 = BigInt.asUintN(64, (X60Qx_1247 * mul_4));
+  let c_471 = BigInt.asUintN(64, (BigInt(X60Qx_1247) * BigInt(mul_4)));
   let X60Qx_1248 = nimLoad8_0_semiw27pt1(s_6, ((n_6 - 16) | 0));
-  let d_4 = BigInt.asUintN(64, (X60Qx_1248 * 11160318154034397263n));
-  let X60Qx_1249 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (a_11 + b_19)), 43);
-  let X60Qx_1250 = nimRotR_0_semiw27pt1(c_471, 30);
-  let y_2 = BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1249 + X60Qx_1250)) + d_4));
-  let X60Qx_1251 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (b_19 + 11160318154034397263n)), 18);
-  let z_2 = nimLen16_0_semiw27pt1(y_2, BigInt.asUintN(64, (BigInt.asUintN(64, (a_11 + X60Qx_1251)) + c_471)), mul_4);
+  let d_4 = BigInt.asUintN(64, (BigInt(X60Qx_1248) * 11160318154034397263n));
+  let X60Qx_1249 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(a_11) + BigInt(b_19))), 43);
+  let X60Qx_1250 = nimRotR_0_semiw27pt1(BigInt(c_471), 30);
+  let y_2 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1249) + BigInt(X60Qx_1250))) + BigInt(d_4)));
+  let X60Qx_1251 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(b_19) + 11160318154034397263n)), 18);
+  let z_2 = nimLen16_0_semiw27pt1(BigInt(y_2), BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(a_11) + BigInt(X60Qx_1251))) + BigInt(c_471))), BigInt(mul_4));
   let X60Qx_1252 = nimLoad8_0_semiw27pt1(s_6, 16);
-  let e_4 = BigInt.asUintN(64, (X60Qx_1252 * mul_4));
+  let e_4 = BigInt.asUintN(64, (BigInt(X60Qx_1252) * BigInt(mul_4)));
   let f_1 = nimLoad8_0_semiw27pt1(s_6, 24);
   let X60Qx_1253 = nimLoad8_0_semiw27pt1(s_6, ((n_6 - 32) | 0));
-  let g_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (y_2 + X60Qx_1253)) * mul_4));
+  let g_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_2) + BigInt(X60Qx_1253))) * BigInt(mul_4)));
   let X60Qx_1254 = nimLoad8_0_semiw27pt1(s_6, ((n_6 - 24) | 0));
-  let h_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (z_2 + X60Qx_1254)) * mul_4));
+  let h_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(z_2) + BigInt(X60Qx_1254))) * BigInt(mul_4)));
   let X60Qx_1255 = (!false);
   if ((!true)) {
   }
-  let X60Qx_1256 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (e_4 + f_1)), 43);
-  let X60Qx_1257 = nimRotR_0_semiw27pt1(g_1, 30);
-  let X60Qx_1258 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (f_1 + a_11)), 18);
-  let X60Qx_1259 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1256 + X60Qx_1257)) + h_1)), BigInt.asUintN(64, (BigInt.asUintN(64, (e_4 + X60Qx_1258)) + g_1)), mul_4);
+  let X60Qx_1256 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(e_4) + BigInt(f_1))), 43);
+  let X60Qx_1257 = nimRotR_0_semiw27pt1(BigInt(g_1), 30);
+  let X60Qx_1258 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(f_1) + BigInt(a_11))), 18);
+  let X60Qx_1259 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1256) + BigInt(X60Qx_1257))) + BigInt(h_1))), BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(e_4) + BigInt(X60Qx_1258))) + BigInt(g_1))), BigInt(mul_4));
   result_10 = X60Qx_1259;
   return result_10;
 }
 
 function nimWeak32_0_semiw27pt1(w_0, x_0, y_0, z_0, a0_0, b0_0, outA_0, outB_0) {
-  let a_12 = BigInt.asUintN(64, (a0_0 + w_0));
-  let b_20 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (b0_0 + a_12)) + z_0)), 21);
+  let a_12 = BigInt.asUintN(64, (BigInt(a0_0) + BigInt(w_0)));
+  let b_20 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(b0_0) + BigInt(a_12))) + BigInt(z_0))), 21);
   let c_472 = a_12;
   let X60Qx_1260 = (!false);
   if ((!true)) {
   }
-  a_12 = BigInt.asUintN(64, (a_12 + x_0));
-  a_12 = BigInt.asUintN(64, (a_12 + y_0));
-  let X60Qx_1261 = nimRotR_0_semiw27pt1(a_12, 44);
-  b_20 = BigInt.asUintN(64, (b_20 + X60Qx_1261));
-  mem.setU64(outA_0, BigInt.asUintN(64, (a_12 + z_0)));
-  mem.setU64(outB_0, BigInt.asUintN(64, (b_20 + c_472)));
+  a_12 = BigInt.asUintN(64, (BigInt(a_12) + BigInt(x_0)));
+  a_12 = BigInt.asUintN(64, (BigInt(a_12) + BigInt(y_0)));
+  let X60Qx_1261 = nimRotR_0_semiw27pt1(BigInt(a_12), 44);
+  b_20 = BigInt.asUintN(64, (BigInt(b_20) + BigInt(X60Qx_1261)));
+  mem.setU64(outA_0, BigInt.asUintN(64, (BigInt(a_12) + BigInt(z_0))));
+  mem.setU64(outB_0, BigInt.asUintN(64, (BigInt(b_20) + BigInt(c_472))));
 }
 
 function nimWeak32At_0_semiw27pt1(s_7, o_3, a_0, b_0, outA_1, outB_1) {
@@ -29244,7 +29324,7 @@ function nimWeak32At_0_semiw27pt1(s_7, o_3, a_0, b_0, outA_1, outB_1) {
   let X60Qx_1264 = nimLoad8_0_semiw27pt1(s_7, ((o_3 + 8) | 0));
   let X60Qx_1265 = nimLoad8_0_semiw27pt1(s_7, ((o_3 + 16) | 0));
   let X60Qx_1266 = nimLoad8_0_semiw27pt1(s_7, ((o_3 + 24) | 0));
-  nimWeak32_0_semiw27pt1(X60Qx_1263, X60Qx_1264, X60Qx_1265, X60Qx_1266, a_0, b_0, outA_1, outB_1);
+  nimWeak32_0_semiw27pt1(BigInt(X60Qx_1263), BigInt(X60Qx_1264), BigInt(X60Qx_1265), BigInt(X60Qx_1266), BigInt(a_0), BigInt(b_0), outA_1, outB_1);
 }
 
 function nimFarmHash_0_semiw27pt1(s_8) {
@@ -29272,8 +29352,8 @@ function nimFarmHash_0_semiw27pt1(s_8) {
     var o_4 = 0;
     var x_1 = 81;
     var y_3 = BigInt.asUintN(64, (BigInt.asUintN(64, (81n * 13011662864482103923n)) + 113n));
-    var X60Qx_1271 = nimShiftMix_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (y_3 * 11160318154034397263n)) + 113n)));
-    var z_3 = BigInt.asUintN(64, (X60Qx_1271 * 11160318154034397263n));
+    var X60Qx_1271 = nimShiftMix_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_3) * 11160318154034397263n)) + 113n)));
+    var z_3 = BigInt.asUintN(64, (BigInt(X60Qx_1271) * 11160318154034397263n));
     var v0_0 = allocFixed(8);
     mem.setU64(v0_0, 0);
     var v1_0 = allocFixed(8);
@@ -29286,28 +29366,28 @@ function nimFarmHash_0_semiw27pt1(s_8) {
     if ((!true)) {
     }
     var X60Qx_1273 = nimLoad8_0_semiw27pt1(s_8, 0);
-    x_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (x_1 * 11160318154034397263n)) + X60Qx_1273));
+    x_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(x_1) * 11160318154034397263n)) + BigInt(X60Qx_1273)));
     var eos_0 = Math.imul(Math.trunc((((n_7 - 1) | 0) / 64)), 64);
     var last64_0 = ((((eos_0 + (((n_7 - 1) | 0) & 63)) | 0) - 63) | 0);
     {
       while (true) {
         var X60Qx_1274 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 8) | 0));
-        var X60Qx_1275 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (x_1 + y_3)) + mem.u64b(v0_0))) + X60Qx_1274)), 37);
-        x_1 = BigInt.asUintN(64, (X60Qx_1275 * 13011662864482103923n));
+        var X60Qx_1275 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(x_1) + BigInt(y_3))) + BigInt(mem.u64b(v0_0)))) + BigInt(X60Qx_1274))), 37);
+        x_1 = BigInt.asUintN(64, (BigInt(X60Qx_1275) * 13011662864482103923n));
         var X60Qx_1276 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 48) | 0));
-        var X60Qx_1277 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (y_3 + mem.u64b(v1_0))) + X60Qx_1276)), 42);
-        y_3 = BigInt.asUintN(64, (X60Qx_1277 * 13011662864482103923n));
+        var X60Qx_1277 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_3) + BigInt(mem.u64b(v1_0)))) + BigInt(X60Qx_1276))), 42);
+        y_3 = BigInt.asUintN(64, (BigInt(X60Qx_1277) * 13011662864482103923n));
         var X60Qx_1278 = (!false);
         if ((!true)) {
         }
-        x_1 = (x_1 ^ mem.u64b(w1_0));
+        x_1 = (BigInt(x_1) ^ BigInt(mem.u64b(w1_0)));
         var X60Qx_1279 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 40) | 0));
-        y_3 = BigInt.asUintN(64, (BigInt.asUintN(64, (y_3 + mem.u64b(v0_0))) + X60Qx_1279));
-        var X60Qx_1280 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (z_3 + mem.u64b(w0_0))), 33);
-        z_3 = BigInt.asUintN(64, (X60Qx_1280 * 13011662864482103923n));
-        nimWeak32At_0_semiw27pt1(s_8, o_4, BigInt.asUintN(64, (mem.u64b(v1_0) * 13011662864482103923n)), BigInt.asUintN(64, (x_1 + mem.u64b(w0_0))), v0_0, v1_0);
+        y_3 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_3) + BigInt(mem.u64b(v0_0)))) + BigInt(X60Qx_1279)));
+        var X60Qx_1280 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(z_3) + BigInt(mem.u64b(w0_0)))), 33);
+        z_3 = BigInt.asUintN(64, (BigInt(X60Qx_1280) * 13011662864482103923n));
+        nimWeak32At_0_semiw27pt1(s_8, o_4, BigInt.asUintN(64, (BigInt(mem.u64b(v1_0)) * 13011662864482103923n)), BigInt.asUintN(64, (BigInt(x_1) + BigInt(mem.u64b(w0_0)))), v0_0, v1_0);
         var X60Qx_1281 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 16) | 0));
-        nimWeak32At_0_semiw27pt1(s_8, ((o_4 + 32) | 0), BigInt.asUintN(64, (z_3 + mem.u64b(w1_0))), BigInt.asUintN(64, (y_3 + X60Qx_1281)), w0_0, w1_0);
+        nimWeak32At_0_semiw27pt1(s_8, ((o_4 + 32) | 0), BigInt.asUintN(64, (BigInt(z_3) + BigInt(mem.u64b(w1_0)))), BigInt.asUintN(64, (BigInt(y_3) + BigInt(X60Qx_1281))), w0_0, w1_0);
         var t_40 = z_3;
         var X60Qx_1282 = (!false);
         if ((!true)) {
@@ -29321,41 +29401,41 @@ function nimFarmHash_0_semiw27pt1(s_8) {
       }
     }
   }
-  var mul_5 = BigInt.asUintN(64, (13011662864482103923n + BigInt.asUintN(64, ((z_3 & 255n) << 1n))));
+  var mul_5 = BigInt.asUintN(64, (13011662864482103923n + BigInt.asUintN(64, ((BigInt(z_3) & 255n) << 1n))));
   var X60Qx_1283 = (!false);
   if ((!true)) {
   }
   o_4 = last64_0;
-  mem.setU64(w0_0, BigInt.asUintN(64, (mem.u64b(w0_0) + (BigInt.asUintN(64, (BigInt(n_7) - 1n)) & 63n))));
-  mem.setU64(v0_0, BigInt.asUintN(64, (mem.u64b(v0_0) + mem.u64b(w0_0))));
-  mem.setU64(w0_0, BigInt.asUintN(64, (mem.u64b(w0_0) + mem.u64b(v0_0))));
+  mem.setU64(w0_0, BigInt.asUintN(64, (BigInt(mem.u64b(w0_0)) + (BigInt.asUintN(64, (BigInt(n_7) - 1n)) & 63n))));
+  mem.setU64(v0_0, BigInt.asUintN(64, (BigInt(mem.u64b(v0_0)) + BigInt(mem.u64b(w0_0)))));
+  mem.setU64(w0_0, BigInt.asUintN(64, (BigInt(mem.u64b(w0_0)) + BigInt(mem.u64b(v0_0)))));
   var X60Qx_1284 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 8) | 0));
-  var X60Qx_1285 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (x_1 + y_3)) + mem.u64b(v0_0))) + X60Qx_1284)), 37);
-  x_1 = BigInt.asUintN(64, (X60Qx_1285 * mul_5));
+  var X60Qx_1285 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(x_1) + BigInt(y_3))) + BigInt(mem.u64b(v0_0)))) + BigInt(X60Qx_1284))), 37);
+  x_1 = BigInt.asUintN(64, (BigInt(X60Qx_1285) * BigInt(mul_5)));
   var X60Qx_1286 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 48) | 0));
-  var X60Qx_1287 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (y_3 + mem.u64b(v1_0))) + X60Qx_1286)), 42);
-  y_3 = BigInt.asUintN(64, (X60Qx_1287 * mul_5));
+  var X60Qx_1287 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_3) + BigInt(mem.u64b(v1_0)))) + BigInt(X60Qx_1286))), 42);
+  y_3 = BigInt.asUintN(64, (BigInt(X60Qx_1287) * BigInt(mul_5)));
   var X60Qx_1288 = (!false);
   if ((!true)) {
   }
-  x_1 = (x_1 ^ BigInt.asUintN(64, (mem.u64b(w1_0) * 9n)));
+  x_1 = (BigInt(x_1) ^ BigInt.asUintN(64, (BigInt(mem.u64b(w1_0)) * 9n)));
   var X60Qx_1289 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 40) | 0));
-  y_3 = BigInt.asUintN(64, (BigInt.asUintN(64, (y_3 + BigInt.asUintN(64, (mem.u64b(v0_0) * 9n)))) + X60Qx_1289));
-  var X60Qx_1290 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (z_3 + mem.u64b(w0_0))), 33);
-  z_3 = BigInt.asUintN(64, (X60Qx_1290 * mul_5));
-  nimWeak32At_0_semiw27pt1(s_8, o_4, BigInt.asUintN(64, (mem.u64b(v1_0) * mul_5)), BigInt.asUintN(64, (x_1 + mem.u64b(w0_0))), v0_0, v1_0);
+  y_3 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(y_3) + BigInt.asUintN(64, (BigInt(mem.u64b(v0_0)) * 9n)))) + BigInt(X60Qx_1289)));
+  var X60Qx_1290 = nimRotR_0_semiw27pt1(BigInt.asUintN(64, (BigInt(z_3) + BigInt(mem.u64b(w0_0)))), 33);
+  z_3 = BigInt.asUintN(64, (BigInt(X60Qx_1290) * BigInt(mul_5)));
+  nimWeak32At_0_semiw27pt1(s_8, o_4, BigInt.asUintN(64, (BigInt(mem.u64b(v1_0)) * BigInt(mul_5))), BigInt.asUintN(64, (BigInt(x_1) + BigInt(mem.u64b(w0_0)))), v0_0, v1_0);
   var X60Qx_1291 = nimLoad8_0_semiw27pt1(s_8, ((o_4 + 16) | 0));
-  nimWeak32At_0_semiw27pt1(s_8, ((o_4 + 32) | 0), BigInt.asUintN(64, (z_3 + mem.u64b(w1_0))), BigInt.asUintN(64, (y_3 + X60Qx_1291)), w0_0, w1_0);
+  nimWeak32At_0_semiw27pt1(s_8, ((o_4 + 32) | 0), BigInt.asUintN(64, (BigInt(z_3) + BigInt(mem.u64b(w1_0)))), BigInt.asUintN(64, (BigInt(y_3) + BigInt(X60Qx_1291))), w0_0, w1_0);
   var t2_0 = z_3;
   var X60Qx_1292 = (!false);
   if ((!true)) {
   }
   z_3 = x_1;
   x_1 = t2_0;
-  var X60Qx_1293 = nimLen16_0_semiw27pt1(mem.u64b(v0_0), mem.u64b(w0_0), mul_5);
-  var X60Qx_1294 = nimShiftMix_0_semiw27pt1(y_3);
-  var X60Qx_1295 = nimLen16_0_semiw27pt1(mem.u64b(v1_0), mem.u64b(w1_0), mul_5);
-  var X60Qx_1296 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (X60Qx_1293 + BigInt.asUintN(64, (X60Qx_1294 * 14097894508562428199n)))) + z_3)), BigInt.asUintN(64, (X60Qx_1295 + x_1)), mul_5);
+  var X60Qx_1293 = nimLen16_0_semiw27pt1(BigInt(mem.u64b(v0_0)), BigInt(mem.u64b(w0_0)), BigInt(mul_5));
+  var X60Qx_1294 = nimShiftMix_0_semiw27pt1(BigInt(y_3));
+  var X60Qx_1295 = nimLen16_0_semiw27pt1(BigInt(mem.u64b(v1_0)), BigInt(mem.u64b(w1_0)), BigInt(mul_5));
+  var X60Qx_1296 = nimLen16_0_semiw27pt1(BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(X60Qx_1293) + BigInt.asUintN(64, (BigInt(X60Qx_1294) * 14097894508562428199n)))) + BigInt(z_3))), BigInt.asUintN(64, (BigInt(X60Qx_1295) + BigInt(x_1))), BigInt(mul_5));
   result_11 = X60Qx_1296;
   return result_11;
 }
@@ -29367,7 +29447,7 @@ function nimStringHashCode_0_semiw27pt1(s_9) {
   }
   let X60Qx_1298 = nimFarmHash_0_semiw27pt1(s_9);
   result_12 = X60Qx_1298;
-  if ((result_12 === 0n)) {
+  if ((BigInt(result_12) === 0n)) {
     result_12 = 314159265;
   }
   return result_12;
@@ -29434,7 +29514,7 @@ function nimTableSlots_0_semiw27pt1(keys_0) {
                       var X60Qii_4 = allocFixed(4);
                       mem.setU32(X60Qii_4, getQ_10_Ik9hgkq1_osalirkw71(X60Qlf_3, mem.i32(X60Qlf_4)));
                       var X60Qx_1304 = nimStringHashCode_0_semiw27pt1(mem.u32(X60Qii_4));
-                      add_0_I388oob1_semiw27pt1(hashes_0, X60Qx_1304);
+                      add_0_I388oob1_semiw27pt1(hashes_0, BigInt(X60Qx_1304));
                     }
                     inc_1_I6wjjge_cmdqs323n1(X60Qlf_4);
                   } else {
@@ -29555,7 +29635,7 @@ function nimTableSlots_0_semiw27pt1(keys_0) {
                       var X60Qii_16 = allocFixed(8);
                       mem.setU64(X60Qii_16, mem.u64b(X60Qx_1317));
                       var X60Qii_17 = allocFixed(4);
-                      mem.setI32(X60Qii_17, Number(BigInt.asIntN(32, (mem.u64b(X60Qii_16) & BigInt(((cap_0 - 1) | 0))))));
+                      mem.setI32(X60Qii_17, Number(BigInt.asIntN(32, (BigInt(mem.u64b(X60Qii_16)) & BigInt(((cap_0 - 1) | 0))))));
                       var X60Qii_18 = allocFixed(4);
                       mem.setI32(X60Qii_18, -1);
                       while (true) {
@@ -29564,7 +29644,7 @@ function nimTableSlots_0_semiw27pt1(keys_0) {
                           var X60Qx_1319;
                           var X60Qx_1320;
                           var X60Qx_1321 = getQ_7_Ifaxado1_semiw27pt1(slotHash_0, mem.i32(X60Qii_17));
-                          if ((mem.u64b(X60Qx_1321) === mem.u64b(X60Qii_16))) {
+                          if ((mem.u64b(X60Qx_1321) === BigInt(mem.u64b(X60Qii_16)))) {
                             var X60Qx_1322 = getQ_7_Ir8kccm_nif0bno621(slotKey_0, mem.i32(X60Qii_17));
                             X60Qx_1320 = (0 <= mem.i32(X60Qx_1322));
                           } else {
@@ -29594,7 +29674,7 @@ function nimTableSlots_0_semiw27pt1(keys_0) {
                       if ((0 <= mem.i32(X60Qii_18))) {
                         break continueLabel_7;
                       }
-                      putQ_7_Iv21cr9_semiw27pt1(slotHash_0, mem.i32(X60Qii_17), mem.u64b(X60Qii_16));
+                      putQ_7_Iv21cr9_semiw27pt1(slotHash_0, mem.i32(X60Qii_17), BigInt(mem.u64b(X60Qii_16)));
                       putQ_7_Ifvyck5_semiw27pt1(slotKey_0, mem.i32(X60Qii_17), mem.i32(X60Qlf_7));
                       counter_0 = ((counter_0 + 1) | 0);
                     }
@@ -30626,7 +30706,7 @@ function tokenSpan_0_semiw27pt1(cur_9) {
       {
         let X60Qx_1390 = intVal_0_nif0bno621(cur_9);
         let X60Qtmp_14 = allocFixed(8);
-        mem.copy(X60Qtmp_14, dollarQ_1_sysvq0asl(X60Qx_1390), 8);
+        mem.copy(X60Qtmp_14, dollarQ_1_sysvq0asl(BigInt(X60Qx_1390)), 8);
         let X60Qx_1391 = len_4_sysvq0asl(X60Qtmp_14);
         X60Qx_9 = X60Qx_1391;
         nimStrDestroy(X60Qtmp_14);
@@ -33645,8 +33725,8 @@ function ctfeHashOf_0_semiw27pt1(content_0) {
             while ((mem.i32(X60Qlf_102) < X60Qlf_101)) {
               {
                 var X60Qx_1694 = getQ_9_sysvq0asl(content_0, mem.i32(X60Qlf_102));
-                h_5 = (h_5 ^ BigInt((X60Qx_1694 & 255)));
-                h_5 = BigInt.asUintN(64, (h_5 * 1099511628211n));
+                h_5 = (BigInt(h_5) ^ BigInt((X60Qx_1694 & 255)));
+                h_5 = BigInt.asUintN(64, (BigInt(h_5) * 1099511628211n));
               }
               inc_1_I6wjjge_cmdqs323n1(X60Qlf_102);
             }
@@ -33675,7 +33755,7 @@ function ctfeHashOf_0_semiw27pt1(content_0) {
           mem.setU32(_o, 842084606);
           mem.setU32((_o + 4), strlit_0_I6105018409752412263_diak37ukf);
           return _o;
-        })(), Number(BigInt.asIntN(32, ((h_5 >> BigInt(i_25)) & 15n))));
+        })(), Number(BigInt.asIntN(32, ((BigInt(h_5) >> BigInt(i_25)) & 15n))));
         add_1_sysvq0asl(result_38, X60Qx_1696);
         i_25 = ((i_25 - 4) | 0);
       }
@@ -42186,7 +42266,7 @@ function ceEvalInt_0_semiw27pt1(c_44, valueCur_5, constName_5, res_3, force_2) {
           if ((!true)) {
           }
           var X60Qx_2546 = getQ_9_sysvq0asl(t_56, mem.i32(i_84));
-          v_7 = BigInt.asIntN(64, (BigInt.asIntN(64, (v_7 * 10n)) + BigInt(((X60Qx_2546 - 48) | 0))));
+          v_7 = BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(v_7) * 10n)) + BigInt(((X60Qx_2546 - 48) | 0))));
           inc_1_I6wjjge_cmdqs323n1(i_84);
         } else {
           break;
@@ -42196,7 +42276,7 @@ function ceEvalInt_0_semiw27pt1(c_44, valueCur_5, constName_5, res_3, force_2) {
   }
   var X60Qx_20;
   if (neg_0) {
-    X60Qx_20 = BigInt.asIntN(64, (-v_7));
+    X60Qx_20 = BigInt.asIntN(64, (-BigInt(v_7)));
   } else {
     X60Qx_20 = v_7;
   }
@@ -42275,7 +42355,7 @@ function ceEvalIntArray_0_semiw27pt1(c_45, valueCur_6, constName_6, count_2, res
         }
         if (X60Qx_2554) {
           var X60Qx_2556 = intVal_0_nif0bno621(m_16);
-          add_0_I8fahwb_semiw27pt1(res_4, X60Qx_2556);
+          add_0_I8fahwb_semiw27pt1(res_4, BigInt(X60Qx_2556));
           var X60Qx_2557 = (!false);
           if ((!true)) {
           }
@@ -42359,7 +42439,7 @@ function ceEvalIntSeq_0_semiw27pt1(c_46, valueCur_7, constName_7, res_5) {
           break whileStmtLabel_0;
         }
         var X60Qx_2567 = intVal_0_nif0bno621(m_17);
-        add_0_I8fahwb_semiw27pt1(res_5, X60Qx_2567);
+        add_0_I8fahwb_semiw27pt1(res_5, BigInt(X60Qx_2567));
         skip_0_nif0bno621(m_17);
       }
     }
@@ -42442,7 +42522,7 @@ function ceEvalIntObject_0_semiw27pt1(c_47, valueCur_8, constName_8, fields_2, r
         }
         if (X60Qx_2578) {
           var X60Qx_2580 = intVal_0_nif0bno621(m_18);
-          add_0_I8fahwb_semiw27pt1(res_6, X60Qx_2580);
+          add_0_I8fahwb_semiw27pt1(res_6, BigInt(X60Qx_2580));
           skip_0_nif0bno621(m_18);
         } else {
           break;
@@ -49929,7 +50009,7 @@ function emitType_0_semiw27pt1(dest_6, tc_0, t_12) {
         } else {
           X60Qx_40 = mem.i32((t_12 + 16));
         }
-        addIntLit_0_nif0bno621(dest_6, X60Qx_40);
+        addIntLit_0_nif0bno621(dest_6, BigInt(X60Qx_40));
         var X60Qx_3447 = len_4_sysvq0asl((t_12 + 4));
         if ((0 < X60Qx_3447)) {
           var X60Qx_3448 = registerTag_0_nif0bno621(mem.u32((dest_6 + 28)), (() => {
@@ -54463,7 +54543,7 @@ function typeOfExpr_0_semiw27pt1(c_97, cur_40) {
         var X60Qx_4030 = kind_1_nif0bno621(m_41);
         if ((X60Qx_4030 === 3)) {
           var X60Qx_4031 = intVal_0_nif0bno621(m_41);
-          n_23 = Number(BigInt.asIntN(32, X60Qx_4031));
+          n_23 = Number(BigInt.asIntN(32, BigInt(X60Qx_4031)));
         } else {
           var X60Qx_639;
           var X60Qx_4032 = kind_1_nif0bno621(m_41);
@@ -54483,7 +54563,7 @@ function typeOfExpr_0_semiw27pt1(c_97, cur_40) {
             var X60Qtmp_262 = allocFixed(8);
             mem.copy(X60Qtmp_262, symName_1_nif0bno621(m_41), 8);
             var X60Qx_4035 = getOrDefault_0_Iskl9a7_semiw27pt1((c_97 + 1604), X60Qtmp_262);
-            n_23 = Number(BigInt.asIntN(32, X60Qx_4035));
+            n_23 = Number(BigInt.asIntN(32, BigInt(X60Qx_4035)));
             nimStrDestroy(X60Qtmp_262);
           } else {
             var X60Qx_4036 = kind_1_nif0bno621(m_41);
@@ -54502,7 +54582,7 @@ function typeOfExpr_0_semiw27pt1(c_97, cur_40) {
               }
               if (X60Qx_4037) {
                 var X60Qx_4040 = getOrDefault_0_Iskl9a7_semiw27pt1((c_97 + 1604), s_95);
-                n_23 = Number(BigInt.asIntN(32, X60Qx_4040));
+                n_23 = Number(BigInt.asIntN(32, BigInt(X60Qx_4040)));
               } else {
                 if (mem.u8At((s_95 + 65))) {
                   eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idx_12);
@@ -54643,16 +54723,16 @@ function typeOfExpr_0_semiw27pt1(c_97, cur_40) {
                   X60Qx_4059 = false;
                 }
                 if (X60Qx_4059) {
-                  X60Qx_4058 = (mem.i64b(loV_1) <= mem.i64b(hiV_1));
+                  X60Qx_4058 = (BigInt(mem.i64b(loV_1)) <= BigInt(mem.i64b(hiV_1)));
                 } else {
                   X60Qx_4058 = false;
                 }
                 if (X60Qx_4058) {
-                  n_23 = Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (mem.i64b(hiV_1) - mem.i64b(loV_1))) + 1n))));
+                  n_23 = Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(mem.i64b(hiV_1)) - BigInt(mem.i64b(loV_1)))) + 1n))));
                   var X60Qx_4062 = (!false);
                   if ((!true)) {
                   }
-                  loBound_0 = Number(BigInt.asIntN(32, mem.i64b(loV_1)));
+                  loBound_0 = Number(BigInt.asIntN(32, BigInt(mem.i64b(loV_1))));
                 }
                 nimStrDestroy(op_3);
                 eQdestroy_0_nif0bno621(dm_1);
@@ -57612,7 +57692,7 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                 return _o;
               })());
               if (X60Qx_4444) {
-                mem.setI64(res_8, BigInt.asIntN(64, (mem.i64b(a_29) + mem.i64b(b_29))));
+                mem.setI64(res_8, BigInt.asIntN(64, (BigInt(mem.i64b(a_29)) + BigInt(mem.i64b(b_29)))));
                 result_180 = true;
               } else {
                 var X60Qx_4445 = eqQ_20_sysvq0asl(op_5, (() => {
@@ -57625,7 +57705,7 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                   var X60Qx_4446 = (!false);
                   if ((!true)) {
                   }
-                  mem.setI64(res_8, BigInt.asIntN(64, (mem.i64b(a_29) - mem.i64b(b_29))));
+                  mem.setI64(res_8, BigInt.asIntN(64, (BigInt(mem.i64b(a_29)) - BigInt(mem.i64b(b_29)))));
                   result_180 = true;
                 } else {
                   var X60Qx_4447 = eqQ_20_sysvq0asl(op_5, (() => {
@@ -57635,7 +57715,7 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                     return _o;
                   })());
                   if (X60Qx_4447) {
-                    mem.setI64(res_8, BigInt.asIntN(64, (mem.i64b(a_29) * mem.i64b(b_29))));
+                    mem.setI64(res_8, BigInt.asIntN(64, (BigInt(mem.i64b(a_29)) * BigInt(mem.i64b(b_29)))));
                     var X60Qx_4448 = (!false);
                     if ((!true)) {
                     }
@@ -57649,12 +57729,12 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                       return _o;
                     })());
                     if (X60Qx_4450) {
-                      X60Qx_4449 = (!(mem.i64b(b_29) === 0n));
+                      X60Qx_4449 = (!(BigInt(mem.i64b(b_29)) === 0n));
                     } else {
                       X60Qx_4449 = false;
                     }
                     if (X60Qx_4449) {
-                      mem.setI64(res_8, (mem.i64b(a_29) / mem.i64b(b_29)));
+                      mem.setI64(res_8, (BigInt(mem.i64b(a_29)) / BigInt(mem.i64b(b_29))));
                       result_180 = true;
                     } else {
                       var X60Qx_4451;
@@ -57665,7 +57745,7 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                         return _o;
                       })());
                       if (X60Qx_4452) {
-                        X60Qx_4451 = (!(mem.i64b(b_29) === 0n));
+                        X60Qx_4451 = (!(BigInt(mem.i64b(b_29)) === 0n));
                       } else {
                         X60Qx_4451 = false;
                       }
@@ -57673,7 +57753,7 @@ function foldRawArrayDim_0_semiw27pt1(c_109, cur_43, res_8) {
                         var X60Qx_4453 = (!false);
                         if ((!true)) {
                         }
-                        mem.setI64(res_8, (mem.i64b(a_29) % mem.i64b(b_29)));
+                        mem.setI64(res_8, (BigInt(mem.i64b(a_29)) % BigInt(mem.i64b(b_29))));
                         result_180 = true;
                       }
                     }
@@ -57989,7 +58069,7 @@ function procTypeStructKey_0_semiw27pt1(c_111, cur_44) {
         nimStrDestroy(result_182);
         var X60Qx_4491 = intVal_0_nif0bno621(cur_44);
         var X60Qtmp_310 = allocFixed(8);
-        mem.copy(X60Qtmp_310, dollarQ_1_sysvq0asl(X60Qx_4491), 8);
+        mem.copy(X60Qtmp_310, dollarQ_1_sysvq0asl(BigInt(X60Qx_4491)), 8);
         var X60Qx_4492 = allocFixed(8);
         mem.copy(X60Qx_4492, ampQ_0_sysvq0asl((() => {
           var _o = allocFixed(8);
@@ -58006,7 +58086,7 @@ function procTypeStructKey_0_semiw27pt1(c_111, cur_44) {
         nimStrDestroy(result_182);
         var X60Qx_4493 = uintVal_0_nif0bno621(cur_44);
         var X60Qtmp_311 = allocFixed(8);
-        mem.copy(X60Qtmp_311, dollarQ_0_sysvq0asl(X60Qx_4493), 8);
+        mem.copy(X60Qtmp_311, dollarQ_0_sysvq0asl(BigInt(X60Qx_4493)), 8);
         var X60Qx_4494 = allocFixed(8);
         mem.copy(X60Qx_4494, ampQ_0_sysvq0asl((() => {
           var _o = allocFixed(8);
@@ -61541,9 +61621,9 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
               }
               emitType_0_semiw27pt1(dest_12, c_112, X60Qx_58);
               var X60Qx_4950 = intVal_0_nif0bno621(loC_0);
-              addIntLit_0_nif0bno621(dest_12, X60Qx_4950);
+              addIntLit_0_nif0bno621(dest_12, BigInt(X60Qx_4950));
               var X60Qx_4951 = intVal_0_nif0bno621(hiC_0);
-              addIntLit_0_nif0bno621(dest_12, X60Qx_4951);
+              addIntLit_0_nif0bno621(dest_12, BigInt(X60Qx_4951));
               var X60Qx_4952 = (!false);
               if ((!true)) {
               }
@@ -61888,7 +61968,7 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                         X60Qx_4988 = false;
                       }
                       if (X60Qx_4988) {
-                        X60Qx_4987 = (mem.i64b(loV_2) <= mem.i64b(hiV_2));
+                        X60Qx_4987 = (BigInt(mem.i64b(loV_2)) <= BigInt(mem.i64b(hiV_2)));
                       } else {
                         X60Qx_4987 = false;
                       }
@@ -61905,17 +61985,17 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                         openTag_0_nif0bno621(dest_12, mem.u32((c_112 + 20)));
                         addIntLit_0_nif0bno621(dest_12, 64n);
                         closeTag_0_nif0bno621(dest_12);
-                        addIntLit_0_nif0bno621(dest_12, mem.i64b(loV_2));
+                        addIntLit_0_nif0bno621(dest_12, BigInt(mem.i64b(loV_2)));
                         var X60Qx_4993 = (!false);
                         if ((!true)) {
                         }
-                        addIntLit_0_nif0bno621(dest_12, mem.i64b(hiV_2));
+                        addIntLit_0_nif0bno621(dest_12, BigInt(mem.i64b(hiV_2)));
                         closeTag_0_nif0bno621(dest_12);
                         closeTag_0_nif0bno621(dest_12);
                         var X60Qtmp_371 = allocFixed(56);
                         mem.copy(X60Qtmp_371, typeOfExpr_0_semiw27pt1(c_112, elemC_1), 56);
                         var X60Qx_4994 = allocFixed(56);
-                        mem.copy(X60Qx_4994, arrType_0_semiw27pt1(X60Qtmp_371, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (mem.i64b(hiV_2) - mem.i64b(loV_2))) + 1n)))), Number(BigInt.asIntN(32, mem.i64b(loV_2)))), 56);
+                        mem.copy(X60Qx_4994, arrType_0_semiw27pt1(X60Qtmp_371, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(mem.i64b(hiV_2)) - BigInt(mem.i64b(loV_2)))) + 1n)))), Number(BigInt.asIntN(32, BigInt(mem.i64b(loV_2))))), 56);
                         mem.copy(result_183, X60Qx_4994, 56);
                         eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_371);
                         eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_370);
@@ -61942,7 +62022,7 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                     var X60Qx_4996;
                     var X60Qx_4997 = foldRawArrayDim_0_semiw27pt1(c_112, dimC_1, n_28);
                     if (X60Qx_4997) {
-                      X60Qx_4996 = (0n < mem.i64b(n_28));
+                      X60Qx_4996 = (0n < BigInt(mem.i64b(n_28)));
                     } else {
                       X60Qx_4996 = false;
                     }
@@ -61963,13 +62043,13 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                       if ((!true)) {
                       }
                       addIntLit_0_nif0bno621(dest_12, 0n);
-                      addIntLit_0_nif0bno621(dest_12, BigInt.asIntN(64, (mem.i64b(n_28) - 1n)));
+                      addIntLit_0_nif0bno621(dest_12, BigInt.asIntN(64, (BigInt(mem.i64b(n_28)) - 1n)));
                       closeTag_0_nif0bno621(dest_12);
                       closeTag_0_nif0bno621(dest_12);
                       var X60Qtmp_373 = allocFixed(56);
                       mem.copy(X60Qtmp_373, typeOfExpr_0_semiw27pt1(c_112, elemC_1), 56);
                       var X60Qx_5001 = allocFixed(56);
-                      mem.copy(X60Qx_5001, arrType_0_semiw27pt1(X60Qtmp_373, Number(BigInt.asIntN(32, mem.i64b(n_28))), 0), 56);
+                      mem.copy(X60Qx_5001, arrType_0_semiw27pt1(X60Qtmp_373, Number(BigInt.asIntN(32, BigInt(mem.i64b(n_28)))), 0), 56);
                       mem.copy(result_183, X60Qx_5001, 56);
                       eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_373);
                       eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_372);
@@ -62028,7 +62108,7 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                   }
                   break evalDim_0;
                 }
-                if ((mem.i64b(n_29) <= 0n)) {
+                if ((BigInt(mem.i64b(n_29)) <= 0n)) {
                   break evalDim_0;
                 }
                 openTag_0_nif0bno621(dest_12, mem.u32((c_112 + 276)));
@@ -62047,13 +62127,13 @@ function semType_1_semiw27pt1(c_112, dest_12, cur_45) {
                 }
                 closeTag_0_nif0bno621(dest_12);
                 addIntLit_0_nif0bno621(dest_12, 0n);
-                addIntLit_0_nif0bno621(dest_12, BigInt.asIntN(64, (mem.i64b(n_29) - 1n)));
+                addIntLit_0_nif0bno621(dest_12, BigInt.asIntN(64, (BigInt(mem.i64b(n_29)) - 1n)));
                 closeTag_0_nif0bno621(dest_12);
                 closeTag_0_nif0bno621(dest_12);
                 var X60Qtmp_375 = allocFixed(56);
                 mem.copy(X60Qtmp_375, typeOfExpr_0_semiw27pt1(c_112, elemC_1), 56);
                 var X60Qx_5013 = allocFixed(56);
-                mem.copy(X60Qx_5013, arrType_0_semiw27pt1(X60Qtmp_375, Number(BigInt.asIntN(32, mem.i64b(n_29))), 0), 56);
+                mem.copy(X60Qx_5013, arrType_0_semiw27pt1(X60Qtmp_375, Number(BigInt.asIntN(32, BigInt(mem.i64b(n_29)))), 0), 56);
                 mem.copy(result_183, X60Qx_5013, 56);
                 eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_375);
                 eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(X60Qtmp_374);
@@ -63989,7 +64069,7 @@ function typeOfResolved_0_semiw27pt1(c_113, cur_46) {
             var X60Qx_5242 = kind_1_nif0bno621(m_58);
             if ((X60Qx_5242 === 3)) {
               var X60Qx_5243 = intVal_0_nif0bno621(m_58);
-              bits_9 = Number(BigInt.asIntN(32, X60Qx_5243));
+              bits_9 = Number(BigInt.asIntN(32, BigInt(X60Qx_5243)));
             }
             skip_0_nif0bno621(m_58);
             var X60Qx_5244 = (!false);
@@ -64143,7 +64223,7 @@ function typeOfResolved_0_semiw27pt1(c_113, cur_46) {
             var X60Qx_5268 = kind_1_nif0bno621(m_59);
             if ((X60Qx_5268 === 3)) {
               var X60Qx_5269 = intVal_0_nif0bno621(m_59);
-              bits_10 = Number(BigInt.asIntN(32, X60Qx_5269));
+              bits_10 = Number(BigInt.asIntN(32, BigInt(X60Qx_5269)));
             }
             skip_0_nif0bno621(m_59);
             {
@@ -65054,7 +65134,7 @@ function typeOfResolved_0_semiw27pt1(c_113, cur_46) {
           leaveScope_0_nif0bno621(m_69, cursorScope_202);
           var X60Qx_5392;
           if (haveBounds_0) {
-            X60Qx_5392 = (lo_5 <= hi_1);
+            X60Qx_5392 = (BigInt(lo_5) <= BigInt(hi_1));
           } else {
             X60Qx_5392 = false;
           }
@@ -65067,7 +65147,7 @@ function typeOfResolved_0_semiw27pt1(c_113, cur_46) {
             }
             if (X60Qx_5393) {
               var X60Qx_5394 = allocFixed(56);
-              mem.copy(X60Qx_5394, arrTypeIndexed_0_semiw27pt1(el_1, idxBase_0, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (hi_1 - lo_5)) + 1n)))), Number(BigInt.asIntN(32, lo_5))), 56);
+              mem.copy(X60Qx_5394, arrTypeIndexed_0_semiw27pt1(el_1, idxBase_0, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(hi_1) - BigInt(lo_5))) + 1n)))), Number(BigInt.asIntN(32, BigInt(lo_5)))), 56);
               mem.copy(result_184, X60Qx_5394, 56);
               eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idxBase_0);
               eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idx_19);
@@ -65079,7 +65159,7 @@ function typeOfResolved_0_semiw27pt1(c_113, cur_46) {
             if ((!true)) {
             }
             var X60Qx_5396 = allocFixed(56);
-            mem.copy(X60Qx_5396, arrType_0_semiw27pt1(el_1, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (hi_1 - lo_5)) + 1n)))), Number(BigInt.asIntN(32, lo_5))), 56);
+            mem.copy(X60Qx_5396, arrType_0_semiw27pt1(el_1, Number(BigInt.asIntN(32, BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(hi_1) - BigInt(lo_5))) + 1n)))), Number(BigInt.asIntN(32, BigInt(lo_5)))), 56);
             mem.copy(result_184, X60Qx_5396, 56);
             eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idxBase_0);
             eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idx_19);
@@ -67086,25 +67166,25 @@ function evalCond_0_semiw27pt1(c_116, cur_49, value_0) {
                           }
                           break X60Qsc_189;
                         }
-                        mem.setU8(value_0, (mem.i64b(a_39) < mem.i64b(b_31)));
+                        mem.setU8(value_0, (BigInt(mem.i64b(a_39)) < BigInt(mem.i64b(b_31))));
                         break X60Qsc_188;
                       }
-                      mem.setU8(value_0, (mem.i64b(b_31) < mem.i64b(a_39)));
+                      mem.setU8(value_0, (BigInt(mem.i64b(b_31)) < BigInt(mem.i64b(a_39))));
                       break X60Qsc_188;
                     }
-                    mem.setU8(value_0, (mem.i64b(a_39) <= mem.i64b(b_31)));
+                    mem.setU8(value_0, (BigInt(mem.i64b(a_39)) <= BigInt(mem.i64b(b_31))));
                     break X60Qsc_188;
                   }
-                  mem.setU8(value_0, (mem.i64b(b_31) <= mem.i64b(a_39)));
+                  mem.setU8(value_0, (BigInt(mem.i64b(b_31)) <= BigInt(mem.i64b(a_39))));
                   break X60Qsc_188;
                 }
                 var X60Qx_5636 = (!false);
                 if ((!true)) {
                 }
-                mem.setU8(value_0, (mem.i64b(a_39) === mem.i64b(b_31)));
+                mem.setU8(value_0, (BigInt(mem.i64b(a_39)) === BigInt(mem.i64b(b_31))));
                 break X60Qsc_188;
               }
-              mem.setU8(value_0, (!(mem.i64b(a_39) === mem.i64b(b_31))));
+              mem.setU8(value_0, (!(BigInt(mem.i64b(a_39)) === BigInt(mem.i64b(b_31)))));
             }
             known_0 = true;
           }
@@ -69586,7 +69666,7 @@ function ordOfLit_0_semiw27pt1(cur_57, isChar_0, ok_0) {
     let X60Qx_5926 = kind_1_nif0bno621(cur_57);
     if ((X60Qx_5926 === 3)) {
       let X60Qx_5927 = intVal_0_nif0bno621(cur_57);
-      result_202 = Number(BigInt.asIntN(32, X60Qx_5927));
+      result_202 = Number(BigInt.asIntN(32, BigInt(X60Qx_5927)));
     } else {
       mem.setU8(ok_0, false);
       result_202 = -1;
@@ -71320,7 +71400,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                           }
                           if (X60Qx_6172) {
                             var X60Qx_6178 = intVal_0_nif0bno621(rc_1);
-                            X60Qx_6171 = (X60Qx_6178 === 0n);
+                            X60Qx_6171 = (BigInt(X60Qx_6178) === 0n);
                           } else {
                             X60Qx_6171 = false;
                           }
@@ -72184,7 +72264,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                               var X60Qx_6311 = kind_1_nif0bno621(lc_1);
                               if ((X60Qx_6311 === 3)) {
                                 var X60Qx_6312 = intVal_0_nif0bno621(lc_1);
-                                X60Qx_6310 = (X60Qx_6312 === 0n);
+                                X60Qx_6310 = (BigInt(X60Qx_6312) === 0n);
                               } else {
                                 X60Qx_6310 = false;
                               }
@@ -72195,7 +72275,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                 var X60Qx_6314 = kind_1_nif0bno621(rc_1);
                                 if ((X60Qx_6314 === 3)) {
                                   var X60Qx_6315 = intVal_0_nif0bno621(rc_1);
-                                  X60Qx_6313 = (X60Qx_6315 === 0n);
+                                  X60Qx_6313 = (BigInt(X60Qx_6315) === 0n);
                                 } else {
                                   X60Qx_6313 = false;
                                 }
@@ -72233,7 +72313,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                               }
                               if (X60Qx_6318) {
                                 var X60Qx_6321 = intVal_0_nif0bno621(rc_1);
-                                X60Qx_6317 = (X60Qx_6321 === 1n);
+                                X60Qx_6317 = (BigInt(X60Qx_6321) === 1n);
                               } else {
                                 X60Qx_6317 = false;
                               }
@@ -72262,7 +72342,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                 }
                                 if (X60Qx_6323) {
                                   var X60Qx_6326 = intVal_0_nif0bno621(rc_1);
-                                  X60Qx_6322 = (X60Qx_6326 === 1n);
+                                  X60Qx_6322 = (BigInt(X60Qx_6326) === 1n);
                                 } else {
                                   X60Qx_6322 = false;
                                 }
@@ -72288,7 +72368,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                     var X60Qx_6331 = kind_1_nif0bno621(lc_1);
                                     if ((X60Qx_6331 === 3)) {
                                       var X60Qx_6332 = intVal_0_nif0bno621(lc_1);
-                                      X60Qx_6330 = (X60Qx_6332 === 0n);
+                                      X60Qx_6330 = (BigInt(X60Qx_6332) === 0n);
                                     } else {
                                       X60Qx_6330 = false;
                                     }
@@ -72299,7 +72379,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                       var X60Qx_6334 = kind_1_nif0bno621(rc_1);
                                       if ((X60Qx_6334 === 3)) {
                                         var X60Qx_6335 = intVal_0_nif0bno621(rc_1);
-                                        X60Qx_6333 = (X60Qx_6335 === 0n);
+                                        X60Qx_6333 = (BigInt(X60Qx_6335) === 0n);
                                       } else {
                                         X60Qx_6333 = false;
                                       }
@@ -72374,7 +72454,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                           X60Qx_6341 = X60Qx_6343;
                         }
                         if (X60Qx_6341) {
-                          X60Qx_6340 = (rv_3 === 0n);
+                          X60Qx_6340 = (BigInt(rv_3) === 0n);
                         } else {
                           X60Qx_6340 = false;
                         }
@@ -72432,7 +72512,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                             X60Qx_6348 = X60Qx_6350;
                           }
                           if (X60Qx_6348) {
-                            X60Qx_6347 = (rv_3 === 1n);
+                            X60Qx_6347 = (BigInt(rv_3) === 1n);
                           } else {
                             X60Qx_6347 = false;
                           }
@@ -72559,7 +72639,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                     var X60Qx_6364 = kind_1_nif0bno621(lc_1);
                     if ((X60Qx_6364 === 3)) {
                       var X60Qx_6365 = intVal_0_nif0bno621(lc_1);
-                      X60Qx_6363 = (X60Qx_6365 === 0n);
+                      X60Qx_6363 = (BigInt(X60Qx_6365) === 0n);
                     } else {
                       X60Qx_6363 = false;
                     }
@@ -72568,7 +72648,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                     var X60Qx_6367 = kind_1_nif0bno621(rc_1);
                     if ((X60Qx_6367 === 3)) {
                       var X60Qx_6368 = intVal_0_nif0bno621(rc_1);
-                      X60Qx_6366 = (X60Qx_6368 === 0n);
+                      X60Qx_6366 = (BigInt(X60Qx_6368) === 0n);
                     } else {
                       X60Qx_6366 = false;
                     }
@@ -72883,7 +72963,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                       var hasHi_1 = mem.u8At((X60Qtmptup_9 + 24));
                       var X60Qx_6403;
                       if (checkable_1) {
-                        X60Qx_6403 = (k_74 < lo_11);
+                        X60Qx_6403 = (BigInt(k_74) < BigInt(lo_11));
                       } else {
                         X60Qx_6403 = false;
                       }
@@ -72896,7 +72976,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                         X60Qx_6405 = false;
                       }
                       if (X60Qx_6405) {
-                        X60Qx_6404 = (hi_7 < k_74);
+                        X60Qx_6404 = (BigInt(hi_7) < BigInt(k_74));
                       } else {
                         X60Qx_6404 = false;
                       }
@@ -73106,7 +73186,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                         var X60Qx_6421 = len_4_sysvq0asl(verdict_6);
                         if ((0 < X60Qx_6421)) {
                           var X60Qdesugar_254 = allocFixed(8);
-                          mem.copy(X60Qdesugar_254, dollarQ_1_sysvq0asl(k_74), 8);
+                          mem.copy(X60Qdesugar_254, dollarQ_1_sysvq0asl(BigInt(k_74)), 8);
                           var X60Qdesugar_255 = allocFixed(8);
                           mem.copy(X60Qdesugar_255, sizedIntName_0_semiw27pt1(vt_3), 8);
                           var X60Qx_6422 = len_4_sysvq0asl((() => {
@@ -73168,13 +73248,13 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                           var X60Qdesugar_257 = allocFixed(8);
                           mem.copy(X60Qdesugar_257, sizedIntName_0_semiw27pt1(vt_3), 8);
                           var X60Qdesugar_258 = allocFixed(8);
-                          mem.copy(X60Qdesugar_258, dollarQ_1_sysvq0asl(lo_11), 8);
+                          mem.copy(X60Qdesugar_258, dollarQ_1_sysvq0asl(BigInt(lo_11)), 8);
                           var X60Qx_91 = allocFixed(8);
                           nimStrWasMoved(X60Qx_91);
                           if (hasHi_1) {
                             nimStrDestroy(X60Qx_91);
                             var X60Qx_6429 = allocFixed(8);
-                            mem.copy(X60Qx_6429, dollarQ_1_sysvq0asl(hi_7), 8);
+                            mem.copy(X60Qx_6429, dollarQ_1_sysvq0asl(BigInt(hi_7)), 8);
                             mem.copy(X60Qx_91, X60Qx_6429, 8);
                           } else {
                             nimStrDestroy(X60Qx_91);
@@ -73386,8 +73466,8 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                   if ((!true)) {
                   }
                   if (have_5) {
-                    var lo_12 = BigInt.asIntN(64, (-BigInt.asIntN(64, (mem.i64b(n_35) - 1n))));
-                    var hi_8 = BigInt.asIntN(64, (mem.i64b(n_35) - 1n));
+                    var lo_12 = BigInt.asIntN(64, (-BigInt.asIntN(64, (BigInt(mem.i64b(n_35)) - 1n))));
+                    var hi_8 = BigInt.asIntN(64, (BigInt(mem.i64b(n_35)) - 1n));
                     var o_8 = allocFixed(8);
                     mem.copy(o_8, nimStrDup(op_18), 8);
                     if ((!modLeft_1)) {
@@ -73472,10 +73552,10 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                       if ((!true)) {
                       }
                       var X60Qx_6480;
-                      if ((k_75 < lo_12)) {
+                      if ((BigInt(k_75) < BigInt(lo_12))) {
                         X60Qx_6480 = true;
                       } else {
-                        X60Qx_6480 = (hi_8 < k_75);
+                        X60Qx_6480 = (BigInt(hi_8) < BigInt(k_75));
                       }
                       if (X60Qx_6480) {
                         nimStrDestroy(verdict_7);
@@ -73495,10 +73575,10 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                       })());
                       if (X60Qx_6481) {
                         var X60Qx_6482;
-                        if ((k_75 < lo_12)) {
+                        if ((BigInt(k_75) < BigInt(lo_12))) {
                           X60Qx_6482 = true;
                         } else {
-                          X60Qx_6482 = (hi_8 < k_75);
+                          X60Qx_6482 = (BigInt(hi_8) < BigInt(k_75));
                         }
                         if (X60Qx_6482) {
                           nimStrDestroy(verdict_7);
@@ -73517,7 +73597,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                           return _o;
                         })());
                         if (X60Qx_6483) {
-                          if ((hi_8 < k_75)) {
+                          if ((BigInt(hi_8) < BigInt(k_75))) {
                             nimStrDestroy(verdict_7);
                             mem.copy(verdict_7, (() => {
                               var _o = allocFixed(8);
@@ -73526,7 +73606,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                               return _o;
                             })(), 8);
                           } else {
-                            if ((k_75 <= lo_12)) {
+                            if ((BigInt(k_75) <= BigInt(lo_12))) {
                               var X60Qx_6484 = (!false);
                               if ((!true)) {
                               }
@@ -73547,7 +73627,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                             return _o;
                           })());
                           if (X60Qx_6485) {
-                            if ((hi_8 <= k_75)) {
+                            if ((BigInt(hi_8) <= BigInt(k_75))) {
                               nimStrDestroy(verdict_7);
                               mem.copy(verdict_7, (() => {
                                 var _o = allocFixed(8);
@@ -73556,7 +73636,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                 return _o;
                               })(), 8);
                             } else {
-                              if ((k_75 < lo_12)) {
+                              if ((BigInt(k_75) < BigInt(lo_12))) {
                                 nimStrDestroy(verdict_7);
                                 mem.copy(verdict_7, (() => {
                                   var _o = allocFixed(8);
@@ -73574,7 +73654,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                               return _o;
                             })());
                             if (X60Qx_6486) {
-                              if ((k_75 < lo_12)) {
+                              if ((BigInt(k_75) < BigInt(lo_12))) {
                                 nimStrDestroy(verdict_7);
                                 mem.copy(verdict_7, (() => {
                                   var _o = allocFixed(8);
@@ -73583,7 +73663,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                   return _o;
                                 })(), 8);
                               } else {
-                                if ((hi_8 <= k_75)) {
+                                if ((BigInt(hi_8) <= BigInt(k_75))) {
                                   var X60Qx_6487 = (!false);
                                   if ((!true)) {
                                   }
@@ -73604,7 +73684,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                 return _o;
                               })());
                               if (X60Qx_6488) {
-                                if ((k_75 <= lo_12)) {
+                                if ((BigInt(k_75) <= BigInt(lo_12))) {
                                   nimStrDestroy(verdict_7);
                                   mem.copy(verdict_7, (() => {
                                     var _o = allocFixed(8);
@@ -73613,7 +73693,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                                     return _o;
                                   })(), 8);
                                 } else {
-                                  if ((hi_8 < k_75)) {
+                                  if ((BigInt(hi_8) < BigInt(k_75))) {
                                     nimStrDestroy(verdict_7);
                                     mem.copy(verdict_7, (() => {
                                       var _o = allocFixed(8);
@@ -73632,11 +73712,11 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                     var X60Qx_6489 = len_4_sysvq0asl(verdict_7);
                     if ((0 < X60Qx_6489)) {
                       var X60Qdesugar_261 = allocFixed(8);
-                      mem.copy(X60Qdesugar_261, dollarQ_1_sysvq0asl(mem.i64b(n_35)), 8);
+                      mem.copy(X60Qdesugar_261, dollarQ_1_sysvq0asl(BigInt(mem.i64b(n_35))), 8);
                       var X60Qdesugar_262 = allocFixed(8);
-                      mem.copy(X60Qdesugar_262, dollarQ_1_sysvq0asl(lo_12), 8);
+                      mem.copy(X60Qdesugar_262, dollarQ_1_sysvq0asl(BigInt(lo_12)), 8);
                       var X60Qdesugar_263 = allocFixed(8);
-                      mem.copy(X60Qdesugar_263, dollarQ_1_sysvq0asl(hi_8), 8);
+                      mem.copy(X60Qdesugar_263, dollarQ_1_sysvq0asl(BigInt(hi_8)), 8);
                       var X60Qx_6490 = len_4_sysvq0asl((() => {
                         var _o = allocFixed(8);
                         mem.setU32(_o, 1768453374);
@@ -73696,13 +73776,13 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                       })());
                       add_2_sysvq0asl(X60Qdesugar_264, X60Qdesugar_263);
                       var X60Qdesugar_265 = allocFixed(8);
-                      mem.copy(X60Qdesugar_265, dollarQ_1_sysvq0asl(mem.i64b(n_35)), 8);
+                      mem.copy(X60Qdesugar_265, dollarQ_1_sysvq0asl(BigInt(mem.i64b(n_35))), 8);
                       var X60Qdesugar_266 = allocFixed(8);
-                      mem.copy(X60Qdesugar_266, dollarQ_1_sysvq0asl(lo_12), 8);
+                      mem.copy(X60Qdesugar_266, dollarQ_1_sysvq0asl(BigInt(lo_12)), 8);
                       var X60Qdesugar_267 = allocFixed(8);
-                      mem.copy(X60Qdesugar_267, dollarQ_1_sysvq0asl(hi_8), 8);
+                      mem.copy(X60Qdesugar_267, dollarQ_1_sysvq0asl(BigInt(hi_8)), 8);
                       var X60Qdesugar_268 = allocFixed(8);
-                      mem.copy(X60Qdesugar_268, dollarQ_1_sysvq0asl(k_75), 8);
+                      mem.copy(X60Qdesugar_268, dollarQ_1_sysvq0asl(BigInt(k_75)), 8);
                       var X60Qx_6498 = len_4_sysvq0asl((() => {
                         var _o = allocFixed(8);
                         mem.setU32(_o, 1981833726);
@@ -73846,14 +73926,14 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
               var bits_12 = X60Qx_92;
               var sh_2 = intVal_0_nif0bno621(rc_1);
               var X60Qx_6514;
-              if ((sh_2 < 0n)) {
+              if ((BigInt(sh_2) < 0n)) {
                 X60Qx_6514 = true;
               } else {
-                X60Qx_6514 = (BigInt(bits_12) <= sh_2);
+                X60Qx_6514 = (BigInt(bits_12) <= BigInt(sh_2));
               }
               if (X60Qx_6514) {
                 var X60Qdesugar_270 = allocFixed(8);
-                mem.copy(X60Qdesugar_270, dollarQ_1_sysvq0asl(sh_2), 8);
+                mem.copy(X60Qdesugar_270, dollarQ_1_sysvq0asl(BigInt(sh_2)), 8);
                 var X60Qdesugar_271 = allocFixed(8);
                 mem.copy(X60Qdesugar_271, dollarQ_2_sysvq0asl(bits_12), 8);
                 var X60Qx_6515 = len_4_sysvq0asl((() => {
@@ -73899,7 +73979,7 @@ function semInfix_0_semiw27pt1(c_140, dest_22, cur_59) {
                   return _o;
                 })());
                 var X60Qdesugar_273 = allocFixed(8);
-                mem.copy(X60Qdesugar_273, dollarQ_1_sysvq0asl(sh_2), 8);
+                mem.copy(X60Qdesugar_273, dollarQ_1_sysvq0asl(BigInt(sh_2)), 8);
                 var X60Qdesugar_274 = allocFixed(8);
                 mem.copy(X60Qdesugar_274, dollarQ_2_sysvq0asl(bits_12), 8);
                 var X60Qdesugar_275 = allocFixed(8);
@@ -88973,7 +89053,7 @@ function requestInstance_0_semiw27pt1(c_158, origin_1, argTypes_7, retOut_0, exp
               var X60Qx_8615 = kind_1_nif0bno621(dimC_3);
               if ((X60Qx_8615 === 3)) {
                 var X60Qx_8616 = intVal_0_nif0bno621(dimC_3);
-                n_39 = Number(BigInt.asIntN(32, X60Qx_8616));
+                n_39 = Number(BigInt.asIntN(32, BigInt(X60Qx_8616)));
               } else {
                 var X60Qx_765;
                 var X60Qx_8617 = kind_1_nif0bno621(dimC_3);
@@ -88990,7 +89070,7 @@ function requestInstance_0_semiw27pt1(c_158, origin_1, argTypes_7, retOut_0, exp
                   var X60Qtmp_700 = allocFixed(8);
                   mem.copy(X60Qtmp_700, symName_1_nif0bno621(dimC_3), 8);
                   var X60Qx_8619 = getOrDefault_0_Iskl9a7_semiw27pt1((c_158 + 1604), X60Qtmp_700);
-                  n_39 = Number(BigInt.asIntN(32, X60Qx_8619));
+                  n_39 = Number(BigInt.asIntN(32, BigInt(X60Qx_8619)));
                   nimStrDestroy(X60Qtmp_700);
                 }
               }
@@ -93308,7 +93388,7 @@ function emitOConstrVariant_0_semiw27pt1(c_168, dest_26, v_3, supplied_0, valSto
           nimStrDestroy(discVal_0);
           var X60Qx_9273 = intVal_0_nif0bno621(dc_14);
           var X60Qtmp_774 = allocFixed(8);
-          mem.copy(X60Qtmp_774, dollarQ_1_sysvq0asl(X60Qx_9273), 8);
+          mem.copy(X60Qtmp_774, dollarQ_1_sysvq0asl(BigInt(X60Qx_9273)), 8);
           var X60Qx_9274 = allocFixed(8);
           mem.copy(X60Qx_9274, ampQ_0_sysvq0asl((() => {
             var _o = allocFixed(8);
@@ -102578,7 +102658,7 @@ function evalMacroInt_0_semiw27pt1(c_203, env_0, expr_0, outv_0) {
         return _o;
       })());
       if (X60Qx_10607) {
-        mem.setI64(outv_0, BigInt.asIntN(64, (mem.i64b(a_78) + mem.i64b(b_48))));
+        mem.setI64(outv_0, BigInt.asIntN(64, (BigInt(mem.i64b(a_78)) + BigInt(mem.i64b(b_48)))));
         eQdestroy_0_nif0bno621(m_103);
         nimStrDestroy(op_20);
         eQdestroy_0_nif0bno621(e_21);
@@ -102591,7 +102671,7 @@ function evalMacroInt_0_semiw27pt1(c_203, env_0, expr_0, outv_0) {
           return _o;
         })());
         if (X60Qx_10608) {
-          mem.setI64(outv_0, BigInt.asIntN(64, (mem.i64b(a_78) - mem.i64b(b_48))));
+          mem.setI64(outv_0, BigInt.asIntN(64, (BigInt(mem.i64b(a_78)) - BigInt(mem.i64b(b_48)))));
           eQdestroy_0_nif0bno621(m_103);
           nimStrDestroy(op_20);
           eQdestroy_0_nif0bno621(e_21);
@@ -102607,7 +102687,7 @@ function evalMacroInt_0_semiw27pt1(c_203, env_0, expr_0, outv_0) {
             var X60Qx_10610 = (!false);
             if ((!true)) {
             }
-            mem.setI64(outv_0, BigInt.asIntN(64, (mem.i64b(a_78) * mem.i64b(b_48))));
+            mem.setI64(outv_0, BigInt.asIntN(64, (BigInt(mem.i64b(a_78)) * BigInt(mem.i64b(b_48)))));
             eQdestroy_0_nif0bno621(m_103);
             nimStrDestroy(op_20);
             eQdestroy_0_nif0bno621(e_21);
@@ -102742,7 +102822,7 @@ function evalMacroNode_0_semiw27pt1(c_204, env_1, nameEnv_0, dest_44, expr_1) {
   mem.setI64(iv_0, 0n);
   var X60Qx_10629 = evalMacroInt_0_semiw27pt1(c_204, env_1, expr_1, iv_0);
   if (X60Qx_10629) {
-    addIntLit_0_nif0bno621(dest_44, mem.i64b(iv_0));
+    addIntLit_0_nif0bno621(dest_44, BigInt(mem.i64b(iv_0)));
     return;
   }
   var e_22 = allocFixed(12);
@@ -103227,7 +103307,7 @@ function expandMacroCall_0_semiw27pt1(c_206, dest_45, body_5) {
               var X60Qtmp_877 = allocFixed(8);
               mem.copy(X60Qtmp_877, nm_67, 8);
               nimStrWasMoved(nm_67);
-              putQ_0_I7zgo87_semiw27pt1(env_7, X60Qtmp_877, mem.i64b(v_26));
+              putQ_0_I7zgo87_semiw27pt1(env_7, X60Qtmp_877, BigInt(mem.i64b(v_26)));
             } else {
               var X60Qx_10715;
               var X60Qx_10716;
@@ -103599,19 +103679,19 @@ function expandMacroCall_0_semiw27pt1(c_206, dest_45, body_5) {
         if (X60Qx_10770) {
           X60Qx_157 = mem.i64b(hi_9);
         } else {
-          X60Qx_157 = BigInt.asIntN(64, (mem.i64b(hi_9) - 1n));
+          X60Qx_157 = BigInt.asIntN(64, (BigInt(mem.i64b(hi_9)) - 1n));
         }
         var last_6 = X60Qx_157;
         var iv_1 = allocFixed(8);
         mem.setI64(iv_1, mem.i64b(lo_13));
         {
-          while ((mem.i64b(iv_1) <= last_6)) {
+          while ((BigInt(mem.i64b(iv_1)) <= BigInt(last_6))) {
             var X60Qx_10771 = (!false);
             if ((!true)) {
             }
             var X60Qx_10772 = allocFixed(8);
             mem.copy(X60Qx_10772, nimStrDup(loopVar_4), 8);
-            putQ_0_I7zgo87_semiw27pt1(env_7, X60Qx_10772, mem.i64b(iv_1));
+            putQ_0_I7zgo87_semiw27pt1(env_7, X60Qx_10772, BigInt(mem.i64b(iv_1)));
             evalMacroNode_0_semiw27pt1(c_206, env_7, nameEnv_1, dest_45, addArg_0);
             inc_1_Irn1g7r1_semiw27pt1(iv_1);
           }
@@ -107135,7 +107215,7 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                                             var X60Qx_11240 = (!false);
                                             if ((!true)) {
                                             }
-                                            addIntLit_0_nif0bno621(dest_49, mem.i64b(lit_3));
+                                            addIntLit_0_nif0bno621(dest_49, BigInt(mem.i64b(lit_3)));
                                             var X60Qtmp_921 = allocFixed(8);
                                             mem.copy(X60Qtmp_921, typeSuffix_0_semiw27pt1(boundTy_0), 8);
                                             addStrLit_0_nif0bno621(dest_49, X60Qtmp_921);
@@ -113166,7 +113246,7 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                                           }
                                           if (X60Qx_12054) {
                                             var X60Qx_12056 = intVal_0_nif0bno621(pc_14);
-                                            value_1 = BigInt.asIntN(64, (-X60Qx_12056));
+                                            value_1 = BigInt.asIntN(64, (-BigInt(X60Qx_12056)));
                                             known_5 = true;
                                           }
                                         }
@@ -113180,9 +113260,9 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                                     if (known_5) {
                                       var X60Qx_12058;
                                       var X60Qx_12059 = getQ_7_Ite3z0o_semiw27pt1(rb_5, 0);
-                                      if ((mem.i64b(X60Qx_12059) <= value_1)) {
+                                      if ((mem.i64b(X60Qx_12059) <= BigInt(value_1))) {
                                         var X60Qx_12060 = getQ_7_Ite3z0o_semiw27pt1(rb_5, 1);
-                                        X60Qx_12058 = (value_1 <= mem.i64b(X60Qx_12060));
+                                        X60Qx_12058 = (BigInt(value_1) <= mem.i64b(X60Qx_12060));
                                       } else {
                                         X60Qx_12058 = false;
                                       }
@@ -116702,7 +116782,7 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                           var X60Qx_12597 = (!false);
                           if ((!true)) {
                           }
-                          addIntLit_0_nif0bno621(dest_49, mem.i64b(lit_4));
+                          addIntLit_0_nif0bno621(dest_49, BigInt(mem.i64b(lit_4)));
                           var X60Qtmp_1028 = allocFixed(8);
                           mem.copy(X60Qtmp_1028, typeSuffix_0_semiw27pt1(boundTy_2), 8);
                           addStrLit_0_nif0bno621(dest_49, X60Qtmp_1028);
@@ -116888,7 +116968,7 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                               var X60Qx_12627 = kind_1_nif0bno621(rc_3);
                               if ((X60Qx_12627 === 3)) {
                                 var X60Qx_12628 = intVal_0_nif0bno621(rc_3);
-                                lo_14 = Number(BigInt.asIntN(32, X60Qx_12628));
+                                lo_14 = Number(BigInt.asIntN(32, BigInt(X60Qx_12628)));
                                 var X60Qx_12629 = (!false);
                                 if ((!true)) {
                                 }
@@ -116897,7 +116977,7 @@ function semCall_0_semiw27pt1(c_223, dest_49, cur_77) {
                               var X60Qx_12630 = kind_1_nif0bno621(rc_3);
                               if ((X60Qx_12630 === 3)) {
                                 var X60Qx_12631 = intVal_0_nif0bno621(rc_3);
-                                hi_11 = Number(BigInt.asIntN(32, X60Qx_12631));
+                                hi_11 = Number(BigInt.asIntN(32, BigInt(X60Qx_12631)));
                                 ok_15 = true;
                               }
                               var X60Qx_12632 = (!false);
@@ -133182,7 +133262,7 @@ function semDot_0_semiw27pt1(c_228, dest_50, cur_78) {
         if ((!true)) {
         }
         openTag_0_nif0bno621(dest_50, mem.u32((c_228 + 148)));
-        addIntLit_0_nif0bno621(dest_50, mem.i64b(lit_5));
+        addIntLit_0_nif0bno621(dest_50, BigInt(mem.i64b(lit_5)));
         var X60Qtmp_1186 = allocFixed(8);
         mem.copy(X60Qtmp_1186, typeSuffix_0_semiw27pt1(et_14), 8);
         addStrLit_0_nif0bno621(dest_50, X60Qtmp_1186);
@@ -137494,7 +137574,7 @@ function semAt_0_semiw27pt1(c_231, dest_51, cur_79) {
             if ((!true)) {
             }
             var X60Qx_15586 = intVal_0_nif0bno621(idxC_1);
-            idxVal_0 = Number(BigInt.asIntN(32, X60Qx_15586));
+            idxVal_0 = Number(BigInt.asIntN(32, BigInt(X60Qx_15586)));
             idxIsLit_0 = true;
           }
           eQdestroyQ_SX54ype0semiw27pt1_0_semiw27pt1(idxT_0);
@@ -142320,7 +142400,7 @@ function semArrayConstr_0_semiw27pt1(c_234, dest_54, cur_82) {
                   eQdestroy_1_Iez2nr5_semiw27pt1(ords_0);
                   break keyOrder_0;
                 }
-                add_0_I8fahwb_semiw27pt1(ords_0, ordv_1);
+                add_0_I8fahwb_semiw27pt1(ords_0, BigInt(ordv_1));
                 var X60Qtmp_1332 = allocFixed(12);
                 mem.copy(X60Qtmp_1332, keyC_1, 12);
                 eQwasMoved_0_nif0bno621(keyC_1);
@@ -142823,7 +142903,7 @@ function setElemSig_0_semiw27pt1(cur_83) {
         nimStrDestroy(X60Qx_263);
         let X60Qx_16246 = intVal_0_nif0bno621(cur_83);
         let X60Qtmp_1335 = allocFixed(8);
-        mem.copy(X60Qtmp_1335, dollarQ_1_sysvq0asl(X60Qx_16246), 8);
+        mem.copy(X60Qtmp_1335, dollarQ_1_sysvq0asl(BigInt(X60Qx_16246)), 8);
         let X60Qx_16247 = allocFixed(8);
         mem.copy(X60Qx_16247, ampQ_0_sysvq0asl((() => {
           let _o = allocFixed(8);
@@ -142840,7 +142920,7 @@ function setElemSig_0_semiw27pt1(cur_83) {
         nimStrDestroy(X60Qx_263);
         let X60Qx_16248 = uintVal_0_nif0bno621(cur_83);
         let X60Qtmp_1336 = allocFixed(8);
-        mem.copy(X60Qtmp_1336, dollarQ_0_sysvq0asl(X60Qx_16248), 8);
+        mem.copy(X60Qtmp_1336, dollarQ_0_sysvq0asl(BigInt(X60Qx_16248)), 8);
         let X60Qx_16249 = allocFixed(8);
         mem.copy(X60Qx_16249, ampQ_0_sysvq0asl((() => {
           let _o = allocFixed(8);
@@ -143273,7 +143353,7 @@ function semSetConstr_0_semiw27pt1(c_235, dest_55, cur_84) {
                     var lit_9 = allocFixed(32);
                     mem.copy(lit_9, createTokenBuf_0_nif0bno621(2, mem.u32((dest_55 + 24)), mem.u32((dest_55 + 28))), 32);
                     var X60Qx_16300 = getOrDefault_0_Iskl9a7_semiw27pt1((c_235 + 1604), enm_1);
-                    addIntLit_0_nif0bno621(lit_9, X60Qx_16300);
+                    addIntLit_0_nif0bno621(lit_9, BigInt(X60Qx_16300));
                     eQdestroy_1_nif0bno621(ebuf_8);
                     mem.copy(ebuf_8, lit_9, 32);
                     eQwasMoved_1_nif0bno621(lit_9);
@@ -150428,7 +150508,7 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
               if ((!true)) {
               }
               var X60Qx_17365 = intVal_0_nif0bno621(pv_2);
-              v_37 = BigInt.asIntN(64, (-X60Qx_17365));
+              v_37 = BigInt.asIntN(64, (-BigInt(X60Qx_17365)));
               haveV_1 = true;
             }
           }
@@ -150440,11 +150520,11 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
       if (haveV_1) {
         var X60Qx_17367;
         var X60Qx_17368 = getQ_7_Ite3z0o_semiw27pt1(rb_7, 0);
-        if ((v_37 < mem.i64b(X60Qx_17368))) {
+        if ((BigInt(v_37) < mem.i64b(X60Qx_17368))) {
           X60Qx_17367 = true;
         } else {
           var X60Qx_17369 = getQ_7_Ite3z0o_semiw27pt1(rb_7, 1);
-          X60Qx_17367 = (mem.i64b(X60Qx_17369) < v_37);
+          X60Qx_17367 = (mem.i64b(X60Qx_17369) < BigInt(v_37));
         }
         X60Qx_17366 = X60Qx_17367;
       } else {
@@ -150452,7 +150532,7 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
       }
       if (X60Qx_17366) {
         var X60Qdesugar_682 = allocFixed(8);
-        mem.copy(X60Qdesugar_682, dollarQ_1_sysvq0asl(v_37), 8);
+        mem.copy(X60Qdesugar_682, dollarQ_1_sysvq0asl(BigInt(v_37)), 8);
         var X60Qx_17370 = getQ_7_Ite3z0o_semiw27pt1(rb_7, 0);
         var X60Qdesugar_683 = allocFixed(8);
         mem.copy(X60Qdesugar_683, dollarQ_1_sysvq0asl(mem.i64b(X60Qx_17370)), 8);
@@ -153006,12 +153086,12 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
     if (checkable_3) {
       var v_38 = intVal_0_nif0bno621(vValue_1);
       var X60Qx_17754;
-      if ((v_38 < lo_16)) {
+      if ((BigInt(v_38) < BigInt(lo_16))) {
         X60Qx_17754 = true;
       } else {
         var X60Qx_17755;
         if (hasHi_3) {
-          X60Qx_17755 = (hi_20 < v_38);
+          X60Qx_17755 = (BigInt(hi_20) < BigInt(v_38));
         } else {
           X60Qx_17755 = false;
         }
@@ -153022,9 +153102,9 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
         nimStrWasMoved(X60Qx_287);
         if (hasHi_3) {
           var X60Qdesugar_707 = allocFixed(8);
-          mem.copy(X60Qdesugar_707, dollarQ_1_sysvq0asl(lo_16), 8);
+          mem.copy(X60Qdesugar_707, dollarQ_1_sysvq0asl(BigInt(lo_16)), 8);
           var X60Qdesugar_708 = allocFixed(8);
-          mem.copy(X60Qdesugar_708, dollarQ_1_sysvq0asl(hi_20), 8);
+          mem.copy(X60Qdesugar_708, dollarQ_1_sysvq0asl(BigInt(hi_20)), 8);
           var X60Qx_17756 = len_4_sysvq0asl(X60Qdesugar_707);
           var X60Qx_17757 = len_4_sysvq0asl((() => {
             var _o = allocFixed(8);
@@ -153052,7 +153132,7 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
         } else {
           nimStrDestroy(X60Qx_287);
           var X60Qtmp_1481 = allocFixed(8);
-          mem.copy(X60Qtmp_1481, dollarQ_1_sysvq0asl(lo_16), 8);
+          mem.copy(X60Qtmp_1481, dollarQ_1_sysvq0asl(BigInt(lo_16)), 8);
           var X60Qx_17759 = allocFixed(8);
           mem.copy(X60Qx_17759, ampQ_0_sysvq0asl(X60Qtmp_1481, (() => {
             var _o = allocFixed(8);
@@ -153070,7 +153150,7 @@ function semLocal_0_semiw27pt1(c_255, dest_64, cur_93, outTag_0) {
         if ((!true)) {
         }
         var X60Qdesugar_710 = allocFixed(8);
-        mem.copy(X60Qdesugar_710, dollarQ_1_sysvq0asl(v_38), 8);
+        mem.copy(X60Qdesugar_710, dollarQ_1_sysvq0asl(BigInt(v_38)), 8);
         var X60Qdesugar_711 = allocFixed(8);
         mem.copy(X60Qdesugar_711, sizedIntName_0_semiw27pt1(recordedType_1), 8);
         var X60Qx_17761 = len_4_sysvq0asl((() => {
@@ -154475,7 +154555,7 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
         if ((!true)) {
         }
         var X60Qx_17933 = uintVal_0_nif0bno621(cur_97);
-        mem.setI64(res_13, BigInt.asIntN(64, X60Qx_17933));
+        mem.setI64(res_13, BigInt.asIntN(64, BigInt(X60Qx_17933)));
         result_319 = true;
       }
       break;
@@ -154657,12 +154737,12 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
           if (X60Qx_17962) {
             var X60Qx_17963 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 504)));
             if (X60Qx_17963) {
-              mem.setI64(res_13, BigInt.asIntN(64, (mem.i64b(a_108) + mem.i64b(b_56))));
+              mem.setI64(res_13, BigInt.asIntN(64, (BigInt(mem.i64b(a_108)) + BigInt(mem.i64b(b_56)))));
               result_319 = true;
             } else {
               var X60Qx_17964 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 508)));
               if (X60Qx_17964) {
-                mem.setI64(res_13, BigInt.asIntN(64, (mem.i64b(a_108) - mem.i64b(b_56))));
+                mem.setI64(res_13, BigInt.asIntN(64, (BigInt(mem.i64b(a_108)) - BigInt(mem.i64b(b_56)))));
                 result_319 = true;
               } else {
                 var X60Qx_17965 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 512)));
@@ -154670,29 +154750,29 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
                   var X60Qx_17966 = (!false);
                   if ((!true)) {
                   }
-                  mem.setI64(res_13, BigInt.asIntN(64, (mem.i64b(a_108) * mem.i64b(b_56))));
+                  mem.setI64(res_13, BigInt.asIntN(64, (BigInt(mem.i64b(a_108)) * BigInt(mem.i64b(b_56)))));
                   result_319 = true;
                 } else {
                   var X60Qx_17967;
                   var X60Qx_17968 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 516)));
                   if (X60Qx_17968) {
-                    X60Qx_17967 = (!(mem.i64b(b_56) === 0n));
+                    X60Qx_17967 = (!(BigInt(mem.i64b(b_56)) === 0n));
                   } else {
                     X60Qx_17967 = false;
                   }
                   if (X60Qx_17967) {
-                    mem.setI64(res_13, (mem.i64b(a_108) / mem.i64b(b_56)));
+                    mem.setI64(res_13, (BigInt(mem.i64b(a_108)) / BigInt(mem.i64b(b_56))));
                     result_319 = true;
                   } else {
                     var X60Qx_17969;
                     var X60Qx_17970 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 520)));
                     if (X60Qx_17970) {
-                      X60Qx_17969 = (!(mem.i64b(b_56) === 0n));
+                      X60Qx_17969 = (!(BigInt(mem.i64b(b_56)) === 0n));
                     } else {
                       X60Qx_17969 = false;
                     }
                     if (X60Qx_17969) {
-                      mem.setI64(res_13, (mem.i64b(a_108) % mem.i64b(b_56)));
+                      mem.setI64(res_13, (BigInt(mem.i64b(a_108)) % BigInt(mem.i64b(b_56))));
                       result_319 = true;
                     }
                   }
@@ -154798,7 +154878,7 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
                     }
                     if (X60Qx_17991) {
                       var X60Qx_17993 = intVal_0_nif0bno621(tn_41);
-                      bits_16 = Number(BigInt.asIntN(32, X60Qx_17993));
+                      bits_16 = Number(BigInt.asIntN(32, BigInt(X60Qx_17993)));
                     }
                     {
                       while ((0 < mem.i32((tn_41 + 8)))) {
@@ -154856,8 +154936,8 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
               X60Qx_289 = BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(bits_16))) - 1n));
             }
             var umask_0 = X60Qx_289;
-            var ua_0 = BigInt.asUintN(64, mem.i64b(a_109));
-            var ub_0 = BigInt.asUintN(64, mem.i64b(b_57));
+            var ua_0 = BigInt.asUintN(64, BigInt(mem.i64b(a_109)));
+            var ub_0 = BigInt.asUintN(64, BigInt(mem.i64b(b_57)));
             var X60Qx_17999;
             var X60Qx_18000 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 36)));
             if (X60Qx_18000) {
@@ -154871,14 +154951,14 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
               if ((!true)) {
               }
               if (okA_4) {
-                mem.setI64(res_13, BigInt.asIntN(64, (ua_0 & umask_0)));
+                mem.setI64(res_13, BigInt.asIntN(64, (BigInt(ua_0) & BigInt(umask_0))));
                 result_319 = true;
               }
             } else {
               var X60Qx_18003 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 572)));
               if (X60Qx_18003) {
                 if (okA_4) {
-                  mem.setI64(res_13, BigInt.asIntN(64, (ua_0 ^ umask_0)));
+                  mem.setI64(res_13, BigInt.asIntN(64, (BigInt(ua_0) ^ BigInt(umask_0))));
                   result_319 = true;
                 }
               } else {
@@ -154894,12 +154974,12 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
                   }
                   var X60Qx_18006 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 548)));
                   if (X60Qx_18006) {
-                    mem.setI64(res_13, BigInt.asIntN(64, (BigInt.asUintN(64, (ua_0 << ub_0)) & umask_0)));
+                    mem.setI64(res_13, BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt(ua_0) << BigInt(ub_0))) & BigInt(umask_0))));
                     result_319 = true;
                   } else {
                     var X60Qx_18007 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 552)));
                     if (X60Qx_18007) {
-                      mem.setI64(res_13, BigInt.asIntN(64, ((ua_0 & umask_0) >> ub_0)));
+                      mem.setI64(res_13, BigInt.asIntN(64, ((BigInt(ua_0) & BigInt(umask_0)) >> BigInt(ub_0))));
                       result_319 = true;
                     } else {
                       var X60Qx_18008 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 556)));
@@ -154908,20 +154988,20 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
                           var X60Qx_18009 = (!false);
                           if ((!true)) {
                           }
-                          mem.setI64(res_13, BigInt.asIntN(64, ((ua_0 & umask_0) >> ub_0)));
+                          mem.setI64(res_13, BigInt.asIntN(64, ((BigInt(ua_0) & BigInt(umask_0)) >> BigInt(ub_0))));
                         } else {
-                          mem.setI64(res_13, (mem.i64b(a_109) >> BigInt.asUintN(64, mem.i64b(b_57))));
+                          mem.setI64(res_13, (BigInt(mem.i64b(a_109)) >> BigInt.asUintN(64, BigInt(mem.i64b(b_57)))));
                         }
                         result_319 = true;
                       } else {
                         var X60Qx_18010 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 560)));
                         if (X60Qx_18010) {
-                          mem.setI64(res_13, BigInt.asIntN(64, ((ua_0 & ub_0) & umask_0)));
+                          mem.setI64(res_13, BigInt.asIntN(64, ((BigInt(ua_0) & BigInt(ub_0)) & BigInt(umask_0))));
                           result_319 = true;
                         } else {
                           var X60Qx_18011 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 564)));
                           if (X60Qx_18011) {
-                            mem.setI64(res_13, BigInt.asIntN(64, ((ua_0 | ub_0) & umask_0)));
+                            mem.setI64(res_13, BigInt.asIntN(64, ((BigInt(ua_0) | BigInt(ub_0)) & BigInt(umask_0))));
                             var X60Qx_18012 = (!false);
                             if ((!true)) {
                             }
@@ -154929,7 +155009,7 @@ function foldIntConst_0_semiw27pt1(c_259, cur_97, res_13) {
                           } else {
                             var X60Qx_18013 = eqQ_1_nif0bno621(t_229, mem.u32((c_259 + 568)));
                             if (X60Qx_18013) {
-                              mem.setI64(res_13, BigInt.asIntN(64, ((ua_0 ^ ub_0) & umask_0)));
+                              mem.setI64(res_13, BigInt.asIntN(64, ((BigInt(ua_0) ^ BigInt(ub_0)) & BigInt(umask_0))));
                               result_319 = true;
                             }
                           }
@@ -155263,7 +155343,7 @@ function foldStrConst_0_semiw27pt1(c_260, cur_98, res_14) {
                 if (X60Qx_18062) {
                   nimStrDestroy(res_14);
                   var X60Qx_18063 = allocFixed(8);
-                  mem.copy(X60Qx_18063, dollarQ_1_sysvq0asl(mem.i64b(iv_3)), 8);
+                  mem.copy(X60Qx_18063, dollarQ_1_sysvq0asl(BigInt(mem.i64b(iv_3))), 8);
                   mem.copy(res_14, X60Qx_18063, 8);
                   var X60Qx_18064 = (!false);
                   if ((!true)) {
@@ -155734,13 +155814,13 @@ function foldBoolConst_0_semiw27pt1(c_261, cur_99, res_15) {
     if (X60Qx_18135) {
       var X60Qx_18136 = eqQ_1_nif0bno621(t_230, mem.u32((c_261 + 524)));
       if (X60Qx_18136) {
-        mem.setU8(res_15, (mem.i64b(a_112) < mem.i64b(b_60)));
+        mem.setU8(res_15, (BigInt(mem.i64b(a_112)) < BigInt(mem.i64b(b_60))));
       } else {
         var X60Qx_18137 = eqQ_1_nif0bno621(t_230, mem.u32((c_261 + 528)));
         if (X60Qx_18137) {
-          mem.setU8(res_15, (mem.i64b(a_112) <= mem.i64b(b_60)));
+          mem.setU8(res_15, (BigInt(mem.i64b(a_112)) <= BigInt(mem.i64b(b_60))));
         } else {
-          mem.setU8(res_15, (mem.i64b(a_112) === mem.i64b(b_60)));
+          mem.setU8(res_15, (BigInt(mem.i64b(a_112)) === BigInt(mem.i64b(b_60))));
         }
       }
       result_321 = true;
@@ -157067,12 +157147,12 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
     var X60Qx_18313;
     if (checkable_5) {
       var X60Qx_18314;
-      if ((mem.i64b(folded_1) < lo_18)) {
+      if ((BigInt(mem.i64b(folded_1)) < BigInt(lo_18))) {
         X60Qx_18314 = true;
       } else {
         var X60Qx_18315;
         if (hasHi_5) {
-          X60Qx_18315 = (hi_22 < mem.i64b(folded_1));
+          X60Qx_18315 = (BigInt(hi_22) < BigInt(mem.i64b(folded_1)));
         } else {
           X60Qx_18315 = false;
         }
@@ -157087,9 +157167,9 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
       nimStrWasMoved(X60Qx_295);
       if (hasHi_5) {
         var X60Qdesugar_724 = allocFixed(8);
-        mem.copy(X60Qdesugar_724, dollarQ_1_sysvq0asl(lo_18), 8);
+        mem.copy(X60Qdesugar_724, dollarQ_1_sysvq0asl(BigInt(lo_18)), 8);
         var X60Qdesugar_725 = allocFixed(8);
-        mem.copy(X60Qdesugar_725, dollarQ_1_sysvq0asl(hi_22), 8);
+        mem.copy(X60Qdesugar_725, dollarQ_1_sysvq0asl(BigInt(hi_22)), 8);
         var X60Qx_18316 = len_4_sysvq0asl(X60Qdesugar_724);
         var X60Qx_18317 = len_4_sysvq0asl((() => {
           var _o = allocFixed(8);
@@ -157117,7 +157197,7 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
       } else {
         nimStrDestroy(X60Qx_295);
         var X60Qtmp_1528 = allocFixed(8);
-        mem.copy(X60Qtmp_1528, dollarQ_1_sysvq0asl(lo_18), 8);
+        mem.copy(X60Qtmp_1528, dollarQ_1_sysvq0asl(BigInt(lo_18)), 8);
         var X60Qx_18319 = allocFixed(8);
         mem.copy(X60Qx_18319, ampQ_0_sysvq0asl(X60Qtmp_1528, (() => {
           var _o = allocFixed(8);
@@ -157132,7 +157212,7 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
       mem.copy(rangeStr_3, X60Qx_295, 8);
       nimStrWasMoved(X60Qx_295);
       var X60Qdesugar_727 = allocFixed(8);
-      mem.copy(X60Qdesugar_727, dollarQ_1_sysvq0asl(mem.i64b(folded_1)), 8);
+      mem.copy(X60Qdesugar_727, dollarQ_1_sysvq0asl(BigInt(mem.i64b(folded_1))), 8);
       var X60Qdesugar_728 = allocFixed(8);
       mem.copy(X60Qdesugar_728, sizedIntName_0_semiw27pt1(recordedType_3), 8);
       var X60Qx_18320 = len_4_sysvq0asl((() => {
@@ -158017,9 +158097,9 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
                       var X60Qx_18448 = (!false);
                       if ((!true)) {
                       }
-                      addUIntLit_0_nif0bno621(dest_67, BigInt.asUintN(64, mem.i64b(folded_1)));
+                      addUIntLit_0_nif0bno621(dest_67, BigInt.asUintN(64, BigInt(mem.i64b(folded_1))));
                     } else {
-                      addIntLit_0_nif0bno621(dest_67, mem.i64b(folded_1));
+                      addIntLit_0_nif0bno621(dest_67, BigInt(mem.i64b(folded_1)));
                     }
                   } else {
                     addBuffer_0_nif0bno621(dest_67, valBuf_5);
@@ -158031,7 +158111,7 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
               eQdestroy_0_nif0bno621(vc_24);
             } else {
               if (didFold_1) {
-                addIntLit_0_nif0bno621(dest_67, mem.i64b(folded_1));
+                addIntLit_0_nif0bno621(dest_67, BigInt(mem.i64b(folded_1)));
               } else {
                 if (didFoldFloat_1) {
                   var X60Qx_18449 = (!false);
@@ -158294,7 +158374,7 @@ function semConst_0_semiw27pt1(c_266, dest_67, cur_101) {
   if (didFold_1) {
     var X60Qx_18476 = allocFixed(8);
     mem.copy(X60Qx_18476, nimStrDup(mangled_15), 8);
-    putQ_0_I7zgo87_semiw27pt1((c_266 + 1604), X60Qx_18476, mem.i64b(folded_1));
+    putQ_0_I7zgo87_semiw27pt1((c_266 + 1604), X60Qx_18476, BigInt(mem.i64b(folded_1)));
   }
   if (didFoldFloat_1) {
     var X60Qx_18477 = allocFixed(8);
@@ -169712,7 +169792,7 @@ function semFor_0_semiw27pt1(c_294, dest_79, cur_115) {
           return _o;
         })());
         if (X60Qx_20061) {
-          X60Qx_20060 = (hiV_4 < loV_4);
+          X60Qx_20060 = (BigInt(hiV_4) < BigInt(loV_4));
         } else {
           X60Qx_20060 = false;
         }
@@ -169727,7 +169807,7 @@ function semFor_0_semiw27pt1(c_294, dest_79, cur_115) {
             return _o;
           })());
           if (X60Qx_20063) {
-            X60Qx_20062 = (hiV_4 <= loV_4);
+            X60Qx_20062 = (BigInt(hiV_4) <= BigInt(loV_4));
           } else {
             X60Qx_20062 = false;
           }
@@ -169748,9 +169828,9 @@ function semFor_0_semiw27pt1(c_294, dest_79, cur_115) {
         })());
         if (X60Qx_20064) {
           var X60Qdesugar_793 = allocFixed(8);
-          mem.copy(X60Qdesugar_793, dollarQ_1_sysvq0asl(loV_4), 8);
+          mem.copy(X60Qdesugar_793, dollarQ_1_sysvq0asl(BigInt(loV_4)), 8);
           var X60Qdesugar_794 = allocFixed(8);
-          mem.copy(X60Qdesugar_794, dollarQ_1_sysvq0asl(hiV_4), 8);
+          mem.copy(X60Qdesugar_794, dollarQ_1_sysvq0asl(BigInt(hiV_4)), 8);
           var X60Qx_20065 = len_4_sysvq0asl((() => {
             var _o = allocFixed(8);
             mem.setU32(_o, 1701344510);
@@ -169824,9 +169904,9 @@ function semFor_0_semiw27pt1(c_294, dest_79, cur_115) {
         mem.copy(note_8, X60Qx_320, 8);
         nimStrWasMoved(X60Qx_320);
         var X60Qdesugar_796 = allocFixed(8);
-        mem.copy(X60Qdesugar_796, dollarQ_1_sysvq0asl(loV_4), 8);
+        mem.copy(X60Qdesugar_796, dollarQ_1_sysvq0asl(BigInt(loV_4)), 8);
         var X60Qdesugar_797 = allocFixed(8);
-        mem.copy(X60Qdesugar_797, dollarQ_1_sysvq0asl(hiV_4), 8);
+        mem.copy(X60Qdesugar_797, dollarQ_1_sysvq0asl(BigInt(hiV_4)), 8);
         var X60Qx_20071 = len_4_sysvq0asl((() => {
           var _o = allocFixed(8);
           mem.setU32(_o, 1768453374);
@@ -177393,7 +177473,7 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                 var X60Qx_21031;
                                 var X60Qx_21032 = intVal_0_nif0bno621(aC_17);
                                 var X60Qx_21033 = intVal_0_nif0bno621(bC_16);
-                                if ((Number(BigInt.asIntN(32, X60Qx_21032)) <= Number(BigInt.asIntN(32, X60Qx_21033)))) {
+                                if ((Number(BigInt.asIntN(32, BigInt(X60Qx_21032))) <= Number(BigInt.asIntN(32, BigInt(X60Qx_21033))))) {
                                   X60Qx_21031 = (!mem.u8At((c_300 + 2111)));
                                 } else {
                                   X60Qx_21031 = false;
@@ -177432,13 +177512,13 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                                 var X60Qx_21038;
                                                 if ((mem.u8At(mem.u32(X60Qii_10)) === 105)) {
                                                   var X60Qx_21039 = intVal_0_nif0bno621(aC_17);
-                                                  X60Qx_21038 = (Number(BigInt.asIntN(32, X60Qx_21039)) <= mem.i32((mem.u32(X60Qii_10) + 8)));
+                                                  X60Qx_21038 = (Number(BigInt.asIntN(32, BigInt(X60Qx_21039))) <= mem.i32((mem.u32(X60Qii_10) + 8)));
                                                 } else {
                                                   X60Qx_21038 = false;
                                                 }
                                                 if (X60Qx_21038) {
                                                   var X60Qx_21040 = intVal_0_nif0bno621(bC_16);
-                                                  X60Qx_21037 = (mem.i32((mem.u32(X60Qii_10) + 4)) <= Number(BigInt.asIntN(32, X60Qx_21040)));
+                                                  X60Qx_21037 = (mem.i32((mem.u32(X60Qii_10) + 4)) <= Number(BigInt.asIntN(32, BigInt(X60Qx_21040))));
                                                 } else {
                                                   X60Qx_21037 = false;
                                                 }
@@ -177447,14 +177527,14 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                                   var X60Qx_21042;
                                                   var X60Qx_21043 = intVal_0_nif0bno621(aC_17);
                                                   var X60Qx_21044 = intVal_0_nif0bno621(bC_16);
-                                                  if ((Number(BigInt.asIntN(32, X60Qx_21043)) === Number(BigInt.asIntN(32, X60Qx_21044)))) {
+                                                  if ((Number(BigInt.asIntN(32, BigInt(X60Qx_21043))) === Number(BigInt.asIntN(32, BigInt(X60Qx_21044))))) {
                                                     X60Qx_21042 = (mem.i32((mem.u32(X60Qii_10) + 4)) === mem.i32((mem.u32(X60Qii_10) + 8)));
                                                   } else {
                                                     X60Qx_21042 = false;
                                                   }
                                                   if (X60Qx_21042) {
                                                     var X60Qx_21045 = intVal_0_nif0bno621(aC_17);
-                                                    X60Qx_21041 = (Number(BigInt.asIntN(32, X60Qx_21045)) === mem.i32((mem.u32(X60Qii_10) + 4)));
+                                                    X60Qx_21041 = (Number(BigInt.asIntN(32, BigInt(X60Qx_21045))) === mem.i32((mem.u32(X60Qii_10) + 4)));
                                                   } else {
                                                     X60Qx_21041 = false;
                                                   }
@@ -177525,8 +177605,8 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                   add_0_Ir57zmq1_semiw27pt1(seenIvals_1, (() => {
                                     var _o = allocFixed(12);
                                     mem.setU8(_o, 105);
-                                    mem.setI32((_o + 4), Number(BigInt.asIntN(32, X60Qx_21048)));
-                                    mem.setI32((_o + 8), Number(BigInt.asIntN(32, X60Qx_21049)));
+                                    mem.setI32((_o + 4), Number(BigInt.asIntN(32, BigInt(X60Qx_21048))));
+                                    mem.setI32((_o + 8), Number(BigInt.asIntN(32, BigInt(X60Qx_21049))));
                                     return _o;
                                   })());
                                 }
@@ -179176,7 +179256,7 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                           nimStrDestroy(litKey_11);
                                           var X60Qx_21243 = intVal_0_nif0bno621(r_39);
                                           var X60Qtmp_1901 = allocFixed(8);
-                                          mem.copy(X60Qtmp_1901, dollarQ_1_sysvq0asl(X60Qx_21243), 8);
+                                          mem.copy(X60Qtmp_1901, dollarQ_1_sysvq0asl(BigInt(X60Qx_21243)), 8);
                                           var X60Qx_21244 = allocFixed(8);
                                           mem.copy(X60Qx_21244, ampQ_0_sysvq0asl((() => {
                                             var _o = allocFixed(8);
@@ -179215,7 +179295,7 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                         var X60Qx_21252;
                                         var X60Qx_21253 = intVal_0_nif0bno621(r_39);
                                         var X60Qx_21254 = intVal_0_nif0bno621(r_39);
-                                        if ((Number(BigInt.asIntN(32, X60Qx_21253)) <= Number(BigInt.asIntN(32, X60Qx_21254)))) {
+                                        if ((Number(BigInt.asIntN(32, BigInt(X60Qx_21253))) <= Number(BigInt.asIntN(32, BigInt(X60Qx_21254))))) {
                                           X60Qx_21252 = (!mem.u8At((c_300 + 2111)));
                                         } else {
                                           X60Qx_21252 = false;
@@ -179257,13 +179337,13 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                                         var X60Qx_21260;
                                                         if ((mem.u8At(mem.u32(X60Qii_51)) === 105)) {
                                                           var X60Qx_21261 = intVal_0_nif0bno621(r_39);
-                                                          X60Qx_21260 = (Number(BigInt.asIntN(32, X60Qx_21261)) <= mem.i32((mem.u32(X60Qii_51) + 8)));
+                                                          X60Qx_21260 = (Number(BigInt.asIntN(32, BigInt(X60Qx_21261))) <= mem.i32((mem.u32(X60Qii_51) + 8)));
                                                         } else {
                                                           X60Qx_21260 = false;
                                                         }
                                                         if (X60Qx_21260) {
                                                           var X60Qx_21262 = intVal_0_nif0bno621(r_39);
-                                                          X60Qx_21259 = (mem.i32((mem.u32(X60Qii_51) + 4)) <= Number(BigInt.asIntN(32, X60Qx_21262)));
+                                                          X60Qx_21259 = (mem.i32((mem.u32(X60Qii_51) + 4)) <= Number(BigInt.asIntN(32, BigInt(X60Qx_21262))));
                                                         } else {
                                                           X60Qx_21259 = false;
                                                         }
@@ -179272,14 +179352,14 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                                           var X60Qx_21264;
                                                           var X60Qx_21265 = intVal_0_nif0bno621(r_39);
                                                           var X60Qx_21266 = intVal_0_nif0bno621(r_39);
-                                                          if ((Number(BigInt.asIntN(32, X60Qx_21265)) === Number(BigInt.asIntN(32, X60Qx_21266)))) {
+                                                          if ((Number(BigInt.asIntN(32, BigInt(X60Qx_21265))) === Number(BigInt.asIntN(32, BigInt(X60Qx_21266))))) {
                                                             X60Qx_21264 = (mem.i32((mem.u32(X60Qii_51) + 4)) === mem.i32((mem.u32(X60Qii_51) + 8)));
                                                           } else {
                                                             X60Qx_21264 = false;
                                                           }
                                                           if (X60Qx_21264) {
                                                             var X60Qx_21267 = intVal_0_nif0bno621(r_39);
-                                                            X60Qx_21263 = (Number(BigInt.asIntN(32, X60Qx_21267)) === mem.i32((mem.u32(X60Qii_51) + 4)));
+                                                            X60Qx_21263 = (Number(BigInt.asIntN(32, BigInt(X60Qx_21267))) === mem.i32((mem.u32(X60Qii_51) + 4)));
                                                           } else {
                                                             X60Qx_21263 = false;
                                                           }
@@ -179347,8 +179427,8 @@ function semCase_1_semiw27pt1(c_300, dest_84, cur_120, asExpr_4) {
                                           add_0_Ir57zmq1_semiw27pt1(seenIvals_1, (() => {
                                             var _o = allocFixed(12);
                                             mem.setU8(_o, 105);
-                                            mem.setI32((_o + 4), Number(BigInt.asIntN(32, X60Qx_21269)));
-                                            mem.setI32((_o + 8), Number(BigInt.asIntN(32, X60Qx_21270)));
+                                            mem.setI32((_o + 4), Number(BigInt.asIntN(32, BigInt(X60Qx_21269))));
+                                            mem.setI32((_o + 8), Number(BigInt.asIntN(32, BigInt(X60Qx_21270))));
                                             return _o;
                                           })());
                                         }
@@ -180197,7 +180277,7 @@ function condSig_0_semiw27pt1(c_301, cur_121, sig_0, hasCall_0) {
       {
         var X60Qx_21360 = intVal_0_nif0bno621(cur_121);
         var X60Qtmp_1927 = allocFixed(8);
-        mem.copy(X60Qtmp_1927, dollarQ_1_sysvq0asl(X60Qx_21360), 8);
+        mem.copy(X60Qtmp_1927, dollarQ_1_sysvq0asl(BigInt(X60Qx_21360)), 8);
         var X60Qtmp_1926 = allocFixed(8);
         mem.copy(X60Qtmp_1926, ampQ_0_sysvq0asl((() => {
           var _o = allocFixed(8);
@@ -180214,7 +180294,7 @@ function condSig_0_semiw27pt1(c_301, cur_121, sig_0, hasCall_0) {
       {
         var X60Qx_21361 = uintVal_0_nif0bno621(cur_121);
         var X60Qtmp_1929 = allocFixed(8);
-        mem.copy(X60Qtmp_1929, dollarQ_0_sysvq0asl(X60Qx_21361), 8);
+        mem.copy(X60Qtmp_1929, dollarQ_0_sysvq0asl(BigInt(X60Qx_21361)), 8);
         var X60Qtmp_1928 = allocFixed(8);
         mem.copy(X60Qtmp_1928, ampQ_0_sysvq0asl((() => {
           var _o = allocFixed(8);
@@ -195334,7 +195414,7 @@ function semEnumBody_0_semiw27pt1(c_344, dest_106, mangledType_1, exported_0) {
         } else {
           X60Qx_381 = 16;
         }
-        addIntLit_0_nif0bno621(dest_106, X60Qx_381);
+        addIntLit_0_nif0bno621(dest_106, BigInt(X60Qx_381));
         closeTag_0_nif0bno621(dest_106);
       } else {
         if ((BigInt(mx_0) < 4294967296n)) {
@@ -213096,13 +213176,13 @@ function copyTypeOf_1_semiw27pt1(c_390, cur_144, subst_6) {
                 if ((!true)) {
                 }
                 var X60Qx_25436 = intVal_0_nif0bno621(rc_23);
-                lo_22 = Number(BigInt.asIntN(32, X60Qx_25436));
+                lo_22 = Number(BigInt.asIntN(32, BigInt(X60Qx_25436)));
                 skip_0_nif0bno621(rc_23);
               }
               var X60Qx_25437 = kind_1_nif0bno621(rc_23);
               if ((X60Qx_25437 === 3)) {
                 var X60Qx_25438 = intVal_0_nif0bno621(rc_23);
-                hi_27 = Number(BigInt.asIntN(32, X60Qx_25438));
+                hi_27 = Number(BigInt.asIntN(32, BigInt(X60Qx_25438)));
               }
               {
                 while ((0 < mem.i32((rc_23 + 8)))) {
@@ -214257,7 +214337,7 @@ function copyArgType_0_semiw27pt1(c_394, cur_146, subst_8, env_3) {
           }
           if (X60Qx_25601) {
             var X60Qx_25603 = intVal_0_nif0bno621(tm_2);
-            member_0 = Number(BigInt.asIntN(32, X60Qx_25603));
+            member_0 = Number(BigInt.asIntN(32, BigInt(X60Qx_25603)));
           }
           leaveScopePartial_0_nif0bno621(tm_2, cursorScope_1683);
           var baseTy_5 = allocFixed(56);
@@ -214864,7 +214944,7 @@ function copyArgType_0_semiw27pt1(c_394, cur_146, subst_8, env_3) {
                   }
                   if (X60Qx_25687) {
                     var X60Qx_25689 = intVal_0_nif0bno621(m_208);
-                    idx_109 = Number(BigInt.asIntN(32, X60Qx_25689));
+                    idx_109 = Number(BigInt.asIntN(32, BigInt(X60Qx_25689)));
                   }
                 }
                 var X60Qx_25690 = (!false);
@@ -218989,7 +219069,7 @@ function copySubst_1_semiw27pt1(c_400, dest_135, cur_149, subst_11, rename_5, en
                             var X60Qx_26263 = intBoundLit_0_semiw27pt1(boundTy_3, X60Qx_26262, lit_12);
                             if (X60Qx_26263) {
                               openTag_0_nif0bno621(dest_135, mem.u32((c_400 + 148)));
-                              addIntLit_0_nif0bno621(dest_135, mem.i64b(lit_12));
+                              addIntLit_0_nif0bno621(dest_135, BigInt(mem.i64b(lit_12)));
                               var X60Qx_26264 = (!false);
                               if ((!true)) {
                               }
@@ -220259,7 +220339,7 @@ function copySubst_1_semiw27pt1(c_400, dest_135, cur_149, subst_11, rename_5, en
                       var X60Qx_26417 = kind_1_nif0bno621(rc_25);
                       if ((X60Qx_26417 === 3)) {
                         var X60Qx_26418 = intVal_0_nif0bno621(rc_25);
-                        lo_23 = Number(BigInt.asIntN(32, X60Qx_26418));
+                        lo_23 = Number(BigInt.asIntN(32, BigInt(X60Qx_26418)));
                         var X60Qx_26419 = (!false);
                         if ((!true)) {
                         }
@@ -220268,7 +220348,7 @@ function copySubst_1_semiw27pt1(c_400, dest_135, cur_149, subst_11, rename_5, en
                       var X60Qx_26420 = kind_1_nif0bno621(rc_25);
                       if ((X60Qx_26420 === 3)) {
                         var X60Qx_26421 = intVal_0_nif0bno621(rc_25);
-                        hi_28 = Number(BigInt.asIntN(32, X60Qx_26421));
+                        hi_28 = Number(BigInt.asIntN(32, BigInt(X60Qx_26421)));
                         ok_37 = true;
                       }
                       var X60Qx_26422 = (!false);
@@ -223300,7 +223380,7 @@ function arrayFieldTypeOf_1_semiw27pt1(c_415, cur_154) {
                 if ((!true)) {
                 }
                 var X60Qx_26767 = intVal_0_nif0bno621(rc_27);
-                alo_1 = Number(BigInt.asIntN(32, X60Qx_26767));
+                alo_1 = Number(BigInt.asIntN(32, BigInt(X60Qx_26767)));
               } else {
                 var X60Qx_26768;
                 if ((mem.i32(seen_10) === 2)) {
@@ -223311,7 +223391,7 @@ function arrayFieldTypeOf_1_semiw27pt1(c_415, cur_154) {
                 }
                 if (X60Qx_26768) {
                   var X60Qx_26770 = intVal_0_nif0bno621(rc_27);
-                  n_67 = ((((Number(BigInt.asIntN(32, X60Qx_26770)) - alo_1) | 0) + 1) | 0);
+                  n_67 = ((((Number(BigInt.asIntN(32, BigInt(X60Qx_26770))) - alo_1) | 0) + 1) | 0);
                 }
               }
             }
@@ -228800,7 +228880,7 @@ function scanVariantCase_0_semiw27pt1(c_428, caseCur_0) {
                     if ((X60Qx_27446 === 3)) {
                       var X60Qx_27447 = intVal_0_nif0bno621(rg_13);
                       var X60Qtmp_2586 = allocFixed(8);
-                      mem.copy(X60Qtmp_2586, dollarQ_1_sysvq0asl(X60Qx_27447), 8);
+                      mem.copy(X60Qtmp_2586, dollarQ_1_sysvq0asl(BigInt(X60Qx_27447)), 8);
                       var X60Qx_27448 = allocFixed(8);
                       mem.copy(X60Qx_27448, ampQ_0_sysvq0asl((() => {
                         var _o = allocFixed(8);
@@ -229140,7 +229220,7 @@ function intFromLabel_0_semiw27pt1(r_0) {
         }
         if (X60Qx_27496) {
           var X60Qx_27501 = getQ_9_sysvq0asl(r_0, mem.i32(i_378));
-          result_420 = BigInt.asIntN(64, (BigInt.asIntN(64, (result_420 * 10n)) + BigInt(((X60Qx_27501 - 48) | 0))));
+          result_420 = BigInt.asIntN(64, (BigInt.asIntN(64, (BigInt(result_420) * 10n)) + BigInt(((X60Qx_27501 - 48) | 0))));
           inc_1_I6wjjge_cmdqs323n1(i_378);
         } else {
           break;
@@ -229152,7 +229232,7 @@ function intFromLabel_0_semiw27pt1(r_0) {
     var X60Qx_27502 = (!false);
     if ((!true)) {
     }
-    result_420 = BigInt.asIntN(64, (-result_420));
+    result_420 = BigInt.asIntN(64, (-BigInt(result_420)));
   }
   return result_420;
 }
@@ -229271,7 +229351,7 @@ function emitVariantHookCase_0_semiw27pt1(c_430, h_0, vinfo_1, mode_0) {
                                     }
                                     if (X60Qx_27513) {
                                       var X60Qx_27516 = intFromLabel_0_semiw27pt1(mem.u32(X60Qii_5));
-                                      addIntLit_0_nif0bno621(h_0, X60Qx_27516);
+                                      addIntLit_0_nif0bno621(h_0, BigInt(X60Qx_27516));
                                     } else {
                                       addSymUse_0_nif0bno621(h_0, mem.u32(X60Qii_5));
                                     }
@@ -234516,7 +234596,7 @@ function registerBranchBody_0_semiw27pt1(c_434, brc_0, flds_6, br_0, idx_1, owne
                                 if ((X60Qx_28133 === 3)) {
                                   var X60Qx_28134 = intVal_0_nif0bno621(rg_17);
                                   var X60Qtmp_2669 = allocFixed(8);
-                                  mem.copy(X60Qtmp_2669, dollarQ_1_sysvq0asl(X60Qx_28134), 8);
+                                  mem.copy(X60Qtmp_2669, dollarQ_1_sysvq0asl(BigInt(X60Qx_28134)), 8);
                                   var X60Qx_28135 = allocFixed(8);
                                   mem.copy(X60Qx_28135, ampQ_0_sysvq0asl((() => {
                                     var _o = allocFixed(8);
@@ -235141,7 +235221,7 @@ function registerObjectFields_0_semiw27pt1(c_435, b_12, flds_7, idx_2, vinfo_3, 
                               if ((X60Qx_28225 === 3)) {
                                 var X60Qx_28226 = intVal_0_nif0bno621(rg_25);
                                 var X60Qtmp_2681 = allocFixed(8);
-                                mem.copy(X60Qtmp_2681, dollarQ_1_sysvq0asl(X60Qx_28226), 8);
+                                mem.copy(X60Qtmp_2681, dollarQ_1_sysvq0asl(BigInt(X60Qx_28226)), 8);
                                 var X60Qx_28227 = allocFixed(8);
                                 mem.copy(X60Qx_28227, ampQ_0_sysvq0asl((() => {
                                   var _o = allocFixed(8);
@@ -235562,7 +235642,7 @@ function lensEmitType_0_semiw27pt1(c_440, b_14, tT_0, fT_0, typeSym_0, fields_4)
               } else {
                 X60Qx_491 = 0;
               }
-              addIntLit_0_nif0bno621(b_14, X60Qx_491);
+              addIntLit_0_nif0bno621(b_14, BigInt(X60Qx_491));
               var X60Qx_28264 = (!false);
               if ((!true)) {
               }
@@ -238628,7 +238708,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
               var X60Qx_28694 = kind_1_nif0bno621(lastC_3);
               if ((X60Qx_28694 === 3)) {
                 var X60Qx_28695 = intVal_0_nif0bno621(lastC_3);
-                ord_5 = Number(BigInt.asIntN(32, X60Qx_28695));
+                ord_5 = Number(BigInt.asIntN(32, BigInt(X60Qx_28695)));
               } else {
                 var X60Qx_28696 = kind_1_nif0bno621(lastC_3);
                 if ((X60Qx_28696 === 2)) {
@@ -238697,7 +238777,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
                       var X60Qx_28708 = kind_1_nif0bno621(ordC_3);
                       if ((X60Qx_28708 === 3)) {
                         var X60Qx_28709 = intVal_0_nif0bno621(ordC_3);
-                        ord_5 = Number(BigInt.asIntN(32, X60Qx_28709));
+                        ord_5 = Number(BigInt.asIntN(32, BigInt(X60Qx_28709)));
                       } else {
                         var doneOrd_3 = false;
                         var X60Qx_28710;
@@ -238820,7 +238900,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
                         } else {
                           var X60Qx_28729 = foldRawArrayDim_0_semiw27pt1(c_444, ordC_3, evT_3);
                           if (X60Qx_28729) {
-                            ord_5 = Number(BigInt.asIntN(32, mem.i64b(evT_3)));
+                            ord_5 = Number(BigInt.asIntN(32, BigInt(mem.i64b(evT_3))));
                           } else {
                             var X60Qx_28730;
                             var X60Qx_28731;
@@ -238847,7 +238927,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
                               X60Qx_28730 = false;
                             }
                             if (X60Qx_28730) {
-                              ord_5 = Number(BigInt.asIntN(32, mem.i64b(evT_3)));
+                              ord_5 = Number(BigInt.asIntN(32, BigInt(mem.i64b(evT_3))));
                             }
                           }
                         }
@@ -238862,7 +238942,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
                       mem.setI64(ev_3, 0n);
                       var X60Qx_28735 = foldRawArrayDim_0_semiw27pt1(c_444, lastC_3, ev_3);
                       if (X60Qx_28735) {
-                        ord_5 = Number(BigInt.asIntN(32, mem.i64b(ev_3)));
+                        ord_5 = Number(BigInt.asIntN(32, BigInt(mem.i64b(ev_3))));
                       } else {
                         var X60Qx_28736;
                         var X60Qx_28737;
@@ -238892,7 +238972,7 @@ function registerTypeBody_0_semiw27pt1(c_444, cur_156) {
                           var X60Qx_28740 = (!false);
                           if ((!true)) {
                           }
-                          ord_5 = Number(BigInt.asIntN(32, mem.i64b(ev_3)));
+                          ord_5 = Number(BigInt.asIntN(32, BigInt(mem.i64b(ev_3))));
                         }
                       }
                     }
@@ -240743,7 +240823,7 @@ function loadTypesFrom_0_semiw27pt1(c_445, cur_157) {
                                     if ((!true)) {
                                     }
                                     var X60Qx_29047 = intVal_0_nif0bno621(tc2_26);
-                                    mord_5 = Number(BigInt.asIntN(32, X60Qx_29047));
+                                    mord_5 = Number(BigInt.asIntN(32, BigInt(X60Qx_29047)));
                                   }
                                   inc_1_I6wjjge_cmdqs323n1(ti2_11);
                                   skip_0_nif0bno621(tc2_26);
@@ -245031,7 +245111,7 @@ function recordBoolConst_0_semiw27pt1(c_459, cur_160) {
               mem.copy(X60Qtmp_2856, cName_3, 8);
               nimStrWasMoved(cName_3);
               let X60Qx_29701 = intVal_0_nif0bno621(cc_25);
-              putQ_0_I7zgo87_semiw27pt1((c_459 + 1860), X60Qtmp_2856, X60Qx_29701);
+              putQ_0_I7zgo87_semiw27pt1((c_459 + 1860), X60Qtmp_2856, BigInt(X60Qx_29701));
             }
           }
         }
@@ -251640,7 +251720,7 @@ function putQ_0_I7zgo87_semiw27pt1(t_422, k_396, v_124) {
     let X60Qtmp_2937 = allocFixed(8);
     mem.copy(X60Qtmp_2937, k_396, 8);
     nimStrWasMoved(k_396);
-    rawPut_0_Iv6gh8g_semiw27pt1(t_422, X60Qtmp_2937, v_124, h_73);
+    rawPut_0_Iv6gh8g_semiw27pt1(t_422, X60Qtmp_2937, BigInt(v_124), h_73);
   }
   nimStrDestroy(k_396);
 }
@@ -266226,7 +266306,7 @@ function modDivisorOf_1_semiw27pt1(c_482, cur_172, divv_1) {
     leaveScope_0_nif0bno621(m_89, cursorScope_294);
     var X60Qx_6461;
     if (isMod_1) {
-      X60Qx_6461 = (0n < d_22);
+      X60Qx_6461 = (0n < BigInt(d_22));
     } else {
       X60Qx_6461 = false;
     }
@@ -268715,9 +268795,9 @@ function dollarQ_0_sysvq0asl(x_224) {
     mem.setU32((_o + 4), 0);
     return _o;
   })(), 8);
-  if ((x_224 < 10n)) {
+  if ((BigInt(x_224) < 10n)) {
     nimStrDestroy(result_19);
-    var X60Qx_57 = nimIcheckB(Number(BigInt.asIntN(32, x_224)), 9);
+    var X60Qx_57 = nimIcheckB(Number(BigInt.asIntN(32, BigInt(x_224))), 9);
     var X60Qx_58 = allocFixed(8);
     mem.copy(X60Qx_58, substr_0_sysvq0asl((NegTen_0_sysvq0asl + (X60Qx_57 * 8)), 1, 1), 8);
     mem.copy(result_19, X60Qx_58, 8);
@@ -268727,9 +268807,9 @@ function dollarQ_0_sysvq0asl(x_224) {
         var y_208 = x_224;
         {
           while (true) {
-            add_1_sysvq0asl(result_19, Number(BigInt.asUintN(8, BigInt.asUintN(64, ((y_208 % 10n) + 48n)))));
-            y_208 = (y_208 / 10n);
-            if ((y_208 === 0n)) {
+            add_1_sysvq0asl(result_19, Number(BigInt.asUintN(8, BigInt.asUintN(64, ((BigInt(y_208) % 10n) + 48n)))));
+            y_208 = (BigInt(y_208) / 10n);
+            if ((BigInt(y_208) === 0n)) {
               break whileStmtLabel_0;
             }
           }
@@ -268758,18 +268838,18 @@ function dollarQ_0_sysvq0asl(x_224) {
 function dollarQ_1_sysvq0asl(x_225) {
   let result_20 = allocFixed(8);
   nimStrWasMoved(result_20);
-  if ((x_225 < 0n)) {
-    if ((-10n < x_225)) {
+  if ((BigInt(x_225) < 0n)) {
+    if ((-10n < BigInt(x_225))) {
       nimStrDestroy(result_20);
-      let X60Qx_62 = nimIcheckB(Number(BigInt.asIntN(32, BigInt.asIntN(64, (-x_225)))), 9);
+      let X60Qx_62 = nimIcheckB(Number(BigInt.asIntN(32, BigInt.asIntN(64, (-BigInt(x_225))))), 9);
       let X60Qx_63 = allocFixed(8);
       mem.copy(X60Qx_63, nimStrDup((NegTen_0_sysvq0asl + (X60Qx_62 * 8))), 8);
       mem.copy(result_20, X60Qx_63, 8);
     } else {
-      if ((x_225 === -9223372036854775808n)) {
+      if ((BigInt(x_225) === -9223372036854775808n)) {
         nimStrDestroy(result_20);
         let X60Qtmp_0 = allocFixed(8);
-        mem.copy(X60Qtmp_0, dollarQ_0_sysvq0asl(BigInt.asUintN(64, x_225)), 8);
+        mem.copy(X60Qtmp_0, dollarQ_0_sysvq0asl(BigInt.asUintN(64, BigInt(x_225))), 8);
         let X60Qx_64 = allocFixed(8);
         mem.copy(X60Qx_64, ampQ_0_sysvq0asl((() => {
           let _o = allocFixed(8);
@@ -268782,7 +268862,7 @@ function dollarQ_1_sysvq0asl(x_225) {
       } else {
         nimStrDestroy(result_20);
         let X60Qtmp_1 = allocFixed(8);
-        mem.copy(X60Qtmp_1, dollarQ_1_sysvq0asl(BigInt.asIntN(64, (0n - x_225))), 8);
+        mem.copy(X60Qtmp_1, dollarQ_1_sysvq0asl(BigInt.asIntN(64, (0n - BigInt(x_225)))), 8);
         let X60Qx_65 = allocFixed(8);
         mem.copy(X60Qx_65, ampQ_0_sysvq0asl((() => {
           let _o = allocFixed(8);
@@ -268795,7 +268875,7 @@ function dollarQ_1_sysvq0asl(x_225) {
       }
     }
   } else {
-    if ((x_225 < 10n)) {
+    if ((BigInt(x_225) < 10n)) {
       nimStrDestroy(result_20);
       mem.copy(result_20, (() => {
         let _o = allocFixed(8);
@@ -268803,11 +268883,11 @@ function dollarQ_1_sysvq0asl(x_225) {
         mem.setU32((_o + 4), 0);
         return _o;
       })(), 8);
-      add_1_sysvq0asl(result_20, Number(BigInt.asUintN(8, BigInt.asIntN(64, (x_225 + 48n)))));
+      add_1_sysvq0asl(result_20, Number(BigInt.asUintN(8, BigInt.asIntN(64, (BigInt(x_225) + 48n)))));
     } else {
       nimStrDestroy(result_20);
       let X60Qx_66 = allocFixed(8);
-      mem.copy(X60Qx_66, dollarQ_0_sysvq0asl(BigInt.asUintN(64, x_225)), 8);
+      mem.copy(X60Qx_66, dollarQ_0_sysvq0asl(BigInt.asUintN(64, BigInt(x_225))), 8);
       mem.copy(result_20, X60Qx_66, 8);
     }
   }
@@ -268826,7 +268906,7 @@ function dollarQ_2_sysvq0asl(x_226) {
 
 function addInt_0_sysvq0asl(s_0, x_227) {
   let X60Qtmp_2 = allocFixed(8);
-  mem.copy(X60Qtmp_2, dollarQ_1_sysvq0asl(x_227), 8);
+  mem.copy(X60Qtmp_2, dollarQ_1_sysvq0asl(BigInt(x_227)), 8);
   add_2_sysvq0asl(s_0, X60Qtmp_2);
   nimStrDestroy(X60Qtmp_2);
 }
@@ -275064,7 +275144,7 @@ function multipleOfPow2_1_sysvq0asl(value_4, e2_1) {
   let result_195;
   let X60Qx_366;
   if ((e2_1 < 64)) {
-    X60Qx_366 = ((value_4 & BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(e2_1))) - 1n))) === 0n);
+    X60Qx_366 = ((BigInt(value_4) & BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(e2_1))) - 1n))) === 0n);
   } else {
     X60Qx_366 = false;
   }
@@ -275228,7 +275308,7 @@ function multipleOfPow5_0_sysvq0asl(value_5, e5_0) {
   let X60Qx_367 = nimIcheckB(e5_0, 24);
   let m5_0 = allocFixed(16);
   mem.copy(m5_0, (mod5_0 + (X60Qx_367 * 16)), 16);
-  result_196 = (BigInt.asUintN(64, (value_5 * mem.u64b(m5_0))) <= mem.u64b((m5_0 + 8)));
+  result_196 = (BigInt.asUintN(64, (BigInt(value_5) * mem.u64b(m5_0))) <= mem.u64b((m5_0 + 8)));
   return result_196;
 }
 
@@ -275249,11 +275329,11 @@ function toDecimal64AsymmetricInterval_0_sysvq0asl(e2_2) {
     X60Qx_369 = false;
   }
   let lowerEndpointIsInteger_0 = X60Qx_369;
-  let xi_0 = BigInt.asUintN(64, (lowerEndpoint_0 + BigInt((!lowerEndpointIsInteger_0))));
+  let xi_0 = BigInt.asUintN(64, (BigInt(lowerEndpoint_0) + BigInt((!lowerEndpointIsInteger_0))));
   let zi_0 = upperEndpoint_0;
   let q_5 = allocFixed(8);
-  mem.setU64(q_5, (zi_0 / 10n));
-  if ((xi_0 <= BigInt.asUintN(64, (mem.u64b(q_5) * 10n)))) {
+  mem.setU64(q_5, (BigInt(zi_0) / 10n));
+  if ((BigInt(xi_0) <= BigInt.asUintN(64, (BigInt(mem.u64b(q_5)) * 10n)))) {
     mem.copy(result_197, (() => {
       let _o = allocFixed(16);
       mem.setU64(_o, mem.u64b(q_5));
@@ -275264,9 +275344,9 @@ function toDecimal64AsymmetricInterval_0_sysvq0asl(e2_2) {
   }
   mem.setU64(q_5, (BigInt.asUintN(64, ((mem.u64b(pow10_4) >> BigInt(((((64 - (54 | 0)) | 0) - betaMinus1_2) | 0))) + 1n)) / 2n));
   if ((e2_2 === -77)) {
-    dec_0_Idgnuqw1_sysvq0asl(q_5, BigInt((!((mem.u64b(q_5) % 2n) === 0n))));
+    dec_0_Idgnuqw1_sysvq0asl(q_5, BigInt((!((BigInt(mem.u64b(q_5)) % 2n) === 0n))));
   } else {
-    inc_0_Ineawm41_party5a2l1(q_5, BigInt((mem.u64b(q_5) < xi_0)));
+    inc_0_Ineawm41_party5a2l1(q_5, BigInt((BigInt(mem.u64b(q_5)) < BigInt(xi_0))));
   }
   mem.copy(result_197, (() => {
     let _o = allocFixed(16);
@@ -275285,39 +275365,39 @@ function computeDelta_0_sysvq0asl(pow10_0, betaMinus1_0) {
 
 function dbLo32_0_sysvq0asl(x_343) {
   let result_199;
-  result_199 = Number(BigInt.asUintN(32, x_343));
+  result_199 = Number(BigInt.asUintN(32, BigInt(x_343)));
   return result_199;
 }
 
 function dbHi32_0_sysvq0asl(x_344) {
   let result_200;
-  result_200 = Number(BigInt.asUintN(32, (x_344 >> 32n)));
+  result_200 = Number(BigInt.asUintN(32, (BigInt(x_344) >> 32n)));
   return result_200;
 }
 
 function mul128_0_sysvq0asl(a_70, b_25) {
   let result_201 = allocFixed(16);
-  let X60Qx_370 = dbLo32_0_sysvq0asl(a_70);
-  let X60Qx_371 = dbLo32_0_sysvq0asl(b_25);
+  let X60Qx_370 = dbLo32_0_sysvq0asl(BigInt(a_70));
+  let X60Qx_371 = dbLo32_0_sysvq0asl(BigInt(b_25));
   let b00_0 = BigInt.asUintN(64, (BigInt(X60Qx_370) * BigInt(X60Qx_371)));
-  let X60Qx_372 = dbLo32_0_sysvq0asl(a_70);
-  let X60Qx_373 = dbHi32_0_sysvq0asl(b_25);
+  let X60Qx_372 = dbLo32_0_sysvq0asl(BigInt(a_70));
+  let X60Qx_373 = dbHi32_0_sysvq0asl(BigInt(b_25));
   let b01_1 = BigInt.asUintN(64, (BigInt(X60Qx_372) * BigInt(X60Qx_373)));
-  let X60Qx_374 = dbHi32_0_sysvq0asl(a_70);
-  let X60Qx_375 = dbLo32_0_sysvq0asl(b_25);
+  let X60Qx_374 = dbHi32_0_sysvq0asl(BigInt(a_70));
+  let X60Qx_375 = dbLo32_0_sysvq0asl(BigInt(b_25));
   let b10_0 = BigInt.asUintN(64, (BigInt(X60Qx_374) * BigInt(X60Qx_375)));
-  let X60Qx_376 = dbHi32_0_sysvq0asl(a_70);
-  let X60Qx_377 = dbHi32_0_sysvq0asl(b_25);
+  let X60Qx_376 = dbHi32_0_sysvq0asl(BigInt(a_70));
+  let X60Qx_377 = dbHi32_0_sysvq0asl(BigInt(b_25));
   let b11_1 = BigInt.asUintN(64, (BigInt(X60Qx_376) * BigInt(X60Qx_377)));
-  let X60Qx_378 = dbHi32_0_sysvq0asl(b00_0);
-  let mid1_0 = BigInt.asUintN(64, (b10_0 + BigInt(X60Qx_378)));
-  let X60Qx_379 = dbLo32_0_sysvq0asl(mid1_0);
-  let mid2_0 = BigInt.asUintN(64, (b01_1 + BigInt(X60Qx_379)));
-  let X60Qx_380 = dbHi32_0_sysvq0asl(mid1_0);
-  let X60Qx_381 = dbHi32_0_sysvq0asl(mid2_0);
-  let hi_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (b11_1 + BigInt(X60Qx_380))) + BigInt(X60Qx_381)));
-  let X60Qx_382 = dbLo32_0_sysvq0asl(b00_0);
-  let X60Qx_383 = dbLo32_0_sysvq0asl(mid2_0);
+  let X60Qx_378 = dbHi32_0_sysvq0asl(BigInt(b00_0));
+  let mid1_0 = BigInt.asUintN(64, (BigInt(b10_0) + BigInt(X60Qx_378)));
+  let X60Qx_379 = dbLo32_0_sysvq0asl(BigInt(mid1_0));
+  let mid2_0 = BigInt.asUintN(64, (BigInt(b01_1) + BigInt(X60Qx_379)));
+  let X60Qx_380 = dbHi32_0_sysvq0asl(BigInt(mid1_0));
+  let X60Qx_381 = dbHi32_0_sysvq0asl(BigInt(mid2_0));
+  let hi_1 = BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt(b11_1) + BigInt(X60Qx_380))) + BigInt(X60Qx_381)));
+  let X60Qx_382 = dbLo32_0_sysvq0asl(BigInt(b00_0));
+  let X60Qx_383 = dbLo32_0_sysvq0asl(BigInt(mid2_0));
   let lo_0 = (BigInt(X60Qx_382) | BigInt.asUintN(64, (BigInt(X60Qx_383) << 32n)));
   mem.copy(result_201, (() => {
     let _o = allocFixed(16);
@@ -275331,9 +275411,9 @@ function mul128_0_sysvq0asl(a_70, b_25) {
 function mulShift_0_sysvq0asl(x_345, y_205) {
   let result_202;
   let p1_0 = allocFixed(16);
-  mem.copy(p1_0, mul128_0_sysvq0asl(x_345, mem.u64b(y_205)), 16);
+  mem.copy(p1_0, mul128_0_sysvq0asl(BigInt(x_345), mem.u64b(y_205)), 16);
   let p0_0 = allocFixed(16);
-  mem.copy(p0_0, mul128_0_sysvq0asl(x_345, mem.u64b((y_205 + 8))), 16);
+  mem.copy(p0_0, mul128_0_sysvq0asl(BigInt(x_345), mem.u64b((y_205 + 8))), 16);
   plusQeQ_0_Iar0t5x_nif0bno621((p1_0 + 8), mem.u64b(p0_0));
   inc_0_Ineawm41_party5a2l1(p1_0, BigInt((mem.u64b((p1_0 + 8)) < mem.u64b(p0_0))));
   result_202 = mem.u64b(p1_0);
@@ -275342,12 +275422,12 @@ function mulShift_0_sysvq0asl(x_345, y_205) {
 
 function mulParity_0_sysvq0asl(twoF_0, pow10_1, betaMinus1_1) {
   let result_203;
-  let p01_0 = BigInt.asUintN(64, (twoF_0 * mem.u64b(pow10_1)));
+  let p01_0 = BigInt.asUintN(64, (BigInt(twoF_0) * mem.u64b(pow10_1)));
   let X60Qx_384 = allocFixed(16);
-  mem.copy(X60Qx_384, mul128_0_sysvq0asl(twoF_0, mem.u64b((pow10_1 + 8))), 16);
+  mem.copy(X60Qx_384, mul128_0_sysvq0asl(BigInt(twoF_0), mem.u64b((pow10_1 + 8))), 16);
   let p10_0 = mem.u64b(X60Qx_384);
-  let mid_1 = BigInt.asUintN(64, (p01_0 + p10_0));
-  result_203 = (!((mid_1 & BigInt.asUintN(64, (1n << BigInt(((64 - betaMinus1_1) | 0))))) === 0n));
+  let mid_1 = BigInt.asUintN(64, (BigInt(p01_0) + BigInt(p10_0)));
+  result_203 = (!((BigInt(mid_1) & BigInt.asUintN(64, (1n << BigInt(((64 - betaMinus1_1) | 0))))) === 0n));
   return result_203;
 }
 
@@ -275360,7 +275440,7 @@ function isIntegralEndpoint_0_sysvq0asl(twoF_1, e2_3, minusK_0) {
     return true;
   }
   if ((e2_3 <= 86)) {
-    let X60Qx_385 = multipleOfPow5_0_sysvq0asl(twoF_1, minusK_0);
+    let X60Qx_385 = multipleOfPow5_0_sysvq0asl(BigInt(twoF_1), minusK_0);
     result_204 = X60Qx_385;
     return result_204;
   }
@@ -275371,7 +275451,7 @@ function isIntegralEndpoint_0_sysvq0asl(twoF_1, e2_3, minusK_0) {
 function isIntegralMidpoint_0_sysvq0asl(twoF_2, e2_4, minusK_1) {
   let result_205;
   if ((e2_4 < -4)) {
-    let X60Qx_386 = multipleOfPow2_1_sysvq0asl(twoF_2, ((((minusK_1 - e2_4) | 0) + 1) | 0));
+    let X60Qx_386 = multipleOfPow2_1_sysvq0asl(BigInt(twoF_2), ((((minusK_1 - e2_4) | 0) + 1) | 0));
     result_205 = X60Qx_386;
     return result_205;
   }
@@ -275379,7 +275459,7 @@ function isIntegralMidpoint_0_sysvq0asl(twoF_2, e2_4, minusK_1) {
     return true;
   }
   if ((e2_4 <= 86)) {
-    let X60Qx_387 = multipleOfPow5_0_sysvq0asl(twoF_2, minusK_1);
+    let X60Qx_387 = multipleOfPow5_0_sysvq0asl(BigInt(twoF_2), minusK_1);
     result_205 = X60Qx_387;
     return result_205;
   }
@@ -275394,9 +275474,9 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
   let smallDivisor_0 = 100;
   let m2_0;
   let e2_5;
-  if ((!(ieeeExponent_1 === 0n))) {
-    m2_0 = (4503599627370496n | ieeeSignificand_1);
-    e2_5 = ((Number(BigInt.asIntN(32, ieeeExponent_1)) - 1075) | 0);
+  if ((!(BigInt(ieeeExponent_1) === 0n))) {
+    m2_0 = (4503599627370496n | BigInt(ieeeSignificand_1));
+    e2_5 = ((Number(BigInt.asIntN(32, BigInt(ieeeExponent_1))) - 1075) | 0);
     let X60Qx_388;
     let X60Qx_389;
     if ((0 <= (-e2_5))) {
@@ -275405,7 +275485,7 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
       X60Qx_389 = false;
     }
     if (X60Qx_389) {
-      let X60Qx_390 = multipleOfPow2_1_sysvq0asl(m2_0, (-e2_5));
+      let X60Qx_390 = multipleOfPow2_1_sysvq0asl(BigInt(m2_0), (-e2_5));
       X60Qx_388 = X60Qx_390;
     } else {
       X60Qx_388 = false;
@@ -275413,15 +275493,15 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
     if (X60Qx_388) {
       mem.copy(result_206, (() => {
         let _o = allocFixed(16);
-        mem.setU64(_o, (m2_0 >> BigInt((-e2_5))));
+        mem.setU64(_o, (BigInt(m2_0) >> BigInt((-e2_5))));
         mem.setI32((_o + 8), 0);
         return _o;
       })(), 16);
       return result_206;
     }
     let X60Qx_391;
-    if ((ieeeSignificand_1 === 0n)) {
-      X60Qx_391 = (1n < ieeeExponent_1);
+    if ((BigInt(ieeeSignificand_1) === 0n)) {
+      X60Qx_391 = (1n < BigInt(ieeeExponent_1));
     } else {
       X60Qx_391 = false;
     }
@@ -275435,7 +275515,7 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
     m2_0 = ieeeSignificand_1;
     e2_5 = (-1074 | 0);
   }
-  let isEven_1 = ((m2_0 % 2n) === 0n);
+  let isEven_1 = ((BigInt(m2_0) % 2n) === 0n);
   let acceptLower_0 = isEven_1;
   let acceptUpper_0 = isEven_1;
   let X60Qx_393 = dbFloorLog10Pow2_0_sysvq0asl(e2_5);
@@ -275445,13 +275525,13 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
   let pow10_5 = allocFixed(16);
   mem.copy(pow10_5, computePow10_0_sysvq0asl((-minusK_3)), 16);
   let delta_0 = computeDelta_0_sysvq0asl(pow10_5, betaMinus1_3);
-  let twoFl_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (2n * m2_0)) - 1n));
-  let twoFc_0 = BigInt.asUintN(64, (2n * m2_0));
-  let twoFr_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (2n * m2_0)) + 1n));
-  let zi_1 = mulShift_0_sysvq0asl(BigInt.asUintN(64, (twoFr_0 << BigInt(betaMinus1_3))), pow10_5);
+  let twoFl_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (2n * BigInt(m2_0))) - 1n));
+  let twoFc_0 = BigInt.asUintN(64, (2n * BigInt(m2_0)));
+  let twoFr_0 = BigInt.asUintN(64, (BigInt.asUintN(64, (2n * BigInt(m2_0))) + 1n));
+  let zi_1 = mulShift_0_sysvq0asl(BigInt.asUintN(64, (BigInt(twoFr_0) << BigInt(betaMinus1_3))), pow10_5);
   let q_6 = allocFixed(8);
-  mem.setU64(q_6, (zi_1 / 1000n));
-  let r_5 = ((Number(BigInt.asUintN(32, zi_1)) - (Math.imul(1000, Number(BigInt.asUintN(32, mem.u64b(q_6)))) >>> 0)) >>> 0);
+  mem.setU64(q_6, (BigInt(zi_1) / 1000n));
+  let r_5 = ((Number(BigInt.asUintN(32, BigInt(zi_1))) - (Math.imul(1000, Number(BigInt.asUintN(32, BigInt(mem.u64b(q_6))))) >>> 0)) >>> 0);
   if ((r_5 < delta_0)) {
     let X60Qx_395;
     let X60Qx_396;
@@ -275463,7 +275543,7 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
     if (X60Qx_396) {
       X60Qx_395 = true;
     } else {
-      let X60Qx_397 = isIntegralEndpoint_0_sysvq0asl(twoFr_0, e2_5, minusK_3);
+      let X60Qx_397 = isIntegralEndpoint_0_sysvq0asl(BigInt(twoFr_0), e2_5, minusK_3);
       X60Qx_395 = (!X60Qx_397);
     }
     if (X60Qx_395) {
@@ -275482,7 +275562,7 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
       let X60Qx_398;
       let X60Qx_399;
       if (acceptLower_0) {
-        let X60Qx_400 = isIntegralEndpoint_0_sysvq0asl(twoFl_0, e2_5, minusK_3);
+        let X60Qx_400 = isIntegralEndpoint_0_sysvq0asl(BigInt(twoFl_0), e2_5, minusK_3);
         X60Qx_399 = X60Qx_400;
       } else {
         X60Qx_399 = false;
@@ -275490,7 +275570,7 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
       if (X60Qx_399) {
         X60Qx_398 = true;
       } else {
-        let X60Qx_401 = mulParity_0_sysvq0asl(twoFl_0, pow10_5, betaMinus1_3);
+        let X60Qx_401 = mulParity_0_sysvq0asl(BigInt(twoFl_0), pow10_5, betaMinus1_3);
         X60Qx_398 = X60Qx_401;
       }
       if (X60Qx_398) {
@@ -275505,19 +275585,19 @@ function toDecimal64_0_sysvq0asl(ieeeSignificand_1, ieeeExponent_1) {
     } else {
     }
   }
-  mem.setU64(q_6, BigInt.asUintN(64, (mem.u64b(q_6) * 10n)));
+  mem.setU64(q_6, BigInt.asUintN(64, (BigInt(mem.u64b(q_6)) * 10n)));
   let dist_0 = ((((r_5 - Math.trunc((delta_0 / 2))) >>> 0) + Math.trunc((100 / 2))) >>> 0);
   let distQQ_0 = Math.trunc((dist_0 / 100));
   plusQeQ_0_Iar0t5x_nif0bno621(q_6, BigInt(distQQ_0));
   if ((dist_0 === (Math.imul(distQQ_0, 100) >>> 0))) {
     let approxYParity_0 = (!(((dist_0 & 1) >>> 0) === 0));
-    let X60Qx_402 = mulParity_0_sysvq0asl(twoFc_0, pow10_5, betaMinus1_3);
+    let X60Qx_402 = mulParity_0_sysvq0asl(BigInt(twoFc_0), pow10_5, betaMinus1_3);
     if ((!(X60Qx_402 === approxYParity_0))) {
       dec_1_Ifi4w3m1_sysvq0asl(q_6);
     } else {
       let X60Qx_403;
-      if ((!((mem.u64b(q_6) % 2n) === 0n))) {
-        let X60Qx_404 = isIntegralMidpoint_0_sysvq0asl(twoFc_0, e2_5, minusK_3);
+      if ((!((BigInt(mem.u64b(q_6)) % 2n) === 0n))) {
+        let X60Qx_404 = isIntegralMidpoint_0_sysvq0asl(BigInt(twoFc_0), e2_5, minusK_3);
         X60Qx_403 = X60Qx_404;
       } else {
         X60Qx_403 = false;
@@ -275591,9 +275671,9 @@ function printDecimalDigitsBackwards_1_sysvq0asl(buf_4, pos_4, output64_0) {
   mem.setI32(tz_2, 0);
   var nd_1 = allocFixed(4);
   mem.setI32(nd_1, 0);
-  if ((100000000n <= output64_1)) {
-    var q_8 = (output64_1 / 100000000n);
-    var r_7 = Number(BigInt.asUintN(32, (output64_1 % 100000000n)));
+  if ((100000000n <= BigInt(output64_1))) {
+    var q_8 = (BigInt(output64_1) / 100000000n);
+    var r_7 = Number(BigInt.asUintN(32, (BigInt(output64_1) % 100000000n)));
     output64_1 = q_8;
     dec_0_Ig5i8xp_nif0bno621(pos_9, 8);
     if ((!(r_7 === 0))) {
@@ -275604,7 +275684,7 @@ function printDecimalDigitsBackwards_1_sysvq0asl(buf_4, pos_4, output64_0) {
     }
     mem.setI32(nd_1, 8);
   }
-  var output_2 = Number(BigInt.asUintN(32, output64_1));
+  var output_2 = Number(BigInt.asUintN(32, BigInt(output64_1)));
   if ((10000 <= output_2)) {
     var q_9 = Math.trunc((output_2 / 10000));
     var r_8 = (output_2 % 10000);
@@ -275701,31 +275781,31 @@ function printDecimalDigitsBackwards_1_sysvq0asl(buf_4, pos_4, output64_0) {
 
 function decimalLength_1_sysvq0asl(v_4) {
   let result_209;
-  if ((!(Number(BigInt.asUintN(32, (v_4 >> 32n))) === 0))) {
-    if ((10000000000000000n <= v_4)) {
+  if ((!(Number(BigInt.asUintN(32, (BigInt(v_4) >> 32n))) === 0))) {
+    if ((10000000000000000n <= BigInt(v_4))) {
       return 17;
     }
-    if ((1000000000000000n <= v_4)) {
+    if ((1000000000000000n <= BigInt(v_4))) {
       return 16;
     }
-    if ((100000000000000n <= v_4)) {
+    if ((100000000000000n <= BigInt(v_4))) {
       return 15;
     }
-    if ((10000000000000n <= v_4)) {
+    if ((10000000000000n <= BigInt(v_4))) {
       return 14;
     }
-    if ((1000000000000n <= v_4)) {
+    if ((1000000000000n <= BigInt(v_4))) {
       return 13;
     }
-    if ((100000000000n <= v_4)) {
+    if ((100000000000n <= BigInt(v_4))) {
       return 12;
     }
-    if ((10000000000n <= v_4)) {
+    if ((10000000000n <= BigInt(v_4))) {
       return 11;
     }
     return 10;
   }
-  let v32_0 = Number(BigInt.asUintN(32, v_4));
+  let v32_0 = Number(BigInt.asUintN(32, BigInt(v_4)));
   if ((1000000000 <= v32_0)) {
     return 10;
   }
@@ -275765,7 +275845,7 @@ function formatDigits_1_sysvq0asl(buffer_2, pos_5, digits_4, decimalExponent_1, 
     var pos_10 = allocFixed(4);
     mem.setI32(pos_10, pos_5);
     var numDigits_1 = allocFixed(4);
-    mem.setI32(numDigits_1, decimalLength_1_sysvq0asl(digits_4));
+    mem.setI32(numDigits_1, decimalLength_1_sysvq0asl(BigInt(digits_4)));
     var decimalPoint_1 = ((mem.i32(numDigits_1) + decimalExponent_1) | 0);
     var X60Qx_413;
     if ((-6 <= decimalPoint_1)) {
@@ -275803,7 +275883,7 @@ function formatDigits_1_sysvq0asl(buffer_2, pos_5, digits_4, decimalExponent_1, 
   }
   var digitsEnd_1 = allocFixed(4);
   mem.setI32(digitsEnd_1, ((((mem.i32(pos_10) + decimalDigitsPosition_1) | 0) + mem.i32(numDigits_1)) | 0));
-  var tz_3 = printDecimalDigitsBackwards_1_sysvq0asl(buffer_2, mem.i32(digitsEnd_1), digits_4);
+  var tz_3 = printDecimalDigitsBackwards_1_sysvq0asl(buffer_2, mem.i32(digitsEnd_1), BigInt(digits_4));
   dec_0_Ig5i8xp_nif0bno621(digitsEnd_1, tz_3);
   dec_0_Ig5i8xp_nif0bno621(numDigits_1, tz_3);
   if (useFixed_1) {
@@ -275921,19 +276001,19 @@ function toChars_0_sysvq0asl(buffer_3, v_5, forceTrailingDotZero_3) {
   mem.copy(double_0, constructDouble_0_sysvq0asl(v_5), 8);
   let significand_1 = physicalSignificand_1_sysvq0asl(double_0);
   let exponent_1 = physicalExponent_1_sysvq0asl(double_0);
-  if ((!(exponent_1 === 2047n))) {
+  if ((!(BigInt(exponent_1) === 2047n))) {
     putQ_10_If2353w_sysvq0asl(buffer_3, mem.i32(pos_11), 45);
     let X60Qx_420 = signBit_1_sysvq0asl(double_0);
     inc_0_Iloplki_party5a2l1(pos_11, X60Qx_420);
     let X60Qx_421;
-    if ((!(exponent_1 === 0n))) {
+    if ((!(BigInt(exponent_1) === 0n))) {
       X60Qx_421 = true;
     } else {
-      X60Qx_421 = (!(significand_1 === 0n));
+      X60Qx_421 = (!(BigInt(significand_1) === 0n));
     }
     if (X60Qx_421) {
       let dec_1 = allocFixed(16);
-      mem.copy(dec_1, toDecimal64_0_sysvq0asl(significand_1, exponent_1), 16);
+      mem.copy(dec_1, toDecimal64_0_sysvq0asl(BigInt(significand_1), BigInt(exponent_1)), 16);
       let X60Qx_422 = formatDigits_1_sysvq0asl(buffer_3, mem.i32(pos_11), mem.u64b(dec_1), mem.i32((dec_1 + 8)), forceTrailingDotZero_3);
       result_211 = X60Qx_422;
       return result_211;
@@ -275952,7 +276032,7 @@ function toChars_0_sysvq0asl(buffer_3, v_5, forceTrailingDotZero_3) {
       return mem.i32(pos_11);
     }
   }
-  if ((significand_1 === 0n)) {
+  if ((BigInt(significand_1) === 0n)) {
     putQ_10_If2353w_sysvq0asl(buffer_3, mem.i32(pos_11), 45);
     let X60Qx_423 = signBit_1_sysvq0asl(double_0);
     inc_0_Iloplki_party5a2l1(pos_11, X60Qx_423);
@@ -276132,7 +276212,7 @@ function putQ_10_If2353w_sysvq0asl(x_380, i_70, elem_13) {
 }
 
 function dec_0_Idgnuqw1_sysvq0asl(x_382, y_218) {
-  mem.setU64(x_382, BigInt.asUintN(64, (mem.u64b(x_382) - y_218)));
+  mem.setU64(x_382, BigInt.asUintN(64, (mem.u64b(x_382) - BigInt(y_218))));
 }
 
 function dec_1_Ifi4w3m1_sysvq0asl(x_385) {
@@ -276936,7 +277016,7 @@ function combinedPayload_0_nif0bno621(c_11) {
           X60Qx_62 = false;
         }
         if (X60Qx_62) {
-          result_36 = (result_36 | BigInt.asUintN(64, (BigInt((mem.u32(((mem.u32((c_11 + 4)) + (Math.imul(mem.i32(i_3), 4) >>> 0)) >>> 0)) >>> 4)) << BigInt(mem.u32(shift_0)))));
+          result_36 = (BigInt(result_36) | BigInt.asUintN(64, (BigInt((mem.u32(((mem.u32((c_11 + 4)) + (Math.imul(mem.i32(i_3), 4) >>> 0)) >>> 0)) >>> 4)) << BigInt(mem.u32(shift_0)))));
           inc_1_I6wjjge_cmdqs323n1(i_3);
           plusQeQ_0_Ih8llpb_nif0bno621(shift_0, 28);
         } else {
@@ -277025,7 +277105,7 @@ function strVal_0_nif0bno621(c_13, pool_0) {
   } else {
     nimStrDestroy(X60Qx_2);
     let X60Qx_69 = combinedPayload_0_nif0bno621(c_13);
-    let X60Qx_70 = getQ_0_I8dhrvw_nif0bno621((pool_0 + 4), Number(BigInt.asUintN(32, (X60Qx_69 >> 1n))));
+    let X60Qx_70 = getQ_0_I8dhrvw_nif0bno621((pool_0 + 4), Number(BigInt.asUintN(32, (BigInt(X60Qx_69) >> 1n))));
     let X60Qx_71 = allocFixed(8);
     mem.copy(X60Qx_71, nimStrDup(X60Qx_70), 8);
     mem.copy(X60Qx_2, X60Qx_71, 8);
@@ -277094,7 +277174,7 @@ function symName_0_nif0bno621(c_17, pool_2) {
   } else {
     nimStrDestroy(X60Qx_4);
     let X60Qx_83 = combinedPayload_0_nif0bno621(c_17);
-    let X60Qx_84 = getQ_0_Irquinl1_nif0bno621(((pool_2 + 4) + 16), Number(BigInt.asUintN(32, (X60Qx_83 >> 1n))));
+    let X60Qx_84 = getQ_0_Irquinl1_nif0bno621(((pool_2 + 4) + 16), Number(BigInt.asUintN(32, (BigInt(X60Qx_83) >> 1n))));
     let X60Qx_85 = allocFixed(8);
     mem.copy(X60Qx_85, nimStrDup(X60Qx_84), 8);
     mem.copy(X60Qx_4, X60Qx_85, 8);
@@ -277169,10 +277249,10 @@ function intVal_0_nif0bno621(c_22) {
   let combined_0 = combinedPayload_0_nif0bno621(c_22);
   let X60Qx_6;
   if ((64 <= width_0)) {
-    X60Qx_6 = BigInt.asIntN(64, combined_0);
+    X60Qx_6 = BigInt.asIntN(64, BigInt(combined_0));
   } else {
     let shift_1 = BigInt(((64 - width_0) >>> 0));
-    X60Qx_6 = (BigInt.asIntN(64, BigInt.asUintN(64, (combined_0 << shift_1))) >> shift_1);
+    X60Qx_6 = (BigInt.asIntN(64, BigInt.asUintN(64, (BigInt(combined_0) << BigInt(shift_1)))) >> BigInt(shift_1));
   }
   result_49 = X60Qx_6;
   return result_49;
@@ -277298,7 +277378,7 @@ function cursorJump_0_nif0bno621(c_27) {
     quit_0_syn1lfpjv(1);
   }
   let X60Qx_107 = combinedPayload_0_nif0bno621(c_27);
-  result_54 = (X60Qx_107 >> 9n);
+  result_54 = (BigInt(X60Qx_107) >> 9n);
   return result_54;
 }
 
@@ -277367,9 +277447,9 @@ function rawLineInfo_0_nif0bno621(c_28) {
     var combined_1 = (BigInt((lit_0 >>> 4)) | BigInt.asUintN(64, (BigInt((mem.u32(((mem.u32((c_28 + 4)) + (Math.imul(((mem.i32(off_0) + 1) | 0), 4) >>> 0)) >>> 0)) >>> 4)) << 28n)));
     mem.copy(result_55, (() => {
       var _o = allocFixed(16);
-      mem.setU32(_o, Number(BigInt.asUintN(32, ((combined_1 >> 10n) & 16383n))));
-      mem.setI32((_o + 4), Number(BigInt.asIntN(32, ((combined_1 >> BigInt.asUintN(64, (10n + 14n))) & 4294967295n))));
-      mem.setI32((_o + 8), Number(BigInt.asIntN(32, (combined_1 & 1023n))));
+      mem.setU32(_o, Number(BigInt.asUintN(32, ((BigInt(combined_1) >> 10n) & 16383n))));
+      mem.setI32((_o + 4), Number(BigInt.asIntN(32, ((BigInt(combined_1) >> BigInt.asUintN(64, (10n + 14n))) & 4294967295n))));
+      mem.setI32((_o + 8), Number(BigInt.asIntN(32, (BigInt(combined_1) & 1023n))));
       mem.setU32((_o + 12), 0);
       return _o;
     })(), 16);
@@ -277387,7 +277467,7 @@ function rawLineInfo_0_nif0bno621(c_28) {
             {
               while ((mem.i32(X60Qlf_5) < X60Qlf_4)) {
                 {
-                  cid_0 = (cid_0 | BigInt.asUintN(64, (BigInt((mem.u32(((mem.u32((c_28 + 4)) + (Math.imul(((((mem.i32(off_0) + 1) | 0) + mem.i32(X60Qlf_5)) | 0), 4) >>> 0)) >>> 0)) >>> 4)) << mem.u64b(shift_2))));
+                  cid_0 = (BigInt(cid_0) | BigInt.asUintN(64, (BigInt((mem.u32(((mem.u32((c_28 + 4)) + (Math.imul(((((mem.i32(off_0) + 1) | 0) + mem.i32(X60Qlf_5)) | 0), 4) >>> 0)) >>> 0)) >>> 4)) << BigInt(mem.u64b(shift_2)))));
                   plusQeQ_0_Iar0t5x_nif0bno621(shift_2, 28n);
                 }
                 inc_1_I6wjjge_cmdqs323n1(X60Qlf_5);
@@ -277396,7 +277476,7 @@ function rawLineInfo_0_nif0bno621(c_28) {
           }
         }
       }
-      mem.setU32((result_55 + 12), Number(BigInt.asUintN(32, cid_0)));
+      mem.setU32((result_55 + 12), Number(BigInt.asUintN(32, BigInt(cid_0))));
     }
   }
   return result_55;
@@ -277479,7 +277559,7 @@ function skip_0_nif0bno621(c_31) {
   if ((X60Qx_114 === 9)) {
     let X60Qx_115 = tokenWidth_0_nif0bno621(c_31);
     let X60Qx_116 = cursorJump_0_nif0bno621(c_31);
-    let span_0 = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt(X60Qx_115) + X60Qx_116))));
+    let span_0 = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt(X60Qx_115) + BigInt(X60Qx_116)))));
     let advance_2 = span_0;
     mem.setU32((c_31 + 4), ((mem.u32((c_31 + 4)) + (Math.imul(advance_2, 4) >>> 0)) >>> 0));
     if ((0 < mem.i32((c_31 + 8)))) {
@@ -277530,7 +277610,7 @@ function enterScope_0_nif0bno621(c_33) {
     let _o = allocFixed(12);
     mem.setU32(_o, mem.u32((c_33 + 4)));
     mem.setI32((_o + 4), mem.i32((c_33 + 8)));
-    mem.setI32((_o + 8), Number(BigInt.asIntN(32, X60Qx_118)));
+    mem.setI32((_o + 8), Number(BigInt.asIntN(32, BigInt(X60Qx_118))));
     return _o;
   })(), 12);
   let headWidth_0 = tokenWidth_0_nif0bno621(c_33);
@@ -277883,8 +277963,8 @@ function appendLineInfo_0_nif0bno621(b_13, file_3, line_3, col_3, comment_0) {
       quit_0_syn1lfpjv(1);
     }
     let combined_2 = encodeLineInfoWide_0_nif0bno621(file_3, line_4, col_4);
-    add_0_nif0bno621(b_13, ((11 | ((Number(BigInt.asUintN(32, (combined_2 & 268435455n))) << 4) >>> 0)) >>> 0));
-    let X60Qx_151 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((combined_2 >> 28n) & 268435455n))));
+    add_0_nif0bno621(b_13, ((11 | ((Number(BigInt.asUintN(32, (BigInt(combined_2) & 268435455n))) << 4) >>> 0)) >>> 0));
+    let X60Qx_151 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((BigInt(combined_2) >> 28n) & 268435455n))));
     add_0_nif0bno621(b_13, X60Qx_151);
     if ((!(cid_1 === 0))) {
       let X60Qx_152 = extendedSuffixToken_0_nif0bno621(((cid_1 & 268435455) >>> 0));
@@ -277946,9 +278026,9 @@ function addStrLit_0_nif0bno621(b_19, s_4) {
     let X60Qx_160 = getOrIncl_0_Ishx92r_nif0bno621((mem.u32((b_19 + 24)) + 4), s_4);
     let id_8 = X60Qx_160;
     let payload_8 = BigInt.asUintN(64, (BigInt(id_8) << 1n));
-    add_0_nif0bno621(b_19, ((2 | ((Number(BigInt.asUintN(32, (payload_8 & 268435455n))) << 4) >>> 0)) >>> 0));
-    if ((268435455n < payload_8)) {
-      let X60Qx_161 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (payload_8 >> 28n))));
+    add_0_nif0bno621(b_19, ((2 | ((Number(BigInt.asUintN(32, (BigInt(payload_8) & 268435455n))) << 4) >>> 0)) >>> 0));
+    if ((268435455n < BigInt(payload_8))) {
+      let X60Qx_161 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(payload_8) >> 28n))));
       add_0_nif0bno621(b_19, X60Qx_161);
     }
   }
@@ -277963,9 +278043,9 @@ function addIdent_0_nif0bno621(b_20, s_5) {
     let X60Qx_164 = getOrIncl_0_Ishx92r_nif0bno621((mem.u32((b_20 + 24)) + 4), s_5);
     let id_9 = X60Qx_164;
     let payload_9 = BigInt.asUintN(64, (BigInt(id_9) << 1n));
-    add_0_nif0bno621(b_20, ((8 | ((Number(BigInt.asUintN(32, (payload_9 & 268435455n))) << 4) >>> 0)) >>> 0));
-    if ((268435455n < payload_9)) {
-      let X60Qx_165 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (payload_9 >> 28n))));
+    add_0_nif0bno621(b_20, ((8 | ((Number(BigInt.asUintN(32, (BigInt(payload_9) & 268435455n))) << 4) >>> 0)) >>> 0));
+    if ((268435455n < BigInt(payload_9))) {
+      let X60Qx_165 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(payload_9) >> 28n))));
       add_0_nif0bno621(b_20, X60Qx_165);
     }
   }
@@ -277980,9 +278060,9 @@ function addSymUse_0_nif0bno621(b_21, s_6) {
     let X60Qx_168 = getOrIncl_0_Ies9g1i1_nif0bno621(((mem.u32((b_21 + 24)) + 4) + 16), s_6);
     let id_10 = X60Qx_168;
     let payload_10 = BigInt.asUintN(64, (BigInt(id_10) << 1n));
-    add_0_nif0bno621(b_21, ((6 | ((Number(BigInt.asUintN(32, (payload_10 & 268435455n))) << 4) >>> 0)) >>> 0));
-    if ((268435455n < payload_10)) {
-      let X60Qx_169 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (payload_10 >> 28n))));
+    add_0_nif0bno621(b_21, ((6 | ((Number(BigInt.asUintN(32, (BigInt(payload_10) & 268435455n))) << 4) >>> 0)) >>> 0));
+    if ((268435455n < BigInt(payload_10))) {
+      let X60Qx_169 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(payload_10) >> 28n))));
       add_0_nif0bno621(b_21, X60Qx_169);
     }
   }
@@ -277997,50 +278077,50 @@ function addSymDef_0_nif0bno621(b_22, s_7) {
     let X60Qx_172 = getOrIncl_0_Ies9g1i1_nif0bno621(((mem.u32((b_22 + 24)) + 4) + 16), s_7);
     let id_11 = X60Qx_172;
     let payload_11 = BigInt.asUintN(64, (BigInt(id_11) << 1n));
-    add_0_nif0bno621(b_22, ((7 | ((Number(BigInt.asUintN(32, (payload_11 & 268435455n))) << 4) >>> 0)) >>> 0));
-    if ((268435455n < payload_11)) {
-      let X60Qx_173 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (payload_11 >> 28n))));
+    add_0_nif0bno621(b_22, ((7 | ((Number(BigInt.asUintN(32, (BigInt(payload_11) & 268435455n))) << 4) >>> 0)) >>> 0));
+    if ((268435455n < BigInt(payload_11))) {
+      let X60Qx_173 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(payload_11) >> 28n))));
       add_0_nif0bno621(b_22, X60Qx_173);
     }
   }
 }
 
 function addIntLit_0_nif0bno621(b_27, v_1) {
-  let bits_1 = BigInt.asUintN(64, v_1);
-  add_0_nif0bno621(b_27, ((3 | ((Number(BigInt.asUintN(32, (bits_1 & 268435455n))) << 4) >>> 0)) >>> 0));
+  let bits_1 = BigInt.asUintN(64, BigInt(v_1));
+  add_0_nif0bno621(b_27, ((3 | ((Number(BigInt.asUintN(32, (BigInt(bits_1) & 268435455n))) << 4) >>> 0)) >>> 0));
   let X60Qx_178;
-  if ((BigInt.asIntN(64, (-BigInt.asIntN(64, (1n << 27n)))) <= v_1)) {
-    X60Qx_178 = (v_1 < BigInt.asIntN(64, (1n << 27n)));
+  if ((BigInt.asIntN(64, (-BigInt.asIntN(64, (1n << 27n)))) <= BigInt(v_1))) {
+    X60Qx_178 = (BigInt(v_1) < BigInt.asIntN(64, (1n << 27n)));
   } else {
     X60Qx_178 = false;
   }
   if (X60Qx_178) {
   } else {
     let X60Qx_179;
-    if ((BigInt.asIntN(64, (-BigInt.asIntN(64, (1n << 55n)))) <= v_1)) {
-      X60Qx_179 = (v_1 < BigInt.asIntN(64, (1n << 55n)));
+    if ((BigInt.asIntN(64, (-BigInt.asIntN(64, (1n << 55n)))) <= BigInt(v_1))) {
+      X60Qx_179 = (BigInt(v_1) < BigInt.asIntN(64, (1n << 55n)));
     } else {
       X60Qx_179 = false;
     }
     if (X60Qx_179) {
-      let X60Qx_180 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((bits_1 >> 28n) & 268435455n))));
+      let X60Qx_180 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((BigInt(bits_1) >> 28n) & 268435455n))));
       add_0_nif0bno621(b_27, X60Qx_180);
     } else {
-      let X60Qx_181 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((bits_1 >> 28n) & 268435455n))));
+      let X60Qx_181 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((BigInt(bits_1) >> 28n) & 268435455n))));
       add_0_nif0bno621(b_27, X60Qx_181);
-      let X60Qx_182 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (bits_1 >> BigInt((Math.imul(28, 2) >>> 0))))));
+      let X60Qx_182 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(bits_1) >> BigInt((Math.imul(28, 2) >>> 0))))));
       add_0_nif0bno621(b_27, X60Qx_182);
     }
   }
 }
 
 function addUIntLit_0_nif0bno621(b_28, v_2) {
-  add_0_nif0bno621(b_28, ((4 | ((Number(BigInt.asUintN(32, (v_2 & 268435455n))) << 4) >>> 0)) >>> 0));
-  if ((268435455n < v_2)) {
-    let X60Qx_183 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((v_2 >> 28n) & 268435455n))));
+  add_0_nif0bno621(b_28, ((4 | ((Number(BigInt.asUintN(32, (BigInt(v_2) & 268435455n))) << 4) >>> 0)) >>> 0));
+  if ((268435455n < BigInt(v_2))) {
+    let X60Qx_183 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((BigInt(v_2) >> 28n) & 268435455n))));
     add_0_nif0bno621(b_28, X60Qx_183);
-    if ((!((v_2 >> BigInt((Math.imul(28, 2) >>> 0))) === 0n))) {
-      let X60Qx_184 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (v_2 >> BigInt((Math.imul(28, 2) >>> 0))))));
+    if ((!((BigInt(v_2) >> BigInt((Math.imul(28, 2) >>> 0))) === 0n))) {
+      let X60Qx_184 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(v_2) >> BigInt((Math.imul(28, 2) >>> 0))))));
       add_0_nif0bno621(b_28, X60Qx_184);
     }
   }
@@ -278052,20 +278132,20 @@ function addFloatLit_0_nif0bno621(b_29, v_3) {
   mem.setF64(v_3, v_3_v);
   let X60Qx_185 = allocFixed(8);
   copyMem_0_sysvq0asl(X60Qx_185, v_3, 8);
-  add_0_nif0bno621(b_29, ((5 | ((Number(BigInt.asUintN(32, (mem.u64b(X60Qx_185) & 268435455n))) << 4) >>> 0)) >>> 0));
+  add_0_nif0bno621(b_29, ((5 | ((Number(BigInt.asUintN(32, (BigInt(mem.u64b(X60Qx_185)) & 268435455n))) << 4) >>> 0)) >>> 0));
   let X60Qx_186 = allocFixed(8);
   copyMem_0_sysvq0asl(X60Qx_186, v_3, 8);
-  if ((268435455n < mem.u64b(X60Qx_186))) {
+  if ((268435455n < BigInt(mem.u64b(X60Qx_186)))) {
     let X60Qx_187 = allocFixed(8);
     copyMem_0_sysvq0asl(X60Qx_187, v_3, 8);
-    let X60Qx_188 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((mem.u64b(X60Qx_187) >> 28n) & 268435455n))));
+    let X60Qx_188 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, ((BigInt(mem.u64b(X60Qx_187)) >> 28n) & 268435455n))));
     add_0_nif0bno621(b_29, X60Qx_188);
     let X60Qx_189 = allocFixed(8);
     copyMem_0_sysvq0asl(X60Qx_189, v_3, 8);
-    if ((!((mem.u64b(X60Qx_189) >> BigInt((Math.imul(28, 2) >>> 0))) === 0n))) {
+    if ((!((BigInt(mem.u64b(X60Qx_189)) >> BigInt((Math.imul(28, 2) >>> 0))) === 0n))) {
       let X60Qx_190 = allocFixed(8);
       copyMem_0_sysvq0asl(X60Qx_190, v_3, 8);
-      let X60Qx_191 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (mem.u64b(X60Qx_190) >> BigInt((Math.imul(28, 2) >>> 0))))));
+      let X60Qx_191 = extendedSuffixToken_0_nif0bno621(Number(BigInt.asUintN(32, (BigInt(mem.u64b(X60Qx_190)) >> BigInt((Math.imul(28, 2) >>> 0))))));
       add_0_nif0bno621(b_29, X60Qx_191);
     }
   }
@@ -278128,12 +278208,12 @@ function closeTag_0_nif0bno621(b_31) {
     }
   }
   var count_2 = BigInt(((((mem.i32((b_31 + 4)) - p_3) | 0) - mem.i32(headWidth_1)) | 0));
-  if ((count_2 <= 524287n)) {
-    setJump_0_nif0bno621((mem.u32(b_31) + (p_3 * 4)), Number(BigInt.asUintN(32, count_2)));
+  if ((BigInt(count_2) <= 524287n)) {
+    setJump_0_nif0bno621((mem.u32(b_31) + (p_3 * 4)), Number(BigInt.asUintN(32, BigInt(count_2))));
   } else {
     forStmtLabel_1: {
-      var highBits_0 = Number(BigInt.asUintN(32, (count_2 >> 19n)));
-      var lowBits_0 = Number(BigInt.asUintN(32, (count_2 & 524287n)));
+      var highBits_0 = Number(BigInt.asUintN(32, (BigInt(count_2) >> 19n)));
+      var lowBits_0 = Number(BigInt.asUintN(32, (BigInt(count_2) & 524287n)));
       if ((!(highBits_0 <= 268435455))) {
         write_0_syn1lfpjv(stdout, (() => {
           var _o = allocFixed(8);
@@ -278142,7 +278222,7 @@ function closeTag_0_nif0bno621(b_31) {
           return _o;
         })());
         var X60Qdesugar_17 = allocFixed(8);
-        mem.copy(X60Qdesugar_17, dollarQ_0_sysvq0asl(count_2), 8);
+        mem.copy(X60Qdesugar_17, dollarQ_0_sysvq0asl(BigInt(count_2)), 8);
         var X60Qx_196 = len_4_sysvq0asl((() => {
           var _o = allocFixed(8);
           mem.setU32(_o, 1651864574);
@@ -278339,7 +278419,7 @@ function subtreeWidth_0_nif0bno621(c_44) {
   if ((X60Qx_210 === 9)) {
     let X60Qx_211 = tokenWidth_0_nif0bno621(c_44);
     let X60Qx_212 = cursorJump_0_nif0bno621(c_44);
-    X60Qx_16 = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt(X60Qx_211) + X60Qx_212))));
+    X60Qx_16 = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt(X60Qx_211) + BigInt(X60Qx_212)))));
   } else {
     let X60Qx_213 = tokenWidth_0_nif0bno621(c_44);
     X60Qx_16 = X60Qx_213;
@@ -278457,7 +278537,7 @@ function addAcrossPools_0_nif0bno621(dest_5, c_46) {
     case 3:
       {
         var X60Qx_223 = intVal_0_nif0bno621(c_46);
-        addIntLit_0_nif0bno621(dest_5, X60Qx_223);
+        addIntLit_0_nif0bno621(dest_5, BigInt(X60Qx_223));
         appendLineInfo_1_nif0bno621(dest_5, destLi_0);
         inc_0_nif0bno621(c_46);
       }
@@ -278465,7 +278545,7 @@ function addAcrossPools_0_nif0bno621(dest_5, c_46) {
     case 4:
       {
         var X60Qx_224 = uintVal_0_nif0bno621(c_46);
-        addUIntLit_0_nif0bno621(dest_5, X60Qx_224);
+        addUIntLit_0_nif0bno621(dest_5, BigInt(X60Qx_224));
         appendLineInfo_1_nif0bno621(dest_5, destLi_0);
         inc_0_nif0bno621(c_46);
       }
@@ -279051,7 +279131,7 @@ function getOrIncl_0_Ies9g1i1_nif0bno621(t_19, v_10) {
 }
 
 function plusQeQ_0_Iar0t5x_nif0bno621(x_23, y_4) {
-  mem.setU64(x_23, BigInt.asUintN(64, (mem.u64b(x_23) + y_4)));
+  mem.setU64(x_23, BigInt.asUintN(64, (mem.u64b(x_23) + BigInt(y_4))));
 }
 
 function getQ_0_Io78pjy1_nif0bno621(t_21, litId_12) {

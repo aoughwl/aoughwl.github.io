@@ -13,6 +13,48 @@ Live at **[aoughwl.github.io/playground](https://aoughwl.github.io/playground/)*
 
 ---
 
+## Editing a program that is already running
+
+Press **Go live** (beside Run) and the file runs once and *keeps running*. The
+debugger drawer under the editor opens on its **Live** tab, the control panel
+for that running program:
+
+- **State** — the program's module-level variables, read straight out of the
+  running interpreter after every change. A value that moved is highlighted and
+  says what it was.
+- **Procs** — the procs this file declares, marked *edited* or *new* by the
+  version that changed them, with a ▶ to call any that takes no arguments.
+- **History** — every start, code change, new line and call, in words, with what
+  it changed and how long it took.
+- **Output** — what the running program printed, tagged with the version that
+  printed it.
+- **The prompt** at the bottom runs one statement against the running program.
+  It is added to the end of the file, so the file always reproduces the state.
+
+What each kind of edit does:
+
+| you did this | what happens | variables |
+|---|---|---|
+| edited a proc body | swapped in as you type; only globals the new version *introduced* are initialised | kept |
+| added lines at the end | they run when you press **Run new lines** (the Run button, while live) | kept |
+| pressed Restart | the whole file runs again from the top | reset |
+
+Two things the page says out loud, because both are real:
+
+- **A swap lands at a safe point.** aowli refuses one — changing nothing — while
+  an interpreted frame is on the stack, because the previous generation's buffers
+  are freed there. So a swap offered mid-call waits and the drawer says so,
+  rather than silently doing nothing.
+- **Only the running file is swapped.** Editing a different open file never
+  reaches the running program; the drawer says which file is live.
+
+And when a swap moves a symbol's signature under a live caller, aowli records the
+drift and arms the call side, so a call binding a definitely-wrong-typed value
+raises rather than answering plausibly and wrongly. The editor underlines the
+declaration and History says what moved.
+
+---
+
 ## How it works
 
 Editing a program drives the full nimony pipeline, all in the browser:
