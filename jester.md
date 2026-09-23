@@ -1,6 +1,6 @@
 ---
-title: Jester — Unity, turned into a game you mod while it is running
-description: A Unity host that never leaves Play mode. Gameplay is compiled aowlmony, run by an interpreter — and there is one running on this page, in JavaScript, on the same artifacts the desktop player loads.
+title: Jester — Unity, built for modding while it runs
+description: A Unity host that never leaves Play mode. Gameplay is compiled aowlmony, running natively — with an interpreter behind it you can drop into at any point to step, hot-swap, or reload code without restarting. That same interpreter will run on this page, in JavaScript, on the same artifacts the desktop player loads.
 ---
 
 # Jester
@@ -9,25 +9,34 @@ description: A Unity host that never leaves Play mode. Gameplay is compiled aowl
 thousand lines that draw nothing and play nothing. Everything else — player,
 weapons, world, inventory, the menu you booted into — is a mod:
 [aowlmony](/docs/aowlmony) source, statically typed, compiled by our own
-toolchain, executed by [aowli](/aowli). The constraint the rest of the design
-follows from is that **you never leave Play mode.** Add a mod, edit it, remove
-it, load it, unload it, rebuild it — while the game is running, against the
-state it had a frame earlier.
+toolchain and run **natively** — not interpreted — for speed. What makes that
+compatible with editing a mod while it plays is [aowli](/aowli): a wall you can
+drop at any point in the running code, below which execution is interpreted
+instead of native. Cross that wall and you can step it, inspect it, hot-swap
+its code, or edit it and rebuild — all without stopping the game — then let it
+go back to running native once you're done. The constraint the rest of the
+design follows from is that **you never leave Play mode.** Add a mod, edit it,
+remove it, load it, unload it, rebuild it — while the game is running, against
+the state it had a frame earlier.
 
-The rest of this page argues that. The demo does not: it is the thing itself.
+The rest of this page argues that. The demo, when it is live, will be the thing
+itself, not an argument for it.
 
-## The demo is the engine
+## The browser build — coming soon
 
-<iframe src="/jester-demo/" title="Jester running in the browser" loading="lazy"
-        style="width:100%;height:820px;border:1px solid var(--vp-c-divider);border-radius:6px;background:#0a0c11"></iframe>
+<div style="width:100%;padding:64px 24px;border:1px solid var(--vp-c-divider);border-radius:6px;background:#0a0c11;color:var(--vp-c-text-2);text-align:center;font-size:1.1em">
+Coming soon — the same <code>aowli</code> interpreter the Windows player embeds,
+compiled to JavaScript and running live in this page.
+</div>
 
-That frame is `aowli` — the same interpreter the Windows player embeds behind a
-C ABI — **compiled to JavaScript, not WebAssembly**, drawing through a Canvas 2D
-context. The `.s.nif` artifacts it loads are the bytes `tools/build_mod.exe`
-published into each mod's `.infiniteless/live/`, copied without transformation:
-byte for byte what the desktop player loads. Nothing on the page is a recording.
+That frame will be `aowli` — the same interpreter the Windows player embeds
+behind a C ABI — **compiled to JavaScript, not WebAssembly**, drawing through a
+Canvas 2D context. The `.s.nif` artifacts it loads are the bytes
+`tools/build_mod.exe` publishes into each mod's `.infiniteless/live/`, copied
+without transformation: byte for byte what the desktop player loads. Nothing on
+the page will be a recording.
 
-Three things worth doing with it.
+Three things worth doing with it, once it is live.
 
 **Arrow-key the boot menu.** `infiniteless.shell` is the mod the desktop player
 starts in, drawing the 35 modpacks this repository ships, hit-testing your
@@ -45,7 +54,7 @@ artifacts, compiled from the three sources shown under the canvas. Loading one
 changes the code without touching the page: `frame` restarts, because
 interpreter globals do, and `visit` does not, because that counter goes through
 `remember`/`save` — host-side state rather than interpreter memory. That is half
-of hack 2, and it is the half a browser can show.
+of hack 2, and it is the half a browser will be able to show.
 
 The other half is the swap: replace the code and keep the interpreter's globals
 too, so `frame` never resets. **That does not work in this browser build, and
@@ -118,14 +127,16 @@ ask `std/os.fileExists` instead of the relay. On a filesystem that is the same
 answer; in a browser it is `false` for every artifact the virtual filesystem is
 holding, and before that it was worse — `fileExists` compiles down to a libc
 `stat` the JS environment does not define, so the page died on an undefined
-name. Routing both guards through `existsRelay` fixes it. The bundle served here
-is built with that change; it is a two-line fix and it belongs upstream.
+name. Routing both guards through `existsRelay` fixes it. The bundle this page
+will serve is built with that change; it is a two-line fix and it belongs
+upstream.
 
 `tools/pack-jester-demo.mjs` in this repository collects the artifacts, and
-`tools/verify-jester-demo.mjs` drives a real headless Chrome at the published
-page — loads each mod, loads each build, unloads, and prints what the mod
-actually asked the host for and what the host had to decline. On the run that
-produced this page: every call served, nothing declined, no page errors.
+`tools/verify-jester-demo.mjs` drives a real headless Chrome against the built
+bundle — loads each mod, loads each build, unloads, and prints what the mod
+actually asked the host for and what the host had to decline. On the last run:
+every call served, nothing declined, no page errors — the bundle is ready; it
+just is not embedded on this page yet.
 
 ## What it is, by comparison
 
@@ -187,9 +198,9 @@ restart, no reconnect, no reload prompt. State that has to outlive the process
 goes through `remember(key, default)`, which reads a host-side store rather than
 interpreter memory and is flushed before every modpack switch and teardown. A
 mod that throws is quarantined, named and left loaded, so fixing the file brings
-it back without touching the session. The demo above is the browser's half of
-this: new code without a page reload, and remembered state that outlives the
-interpreter it was set in.
+it back without touching the session. The browser build, once live, will show
+the browser's half of this: new code without a page reload, and remembered
+state that outlives the interpreter it was set in.
 
 **3. Mod games that were never meant to be modded.** Every game ships its
 content in some container: an archive format, a mesh format, a texture format.

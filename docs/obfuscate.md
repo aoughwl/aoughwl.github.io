@@ -117,6 +117,87 @@ program together. The **keep-list** is one identifier per line (`#` starts a
 comment): put keywords, stdlib names, imported symbols, and the public API you
 ground against there.
 
+## Before and after
+
+Source:
+
+```nim
+proc computeDiscount(price: int, isMember: bool): int =
+  if isMember:
+    result = price - (price div 10)
+  else:
+    result = price
+
+echo computeDiscount(200, true)
+```
+
+`nifler p` produces the untyped `.p.nif`. **Before** any obfuscation, names are
+plain `Ident` tokens with the source spelling still attached:
+
+```
+(stmts@,1,secret.nim
+ (proc computeDiscount@5 . . .
+  (params@K
+   (param@1 price . . int@7 .)
+   (param@D isMember . . bool@A .))int@U . .
+  (stmts@2,1
+   (if
+    (elif@3 isMember
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@8 \2D price~6
+        (par@2
+         (infix@7 div price~6 10@4))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 price@2))))))
+ (cmd@,6 echo
+  (call@K computeDiscount~F 200@1 true@6)))
+```
+
+(header lines `(.nif27)`/`(.vendor "Nifler")`/`(.dialect "nim-parsed")` omitted
+above and below for brevity.)
+
+**After** `obfuscate keep.txt secret.p.nif` (default: rename only), every
+*declared* identifier — the proc and its two params — is now an opaque token
+under one shared map. `result`, the keyword `if`/`else`, and the stdlib call
+`echo` are left alone because none of them is a name this module declares:
+
+```
+(stmts@,1,secret.nim
+ (proc o0@5 . . .
+  (params@K
+   (param@1 o1 . . int@7 .)
+   (param@D o2 . . bool@A .))int@U . .
+  (stmts@2,1
+   (if
+    (elif@3 o2
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@8 \2D o1~6
+        (par@2
+         (infix@7 div o1~6 10@4))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 o1@2))))))
+ (cmd@,6 echo
+  (call@K o0~F 200@1 true@6)))
+```
+
+`obfuscate --all keep.txt secret.p.nif` goes further: every branch grows an
+opaque `if TRUE`/`if FALSE` wrapper with a computed predicate
+(`and(true, not false)`, `or(true, false)`, …), a dead `else` clones the
+statement to keep definite-assignment provable, and junk `discard`s of the same
+opaque booleans are interleaved between statements. On this six-line module the
+two-branch `if` above grows to 14 `if`s and the file goes from 52 to 228
+whitespace-separated tokens (**~4.4×**) — a small program pays a proportionally
+higher tax than the "~1.5×" figure [Verification](#verification) below measures
+on real, larger programs, because the per-statement wrap applies at the same
+rate regardless of how little code there is to wrap. Both the rename-only and
+the `--all` output above still re-feed `nimsem` and are checked end-to-end
+against `aowli-interp`, so renaming and the injected control flow are
+behaviour-preserving by construction — verified, not assumed.
+
 ## Verification
 
 Behaviour preservation is checked end-to-end against nimony's own

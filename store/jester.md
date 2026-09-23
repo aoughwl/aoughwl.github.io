@@ -7,8 +7,8 @@ title: jester licence
 **[Jester](/jester)** is aoughwl's modding engine: a small Unity host, mods
 written in [aowlmony](/docs/aowlmony) and hot-swapped while the game runs, with
 the whole boundary between a mod and the engine being
-[220 host calls](/docs/jester/host-surface). Read the
-**[documentation](/docs/jester)** or **[try the live demo](/jester)**.
+[440 host calls](/docs/jester/host-surface). Read the
+**[documentation](/docs/jester)** — the in-browser demo is coming soon.
 
 Not for sale yet.
 

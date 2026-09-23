@@ -15,7 +15,7 @@ aowlup login AOWL-XXXX-XXXX-XXXX-XXXX
 The [documentation is public](/aowli); the source is not.
 
 <BuyButton product="aowli" price="999" interval="month" label="Subscribe"
-  demo="https://aoughwl.github.io/playground/" demoLabel="Try it now — free" />
+  demo="https://aoughwl.github.io/playground/" demoLabel="Try it now — free, online, no download" />
 
 ## What the subscription buys
 

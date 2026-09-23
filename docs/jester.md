@@ -1,6 +1,6 @@
 ---
 repo: savannt/jester
-title: Jester — Unity, turned into a game you mod while it is running
+title: Jester — Unity, built for modding while it runs
 ---
 
 # Jester
@@ -37,7 +37,7 @@ proc update() =
     discard spawnPart("weapons", "crate", vec3(0.0, 3.0, 0.0))
 ```
 
-→ **[The overview, with the engine running in your browser](/jester)** ·
+→ **[The overview](/jester)** (in-browser engine demo coming soon) ·
 **[Getting started](/docs/jester/getting-started)** ·
 **[The mod API](/docs/jester/mod-api)** ·
 **[Catalogs](/docs/jester/catalogs)** ·
