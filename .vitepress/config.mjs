@@ -39,7 +39,7 @@ const sidebar = [
       {
         text: 'Titicaca — the browser',
         link: '/docs/titicaca',
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: 'Overview', link: '/docs/titicaca' },
           { text: 'Architecture', link: '/docs/titicaca/architecture' },
@@ -55,7 +55,7 @@ const sidebar = [
       {
         text: 'Minecraft',
         link: '/docs/minecraft',
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: 'Overview', link: '/docs/minecraft' },
           { text: 'What works today', link: '/docs/minecraft/state' },
