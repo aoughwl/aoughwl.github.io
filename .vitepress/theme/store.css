@@ -177,6 +177,38 @@
 .aowl-machines { margin-top: 1.6rem; }
 .aowl-machines h4 { margin: 0 0 0.2rem; font-size: 14px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--vp-c-text-2); }
 
+/* Key field: a validity tick tucked into the right edge of the input. */
+.aowl-input-wrap { position: relative; flex: 1 1 22rem; display: flex; }
+.aowl-input-wrap .aowl-input { flex: 1; padding-right: 2.2rem; }
+.aowl-input-ok {
+  position: absolute; right: 0.7rem; top: 50%; transform: translateY(-50%);
+  color: #3fb950; font-weight: 700; pointer-events: none;
+}
+.aowl-lic-hint { margin: 0.8rem 0 0; max-width: 38rem; }
+
+/* A lapsed/revoked licence gets a warm border so the state reads before the pill. */
+.aowl-lic-body-bad { border-color: color-mix(in srgb, #e5484d 45%, var(--vp-c-border)); }
+
+/* Seats as a bar. The filled span is set inline from seats_used/seats. */
+.aowl-seats { display: flex; align-items: center; gap: 0.7rem; margin-top: 1rem; }
+.aowl-seats-bar {
+  flex: 1; height: 8px; border-radius: 999px; overflow: hidden;
+  background: var(--vp-c-bg); border: 1px solid var(--vp-c-divider);
+}
+.aowl-seats-bar > span {
+  display: block; height: 100%; background: var(--vp-c-brand-1);
+  transition: width 0.35s ease;
+}
+.aowl-seats-bar.full > span { background: #e5484d; }
+.aowl-seats-txt {
+  font-size: 13px; color: var(--vp-c-text-2); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The copyable key block, reusing the dashed brand card from the thank-you page. */
+.aowl-activate-key { justify-content: space-between; }
+.aowl-activate-key code { word-break: break-all; }
+
 /* --- thank-you page -------------------------------------------------------- */
 
 .aowl-thanks {

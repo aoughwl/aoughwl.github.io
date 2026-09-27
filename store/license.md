@@ -4,15 +4,18 @@ title: Your licence
 
 # Your licence
 
-Paste the key from your email. Nothing is stored on our side by looking it up,
-and the key is kept in this browser only so you do not have to retype it.
+Paste the key from your purchase email to see its status, download the latest
+build, and manage the machines it is activated on. The key is checked on our
+server every time; it is kept in this browser only so you do not have to retype
+it.
 
 <LicensePanel />
 
 ## Activating a machine
 
 The download is the same archive for everybody. It becomes *yours* at
-activation:
+activation — copy your key from the panel above and give it to the product's
+`activate` command (each product names its own; for aowlspt it is the installer):
 
 ```
 install\aowlspt-install.exe activate AOWL-SPT-XXXX-XXXX-XXXX-XXXX

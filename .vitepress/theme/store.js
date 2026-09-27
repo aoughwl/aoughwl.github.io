@@ -296,35 +296,70 @@ const LicensePanel = {
       key.value = ''; info.value = null; error.value = ''; dl.value = ''
     }
 
+    // Copy feedback for the key block. Purely cosmetic -- the copy either
+    // lands on the clipboard or the buyer selects the text by hand.
+    const copied = ref(false)
+    async function copyKey() {
+      try {
+        await navigator.clipboard.writeText(key.value.trim().toUpperCase())
+        copied.value = true
+        setTimeout(() => { copied.value = false }, 1600)
+      } catch { /* clipboard blocked; the key is on screen to select */ }
+    }
+    // A cheap "this is shaped like a key" signal so a half-pasted key does not
+    // look the same as a good one. Not validation -- the server is the judge.
+    const looksLikeKey = (s) =>
+      /^AOWL-[0-9A-Za-z]{3}(-[0-9A-Za-z]{4}){4}$/.test(s.trim().replace(/\s+/g, ''))
+
     return () =>
       h('div', { class: 'aowl-lic' }, [
         h('div', { class: 'aowl-lic-form' }, [
-          h('input', {
-            class: 'aowl-input',
-            value: key.value,
-            spellcheck: 'false',
-            autocapitalize: 'characters',
-            placeholder: 'AOWL-SPT-XXXX-XXXX-XXXX-XXXX',
-            onInput: (e) => { key.value = e.target.value },
-            onKeydown: (e) => { if (e.key === 'Enter') look() },
-          }),
-          h('button', { class: 'aowl-buy-btn aowl-sm', disabled: busy.value, onClick: look }, 'Look up'),
+          h('div', { class: 'aowl-input-wrap' }, [
+            h('input', {
+              class: 'aowl-input',
+              value: key.value,
+              spellcheck: 'false',
+              autocapitalize: 'characters',
+              autocomplete: 'off',
+              'aria-label': 'Licence key',
+              placeholder: 'AOWL-XXX-XXXX-XXXX-XXXX-XXXX',
+              onInput: (e) => { key.value = e.target.value },
+              onKeydown: (e) => { if (e.key === 'Enter') look() },
+            }),
+            looksLikeKey(key.value) ? h('span', { class: 'aowl-input-ok', title: 'Looks like a key' }, '✓') : null,
+          ]),
+          h('button', { class: 'aowl-buy-btn', disabled: busy.value || !key.value.trim(), onClick: look },
+            busy.value ? 'Checking…' : 'Activate'),
         ]),
         error.value ? h('p', { class: 'aowl-err' }, error.value) : null,
+        !info.value && !error.value
+          ? h('p', { class: 'aowl-muted aowl-lic-hint' },
+              'Paste the key from your purchase email. It is checked on our server every time and only kept in this browser so you need not retype it.')
+          : null,
         info.value ? licenceBody(info.value) : null,
       ])
 
     function licenceBody(i) {
       const ok = i.status === 'active'
-      return h('div', { class: 'aowl-lic-body' }, [
+      const pct = i.seats ? Math.min(100, Math.round((i.seats_used / i.seats) * 100)) : 0
+      const full = i.seats_used >= i.seats
+      return h('div', { class: 'aowl-lic-body' + (ok ? '' : ' aowl-lic-body-bad') }, [
         h('div', { class: 'aowl-lic-head' }, [
           h('h3', null, i.product_name || i.product),
           h('span', { class: 'aowl-pill ' + (ok ? 'ok' : 'bad') }, i.status),
         ]),
+
+        // Seat usage, as a bar rather than a sentence -- "2 of 3" reads faster
+        // when you can see the third of the bar that is still free.
+        h('div', { class: 'aowl-seats' }, [
+          h('div', { class: 'aowl-seats-bar' + (full ? ' full' : '') },
+            [h('span', { style: `width:${pct}%` })]),
+          h('span', { class: 'aowl-seats-txt' }, `${i.seats_used} of ${i.seats} seats in use`),
+        ]),
+
         h('table', { class: 'aowl-kv' }, [
           h('tbody', null, [
             row('Key', i.key_prefix + '-••••-••••-••••'),
-            row('Seats', `${i.seats_used} of ${i.seats} in use`),
             // For a live subscription this date is the next renewal; for a
             // lapsed one it is when it ran out. Label it for what it is rather
             // than calling both "expires".
@@ -333,6 +368,18 @@ const LicensePanel = {
             row('Latest build', i.latest_version ? 'v' + i.latest_version : 'not published yet'),
           ]),
         ]),
+
+        // The one thing to carry to the product's activation prompt: the key
+        // itself, in full, with a copy button. The exact command is on the page
+        // below; the key is what every path needs.
+        ok
+          ? h('div', { class: 'aowl-key aowl-activate-key' }, [
+              h('code', null, key.value.trim().toUpperCase()),
+              h('button', { class: 'aowl-ghost aowl-xs', onClick: copyKey },
+                copied.value ? 'Copied' : 'Copy key'),
+            ])
+          : null,
+
         h('div', { class: 'aowl-lic-actions' }, [
           ok
             ? h('button', { class: 'aowl-buy-btn', disabled: busy.value, onClick: download },
@@ -344,9 +391,10 @@ const LicensePanel = {
             : null,
           h('button', { class: 'aowl-ghost', onClick: forget }, 'Forget this key on this browser'),
         ]),
+
         i.machines.length
           ? h('div', { class: 'aowl-machines' }, [
-              h('h4', null, 'Machines'),
+              h('h4', null, 'Activated machines'),
               h('table', { class: 'aowl-kv' }, [
                 h('tbody', null, i.machines.map((m) =>
                   h('tr', null, [
