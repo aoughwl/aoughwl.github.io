@@ -62,6 +62,12 @@ Everything that is missing, and why, is on the [parity page](/docs/parity).
 | [aowlts](/docs/aowlts) | TypeScript. |
 | [aowlpy](/docs/aowlpy) | Python. |
 
+## JavaScript engine
+
+| Project | What it does |
+|:--|:--|
+| [aowljs-engine](/docs/aowljs-engine) | Runs JavaScript: an interpreter and an x86-64 JIT written in nimony. Passes 53,477 of 53,479 test262 tests; faster than QuickJS and V8's interpreter on its benchmarks. |
+
 ## Tools
 
 | Tool | What it does |
@@ -86,7 +92,7 @@ backends are one $9.99/month subscription, installed with
 [Jester](/store/jester), is upcoming at $19.99/month.
 
 **Public repos:** `aowlparser`, `aowlmony`, `aowlup`, `aowlrt`, `aowlhl`,
-`aowlfmt`, `aowllsp`, `aowlsuggest`, `aiflens`, `aowljs`, `aowlc`.
+`aowlfmt`, `aowllsp`, `aowlsuggest`, `aiflens`, `aowljs`, `aowljs-engine`, `aowlc`.
 
 **Private repos:** `aowlsem`, `aowlhexer`, `aowlhost`, `aowlcode`, `aowltest`,
 and the four paid components (`aowli`, `aowlweb`, `aowlts`, `aowlpy`). The docs

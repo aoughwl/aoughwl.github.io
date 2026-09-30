@@ -143,6 +143,12 @@ const sidebar = [
     ],
   },
   {
+    text: 'JAVASCRIPT ENGINE',
+    items: [
+      { text: 'Interpreter + JIT — aowljs-engine', link: '/docs/aowljs-engine' },
+    ],
+  },
+  {
     text: 'RUNTIME',
     items: [
       {

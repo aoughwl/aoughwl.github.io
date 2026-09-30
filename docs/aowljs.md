@@ -12,6 +12,9 @@ so the browser's JIT compiles the hot loops. It runs at **near-native-JS speed**
 and its output is **readable**. It's the **Native JS** engine in the
 [playground](https://aoughwl.github.io/playground/).
 
+> aowljs *produces* JavaScript. To *run* JavaScript — an interpreter and JIT
+> written in nimony — see [aowljs-engine](aowljs-engine).
+
 `.s.nif` and emits JavaScript.
 
 [[toc]]

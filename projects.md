@@ -11,6 +11,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [aowli-release](docs/aowli-release) — prebuilt, binary-only distribution of aowli (`aowli-interp`, `aowli-dbg`) | `aoughwl/aowli-release` | private |
 | [aowljs](docs/aowljs) — `.s.nif` → native-JavaScript backend | `aoughwl/aowljs` | public |
 | [aowljs-js](docs/aowljs) — the hand-written JS bootstrap (seed & differential oracle) | `aoughwl/aowljs-js` | public |
+| [aowljs-engine](docs/aowljs-engine) — a JavaScript engine in nimony: interpreter + baseline x86-64 JIT, 53,477/53,479 test262 | `aoughwl/aowljs-engine` | public |
 | [aowlc](docs/aowlc) — `.c.nif` → C native backend (ARC baked in, GC-free) | `aoughwl/aowlc` | public |
 | [aowlhexer](docs/aowlhexer) — the lowering pass (ARC/closures/exceptions/mono) | `aoughwl/aowlhexer` | private |
 | [aowlmony](docs/aowlmony) — the driver: `.nim` → {native \| interpret \| web} over the whole stack | `aoughwl/aowlmony` | public |
