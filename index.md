@@ -82,7 +82,9 @@ Everything that is missing, and why, is on the [parity page](/docs/parity).
 | [aowllens](/docs/aiflens) | Reads `.s.nif` and prints JSON: declarations, outline, type at a position. |
 
 Libraries: [net stack](/docs/net-stack) (TCP, TLS 1.3, HTTP, WebSocket),
-[LLM clients](/docs/llm-stack), [web / html / css](/docs/web).
+[LLM clients](/docs/llm-stack), [web / html / css](/docs/web),
+[regex](/docs/regex), [unicode](/docs/unicode), [x86-64 JIT](/docs/jit),
+[OVH cloud](/docs/ovh).
 
 ## Source and price
 

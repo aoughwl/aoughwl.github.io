@@ -99,6 +99,10 @@ python3 tests/engine/perf/run.py --runs 3 \
 - **GC**: stop-the-world mark and sweep over cells, strings and shapes, with
   weak collections, WeakRef and FinalizationRegistry.
 
+- **Libraries**: `RegExp` is [aowlregex](/docs/regex), Unicode data comes from
+  [aowlunicode](/docs/unicode), and the JIT's assembler, executable memory and
+  register allocator are extracted as [jit](/docs/jit).
+
 The invariants behind all of this are in the repo's
 [`src/engine/README.md`](https://github.com/aoughwl/aowljs-engine/blob/main/src/engine/README.md).
 
