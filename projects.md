@@ -31,7 +31,7 @@ canonical docs for its repo; the repo READMEs are short stubs that point here.
 | [css](docs/css) — MDN-typed CSS engine (parse + validate) | `aoughwl/css` | public |
 | [aowlregex](docs/regex) — ECMAScript (ES2025) regex engine on UTF-16 units, the one inside aowljs-engine | `aoughwl/regex` | public |
 | [aowlunicode](docs/unicode) — Unicode 17 data: case maps, normalization, regex property tables, UAX #29 segmentation | `aoughwl/unicode` | public |
-| [jit](docs/jit) — x86-64 JIT backend: assembler, W^X executable memory, linear-scan allocator | `aoughwl/jit` | public |
+| [aowljit](docs/jit) — x86-64 JIT backend: assembler, W^X executable memory, linear-scan allocator | `aoughwl/jit` | public |
 | [aowlcloud](docs/ovh) — OVH VPS lifecycle + spec-driven mesh/firewall/pools with dead-man rollback (not yet live-tested) | `aoughwl/ovh` | public |
 | [aowlts](docs/aowlts) — idiomatic TypeScript backend | `aoughwl/aowlts` | early scaffold · private |
 | [aowlpy](docs/aowlpy) — idiomatic Python backend | `aoughwl/aowlpy` | early scaffold · private |

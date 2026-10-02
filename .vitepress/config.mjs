@@ -244,7 +244,7 @@ const sidebar = [
       { text: 'JSON — aowljson', link: '/docs/aowljson' },
       { text: 'Regex — aowlregex', link: '/docs/regex' },
       { text: 'Unicode — aowlunicode', link: '/docs/unicode' },
-      { text: 'x86-64 JIT — jit', link: '/docs/jit' },
+      { text: 'x86-64 JIT — aowljit', link: '/docs/jit' },
       { text: 'OVH cloud — aowlcloud', link: '/docs/ovh' },
       { text: 'MCP servers — aowlmcp', link: '/docs/aowlmcp' },
       { text: 'Discord bots — discord', link: '/docs/discord' },

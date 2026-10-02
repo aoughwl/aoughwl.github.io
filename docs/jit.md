@@ -2,14 +2,14 @@
 repo: aoughwl/jit
 ---
 
-# jit — an x86-64 JIT backend for Nimony
+# aowljit — an x86-64 JIT backend for Nimony
 
 > ▶️ **[Try `aoughwl/jit` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/jit)** — clones the repo into the in-browser IDE, no install.
 
-`jit` is the machine-code layer of the [aowljs-engine](/docs/aowljs-engine)
+`aowljit` is the machine-code layer of the [aowljs-engine](/docs/aowljs-engine)
 JIT, extracted as a library: an x86-64 assembler, W^X executable memory with
 calls into and out of generated code, and a linear-scan register allocator.
-Nothing in it knows about JavaScript.
+It has no dependency on any JS value model; `import aowljit` re-exports all three modules.
 
 [[toc]]
 
@@ -19,9 +19,9 @@ Nothing in it knows about JavaScript.
 
 | module | contents |
 |---|---|
-| `x64asm` | x86-64 assembler: instructions are encoded as bytes appended to a buffer, with labels and rel32 fixups resolved by `finalize` |
-| `jitmem` | executable memory (W^X) and C-ABI calls into / out of generated code |
-| `linscan` | linear-scan register assignment over GPRs, XMM registers and spill slots |
+| `aowljit/x64asm` | x86-64 assembler: instructions are encoded as bytes appended to a buffer, with labels and rel32 fixups resolved by `finalize` |
+| `aowljit/jitmem` | executable memory (W^X) and C-ABI calls into / out of generated code |
+| `aowljit/linscan` | linear-scan register assignment over GPRs, XMM registers and spill slots |
 
 ---
 
@@ -61,6 +61,33 @@ function — SysV on Linux, Win64 on Windows.
 
 ---
 
+## Use it
+
+```nim
+import aowljit
+
+var a = initAssembler()
+let done = a.newLabel()
+a.movImm(rax, 0)              # sumTo(n) = 1 + ... + n
+a.mov(rcx, argRegs[0])
+a.test(rcx, rcx)
+a.jcc(cLessEq, done)
+let top = a.hereLabel()
+a.add(rax, rcx)
+a.decr(rcx)
+a.jcc(cNotEqual, top)
+a.bindLabel(done)
+a.ret()
+doAssert a.finalize()          # false if a referenced label was never bound
+
+var jm = initJitMemory()
+let f = jm.install(a.buf)      # nil if pages could not be mapped/protected
+echo jitCall1(f, 10)           # 55
+jm.release()                   # unmaps everything installed from jm
+```
+
+---
+
 ## linscan
 
 `linearScan(vals, start, stop, weight, wantX, crosses, gprPool, xmmFirst, loc,
@@ -68,10 +95,23 @@ nslots, hint)` assigns each value a location: a general register (`0 ..< 100`),
 an XMM register (`100 + n`) or a spill slot (`-(k+1)`). When no register is
 free, the value with the least weight per unit of lifetime is spilled; a hint
 lets a two-address op take over the register of an operand that dies there.
-`loopDepths` and `depthWeight` derive weights from the block layout.
+`loopDepths` and `depthWeight` derive weights from the block layout. `loc` must
+be presized to the value count and `vals` sorted by start.
+
+---
+
+## Build / test
+
+```sh
+git clone https://github.com/aoughwl/jit
+cd jit
+nimony c -p:src tests/test_jit.nim   # then run the binary (x86-64 only)
+```
 
 ---
 
 ## Used by
 
-- [aowljs-engine](/docs/aowljs-engine) — its baseline and optimizing JIT tiers.
+- [aowljs-engine](/docs/aowljs-engine) — its baseline JIT and optimizing tier.
+  The engine's build finds this checkout via `AOWL_JIT` (default `../jit`), like
+  `AOWL_REGEX` / `AOWL_UNICODE`.
