@@ -2,9 +2,9 @@
 repo: aoughwl/ovh
 ---
 
-# aowlcloud — OVH VPS + a declared cloud on top
+# ovh — OVH VPS + a declared cloud on top
 
-`aowlcloud` (repo `aoughwl/ovh`) orders OVH VPS, then runs exactly what you
+`ovh` (its binary is `aowlcloud`) orders OVH VPS, then runs exactly what you
 declare on them: machines, a private WireGuard mesh, firewall, services, TLS
 ingress, and pools of isolated per-session containers (e.g. one browser per
 session, each with its own network and egress IP). One spec file describes the

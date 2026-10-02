@@ -2,14 +2,14 @@
 repo: aoughwl/regex
 ---
 
-# aowlregex — an ECMAScript regex engine for Nimony
+# regex — an ECMAScript regex engine for Nimony
 
 > ▶️ **[Try `aoughwl/regex` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/regex)** — clones the repo into the in-browser IDE, no install.
 
-`aowlregex` is an ECMAScript (ES2025) regular-expression engine for **Nimony**,
+`regex` is an ECMAScript (ES2025) regular-expression engine for **Nimony**,
 operating on UTF-16 code units: the parser, compiler and backtracking matcher of
 the [aowljs-engine](/docs/aowljs-engine) JavaScript engine, with no dependency on
-any JS value model. It depends on [aowlunicode](/docs/unicode) for property
+any JS value model. It depends on [unicode](/docs/unicode) for property
 tables and case folding.
 
 [[toc]]
@@ -36,7 +36,7 @@ patterns never recurse on the Nim stack.
 ## Use it
 
 ```nim
-import aowlregex
+import regex
 var err = ""
 let re = compileRegex(r"(?<y>\d{4})-(?<m>\d\d)", "u", err)   # -1 and err on SyntaxError
 let caps = execAt(re, "on 2024-05!", 0)   # @[3, 10, 3, 7, 8, 10]; @[] = no match

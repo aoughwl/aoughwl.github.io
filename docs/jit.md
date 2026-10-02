@@ -2,14 +2,14 @@
 repo: aoughwl/jit
 ---
 
-# aowljit — an x86-64 JIT backend for Nimony
+# jit — an x86-64 JIT backend for Nimony
 
 > ▶️ **[Try `aoughwl/jit` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/jit)** — clones the repo into the in-browser IDE, no install.
 
-`aowljit` is the machine-code layer of the [aowljs-engine](/docs/aowljs-engine)
+`jit` is the machine-code layer of the [aowljs-engine](/docs/aowljs-engine)
 JIT, extracted as a library: an x86-64 assembler, W^X executable memory with
 calls into and out of generated code, and a linear-scan register allocator.
-It has no dependency on any JS value model; `import aowljit` re-exports all three modules.
+It has no dependency on any JS value model; import its modules as `jit/[x64asm, jitmem, linscan]`.
 
 [[toc]]
 
@@ -19,9 +19,9 @@ It has no dependency on any JS value model; `import aowljit` re-exports all thre
 
 | module | contents |
 |---|---|
-| `aowljit/x64asm` | x86-64 assembler: instructions are encoded as bytes appended to a buffer, with labels and rel32 fixups resolved by `finalize` |
-| `aowljit/jitmem` | executable memory (W^X) and C-ABI calls into / out of generated code |
-| `aowljit/linscan` | linear-scan register assignment over GPRs, XMM registers and spill slots |
+| `jit/x64asm` | x86-64 assembler: instructions are encoded as bytes appended to a buffer, with labels and rel32 fixups resolved by `finalize` |
+| `jit/jitmem` | executable memory (W^X) and C-ABI calls into / out of generated code |
+| `jit/linscan` | linear-scan register assignment over GPRs, XMM registers and spill slots |
 
 ---
 
@@ -64,7 +64,7 @@ function — SysV on Linux, Win64 on Windows.
 ## Use it
 
 ```nim
-import aowljit
+import jit/[x64asm, jitmem, linscan]
 
 var a = initAssembler()
 let done = a.newLabel()

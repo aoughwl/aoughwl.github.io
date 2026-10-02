@@ -99,8 +99,8 @@ python3 tests/engine/perf/run.py --runs 3 \
 - **GC**: stop-the-world mark and sweep over cells, strings and shapes, with
   weak collections, WeakRef and FinalizationRegistry.
 
-- **Libraries**: `RegExp` is [aowlregex](/docs/regex), Unicode data comes from
-  [aowlunicode](/docs/unicode), and the JIT's assembler, executable memory and
+- **Libraries**: `RegExp` is [regex](/docs/regex), Unicode data comes from
+  [unicode](/docs/unicode), and the JIT's assembler, executable memory and
   register allocator are extracted as [jit](/docs/jit).
 
 The invariants behind all of this are in the repo's
