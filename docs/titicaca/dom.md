@@ -5,7 +5,14 @@ description: How Titicaca implements nodes, events, live collections, attribute 
 
 # The DOM
 
-`jsdom` is the layer between the HTML tree and the JavaScript engine.
+`jsdom` is the layer between the HTML tree and the JavaScript engine. It binds
+the same way regardless of which engine is underneath — the original
+tree-walking `jsinterp`, or the newer `aowljs-engine`-backed `EngineAowlJs`,
+now the default (see [The JavaScript engine](/docs/titicaca/javascript)). For
+`EngineAowlJs`, a sidecar module (`aowlheap.nim`) adapts that engine's
+embedding API to the host-indexer and reflected-attribute conventions
+described below, so this page describes the DOM contract both engines share,
+not a per-engine feature.
 
 ## Nodes and trees
 
@@ -48,8 +55,20 @@ parent's `load` waits for. XML frames parse as XML.
 share the HTML and XML parsers. `<base href>` sets the document base URL, and the
 document's `characterSet` reflects the decoded encoding.
 
+## Shadow DOM and Custom Elements
+
+Under `EngineAowlJs`, `attachShadow`, slots, `customElements.define` and the
+custom-element lifecycle callbacks (`connectedCallback` and friends) are
+implemented and exercised by the mod's test gates. This is new work this
+session, ported alongside the rest of the DOM/CSS/Events core onto the
+`aowljs-engine` binding; it is not yet re-verified against the WPT standing
+tracked on the [Web Platform Tests](/docs/titicaca/wpt) page, which still
+reflects the original engine.
+
 ## Not implemented on purpose
 
-Interfaces for features that do not exist here (canvas, workers, event sources)
-are not exposed. A page that feature-detects them gets the truth. See
-[Limits and roadmap](/docs/titicaca/limits).
+Interfaces for features that do not exist here are not exposed. A page that
+feature-detects them gets the truth. Canvas exposes state tracking only — no
+rasterizer, so nothing is actually painted. SVG exposes DOM geometry and
+attributes only — no path-data (`d` attribute) parser. Workers and event
+sources are not exposed yet. See [Limits and roadmap](/docs/titicaca/limits).

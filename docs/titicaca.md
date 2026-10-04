@@ -7,7 +7,7 @@ description: Titicaca is the web browser that runs as a Jester mod. Its HTML, CS
 
 Titicaca is a web browser that ships as a [Jester](/jester) mod (`aoughwl.web`).
 Nothing under it is Chromium, WebKit, Gecko or any other embedded engine: the
-HTML parser, the CSS cascade and layout, the DOM and the JavaScript interpreter
+HTML parser, the CSS cascade and layout, the DOM and the JavaScript engine
 are all written in **pure Nimony**, compiled by our own toolchain and run by
 [aowli](/aowli) like every other Jester mod. Because it is a mod, it can be
 edited and hot-swapped while it is running, and everything it does reaches the
@@ -56,7 +56,12 @@ found by pointing this mod at a test suite.
 ## Status
 
 It renders real pages, runs page scripts and passes about 93.5% of subtests on
-the set we track, against 96.2% for Ladybird on the same set. It is a browser you
-can use for reading and for testing, not one to bank with. See
+the set we track, against 96.2% for Ladybird on the same set. That figure
+still reflects the original tree-walking engine (`jsinterp`); page scripts now
+run by default on a newer engine, [aowljs-engine](/aowljs-engine), bound in as
+`EngineAowlJs` (see [The JavaScript engine](/docs/titicaca/javascript)), which
+has not yet been scored the same way but has run real production pages such
+as youtube.com's front end cleanly. It is a browser you can use for reading
+and for testing, not one to bank with. See
 [Limits and roadmap](/docs/titicaca/limits) for the honest list of what is
 missing.

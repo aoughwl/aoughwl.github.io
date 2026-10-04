@@ -21,9 +21,15 @@ runner.
    internationalised host names.
 4. **Style.** `webcsssyntax` tokenises CSS. `webselector` parses, matches and
    serialises selectors. `webcss` runs the cascade and computes styles.
-5. **Script.** `jslex`, `jsparse`, `jsvalue`, `jsregex` and `jsinterp` make up the
-   JavaScript engine. `jsdom` binds the DOM into it and `webreflect` supplies the
-   generated attribute-reflection tables.
+5. **Script.** Two engines are available, selected per build: the original
+   `jslex`/`jsparse`/`jsvalue`/`jsregex`/`jsinterp` tree-walking engine
+   (`EngineAowl`), and `aowljsengine`, a binding of the separate
+   [aowljs-engine](/aowljs-engine) project via a sidecar heap-adapter module
+   (`aowlheap.nim`) that speaks `jsdom`'s host-indexer and reflection
+   conventions. `aowljsengine` is the default (`EngineAowlJs`); see
+   [The JavaScript engine](/docs/titicaca/javascript). `jsdom` binds the DOM
+   into whichever engine is active, and `webreflect` supplies the generated
+   attribute-reflection tables.
 6. **Layout.** `weblayout`, `webtext`, `webfloat`, `webtable`, `webgrid`,
    `webinnertext`, `webimg` and `websvg` turn styled nodes into boxes.
 7. **Paint and input.** The mod draws boxes through Jester's UI library and feeds
@@ -38,7 +44,7 @@ runner.
 | Text and URLs | `weburl`, `webidna`, `webidnadata`, `webencoding`, `webtext` |
 | Markup | `webhtml`, `webxml`, `webmd` |
 | Styling | `webcsssyntax`, `webselector`, `websel`, `webcss` |
-| Script | `jslex`, `jsparse`, `jsvalue`, `jsregex`, `jsinterp`, `jsdom`, `webreflect` |
+| Script | `jslex`, `jsparse`, `jsvalue`, `jsregex`, `jsinterp` (original engine), `aowljsengine`, `aowlheap` (new default engine's binding), `jsdom`, `webreflect` |
 | Layout and media | `weblayout`, `webfloat`, `webtable`, `webgrid`, `webmatrix`, `webinnertext`, `webimg`, `websvg` |
 
 ## Design rules
@@ -54,6 +60,16 @@ runner.
   by a stub.
 - **The runner is the referee.** Anything that cannot be exercised by the test
   runner is treated as unproven.
+
+## Process-level parallelism
+
+Separately from the in-mod pipeline above, a sandboxed child-process
+mechanism (Win32 named pipes and Job Objects) can run a real JS/DOM
+realm — execution plus a real timer/event-loop pump — out of process, with
+isolation between instances. Three concurrent isolated instances have been
+run at once without interference. This is not yet wired up as Titicaca's
+Worker implementation, but it is the planned shape for one: a Worker as a
+process, not an in-process thread.
 
 ## Memory model
 

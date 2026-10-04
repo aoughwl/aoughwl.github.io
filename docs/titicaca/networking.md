@@ -11,6 +11,16 @@ The mod does not own a socket. It asks the host to fetch a URL and gets bytes
 back, through the same [host surface](/docs/jester/host-surface) any mod uses,
 so a mod cannot reach the network unless the host lets it.
 
+Under `EngineAowlJs` (see [The JavaScript engine](/docs/titicaca/javascript)),
+`fetch()` now does a genuine HTTP request rather than returning a stub or
+cached response. There is no native HTTP/TLS client in the codebase, so the
+request is actually issued by shelling out to `curl.exe` and reading its
+output back into the Fetch/Streams binding. This has been proven against the
+live internet, not just a local fixture: as part of a real-world engine test
+(see the javascript page), youtube.com's front page was fetched this way and
+returned a real 200 response of about 889 KB. The shell-out is a stopgap, not
+a final networking layer — see [Limits and roadmap](/docs/titicaca/limits).
+
 ## URLs
 
 `weburl` implements the WHATWG URL parser, including special-scheme handling,
@@ -39,6 +49,8 @@ Anything else it wants goes through the host, which can refuse it.
 
 ## Not yet
 
-`fetch`, `Request` and `Response` are incomplete, and there is no service-worker,
-WebSocket or WebRTC support. Do not treat this browser as a hardened one; see
+`Request` and `Response` are incomplete even where `fetch` itself now does
+real I/O (via the `curl.exe` shell-out described above, not a native HTTP/TLS
+stack), and there is no service-worker, WebSocket or WebRTC support. Do not
+treat this browser as a hardened one; see
 [Limits and roadmap](/docs/titicaca/limits).
