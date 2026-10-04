@@ -1,0 +1,628 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/decls.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4
+   (bracket@2 assertions@1 syncio@D)))
+ (include@,3
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,4
+  (infix@L /
+   (infix~9 / ".."~5 nimony@2)
+   (bracket@2 nimony_model@1 reporters@F)))
+ (include@,6
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (template@,8 reportImpl@9 . . .
+  (params@J
+   (param@1 msg . . string@5 .)
+   (param@E c . . Cursor@3 .)
+   (param@P level . . string@7 .)). . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@F and
+      (call~8 defined~7 debug@1)
+      (prefix@4 not
+       (call@B defined~7 nimony@1)))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (cmd@,2 write stdout@6 level@E)
+   (if@,3
+    (elif@3
+     (call@7 isValid~7
+      (dot@2 c~1 info@1))
+     (stmts~1,1
+      (cmd write stdout@6
+       (call@N infoToStr~9
+        (dot@2 c~1 info@1)))
+      (cmd@,1 write stdout@6 " "@E))))
+   (cmd@,6 write stdout@6 msg@E)
+   (cmd@,7 writeLine stdout@A
+    (call@Q toString~8 c@1 false@4))
+   (cmd@,8 quit 1@5)))
+ (template@,J reportImpl@9 . . .
+  (params@J
+   (param@1 msg . . string@5 .)
+   (param@E level . . string@7 .)). . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@F and
+      (call~8 defined~7 debug@1)
+      (prefix@4 not
+       (call@B defined~7 nimony@1)))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (cmd@,2 write stdout@6 level@E)
+   (cmd@,3 writeLine stdout@A msg@I)
+   (cmd@,4 quit 1@5)))
+ (proc@,Q error@5 x . .
+  (params@B
+   (param@1 msg . . string@5 .)
+   (param@E c . . Cursor@3 .)).
+  (pragmas@a noreturn@2).
+  (stmts@2,1
+   (call@A reportImpl~A msg@1 c@6 "\5BError\5D "@9)))
+ (proc@,T error@5 x . .
+  (params@B
+   (param@1 msg . . string@5 .)).
+  (pragmas@P noreturn@2).
+  (stmts@2,1
+   (call@A reportImpl~A msg@1 "\5BError\5D "@6)))
+ (proc@,W bug@5 x . .
+  (params@9
+   (param@1 msg . . string@5 .)
+   (param@E c . . Cursor@3 .)).
+  (pragmas@Y noreturn@2).
+  (stmts@2,1
+   (when
+    (elif@5
+     (prefix not
+      (call@B defined~7 nimony@1))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (call@A,2 reportImpl~A msg@1 c@6 "\5BBug\5D "@9)))
+ (proc@,b bug@5 x . .
+  (params@9
+   (param@1 msg . . string@5 .)).
+  (pragmas@N noreturn@2).
+  (stmts@2,1
+   (when
+    (elif@5
+     (prefix not
+      (call@B defined~7 nimony@1))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (call@A,2 reportImpl~A msg@1 "\5BBug\5D "@6)))
+ (proc@,g isRoutine@5 x . .
+  (params@F
+   (param@1 t . . SymKind@3 .))bool@E
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (infix@2 in t~2
+    (curly@3 ProcY@1 FuncY@8 IteratorY@F MacroY@Q TemplateY@Y ConverterY@j MethodY@v))))
+ (proc@,j isLocal@5 x . .
+  (params@D
+   (param@1 t . . SymKind@3 .))bool@E
+  (pragmas@W inline@2).
+  (stmts@2,1
+   (infix@2 in t~2
+    (curly@3 LetY@1 VarY@7 ResultY@D ConstY@M ParamY@U TypevarY@c StaticTypevarY@m CursorY@12 PatternvarY@1B FldY@1O GfldY@1U EfldY@1b GletY@1i TletY@1p GvarY@1w TvarY@23))))
+ (proc@,m isTypevarLike@5 x . .
+  (params@J
+   (param@1 t . . SymKind@3 .))bool@E
+  (pragmas@c inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@2,1 in t~2
+    (curly@3 TypevarY@1 StaticTypevarY@B))))
+ (proc@,q isNominal@5 x . .
+  (params@F
+   (param@1 t . . TypeKind@3 .))bool@F
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@2,1 in t~2
+    (curly@3 ObjectT@1 EnumT@A OnumT@H AnumT@O DistinctT@V ConceptT@g))))
+ (proc@,u skipToParams@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,4 kind . . .
+    (dot@8 c~1 typeKind@1))
+   (cmd@,5 inc c@4)
+   (if@,6
+    (elif@3
+     (infix@5 in kind~5
+      (curly@3 ProctypeT@1 ItertypeT@C))
+     (stmts~1,1
+      (cmd skip c@5)))
+    (elif@5,2
+     (infix@5 in kind~5 RoutineTypes@3)
+     (stmts~3,1
+      (cmd skip c@5)
+      (cmd@,1 skip c@5)
+      (cmd@,2 skip c@5)
+      (cmd@,3 skip c@5))))))
+ (proc@,19 skipRoutineDeclPrefix@5 x . .
+  (params@R
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G parentKind . . TypeKind@C .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,7
+    (elif@3
+     (infix@R and
+      (infix~G in parentKind~B RoutineTypes@3)
+      (infix@F notin parentKind~B
+       (curly@6 ProctypeT@1 ItertypeT@C)))
+     (stmts~1,1
+      (cmd skip n@5)
+      (cmd@,1 skip n@5)
+      (cmd@,2 skip n@5)
+      (cmd@,3 skip n@5))))))
+ (proc@,1N skipProcTypeToParams@5 x . .
+  (params@Q
+   (param@1 t . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 t@2)
+   (if@,2
+    (elif@3
+     (infix@G in
+      (dot~A result~6 typeKind@1)RoutineTypes@3)
+     (stmts~1,1
+      (cmd skipToParams result@D))))))
+ (const@H,1U LocalPragmasPos~F x . . 2@4)
+ (const@E,1V LocalTypePos~C x . . 3@4)
+ (const@F,1W LocalValuePos~D x . . 4@4)
+ (type@C,1Z SkipMode~A x . .
+  (enum@2 .
+   (efld~A,1 SkipExclBody . . . .)
+   (efld~A,2 SkipInclBody . . . .)
+   (efld~A,3 SkipFinalParRi . . . .)))
+ (type@9,1e Local~7 x . .
+  (object@2 .
+   (fld~3,1 kind~4 x . SymKind@3 .)
+   (fld~3,2 name~4 x . Cursor@3 .)
+   (fld@1,3 exported~8 x . Cursor@3 .)
+   (fld@,4 pragmas~7 x . Cursor@3 .)
+   (fld~4,5 typ~3 x . Cursor@3 .)
+   (fld~4,6 val~3 x . Cursor@3 .)))
+ (proc@,1m takeLocal@5 x . .
+  (params@F
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G mode . . SkipMode@6 .))Local@X . .
+  (stmts@2,1
+   (let@4 kind . . .
+    (cmd@F symKind~8 c))
+   (asgn@7,1 result~7
+    (oconstr@7 Local~5
+     (kv@5 kind~4 kind@2)))
+   (if@,2
+    (elif@3
+     (call@7 isLocal~7 kind@1)
+     (stmts~1,1
+      (cmd inc c@4)
+      (asgn@C,1
+       (dot~6 result~6 name@1)c@2)
+      (cmd@,2 skip c@5)
+      (asgn@G,3
+       (dot~A result~6 exported@1)c@2)
+      (cmd@,4 skip c@5)
+      (asgn@F,5
+       (dot~9 result~6 pragmas@1)c@2)
+      (cmd@,6 skip c@5)
+      (asgn@B,7
+       (dot~5 result~6 typ@1)c@2)
+      (if@,8
+       (elif@3
+        (infix@5 >= mode~5 SkipInclBody@3)
+        (stmts~1,1
+         (cmd skip c@5)
+         (asgn@B,1
+          (dot~5 result~6 val@1)c@2)
+         (cmd@,2 skip c@5)
+         (if@,3
+          (elif@3
+           (infix@5 == mode~5 SkipFinalParRi@3)
+           (stmts~1,1
+            (if
+             (elif@3
+              (infix@7 ==
+               (dot~6 c~1 kind@1)ParRi@3)
+              (stmts~1,1
+               (cmd inc c@4)))
+             (else@,2
+              (stmts@2,1
+               (cmd bug
+                (infix@S & "expected \27\29\27 inside \28"~O
+                 (prefix@2 $
+                  (dot@7 result~6 kind@1))))))))))))))))))
+ (proc@,28 asLocal@5 x . .
+  (params@D
+   (param@1 c . . Cursor@3 .)
+   (param@C mode . . . SkipInclBody@7))Local@Y . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (asgn@7,1 result~7
+    (call@B takeLocal~9 c@1 mode@4))))
+ (proc@,2C asTypevar@5 x . .
+  (params@F
+   (param@1 c . . Cursor@3 .))Local@D
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@9 asLocal~7 c@1))))
+ (type@B,2G Routine~9 x . .
+  (object@2 .
+   (fld~5,1 kind~4 x . SymKind@3 .)
+   (fld~5,2 name~4 x . Cursor@3 .)
+   (fld~1,3 exported~8 x . Cursor@3 .)
+   (fld~2,4 pattern~7 x . Cursor@3 .)
+   (fld~1,5 typevars~8 x . Cursor@3 .)
+   (fld~3,6 params~6 x . Cursor@3 .)
+   (fld~2,7 retType~7 x . Cursor@3 .)
+   (fld~2,8 pragmas~7 x . Cursor@3 .)
+   (fld~2,9 effects~7 x . Cursor@3 .)
+   (fld~5,A body~4 x . Cursor@3 .)))
+ (proc@,2S isGeneric@5 x . .
+  (params@F
+   (param@1 r . . Routine@3 .))bool@E
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (infix@S ==
+    (dot~I
+     (dot~9 r~1 typevars@1)substructureKind@1)TypevarsU@3)))
+ (proc@,2V takeRoutine@5 x . .
+  (params@H
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G mode . . SkipMode@6 .))Routine@X . .
+  (stmts@2,1
+   (let@4 kind . . .
+    (cmd@F symKind~8 c))
+   (asgn@7,1 result~7
+    (oconstr@9 Routine~7
+     (kv@5 kind~4 kind@2)))
+   (if@,2
+    (elif@3
+     (call@9 isRoutine~9 kind@1)
+     (stmts~1,1
+      (cmd inc c@4)
+      (asgn@C,1
+       (dot~6 result~6 name@1)c@2)
+      (cmd@,2 skip c@5)
+      (asgn@G,3
+       (dot~A result~6 exported@1)c@2)
+      (cmd@,4 skip c@5)
+      (asgn@F,5
+       (dot~9 result~6 pattern@1)c@2)
+      (cmd@,6 skip c@5)
+      (asgn@G,7
+       (dot~A result~6 typevars@1)c@2)
+      (cmd@,8 skip c@5)
+      (asgn@E,9
+       (dot~8 result~6 params@1)c@2)
+      (cmd@,A skip c@5)
+      (asgn@F,B
+       (dot~9 result~6 retType@1)c@2)
+      (cmd@,C skip c@5)
+      (asgn@F,D
+       (dot~9 result~6 pragmas@1)c@2)
+      (cmd@,E skip c@5)
+      (asgn@F,F
+       (dot~9 result~6 effects@1)c@2)
+      (if@,G
+       (elif@3
+        (infix@5 >= mode~5 SkipInclBody@3)
+        (stmts~1,1
+         (cmd skip c@5)
+         (asgn@C,1
+          (dot~6 result~6 body@1)c@2)
+         (cmd@,2 skip c@5)
+         (if@,3
+          (elif@3
+           (infix@5 == mode~5 SkipFinalParRi@3)
+           (stmts~1,1
+            (if
+             (elif@3
+              (infix@7 ==
+               (dot~6 c~1 kind@1)ParRi@3)
+              (stmts~1,1
+               (cmd inc c@4)))
+             (else@,2
+              (stmts@2,1
+               (cmd bug
+                (infix@S & "expected \27\29\27 inside \28"~O
+                 (prefix@2 $
+                  (dot@7 result~6 kind@1))))))))))))))))))
+ (const@D,30 TypevarsPos~B x . . 3@4)
+ (const@B,31 ParamsPos~9 x . . 4@4)
+ (const@F,32 ReturnTypePos~D x . . 5@4)
+ (const@G,33 ProcPragmasPos~E x . . 6@4)
+ (const@9,34 BodyPos~7 x . . 8@4)
+ (proc@,36 asRoutine@5 x . .
+  (params@F
+   (param@1 c . . Cursor@3 .)
+   (param@C mode . . . SkipExclBody@7))Routine@Y . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (asgn@7,1 result~7
+    (call@D takeRoutine~B c@1 mode@4))))
+ (type@C,3B TypeDecl~A x . .
+  (object@2 .
+   (fld~6,1 kind~4 x . SymKind@3 .)
+   (fld~6,2 name~4 x . Cursor@3 .)
+   (fld~2,3 exported~8 x . Cursor@3 .)
+   (fld~2,4 typevars~8 x . Cursor@3 .)
+   (fld~3,5 pragmas~7 x . Cursor@3 .)
+   (fld~6,6 body~4 x . Cursor@3 .)))
+ (proc@,3J isGeneric@5 x . .
+  (params@F
+   (param@1 r . . TypeDecl@3 .))bool@F
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (infix@S ==
+    (dot~I
+     (dot~9 r~1 typevars@1)substructureKind@1)TypevarsU@3)))
+ (proc@,3M takeTypeDecl@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G mode . . SkipMode@6 .))TypeDecl@X . .
+  (stmts@2,1
+   (let@4 kind . . .
+    (cmd@F symKind~8 c))
+   (asgn@7,1 result~7
+    (oconstr@A TypeDecl~8
+     (kv@5 kind~4 kind@2)))
+   (if@,2
+    (elif@3
+     (infix@5 == kind~5 TypeY@3)
+     (stmts~1,1
+      (cmd inc c@4)
+      (asgn@C,1
+       (dot~6 result~6 name@1)c@2)
+      (cmd@,2 skip c@5)
+      (asgn@G,3
+       (dot~A result~6 exported@1)c@2)
+      (cmd@,4 skip c@5)
+      (asgn@G,5
+       (dot~A result~6 typevars@1)c@2)
+      (cmd@,6 skip c@5)
+      (asgn@F,7
+       (dot~9 result~6 pragmas@1)c@2)
+      (if@,8
+       (elif@3
+        (infix@5 >= mode~5 SkipInclBody@3)
+        (stmts~1,1
+         (cmd skip c@5)
+         (asgn@C,1
+          (dot~6 result~6 body@1)c@2)
+         (if@,2
+          (elif@3
+           (infix@5 == mode~5 SkipFinalParRi@3)
+           (stmts~1,1
+            (cmd skip c@5)
+            (if@,1
+             (elif@3
+              (infix@7 ==
+               (dot~6 c~1 kind@1)ParRi@3)
+              (stmts~1,1
+               (cmd inc c@4)))
+             (else@,2
+              (stmts@2,1
+               (cmd bug
+                (infix@S & "expected \27\29\27 inside \28"~O
+                 (prefix@2 $
+                  (dot@7 result~6 kind@1))))))))))))))))))
+ (proc@,3i asTypeDecl@5 x . .
+  (params@G
+   (param@1 c . . Cursor@3 .))TypeDecl@D . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (asgn@7,1 result~7
+    (call@E takeTypeDecl~C c@1 SkipInclBody@4))))
+ (type@E,3n ObjectDecl~C x . .
+  (object@2 .
+   (fld~8,1 kind~4 x . TypeKind@3 .)
+   (fld~2,2 parentType~A x . Cursor@3 .)
+   (fld~8,3 body~4 x . Cursor@3 .)))
+ (proc@,3v asObjectDecl@5 x . .
+  (params@I
+   (param@1 c . . Cursor@3 .))ObjectDecl@D . .
+  (stmts@2,1
+   (let@4 kind . . .
+    (cmd@G typeKind~9 c))
+   (asgn@7,1 result~7
+    (oconstr@C ObjectDecl~A
+     (kv@5 kind~4 kind@2)
+     (kv@H body~4 c@2)))
+   (if@,2
+    (elif@3
+     (infix@5 == kind~5 ObjectT@3)
+     (stmts~1,1
+      (var@4 x . . . c@4)
+      (cmd@,1 inc x@4)
+      (asgn@I,2
+       (dot~C result~6 parentType@1)x@2))))))
+ (type@J,43 ObjFieldIter~E x . .
+  (object@2 .
+   (fld~J,1 nested . . int@8 .)))
+ (proc@,46 initObjFieldIter@5 x . .
+  (params@M)ObjFieldIter@4 . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@E ObjFieldIter~C
+     (kv@7 nested~6 1@2)))))
+ (proc@,49 nextField@5 x . .
+  (params@F
+   (param@1 iter . .
+    (mut@6 ObjFieldIter@4).)
+   (param@P n . .
+    (mut@3 Cursor@4).)
+   (param@e keepCase . . . false@B))bool@x . .
+  (stmts@2,1
+   (asgn@7 result~7 false@2)
+   (while@,1
+    (infix@I !=
+     (dot~8 iter~4 nested@1)0@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 n~1 kind@1)ParRi@3)
+       (stmts~1,1
+        (cmd dec
+         (dot@8 iter~4 nested@1))
+        (if@,1
+         (elif@3
+          (infix@C !=
+           (dot~8 iter~4 nested@1)0@3)
+          (stmts@I
+           (cmd inc n@4))))))
+      (else@,3
+       (stmts@2,1
+        (case
+         (dot@6 n~1 substructureKind@1)
+         (of@,1
+          (ranges CaseU@3)
+          (stmts@2,1
+           (if
+            (elif@3 keepCase
+             (stmts~1,1
+              (asgn@7 result~7 true@2)
+              (break@,1 .)))
+            (else@,3
+             (stmts@2,1
+              (cmd inc
+               (dot@8 iter~4 nested@1))
+              (cmd@,1 inc n@4))))))
+         (of@,8
+          (ranges WhenU@3 StmtsU@A NilU@I ElseU@O)
+          (stmts@2,1
+           (cmd inc
+            (dot@8 iter~4 nested@1))
+           (cmd@,1 inc n@4)))
+         (of@,B
+          (ranges ElifU@3 OfU@A)
+          (stmts@2,1
+           (cmd inc
+            (dot@8 iter~4 nested@1))
+           (cmd@,1 inc n@4)
+           (cmd@,2 skip n@5)))
+         (of@,F
+          (ranges FldU@3 GfldU@9)
+          (stmts@2,1
+           (asgn@7 result~7 true@2)
+           (break@,1 .)))
+         (else@,I
+          (stmts@2,1
+           (cmd error "illformed AST inside object\3A "@6 n@d)))))))))))
+ (type@C,4c EnumDecl~A x . .
+  (object@2 .
+   (fld~6,1 kind~4 x . TypeKind@3 .)
+   (fld~2,2 baseType~8 x . Cursor@3 .)
+   (fld~6,3 body~4 x . Cursor@3 .)))
+ (proc@,4k asEnumDecl@5 x . .
+  (params@G
+   (param@1 c . . Cursor@3 .))EnumDecl@D . .
+  (stmts@2,1
+   (let@4 kind . . .
+    (cmd@G typeKind~9 c))
+   (asgn@7,1 result~7
+    (oconstr@A EnumDecl~8
+     (kv@5 kind~4 kind@2)
+     (kv@H body~4 c@2)))
+   (if@,2
+    (elif@3
+     (infix@5 in kind~5
+      (curly@3 EnumT@1 OnumT@8 AnumT@F))
+     (stmts~1,1
+      (var@4 x . . . c@4)
+      (cmd@,1 inc x@4)
+      (asgn@G,2
+       (dot~A result~6 baseType@1)x@2))))))
+ (type@E,4t TupleField~C x . .
+  (object@2 .
+   (fld~8,1 kind~4 x . SubstructureKind@3 .)
+   (fld~8,2 name~4 x . Cursor@3 .)
+   (fld~9,3 typ~3 x . Cursor@3 .)))
+ (proc@,4y asTupleField@5 x . .
+  (params@I
+   (param@1 c . . Cursor@3 .))TupleField@D . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (let@4,1 kind . . .
+    (cmd@O substructureKind~H c))
+   (asgn@7,2 result~7
+    (oconstr@C TupleField~A
+     (kv@5 kind~4 kind@2)))
+   (case@,3
+    (dot@6 c~1 substructureKind@1)
+    (of@,1
+     (ranges KvU@3)
+     (stmts@2,1
+      (cmd inc c@4)
+      (asgn@C,1
+       (dot~6 result~6 name@1)c@2)
+      (cmd@,2 skip c@5)
+      (asgn@B,3
+       (dot~5 result~6 typ@1)c@2)))
+    (else@,6
+     (stmts@2,2
+      (asgn@B
+       (dot~5 result~6 typ@1)c@2))))))
+ (proc@,5C getTupleFieldType@5 x . .
+  (params@N
+   (param@1 c . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (case
+    (dot@6 c~1 substructureKind@1)
+    (of@,1
+     (ranges KvU@3)
+     (stmts@2,1
+      (asgn@7 result~7 c@2)
+      (cmd@,1 inc result@4)
+      (cmd@,2 skip result@5 SkipName@D)))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7 c@2))))))
+ (type@B,5M ForStmt~9 x . .
+  (object@2 .
+   (fld~5,1 kind~4 x . StmtKind@3 .)
+   (fld~5,2 iter~4 x . Cursor@H .)
+   (fld@2,2 vars~4 x . Cursor@A .)
+   (fld@9,2 body~4 x . Cursor@3 .)))
+ (proc@,5Q asForStmt@5 x . .
+  (params@F
+   (param@1 c . . Cursor@3 .))ForStmt@D . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (let@4,1 kind . . .
+    (cmd@G stmtKind~9 c))
+   (asgn@7,2 result~7
+    (oconstr@9 ForStmt~7
+     (kv@5 kind~4 kind@2)))
+   (if@,3
+    (elif@3
+     (infix@5 == kind~5 ForS@3)
+     (stmts~1,1
+      (cmd inc c@4)
+      (asgn@C,1
+       (dot~6 result~6 iter@1)c@2)
+      (cmd@,2 skip c@5)
+      (asgn@C,3
+       (dot~6 result~6 vars@1)c@2)
+      (cmd@,4 skip c@5)
+      (asgn@C,5
+       (dot~6 result~6 body@1)c@2)))))))

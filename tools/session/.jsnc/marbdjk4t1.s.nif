@@ -1,0 +1,1482 @@
+(.nif27)
+(.indexat 49161            )
+(stmts@,1,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv layptix6a1 "../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim"))
+ (type@G,A :MarshalClass.0.~E x . .
+  (enum@2
+   (u 8)
+   (efld~E,1 :mcScalar.0. x . MarshalClass.0.
+    (tup 0 "mcScalar"))
+   (efld~E,2 :mcPod.0. x . MarshalClass.0.
+    (tup 1 "mcPod"))
+   (efld~E,3 :mcString.0. x . MarshalClass.0.
+    (tup 2 "mcString"))
+   (efld~E,4 :mcSeq.0. x . MarshalClass.0.
+    (tup 3 "mcSeq"))
+   (efld~E,5 :mcRef.0. x . MarshalClass.0.
+    (tup 4 "mcRef"))
+   (efld~E,6 :mcClosure.0. x . MarshalClass.0.
+    (tup 5 "mcClosure"))
+   (efld~E,7 :mcUnsafe.0. x . MarshalClass.0.
+    (tup 6 "mcUnsafe"))))
+ (proc@2,A :dollar`.MarshalClass.0. x . .
+  (params
+   (param :e.0 . . MarshalClass.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@G :result.0 . . string.0.sysvq0asl .)
+   (case@G e.0
+    (of~E,1
+     (ranges mcScalar.0.)
+     (stmts
+      (ret "mcScalar")))
+    (of~E,2
+     (ranges mcPod.0.)
+     (stmts
+      (ret "mcPod")))
+    (of~E,3
+     (ranges mcString.0.)
+     (stmts
+      (ret "mcString")))
+    (of~E,4
+     (ranges mcSeq.0.)
+     (stmts
+      (ret "mcSeq")))
+    (of~E,5
+     (ranges mcRef.0.)
+     (stmts
+      (ret "mcRef")))
+    (of~E,6
+     (ranges mcClosure.0.)
+     (stmts
+      (ret "mcClosure")))
+    (of~E,7
+     (ranges mcUnsafe.0.)
+     (stmts
+      (ret "mcUnsafe"))))
+   (ret result.0)))
+ (proc@,J :setIsSized.0.@5 . . .
+  (params@F
+   (param@1 :t.0 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F)
+  (pragmas@Z
+   (inline@2)).
+  (stmts@2,1
+   (result :result.1 . .
+    (bool@D,~1).)
+   (asgn@N,8 result.1
+    (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+     (lt@2,1
+      (i 32)0@R,T,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim
+      (call@G,T,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim setSizeInBytes.0.layptix6a1~E
+       (ddot@2 t.0~1 elem.0 0)))))
+   (ret~2,~1 result.1)))
+ (proc@,U :isPodAggregate.0.@5 . . .
+  (params@J
+   (param@1 :t.1 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.2 . .
+    (bool@D,~C).)
+   (case@,2
+    (ddot@6 t.1~1 kind.0 0)
+    (of@,1
+     (ranges akInt.0.layptix6a1@3 akUInt.0.layptix6a1@A akFloat.0.layptix6a1@I akChar.0.layptix6a1@R akBool.0.layptix6a1@Z akEnum.0.layptix6a1@h)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (true@2))))
+    (of@,3
+     (ranges akSet.0.layptix6a1@3)
+     (stmts@2,3
+      (asgn@7 result.2~7
+       (call@C setIsSized.0.~A t.1@1))))
+    (of@,7
+     (ranges akRange.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.1~1 elem.0 0)
+           (nil@N,g,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@I isPodAggregate.0.~E
+         (ddot@2 t.1~1 elem.0 0))))))
+    (of@,9
+     (ranges akPtr.0.layptix6a1@3)
+     (stmts@2,E
+      (asgn@7 result.2~7
+       (false@2))))
+    (of@,O
+     (ranges akDistinct.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,x,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.1~1 elem.0 0)
+           (nil@N,x,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@I isPodAggregate.0.~E
+         (ddot@2 t.1~1 elem.0 0))))))
+    (of@,Q
+     (ranges akArray.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,z,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.1~1 elem.0 0)
+           (nil@N,z,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@I isPodAggregate.0.~E
+         (ddot@2 t.1~1 elem.0 0))))))
+    (of@,S
+     (ranges akObject.0.layptix6a1@3 akTuple.0.layptix6a1@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@J
+         (eq~C AbiKind.0.layptix6a1
+          (ddot~6 t.1~1 kind.0 0)akObject.0.layptix6a1@3)
+         (ddot@5 t.1~1 incomplete.0 0))
+        (stmts~1,3
+         (ret
+          (false@7)))))
+      (if@,4
+       (elif@3
+        (and@J
+         (eq~C AbiKind.0.layptix6a1
+          (ddot~6 t.1~1 kind.0 0)akObject.0.layptix6a1@3)
+         (ddot@5 t.1~1 union.0 0))
+        (stmts~1,4
+         (ret
+          (false@7)))))
+      (if@,9
+       (elif@3
+        (and@b
+         (and~I
+          (eq~C AbiKind.0.layptix6a1
+           (ddot~6 t.1~1 kind.0 0)akObject.0.layptix6a1@3)
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (ref TypeDesc.Obj.0.layptix6a1
+              (unchecked))
+             (ddot@V,1A,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.1~1 base.0 0)
+             (nil@e,1A,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim)))))
+         (not@4
+          (call@I isPodAggregate.0.~E
+           (ddot@2 t.1~1 base.0 0))))
+        (stmts~1,1
+         (ret
+          (false@7)))))
+      (asgn@7,B result.2~7
+       (true@2))
+      (for@4,C
+       (hderef@6
+        (call items.1.Ins199m.~6
+         (hcall toOpenArray.1.I0zz6qv1.
+          (ddot t.1~1 fields.0 0))))
+       (unpackflat
+        (let :f.0 . .
+         (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil))).))
+       (stmts~2,1
+        (if
+         (elif@3
+          (not
+           (call@I isPodAggregate.0.~E
+            (hderef@1 f.0)))
+          (stmts~1,1
+           (ret
+            (false@7)))))))))
+    (of@,i
+     (ranges akVariant.0.layptix6a1@3)
+     (stmts@2,3
+      (asgn@7 result.2~7
+       (false@2))))
+    (of@,m
+     (ranges akString.0.layptix6a1@3 akSeq.0.layptix6a1@D)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (false@2))))
+    (of@,o
+     (ranges akUnchecked.0.layptix6a1@3)
+     (stmts@2,3
+      (asgn@7 result.2~7
+       (false@2))))
+    (of@,s
+     (ranges akRef.0.layptix6a1@3 akClosure.0.layptix6a1@A)
+     (stmts@2,2
+      (asgn@7 result.2~7
+       (false@2)))))
+   (ret~2,~1 result.2)))
+ (proc@,1T :hasPtrLeaf.0.@5 . . .
+  (params@F
+   (param@1 :t.2 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.3 . .
+    (bool@D,~1B).)
+   (case
+    (ddot@6 t.2~1 kind.0 0)
+    (of@,1
+     (ranges akPtr.0.layptix6a1@3)
+     (stmts@A
+      (asgn@7 result.3~7
+       (true@2))))
+    (of@,2
+     (ranges akDistinct.0.layptix6a1@3 akArray.0.layptix6a1@F akRange.0.layptix6a1@O)
+     (stmts@X
+      (asgn@7 result.3~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@j,1X,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.2~1 elem.0 0)
+           (nil@s,1X,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@E hasPtrLeaf.0.~A
+         (ddot@2 t.2~1 elem.0 0))))))
+    (of@,3
+     (ranges akObject.0.layptix6a1@3 akTuple.0.layptix6a1@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@b
+         (and~I
+          (eq~C AbiKind.0.layptix6a1
+           (ddot~6 t.2~1 kind.0 0)akObject.0.layptix6a1@3)
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (ref TypeDesc.Obj.0.layptix6a1
+              (unchecked))
+             (ddot@V,1Z,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.2~1 base.0 0)
+             (nil@e,1Z,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim)))))
+         (call@E hasPtrLeaf.0.~A
+          (ddot@2 t.2~1 base.0 0)))
+        (stmts@z
+         (ret
+          (true@7)))))
+      (asgn@7,1 result.3~7
+       (false@2))
+      (for@4,2
+       (hderef@6
+        (call items.1.Ins199m.~6
+         (hcall toOpenArray.1.I0zz6qv1.
+          (ddot t.2~1 fields.0 0))))
+       (unpackflat
+        (let :f.1 . .
+         (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil))).))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@A hasPtrLeaf.0.~A
+           (hderef@1 f.1))
+          (stmts@F
+           (ret
+            (true@7)))))))))
+    (else@,8
+     (stmts@6
+      (asgn@7 result.3~7
+       (false@2)))))
+   (ret~2,~1 result.3)))
+ (proc@,1e :podOrPtrAggregate.0.@5 . . .
+  (params@M
+   (param@1 :t.3 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.4 . .
+    (bool@D,~1M).)
+   (case@,1
+    (ddot@6 t.3~1 kind.0 0)
+    (of@,1
+     (ranges akInt.0.layptix6a1@3 akUInt.0.layptix6a1@A akFloat.0.layptix6a1@I akChar.0.layptix6a1@R akBool.0.layptix6a1@Z akEnum.0.layptix6a1@h akPtr.0.layptix6a1@p)
+     (stmts@2,1
+      (asgn@7 result.4~7
+       (true@2))))
+    (of@,3
+     (ranges akSet.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.4~7
+       (call@C setIsSized.0.~A t.3@1))))
+    (of@,5
+     (ranges akDistinct.0.layptix6a1@3 akArray.0.layptix6a1@F akRange.0.layptix6a1@O)
+     (stmts@2,1
+      (asgn@7 result.4~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,1n,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.3~1 elem.0 0)
+           (nil@N,1n,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@L podOrPtrAggregate.0.~H
+         (ddot@2 t.3~1 elem.0 0))))))
+    (of@,7
+     (ranges akObject.0.layptix6a1@3 akTuple.0.layptix6a1@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@J
+         (eq~C AbiKind.0.layptix6a1
+          (ddot~6 t.3~1 kind.0 0)akObject.0.layptix6a1@3)
+         (or@D
+          (ddot~7 t.3~1 union.0 0)
+          (ddot@4 t.3~1 incomplete.0 0)))
+        (stmts@o
+         (ret
+          (false@7)))))
+      (if@,1
+       (elif@3
+        (and@b
+         (and~I
+          (eq~C AbiKind.0.layptix6a1
+           (ddot~6 t.3~1 kind.0 0)akObject.0.layptix6a1@3)
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (ref TypeDesc.Obj.0.layptix6a1
+              (unchecked))
+             (ddot@V,1q,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.3~1 base.0 0)
+             (nil@e,1q,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim)))))
+         (not@4
+          (call@L podOrPtrAggregate.0.~H
+           (ddot@2 t.3~1 base.0 0))))
+        (stmts~1,1
+         (ret
+          (false@7)))))
+      (asgn@7,3 result.4~7
+       (true@2))
+      (for@4,4
+       (hderef@6
+        (call items.1.Ins199m.~6
+         (hcall toOpenArray.1.I0zz6qv1.
+          (ddot t.3~1 fields.0 0))))
+       (unpackflat
+        (let :f.2 . .
+         (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil))).))
+       (stmts~2,1
+        (if
+         (elif@3
+          (not
+           (call@L podOrPtrAggregate.0.~H
+            (hderef@1 f.2)))
+          (stmts@Q
+           (ret
+            (false@7)))))))))
+    (else@,E
+     (stmts@2,1
+      (asgn@7 result.4~7
+       (false@2)))))
+   (ret~2,~1 result.4)))
+ (proc@,1x :hasSeqLeaf.0.@5 . . .
+  (params@F
+   (param@1 :t.4 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.5 . .
+    (bool@D,~1f).)
+   (case
+    (ddot@6 t.4~1 kind.0 0)
+    (of@,1
+     (ranges akSeq.0.layptix6a1@3)
+     (stmts@A
+      (asgn@7 result.5~7
+       (true@2))))
+    (of@,2
+     (ranges akDistinct.0.layptix6a1@3 akArray.0.layptix6a1@F akRange.0.layptix6a1@O)
+     (stmts@X
+      (asgn@7 result.5~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@j,21,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.4~1 elem.0 0)
+           (nil@s,21,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@E hasSeqLeaf.0.~A
+         (ddot@2 t.4~1 elem.0 0))))))
+    (of@,3
+     (ranges akObject.0.layptix6a1@3 akTuple.0.layptix6a1@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@b
+         (and~I
+          (eq~C AbiKind.0.layptix6a1
+           (ddot~6 t.4~1 kind.0 0)akObject.0.layptix6a1@3)
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (ref TypeDesc.Obj.0.layptix6a1
+              (unchecked))
+             (ddot@V,23,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.4~1 base.0 0)
+             (nil@e,23,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim)))))
+         (call@E hasSeqLeaf.0.~A
+          (ddot@2 t.4~1 base.0 0)))
+        (stmts@z
+         (ret
+          (true@7)))))
+      (asgn@7,1 result.5~7
+       (false@2))
+      (for@4,2
+       (hderef@6
+        (call items.1.Ins199m.~6
+         (hcall toOpenArray.1.I0zz6qv1.
+          (ddot t.4~1 fields.0 0))))
+       (unpackflat
+        (let :f.3 . .
+         (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil))).))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@A hasSeqLeaf.0.~A
+           (hderef@1 f.3))
+          (stmts@F
+           (ret
+            (true@7)))))))))
+    (else@,8
+     (stmts@6
+      (asgn@7 result.5~7
+       (false@2)))))
+   (ret~2,~1 result.5)))
+ (proc@,28 :podPtrOrSeqAggregate.0.@5 . . .
+  (params@P
+   (param@1 :t.5 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.6 . .
+    (bool@D,~1q).)
+   (case@,5
+    (ddot@6 t.5~1 kind.0 0)
+    (of@,1
+     (ranges akInt.0.layptix6a1@3 akUInt.0.layptix6a1@A akFloat.0.layptix6a1@I akChar.0.layptix6a1@R akBool.0.layptix6a1@Z akEnum.0.layptix6a1@h akPtr.0.layptix6a1@p)
+     (stmts@2,1
+      (asgn@7 result.6~7
+       (true@2))))
+    (of@,3
+     (ranges akSet.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.6~7
+       (call@C setIsSized.0.~A t.5@1))))
+    (of@,5
+     (ranges akSeq.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.6~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,2L,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.5~1 elem.0 0)
+           (nil@N,2L,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@L podOrPtrAggregate.0.~H
+         (ddot@2 t.5~1 elem.0 0))))))
+    (of@,7
+     (ranges akDistinct.0.layptix6a1@3 akArray.0.layptix6a1@F akRange.0.layptix6a1@O)
+     (stmts@2,1
+      (asgn@7 result.6~7
+       (and@G
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ref TypeDesc.Obj.0.layptix6a1
+            (unchecked))
+           (ddot@E,2N,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.5~1 elem.0 0)
+           (nil@N,2N,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+        (call@O podPtrOrSeqAggregate.0.~K
+         (ddot@2 t.5~1 elem.0 0))))))
+    (of@,9
+     (ranges akObject.0.layptix6a1@3 akTuple.0.layptix6a1@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@J
+         (eq~C AbiKind.0.layptix6a1
+          (ddot~6 t.5~1 kind.0 0)akObject.0.layptix6a1@3)
+         (or@D
+          (ddot~7 t.5~1 union.0 0)
+          (ddot@4 t.5~1 incomplete.0 0)))
+        (stmts@o
+         (ret
+          (false@7)))))
+      (if@,1
+       (elif@3
+        (and@b
+         (and~I
+          (eq~C AbiKind.0.layptix6a1
+           (ddot~6 t.5~1 kind.0 0)akObject.0.layptix6a1@3)
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (ref TypeDesc.Obj.0.layptix6a1
+              (unchecked))
+             (ddot@V,2Q,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.5~1 base.0 0)
+             (nil@e,2Q,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim)))))
+         (not@4
+          (call@O podPtrOrSeqAggregate.0.~K
+           (ddot@2 t.5~1 base.0 0))))
+        (stmts~1,1
+         (ret
+          (false@7)))))
+      (asgn@7,3 result.6~7
+       (true@2))
+      (for@4,4
+       (hderef@6
+        (call items.1.Ins199m.~6
+         (hcall toOpenArray.1.I0zz6qv1.
+          (ddot t.5~1 fields.0 0))))
+       (unpackflat
+        (let :f.4 . .
+         (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil))).))
+       (stmts~2,1
+        (if
+         (elif@3
+          (not
+           (call@O podPtrOrSeqAggregate.0.~K
+            (hderef@1 f.4)))
+          (stmts@T
+           (ret
+            (false@7)))))))))
+    (else@,G
+     (stmts@2,1
+      (asgn@7 result.6~7
+       (false@2)))))
+   (ret~2,~1 result.6)))
+ (proc@,2X :isArenaAggregate.0.@5 x . .
+  (params@M
+   (param@1 :t.6 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.7 . .
+    (bool@D,~2F).)
+   (asgn@Q,B result.7
+    (and
+     (and@e,~1
+      (or~P
+       (or~L
+        (eq~C AbiKind.0.layptix6a1
+         (ddot~6 t.6~1 kind.0 0)akObject.0.layptix6a1@3)
+        (eq@A AbiKind.0.layptix6a1
+         (ddot~6 t.6~1 kind.0 0)akTuple.0.layptix6a1@3))
+       (eq@A AbiKind.0.layptix6a1
+        (ddot~6 t.6~1 kind.0 0)akDistinct.0.layptix6a1@3))
+      (call~i,1 podPtrOrSeqAggregate.0.~K t.6@1))
+     (or@J
+      (call~4 hasPtrLeaf.0.~A t.6@1)
+      (call@D hasSeqLeaf.0.~A t.6@1))))
+   (ret~2,~1 result.7)))
+ (proc@,2l :isArenaPtrAggregate.0.@5 x . .
+  (params@P
+   (param@1 :t.7 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))
+  (bool@F). .
+  (stmts@2,1
+   (result :result.8 . .
+    (bool@D,~2T).)
+   (asgn@N,7 result.8
+    (and
+     (and@h,~1
+      (or~P
+       (or~L
+        (eq~C AbiKind.0.layptix6a1
+         (ddot~6 t.7~1 kind.0 0)akObject.0.layptix6a1@3)
+        (eq@A AbiKind.0.layptix6a1
+         (ddot~6 t.7~1 kind.0 0)akTuple.0.layptix6a1@3))
+       (eq@A AbiKind.0.layptix6a1
+        (ddot~6 t.7~1 kind.0 0)akDistinct.0.layptix6a1@3))
+      (call~l,1 podOrPtrAggregate.0.~H t.7@1))
+     (call@E hasPtrLeaf.0.~A t.7@1)))
+   (ret~2,~1 result.8)))
+ (proc@,2v :marshalClass.0.@5 x . .
+  (params@I
+   (param@1 :t.8 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).))MarshalClass.0.@F . .
+  (stmts@2,1
+   (result :result.9 . . MarshalClass.0.@,~2m .)
+   (case@,1
+    (ddot@6 t.8~1 kind.0 0)
+    (of@,1
+     (ranges akInt.0.layptix6a1@3 akUInt.0.layptix6a1@A akFloat.0.layptix6a1@I akChar.0.layptix6a1@R akBool.0.layptix6a1@Z akEnum.0.layptix6a1@h)
+     (stmts@2,1
+      (asgn@7 result.9~7 mcScalar.0.@2)))
+    (of@,3
+     (ranges akRange.0.layptix6a1@3)
+     (stmts@2,2
+      (asgn@7 result.9~7
+       (if@2
+        (elif@3
+         (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (not@,1
+           (eq@7
+            (ref TypeDesc.Obj.0.layptix6a1
+             (unchecked))
+            (ddot@H,33,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.8~1 elem.0 0)
+            (nil@Q,33,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+         (expr@F
+          (call@C marshalClass.0.~C
+           (ddot@2 t.8~1 elem.0 0))))
+        (else@d
+         (expr@6 mcUnsafe.0.))))))
+    (of@,6
+     (ranges akSet.0.layptix6a1@3)
+     (stmts@2,3
+      (asgn@7 result.9~7
+       (if@2
+        (elif@3
+         (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (lt@2,1
+           (i 32)0@f,37,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim
+           (call@U,37,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim setSizeInBytes.0.layptix6a1~E
+            (ddot@2 t.8~1 elem.0 0))))
+         (expr@S mcPod.0.))
+        (else@b
+         (expr@6 mcUnsafe.0.))))))
+    (of@,A
+     (ranges akUnchecked.0.layptix6a1@3)
+     (stmts@2,2
+      (asgn@7 result.9~7 mcUnsafe.0.@2)))
+    (of@,D
+     (ranges akPtr.0.layptix6a1@3)
+     (stmts@2,3
+      (asgn@7 result.9~7 mcScalar.0.@2)))
+    (of@,H
+     (ranges akRef.0.layptix6a1@3)
+     (stmts@2,2
+      (asgn@7 result.9~7 mcRef.0.@2)))
+    (of@,K
+     (ranges akClosure.0.layptix6a1@3)
+     (stmts@2,2
+      (asgn@7 result.9~7 mcClosure.0.@2)))
+    (of@,N
+     (ranges akDistinct.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.9~7
+       (if@2
+        (elif@3
+         (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (not@,1
+           (eq@7
+            (ref TypeDesc.Obj.0.layptix6a1
+             (unchecked))
+            (ddot@H,3M,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.8~1 elem.0 0)
+            (nil@Q,3M,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+         (expr@F
+          (call@C marshalClass.0.~C
+           (ddot@2 t.8~1 elem.0 0))))
+        (else@d
+         (expr@6 mcUnsafe.0.))))))
+    (of@,P
+     (ranges akString.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.9~7 mcString.0.@2)))
+    (of@,R
+     (ranges akSeq.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.9~7 mcSeq.0.@2)))
+    (of@,T
+     (ranges akArray.0.layptix6a1@3 akTuple.0.layptix6a1@C akObject.0.layptix6a1@L)
+     (stmts@2,1
+      (asgn@7 result.9~7
+       (if@2
+        (elif@3
+         (call@E isPodAggregate.0.~E t.8@1)
+         (expr@J mcPod.0.))
+        (else@S
+         (expr@6 mcUnsafe.0.))))))
+    (of@,V
+     (ranges akVariant.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.9~7 mcUnsafe.0.@2))))
+   (ret~2,~1 result.9)))
+ (proc@,3V :isByValueSafe.0.@5 x . .
+  (params@J
+   (param@1 :c.0 . . MarshalClass.0.@3 .))
+  (bool@J)
+  (pragmas@h
+   (inline@2)).
+  (stmts@2,1
+   (result :result.10 . .
+    (bool@D,~3D).)
+   (asgn@E,1 result.10
+    (or
+     (eq~C MarshalClass.0. c.0~2 mcScalar.0.@3)
+     (eq@5 MarshalClass.0. c.0~2 mcPod.0.@3)))
+   (ret~2,~1 result.10)))
+ (proc@,3Z :needsHeaderSynthesis.0.@5 x . .
+  (params@Q
+   (param@1 :c.1 . . MarshalClass.0.@3 .))
+  (bool@J)
+  (pragmas@o
+   (inline@2)).
+  (stmts@2,1
+   (result :result.11 . .
+    (bool@D,~3H).)
+   (asgn@E,1 result.11
+    (or
+     (eq~C MarshalClass.0. c.1~2 mcString.0.@3)
+     (eq@5 MarshalClass.0. c.1~2 mcSeq.0.@3)))
+   (ret~2,~1 result.11)))
+ (proc@,3d :isInterpretFallback.0.@5 x . .
+  (params@P
+   (param@1 :c.2 . . MarshalClass.0.@3 .))
+  (bool@J)
+  (pragmas@n
+   (inline@2)).
+  (stmts@2,1
+   (result :result.12 . .
+    (bool@D,~3L).)
+   (asgn@T,1 result.12
+    (or
+     (or~I
+      (eq~9 MarshalClass.0. c.2~2 mcRef.0.@3)
+      (eq@5 MarshalClass.0. c.2~2 mcClosure.0.@3))
+     (eq@5 MarshalClass.0. c.2~2 mcUnsafe.0.@3)))
+   (ret~2,~1 result.12)))
+ (type@A,46 :JsRepr.0.~8 x . .
+  (enum@2
+   (u 8)
+   (efld~8,1 :jsNumber.0. x . JsRepr.0.
+    (tup 0 "jsNumber"))
+   (efld~8,2 :jsBigInt.0. x . JsRepr.0.
+    (tup 1 "jsBigInt"))
+   (efld~8,3 :jsBoolean.0. x . JsRepr.0.
+    (tup 2 "jsBoolean"))
+   (efld~8,4 :jsCharString.0. x . JsRepr.0.
+    (tup 3 "jsCharString"))
+   (efld~8,5 :jsString.0. x . JsRepr.0.
+    (tup 4 "jsString"))
+   (efld~8,6 :jsArray.0. x . JsRepr.0.
+    (tup 5 "jsArray"))
+   (efld~8,7 :jsObject.0. x . JsRepr.0.
+    (tup 6 "jsObject"))
+   (efld~8,8 :jsRefBox.0. x . JsRepr.0.
+    (tup 7 "jsRefBox"))
+   (efld~8,9 :jsSet.0. x . JsRepr.0.
+    (tup 8 "jsSet"))))
+ (proc@2,46 :dollar`.JsRepr.0. x . .
+  (params
+   (param :e.1 . . JsRepr.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@A :result.13 . . string.0.sysvq0asl .)
+   (case@A e.1
+    (of~8,1
+     (ranges jsNumber.0.)
+     (stmts
+      (ret "jsNumber")))
+    (of~8,2
+     (ranges jsBigInt.0.)
+     (stmts
+      (ret "jsBigInt")))
+    (of~8,3
+     (ranges jsBoolean.0.)
+     (stmts
+      (ret "jsBoolean")))
+    (of~8,4
+     (ranges jsCharString.0.)
+     (stmts
+      (ret "jsCharString")))
+    (of~8,5
+     (ranges jsString.0.)
+     (stmts
+      (ret "jsString")))
+    (of~8,6
+     (ranges jsArray.0.)
+     (stmts
+      (ret "jsArray")))
+    (of~8,7
+     (ranges jsObject.0.)
+     (stmts
+      (ret "jsObject")))
+    (of~8,8
+     (ranges jsRefBox.0.)
+     (stmts
+      (ret "jsRefBox")))
+    (of~8,9
+     (ranges jsSet.0.)
+     (stmts
+      (ret "jsSet"))))
+   (ret result.13)))
+ (proc@,4H :jsRepr.0.@5 x . .
+  (params@C
+   (param@1 :t.9 . .
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)).)
+   (param@E :faithful.0 . .
+    (bool~B,~3y)
+    (false@B)))JsRepr.0.@X . .
+  (stmts@2,1
+   (result :result.14 . . JsRepr.0.@,~C .)
+   (case@,2
+    (ddot@6 t.9~1 kind.0 0)
+    (of@,1
+     (ranges akInt.0.layptix6a1@3 akUInt.0.layptix6a1@A)
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@9 faithful.0~9
+         (or@H
+          (eq~5
+           (i 32)
+           (ddot~6 t.9~1 bits.0 0)0@3)
+          (eq@A
+           (i 32)
+           (ddot~6 t.9~1 bits.0 0)64@3)))
+        (stmts@i
+         (asgn@7 result.14~7 jsBigInt.0.@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result.14~7 jsNumber.0.@2))))))
+    (of@,4
+     (ranges akFloat.0.layptix6a1@3 akEnum.0.layptix6a1@C)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsNumber.0.@2)))
+    (of@,6
+     (ranges akBool.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsBoolean.0.@2)))
+    (of@,8
+     (ranges akChar.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsCharString.0.@2)))
+    (of@,A
+     (ranges akString.0.layptix6a1@3)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsString.0.@2)))
+    (of@,C
+     (ranges akSeq.0.layptix6a1@3 akArray.0.layptix6a1@A akTuple.0.layptix6a1@J akUnchecked.0.layptix6a1@S)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsArray.0.@2)))
+    (of@,E
+     (ranges akObject.0.layptix6a1@3 akVariant.0.layptix6a1@D)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsObject.0.@2)))
+    (of@,G
+     (ranges akPtr.0.layptix6a1@3 akRef.0.layptix6a1@A akClosure.0.layptix6a1@H)
+     (stmts@2,1
+      (asgn@7 result.14~7 jsRefBox.0.@2)))
+    (of@,I
+     (ranges akSet.0.layptix6a1@3)
+     (stmts@2,2
+      (asgn@7 result.14~7 jsSet.0.@2)))
+    (of@,L
+     (ranges akDistinct.0.layptix6a1@3 akRange.0.layptix6a1@F)
+     (stmts@2,1
+      (asgn@7 result.14~7
+       (if@2
+        (elif@3
+         (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (not@,1
+           (eq@7
+            (ref TypeDesc.Obj.0.layptix6a1
+             (unchecked))
+            (ddot@H,4h,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim t.9~1 elem.0 0)
+            (nil@Q,4h,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim))))
+         (expr@F
+          (call@6 jsRepr.0.~6
+           (ddot@2 t.9~1 elem.0 0)faithful.0@9)))
+        (else@h
+         (expr@6 jsNumber.0.)))))))
+   (ret~2,~1 result.14)))
+ (comment@F,J bool.0.sysvq0asl bool.0.sysvq0asl@,B bool.0.sysvq0asl@,1A bool.0.sysvq0asl@,1L bool.0.sysvq0asl@,1e bool.0.sysvq0asl@,1p bool.0.sysvq0asl@,2E bool.0.sysvq0asl@,2S bool.0.sysvq0asl@4,3C bool.0.sysvq0asl@4,3G bool.0.sysvq0asl@4,3K false.0.sysvq0asl@M,3y >.0.sysvq0asl@A,9 true.0.sysvq0asl~2,G !=.0.sysvq0asl@5,M false.0.sysvq0asl~2,b !=.0.sysvq0asl@5,d !=.0.sysvq0asl@5,f false.0.sysvq0asl~2,k false.0.sysvq0asl~2,p !=.0.sysvq0asl@M,q false.0.sysvq0asl~2,r true.0.sysvq0asl~2,s false.0.sysvq0asl@,v false.0.sysvq0asl~2,z false.0.sysvq0asl~2,11 false.0.sysvq0asl~2,15 false.0.sysvq0asl~2,18 true.0.sysvq0asl@6,1C !=.0.sysvq0asl@a,1D !=.0.sysvq0asl@M,1F true.0.sysvq0asl@y,1F false.0.sysvq0asl~2,1G true.0.sysvq0asl@G,1I false.0.sysvq0asl@2,1J true.0.sysvq0asl~2,1P !=.0.sysvq0asl@5,1T false.0.sysvq0asl@n,1V !=.0.sysvq0asl@M,1W false.0.sysvq0asl~2,1X true.0.sysvq0asl~2,1Y false.0.sysvq0asl@R,1a false.0.sysvq0asl~2,1c true.0.sysvq0asl@6,1g !=.0.sysvq0asl@a,1h !=.0.sysvq0asl@M,1j true.0.sysvq0asl@y,1j false.0.sysvq0asl~2,1k true.0.sysvq0asl@G,1m false.0.sysvq0asl@2,1n true.0.sysvq0asl~2,1x !=.0.sysvq0asl@5,21 !=.0.sysvq0asl@5,23 false.0.sysvq0asl@n,25 !=.0.sysvq0asl@M,26 false.0.sysvq0asl~2,27 true.0.sysvq0asl~2,28 false.0.sysvq0asl@U,2A false.0.sysvq0asl~2,2C !=.0.sysvq0asl@8,2j >.0.sysvq0asl@O,2n !=.0.sysvq0asl@8,32 !=.0.sysvq0asl@8,4N)
+ (converter@E,1C :toOpenArray.1.I0zz6qv1. . .@,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (at toOpenArray.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@P,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (param@1 :s.1 . . seq.0.I3ump14.@6 .))openArray.0.I3ca6t4.@M,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (pragmas@p,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (inline@2)).@,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (stmts@2,O,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (result@C :result.15 . . openArray.0.I3ca6t4.@8,~1 .)
+   (asgn@C result.15
+    (oconstr openArray.0.I3ca6t4.@8,~1
+     (kv@2 a.0~1
+      (call@9 rawData.0.I2xua2q.~7 s.1@1))
+     (kv@J len.0~3
+      (dot@3 s.1~1 len.0 0 "x"))))
+   (ret~2,~1 result.15)))
+ (iterator@E,1C :items.1.Ins199m. . .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (at items.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@I,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (param@1 :a.1 . . openArray.0.I3ca6t4.@C .))
+  (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil))). .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (stmts@2,m,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (var@4 :i.0 . .
+    (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)0@4)
+   (while@,1
+    (lt@8
+     (i 32)i.0~2
+     (call@5 len.6.I0tpktl1.~3 a.1@1))
+    (stmts@2,1
+     (yld
+      (call@6 \5B\5D.10.Ikixp7k. a.1 i.0@2))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.0))))))
+ (func@P,O,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :rawData.0.I2xua2q. . .@,2d,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at rawData.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@G,2d,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.3 . . seq.0.I3ump14.@6 .))
+  (ptr@D,2d,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (uarray@I
+    (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+     (notnil)))
+   (unchecked))
+  (pragmas@p,2d,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (inline@2)).@,2d,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@2,2e,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (result :result.16 . .
+    (ptr@B,~1
+     (uarray@I
+      (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+       (notnil)))
+     (unchecked)).)
+   (asgn@7,1 result.16~7
+    (dot@3 s.3~1 data.0 0 "x"))
+   (ret~2,~1 result.16)))
+ (func@F,n,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :len.6.I0tpktl1. . .~F,~I
+  (at len.6.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params~3,~I
+   (param@1 :a.3 . . openArray.0.I3ca6t4.@C .))
+  (i@4,~I 32)
+  (pragmas@K,~I
+   (inline@2)).~F,~I
+  (stmts@X,~I
+   (result@1 :result.17 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1 result.17
+    (dot a.3~1 len.0 0 "x"))
+   (ret~m result.17)))
+ (func@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :\5B\5D.10.Ikixp7k. . .~A,~e
+  (at \5B\5D.10.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@3,~e
+   (param@1 :x.2 . . openArray.0.I3ca6t4.@C .)
+   (param@I :idx.1 . .
+    (i@5 32).))
+  (mut@J,~e
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (pragmas@c,~e
+   (inline@2)
+   (requires@A
+    (and@J
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1D,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim idx.1@16,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim))
+     (lt@8
+      (i 32)idx.1~4
+      (dot@3 x.2~1 len.0 0 "x"))))).~A,~e
+  (stmts@1P,~e
+   (result@3 :result.18 . .
+    (mut~19
+     (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+      (notnil))).)
+   (asgn@3 result.18
+    (haddr~2
+     (pat
+      (dot x.2~1 a.0 0 "x")idx.1@3)))
+   (ret~1Z result.18)))
+ (func@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.3 . .
+    (mut@3
+     (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.3)
+    (add@6
+     (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+     (hderef@1 x.3)
+     (conv@U,~F
+      (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)1@1)))))
+ (type@M,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :openArray.0.I3ca6t4. .
+  (at openArray.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (pragmas~6,~H
+   (view@2))
+  (object@5,~H .
+   (fld~N,1 :a.0 . .
+    (ptr@3
+     (uarray@I
+      (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+       (notnil)))
+     (unchecked)).)
+   (fld~N,2 :len.0 . .
+    (i@5 32).)))
+ (type@W,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :seq.0.I3ump14. .
+  (at seq.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (pragmas@A,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (destroy =destroy.1.Iqg9snl1.)
+   (wasmoved =wasMoved.1.Iba95rl.)
+   (dup =dup.1.Iuu9ye01.)
+   (copy =copy.1.I4o5y601.))
+  (object@C,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim .
+   (fld~8,1 :len.0 . .
+    (i@5 32).)
+   (fld~8,2 :data.0 . .
+    (ptr@6
+     (uarray@I
+      (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+       (notnil)))
+     (unchecked)).)))
+ (func@,D,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=destroy.1.Iqg9snl1. . .
+  (at =destroy.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@J
+   (param@1 :s.6 . . seq.0.I3ump14.@6 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (ptr
+         (uarray
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil)))
+         (unchecked))
+        (dot@6,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.6~1 data.0 0 "x")
+        (nil@F,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+     (stmts~1,1
+      (var@4 :i.1 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)0@4)
+      (while@,1
+       (lt@8
+        (i 32)i.1~2
+        (dot@3 s.6~1 len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@2
+          (dot s.6~1 data.0 0 "x")i.1@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.1))))
+      (cmd@,4 dealloc.1.sysvq0asl
+       (hconv@9
+        (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (hconv
+         (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (dot s.6~1 data.0 0 "x")))))))))
+ (func@,L,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=wasMoved.1.Iba95rl. . .
+  (at =wasMoved.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@K
+   (param@1 :s.7 . .
+    (mut@3 seq.0.I3ump14.@7).)).
+  (pragmas@a
+   (inline@2)).
+  (stmts@2,1
+   (asgn@6
+    (dot~5
+     (hderef~1 s.7)len.0 0 "x")0@2)
+   (asgn@7,1
+    (dot~6
+     (hderef~1 s.7)data.0 0 "x")
+    (nil@2))))
+ (func@,1U,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=dup.1.Iuu9ye01. . .
+  (at =dup.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@F
+   (param@1 :a.5 . . seq.0.I3ump14.@6 .))seq.0.I3ump14.@G
+  (pragmas@Z
+   (nodestroy@2)).
+  (stmts@2,1
+   (result@7 :result.19 . . seq.0.I3ump14.@D,~1 .)
+   (asgn@7 result.19~7
+    (call@H newSeqUninit.0.I978ktq1.~F
+     (dot@2 a.5~1 len.0 0 "x")))
+   (var@4,1 :i.2 . .
+    (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.2~2
+     (dot@3 a.5~1 len.0 0 "x"))
+    (stmts@2,1
+     (asgn@H
+      (pat~A
+       (dot result.19~6 data.0 0 "x")i.2@6)
+      (dup@8
+       (pat@2
+        (dot a.5~1 data.0 0 "x")i.2@6)))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.2))))
+   (ret~2,~1 result.19)))
+ (func@,20,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=copy.1.I4o5y601. . .
+  (at =copy.1.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@G
+   (param@1 :dest.1 . .
+    (mut@6 seq.0.I3ump14.@7).)
+   (param@J :src.1 . . seq.0.I3ump14.@8 .)).
+  (pragmas@m
+   (nodestroy@2)).
+  (stmts@2,1
+   (if
+    (elif@3
+     (eq@A
+      (ptr
+       (uarray
+        (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+         (notnil)))
+       (unchecked))
+      (dot~6
+       (hderef~4 dest.1)data.0 0 "x")
+      (dot@6 src.1~3 data.0 0 "x"))
+     (stmts@N
+      (ret .))))
+   (if@,1
+    (elif@3
+     (lt@8
+      (i 32)
+      (dot~5 src.1~3 len.0 0 "x")
+      (dot@6
+       (hderef~4 dest.1)len.0 0 "x"))
+     (stmts~1,1
+      (var@4 :i.3 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+       (dot@7 src.1~3 len.0 0 "x"))
+      (while@,1
+       (lt@8
+        (i 32)i.3~2
+        (dot@6
+         (hderef~4 dest.1)len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@5
+          (dot
+           (hderef~4 dest.1)data.0 0 "x")i.3@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.3))))))
+    (elif@5,5
+     (lt@G
+      (i 32)
+      (call~C capInBytes.0.Iho46001.@1
+       (hderef~4 dest.1))
+      (mul@A
+       (i 32)
+       (dot~5 src.1~3 len.0 0 "x")
+       (sizeof@8
+        (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+         (notnil)))))
+     (stmts~3,1
+      (let@4 :oldCap.0 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+       (div@P
+        (i 32)
+        (call~C capInBytes.0.Iho46001.@1
+         (hderef~4 dest.1))
+        (sizeof@A
+         (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+          (notnil)))))
+      (let@4,1 :newCap.0 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+       (call@I recalcCap.0.sysvq0asl~9 oldCap.0@1
+        (sub@H
+         (i 32)
+         (dot~5 src.1~3 len.0 0 "x")oldCap.0@2)))
+      (let@4,2 :memSize.0 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+       (call@R memSizeInBytes.0.I6h5zpv1.~H newCap.0@1))
+      (asgn@A,3
+       (dot~6
+        (hderef~4 dest.1)data.0 0 "x")
+       (cast@2
+        (ptr@5
+         (uarray@I
+          (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+           (notnil)))
+         (unchecked))
+        (call@Z realloc.1.sysvq0asl~7
+         (hconv@5
+          (pointer@J,2Z,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (hconv
+           (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+            (unchecked))
+           (dot
+            (hderef~4 dest.1)data.0 0 "x")))memSize.0@C)))
+      (if@,4
+       (elif@3
+        (eq@A
+         (ptr
+          (uarray
+           (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+            (notnil)))
+          (unchecked))
+         (dot~6
+          (hderef~4 dest.1)data.0 0 "x")
+         (nil@3))
+        (stmts~1,1
+         (asgn@9
+          (dot~5
+           (hderef~4 dest.1)len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.0@B)))
+         (ret@,3 .)))))))
+   (asgn@9,G
+    (dot~5
+     (hderef~4 dest.1)len.0 0 "x")
+    (dot@5 src.1~3 len.0 0 "x"))
+   (var@4,H :i.4 . .
+    (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)0@4)
+   (while@,I
+    (lt@8
+     (i 32)i.4~2
+     (dot@6
+      (hderef~4 dest.1)len.0 0 "x"))
+    (stmts@2,1
+     (stmts@2,Y,../../../../../../home/savant/nimony/lib/std/system.nim
+      (asgn@7
+       (pat~6
+        (dot@8,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+         (hderef~4 dest.1)data.0 0 "x")i.4@E,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim)
+       (dup@P,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (pat@4
+         (dot src.1~3 data.0 0 "x")i.4@6))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.4))))))
+ (func@Q,1V,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :newSeqUninit.0.I978ktq1. . .~Q,~R
+  (at newSeqUninit.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params~5,~R
+   (param@1 :size.2 . .
+    (i@6 32).))seq.0.I3ump14.~A,~R
+  (pragmas@F,~R
+   (nodestroy@2)
+   (inline@D)).~Q,~R
+  (stmts~O,~Q
+   (result :result.20 . . seq.0.I3ump14.@E,~1 .)
+   (if@,1
+    (elif@3
+     (eq@5
+      (i 32)size.2~5 0@3)
+     (stmts~1,1
+      (asgn@7 result.20~7
+       (oconstr@8 seq.0.I3ump14.@W,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+        (kv@4 len.0~3 size.2@2)
+        (kv@G data.0~4
+         (nil@2))))))
+    (else@,2
+     (stmts@2,1
+      (let@4 :memSize.1 . .
+       (i@I,2D,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim 32)
+       (call@R memSizeInBytes.0.I6h5zpv1.~H size.2@1))
+      (asgn@7,1 result.20~7
+       (oconstr@8 seq.0.I3ump14.@W,N,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+        (kv@4 len.0~3 size.2@2)
+        (kv@G data.0~4
+         (cast@2
+          (ptr@5
+           (uarray@I
+            (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+             (notnil)))
+           (unchecked))
+          (call@X alloc.1.sysvq0asl~5 memSize.1@1)))))
+      (if@,2
+       (elif@3
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ptr
+            (uarray
+             (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+              (notnil)))
+            (unchecked))
+           (dot@D,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim result.20~6 data.0 0 "x")
+           (nil@M,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+        (stmts~1,1
+         (discard "leave uninitialized"@8)))
+       (else@,2
+        (stmts@2,1
+         (asgn@B
+          (dot~5 result.20~6 len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.1@B)))))))))
+   (ret~2,~1 result.20)))
+ (func@B,27,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :capInBytes.0.Iho46001. . .~B,~1x
+  (at capInBytes.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params@7,~1x
+   (param@1 :s.9 . . seq.0.I3ump14.@6 .))
+  (i@2,~1x 32)
+  (pragmas@O,~1x
+   (inline@2)).~B,~1x
+  (stmts~9,~1w
+   (result@7 :result.21 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@7 result.21~7
+    (if@2
+     (elif@3
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (ptr
+          (uarray
+           (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+            (notnil)))
+          (unchecked))
+         (dot@F,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.9~1 data.0 0 "x")
+         (nil@O,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+      (expr@F
+       (call@D allocatedSize.0.sysvq0asl~D
+        (hconv@2
+         (pointer@P,2j,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (hconv
+          (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (dot s.9~1 data.0 0 "x"))))))
+     (else@e
+      (expr@6 0))))
+   (ret~2,~1 result.21)))
+ (func@Z,2A,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :memSizeInBytes.0.I6h5zpv1. . .~Z,~1l
+  (at memSizeInBytes.0.sysvq0asl
+   (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+    (notnil)))
+  (params~D,~1l
+   (param@1 :size.3 . .
+    (i@6 32).))
+  (i~M,~1l 32)
+  (pragmas@4,~1l
+   (inline@2)).~Z,~1l
+  (stmts~X,~1k
+   (result :result.22 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (pragmax
+    (pragmas
+     (keepOverflowFlag@2))
+    (stmts@2,1
+     (asgn@7 result.22~7
+      (mul@7
+       (i 32)size.3~5
+       (sizeof@8
+        (ref@E,g,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim TypeDesc.Obj.0.layptix6a1@4
+         (notnil)))))
+     (if@,1
+      (elif@3
+       (ovf@C)
+       (stmts~1,2
+        (asgn@7 result.22~7
+         (suf@6 2147483647 "i32")))))))
+   (ret~2,~1 result.22))))(.index@,1,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim
+ (x MarshalClass.0. 275)
+ (x@I,A mcScalar.0. 55)
+ (x@I,A mcPod.0. 70)
+ (x@I,A mcString.0. 64)
+ (x@I,A mcSeq.0. 70)
+ (x@I,A mcRef.0. 64)
+ (x@I,A mcClosure.0. 64)
+ (x@I,A mcUnsafe.0. 72)
+ (x dollar`.MarshalClass.0. 72)
+ (h setIsSized.0. 716)
+ (h isPodAggregate.0. 648)
+ (h hasPtrLeaf.0. 4798)
+ (h podOrPtrAggregate.0. 2461)
+ (h hasSeqLeaf.0. 3082)
+ (h podPtrOrSeqAggregate.0. 2461)
+ (x isArenaAggregate.0. 3646)
+ (x isArenaPtrAggregate.0. 775)
+ (x marshalClass.0. 725)
+ (x isByValueSafe.0. 3406)
+ (x needsHeaderSynthesis.0. 342)
+ (x isInterpretFallback.0. 349)
+ (x JsRepr.0. 411)
+ (x@C,46 jsNumber.0. 50)
+ (x@C,46 jsBigInt.0. 64)
+ (x@C,46 jsBoolean.0. 64)
+ (x@C,46 jsCharString.0. 66)
+ (x@C,46 jsString.0. 72)
+ (x@C,46 jsArray.0. 64)
+ (x@C,46 jsObject.0. 62)
+ (x@C,46 jsRefBox.0. 64)
+ (x@C,46 jsSet.0. 64)
+ (x dollar`.JsRepr.0. 60)
+ (x jsRepr.0. 875)
+ (h toOpenArray.1.I0zz6qv1. 3876)
+ (h items.1.Ins199m. 981)
+ (h rawData.0.I2xua2q. 1026)
+ (h len.6.I0tpktl1. 1178)
+ (h \5B\5D.10.Ikixp7k. 556)
+ (h inc.1.I6wjjge. 1155)
+ (h openArray.0.I3ca6t4. 1031)
+ (h seq.0.I3ump14. 521)
+ (h =destroy.1.Iqg9snl1. 749)
+ (h =wasMoved.1.Iba95rl. 1494)
+ (h =dup.1.Iuu9ye01. 482)
+ (h =copy.1.I4o5y601. 901)
+ (h newSeqUninit.0.I978ktq1. 4411)
+ (h capInBytes.0.Iho46001. 2305)
+ (h memSizeInBytes.0.I6h5zpv1. 1439))

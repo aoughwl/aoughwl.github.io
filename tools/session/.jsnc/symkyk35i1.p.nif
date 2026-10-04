@@ -1,0 +1,536 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/symparser.nim
+ (comment)
+ (proc@,2 extractBasename@5 x . .
+  (params@L
+   (param@1 s . . string@3 .)
+   (param@C isGlobal . .
+    (mut@A bool@4).))string@X . .
+  (stmts@2,4
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (ret
+            (call@D substr~6 s@1 0@4
+             (infix@8 \2D i~1 1@1))))))
+        (asgn@9,2 isGlobal~9 true@2))))
+     (cmd@,4 dec i@4)))
+   (ret@,7 ""@7)))
+ (proc@,F extractBasename@5 x . .
+  (params@L
+   (param@1 s . .
+    (mut@3 string@4).)). . .
+  (stmts@2,1
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (cmd@1
+            (dot s~1 setLen@1)i@8)
+           (ret@,1 .)))))))
+     (cmd@,4 dec i@4)))))
+ (proc@,O genericTypeName@5 x . .
+  (params@L
+   (param@1 key . . string@E .)
+   (param@6 modname . . string@9 .))string@O . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@N &
+     (infix~6 &
+      (infix~6 & "`t.0.I"~9 key@2)"."@2)modname@2))))
+ (proc@,R extractModule@5 x . .
+  (params@J
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,3
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (ret ""@7)))
+         (else@,2
+          (stmts@2,1
+           (ret
+            (call@D substr~6 s@1
+             (infix@5 \2B i~1 1@1)))))))))
+     (cmd@,5 dec i@4)))
+   (ret@,8 ""@7)))
+ (type@J,f SplittedSymName~H x . .
+  (object@2 .
+   (fld~D,1 name~4 x . string@3 .)
+   (fld~B,2 module~6 x . string@3 .)))
+ (proc@,j splitSymName@5 x . .
+  (params@I
+   (param@1 s . . string@3 .))SplittedSymName@D . .
+  (stmts@2,1
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (ret
+            (oconstr@M SplittedSymName~F
+             (kv@5 name~4 s@2)
+             (kv@G module~6 ""@2)))))
+         (else@,2
+          (stmts@2,1
+           (ret
+            (oconstr@M SplittedSymName~F
+             (kv@5 name~4
+              (call@8 substr~6 s@1 0@4
+               (infix@8 \2D i~1 1@1)))
+             (kv@W module~6
+              (call@8 substr~6 s@1
+               (infix@5 \2B i~1 1@1)))))))))))
+     (cmd@,5 dec i@4)))
+   (ret@,8
+    (oconstr@M SplittedSymName~F
+     (kv@5 name~4 s@2)
+     (kv@G module~6 ""@2)))))
+ (proc@,u
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 s . . SplittedSymName@3 .))string@M . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~7 s~1 module@1)len@1)0@2)
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@F &
+        (infix~6 &
+         (dot~6 s~1 name@1)"."@2)
+        (dot@3 s~1 module@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (dot@3 s~1 name@1)))))))
+ (proc@,10 extractVersionedBasename@5 x . .
+  (params@U
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,2
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (var@4 j . . .
+            (infix@5 \2B i~1 1@1))
+           (while@,1
+            (infix@G and
+             (infix~8 < j~2
+              (dot@3 s~1 len@1))
+             (infix@9 in
+              (at~4 s~1 j@1)
+              (curly@3
+               (infix@4 \2E\2E '0'~3 '9'@2))))
+            (stmts@e
+             (cmd inc j@4)))
+           (ret@,2
+            (call@D substr~6 s@1 0@4
+             (infix@8 \2D j~1 1@1)))))))))
+     (cmd@,5 dec i@4)))
+   (ret@,8 ""@7)))
+ (proc@,1C isInstantiation@5 x . .
+  (params@L
+   (param@1 s . . string@3 .))bool@D . .
+  (stmts@2,2
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (var@4,1 dots . . . 3@7)
+   (while@,2
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (cmd dec dots@4)
+        (if@,1
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (ret
+            (infix@C == dots~5 0@3))))
+         (elif@5,2
+          (infix@A and
+           (infix~5 == dots~5 1@3)
+           (infix@B !=
+            (at~6 s~1
+             (infix@2 \2B i~1 1@1))'I'@3))
+          (stmts~3,1
+           (ret false@7)))))))
+     (cmd@,6 dec i@4)))
+   (asgn@7,A result~7 false@2)))
+ (proc@,1Q isLocalName@5 x . .
+  (params@H
+   (param@1 s . . string@3 .))bool@D . .
+  (stmts@2,1
+   (var@4 dots . . . 0@7)
+   (for@4,1 s@5
+    (unpackflat
+     (let c . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == c~2 '.'@3)
+       (stmts@A
+        (cmd inc dots@4))))))
+   (asgn@7,3 result~7
+    (infix@7 <= dots~5 1@3))))
+ (proc@,1W splitLocalSymName@5 x . .
+  (params@N
+   (param@1 s . . string@3 .)
+   (param@C basename . .
+    (mut@A string@4).)
+   (param@1,1 disamb . .
+    (mut@8 int@4).))bool@J,1 . .
+  (stmts@2,2
+   (comment)
+   (asgn@9,1 basename~9 ""@2)
+   (asgn@7,2 disamb~7 0@2)
+   (var@4,3 dot . . .
+    (infix@C \2D
+     (dot~5 s~1 len@1)1@2))
+   (while@,4
+    (infix@F and
+     (infix~5 >= dot~4 0@3)
+     (infix@B in
+      (at~6 s~1 dot@1)
+      (curly@3
+       (infix@4 \2E\2E '0'~3 '9'@2))))
+    (stmts@2,1
+     (cmd dec dot@4)))
+   (if@,6
+    (elif@3
+     (infix@T or
+      (infix~K or
+       (infix~5 <= dot~4 0@3)
+       (infix@7 == dot~4
+        (infix@9 \2D
+         (dot~5 s~1 len@1)1@2)))
+      (infix@A !=
+       (at~6 s~1 dot@1)'.'@3))
+     (stmts~1,1
+      (ret false@7))))
+   (for@4,8
+    (infix@7 \2E\2E< 0~2 dot@4)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (ret false@7))))))
+   (var@4,B value . . . 0@8)
+   (for@4,C
+    (infix@D \2E\2E<
+     (infix~4 \2B dot~4 1@2)
+     (dot@5 s~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (let@4 digit . . .
+      (infix@I \2D
+       (call~7 ord~3
+        (at@2 s~1 i@1))
+       (call@5 ord~3 '0'@1)))
+     (if@,1
+      (elif@3
+       (infix@6 > value~6
+        (infix@M div
+         (par~K
+          (infix@B \2D
+           (call~6 high~4 int@1)digit@2))10@4))
+       (stmts~1,1
+        (ret false@7))))
+     (asgn@6,3 value~6
+      (infix@D \2B
+       (infix~5 * value~6 10@2)digit@2))))
+   (asgn@9,H basename~9
+    (call@8 substr~6 s@1 0@4
+     (infix@B \2D dot~4 1@2)))
+   (asgn@7,I disamb~7 value@2)
+   (asgn@7,J result~7 true@2)))
+ (proc@,1t removeModule@5 x . .
+  (params@I
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,3
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@8 > i~2 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'.'@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 in
+           (at~6 s~1
+            (infix@2 \2B i~1 1@1))
+           (curly@3
+            (infix@4 \2E\2E '0'~3 '9'@2)))
+          (stmts~1,1
+           (ret s@7)))
+         (else@,2
+          (stmts@2,1
+           (ret
+            (call@D substr~6 s@1 0@4
+             (infix@8 \2D i~1 1@1)))))))))
+     (cmd@,5 dec i@4)))
+   (ret@,8 s@7)))
+ (type@M,27 SplittedModulePath~K x . .
+  (object@2 .
+   (fld~H,1 dir~3 x . string@3 .)
+   (fld~G,2 name~4 x . string@3 .)
+   (fld~H,3 ext~3 x . string@3 .)))
+ (proc@,2C splitModulePath@5 x . .
+  (params@L
+   (param@1 s . . string@3 .))SplittedModulePath@D . .
+  (stmts@2,2
+   (var@4 i . . .
+    (infix@A \2D
+     (dot~5 s~1 len@1)2@2))
+   (while@,1
+    (infix@D and
+     (infix~5 >= i~2 0@3)
+     (infix@9 notin
+      (at~4 s~1 i@1)
+      (curly@6 '/'@1 '\5C'@6)))
+    (stmts@2,1
+     (cmd dec i@4)))
+   (var@4,3 d . . .
+    (infix@6 \2B i~2 1@2))
+   (while@,4
+    (infix@G and
+     (infix~8 < d~2
+      (dot@3 s~1 len@1))
+     (infix@9 !=
+      (at~4 s~1 d@1)'.'@3))
+    (stmts@2,1
+     (cmd inc d@4)))
+   (asgn@7,6 result~7
+    (oconstr@K SplittedModulePath~I
+     (kv@4 dir~3
+      (call@8 substr~6 s@1 0@4
+       (infix@8 \2D i~1 1@1)))
+     (kv@T name~4
+      (call@8 substr~6 s@1
+       (infix@5 \2B i~1 1@1)
+       (infix@A \2D d~1 1@1)))
+     (kv@t ext~3
+      (call@8 substr~6 s@1 d@4))))))
+ (proc@,2M changeModuleExt@5 x . .
+  (params@L
+   (param@1 s . . string@8 .)
+   (param@4 ext . . string@5 .))string@I . .
+  (stmts@2,1
+   (let@4 mp . . .
+    (call@K splitModulePath~F s@1))
+   (asgn@7,1 result~7
+    (dot@4 mp~2 dir@1))
+   (if@,2
+    (elif@3
+     (infix@B >
+      (dot~5 result~6 len@1)0@2)
+     (stmts@G
+      (cmd@6
+       (dot result~6 add@1)"/"@5))))
+   (cmd@6,3
+    (dot result~6 add@1)
+    (dot@7 mp~2 name@1))
+   (if@,4
+    (elif@3
+     (infix@C and
+      (infix~4 >
+       (dot~5 ext~3 len@1)0@2)
+      (infix@B !=
+       (at~4 ext~3 0@1)'.'@3))
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)
+       (infix@9 & "."~4 ext@2))))
+    (else@,2
+     (stmts@2,1
+      (cmd@6
+       (dot result~6 add@1)ext@5))))))
+ (proc@,2W
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 s . . SplittedModulePath@3 .))string@P . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (dot@3 s~1 dir@1))
+   (if@,1
+    (elif@3
+     (infix@B >
+      (dot~5 result~6 len@1)0@2)
+     (stmts@G
+      (cmd@6
+       (dot result~6 add@1)"/"@5))))
+   (cmd@6,2
+    (dot result~6 add@1)
+    (dot@6 s~1 name@1))
+   (cmd@6,3
+    (dot result~6 add@1)
+    (dot@6 s~1 ext@1))))
+ (when@,2c
+  (elif@5 isMainModule
+   (stmts~3,1
+    (import
+     (infix@A / std~3
+      (bracket@1 assertions@1)))
+    (cmd@,1 assert
+     (infix@r ==
+      (call~M extractVersionedBasename~O "abc.12.Mod132a3bc"@1)"abc.12"@3))
+    (cmd@,2 assert
+     (infix@o ==
+      (call~J extractVersionedBasename~O "abc.Mod132a3bc"@1)""@3))
+    (let@4,4 sn . . .
+     (call@H splitSymName~C "abc.12.Mod132a3bc"@1))
+    (cmd@,5 assert
+     (infix@F ==
+      (dot~6 sn~2 name@1)"abc.12"@3))
+    (cmd@,6 assert
+     (infix@H ==
+      (dot~8 sn~2 module@1)"Mod132a3bc"@3))
+    (let@4,8 mp . . .
+     (call@K splitModulePath~F "abc/def.2.nif"@1))
+    (cmd@,9 assert
+     (infix@E ==
+      (dot~5 mp~2 dir@1)"abc"@3))
+    (cmd@,A assert
+     (infix@F ==
+      (dot~6 mp~2 name@1)"def"@3))
+    (cmd@,B assert
+     (infix@E ==
+      (dot~5 mp~2 ext@1)".2.nif"@3))
+    (let@4,D mp2 . . .
+     (call@L splitModulePath~F "def.2.nif"@1))
+    (cmd@,E assert
+     (infix@F ==
+      (dot~5 mp2~3 dir@1)""@3)
+     (dot@P mp2~3 dir@1))
+    (cmd@,F assert
+     (infix@G ==
+      (dot~6 mp2~3 name@1)"def"@3)
+     (dot@T mp2~3 name@1))
+    (cmd@,G assert
+     (infix@F ==
+      (dot~5 mp2~3 ext@1)".2.nif"@3))
+    (let@4,I mp3 . . .
+     (call@L splitModulePath~F "def"@1))
+    (cmd@,J assert
+     (infix@F ==
+      (dot~5 mp3~3 dir@1)""@3)
+     (dot@P mp3~3 dir@1))
+    (cmd@,K assert
+     (infix@G ==
+      (dot~6 mp3~3 name@1)"def"@3)
+     (dot@T mp3~3 name@1))
+    (cmd@,L assert
+     (infix@F ==
+      (dot~5 mp3~3 ext@1)""@3))
+    (var@4,N basename . . . ""@B)
+    (var@4,O disamb . . . 0@9)
+    (cmd@,P assert
+     (call@O splitLocalSymName~H "tmp.14"@1 basename@B disamb@L))
+    (cmd@,Q assert
+     (infix@G == basename~9 "tmp"@3))
+    (cmd@,R assert
+     (infix@E == disamb~7 14@3))
+    (cmd@,S assert
+     (prefix@7 not
+      (call@L splitLocalSymName~H "tmp.14.mod"@1 basename@F disamb@P)))
+    (cmd@,T assert
+     (prefix@7 not
+      (call@L splitLocalSymName~H "tmp.part.14"@1 basename@G disamb@Q)))))))

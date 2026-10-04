@@ -1,0 +1,26 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket tables assertions hashes syncio strutils)))
+ (import bitabs lineinfos nifreader nifstreams nifcursors nifchecksums symparser vfs)
+ (import
+  (when
+   (call defined nimony))
+  (infix / std sha1))
+ (import
+  (when
+   (prefix not
+    (call defined nimony)))
+  (infix / std sha1))
+ (import
+  (infix /
+   (infix / ".." models)
+   (bracket tags nifindex_tags)))
+ (include compat2)
+ (import
+  (when isMainModule)
+  (infix / std
+   (bracket os))))

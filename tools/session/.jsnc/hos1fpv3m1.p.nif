@@ -1,0 +1,755 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/hostdir.nim
+ (comment)
+ (when@,Q
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,T
+  (infix@A / std~3 dirs@1))
+ (import@,U
+  (infix@A / std~3 paths@1))
+ (import@,V
+  (infix@A / std~3 osproc@1))
+ (import@,W
+  (infix@A / std~3 syncio@1))
+ (import@,X
+  (infix@A / std~3 times@1))
+ (import@,Y
+  (infix@A / std~3 monotimes@1))
+ (import@,Z iopolicy@7)
+ (import@,a journal@7)
+ (import@,b
+  (infix@A / std~3 oserrors@1))
+ (const@7,n EPERM~5 x . . 1@4)
+ (const@8,o ENOENT~6 x . . 2@4)
+ (const@7,p EINTR~5 x . . 4@4)
+ (const@5,q EIO~3 x . . 5@4)
+ (const@7,r EBADF~5 x . . 9@4)
+ (const@8,s EAGAIN~6 x . . 11@4)
+ (const@8,t ENOMEM~6 x . . 12@4)
+ (const@8,u EACCES~6 x . . 13@4)
+ (const@8,v EEXIST~6 x . . 17@4)
+ (const@7,w EXDEV~5 x . . 18@4)
+ (const@9,x ENOTDIR~7 x . . 20@4)
+ (const@8,y EISDIR~6 x . . 21@4)
+ (const@8,z EINVAL~6 x . . 22@4)
+ (const@8,10 ENFILE~6 x . . 23@4)
+ (const@8,11 EMFILE~6 x . . 24@4)
+ (const@8,12 ENOSPC~6 x . . 28@4)
+ (const@8,13 ESPIPE~6 x . . 29@4)
+ (const@7,14 EROFS~5 x . . 30@4)
+ (const@E,15 ENAMETOOLONG~C x . . 36@4)
+ (const@8,16 ENOSYS~6 x . . 38@4)
+ (const@B,17 ENOTEMPTY~9 x . . 39@4)
+ (const@7,18 ELOOP~5 x . . 40@4)
+ (const@B,19 EOVERFLOW~9 x . . 75@4)
+ (var@4,1B gErrno . . . 0@9)
+ (proc@,1D hostErrno@5 x . .
+  (params@F)int@4 . .
+  (stmts@2,1
+   (comment)gErrno@,1))
+ (proc@,1H setHostErrno@5 x . .
+  (params@I
+   (param@1 e . . int@3 .)). . .
+  (stmts@2,1
+   (asgn@7 gErrno~7 e@2)))
+ (proc@,1K blockedByPolicy@5 . . .
+  (params@K
+   (param@1 name . . string@6 .)
+   (param@F need . . int@6 .)
+   (param@Q path . . . ""@7))bool@c . .
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (call@C capsDeniedOn~C need@1 path@7)
+     (stmts~1,4
+      (call@F recordViolation~F
+       (expr
+        (stmts@1)
+        (if@1
+         (elif@3
+          (infix@9 >
+           (dot~5 path~4 len@1)0@2)
+          (infix@a &
+           (infix~7 &
+            (infix~A & name~5 " on \27"@2)path@2)"\27"@2))
+         (else@j name@6)))need@y)
+      (asgn@7,1 gErrno~7 EPERM@2)
+      (asgn@7,2 result~7 true@2)))
+    (else@,7
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,1b errnoOf@5 . . .
+  (params@C
+   (param@1 ec . . ErrorCode@4 .))int@H . .
+  (stmts@2,1
+   (comment)
+   (case@,6 ec@5
+    (of@,1
+     (ranges Success@3)
+     (stmts@C 0))
+    (of@,2
+     (ranges NameExists@3)
+     (stmts@F EEXIST))
+    (of@,3
+     (ranges NameNotFound@3)
+     (stmts@H ENOENT))
+    (of@,4
+     (ranges PermissionDenied@3)
+     (stmts@L EACCES))
+    (of@,5
+     (ranges BadOperation@3)
+     (stmts@H ENOTEMPTY))
+    (of@,6
+     (ranges DiskFullError@3)
+     (stmts@I ENOSPC))
+    (of@,7
+     (ranges IOError@3)
+     (stmts@C EIO))
+    (of@,8
+     (ranges OutOfMemError@3)
+     (stmts@I ENOMEM))
+    (of@,9
+     (ranges RetryError@3)
+     (stmts@F EAGAIN))
+    (of@,A
+     (ranges InterruptedError@3)
+     (stmts@L EINTR))
+    (else@,B
+     (stmts@6 EINVAL)))))
+ (proc@,23 jLeaf@5 . . .
+  (params@A
+   (param@1 kind . . string@B .)
+   (param@7 key . . string@5 .)
+   (param@K rc . .
+    (mut@4 int@4).))bool@Y . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (prefix not
+      (call@K journalReplaying~G))
+     (stmts@O
+      (ret false@7))))
+   (let@4,3 a . . .
+    (call@A jServe~6 kind@1 key@7))
+   (asgn@3,4 rc~3
+    (call@6 jInt~4
+     (call@7 jField~6 a@1 0@4)))
+   (cmd@,5 setHostErrno
+    (call@H jInt~4
+     (call@7 jField~6 a@1 1@4)))
+   (asgn@7,6 result~7 true@2)))
+ (proc@,2C jLeafDone@5 . . .
+  (params@E
+   (param@1 kind . . string@B .)
+   (param@7 key . . string@5 .)
+   (param@K rc . . int@4 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts@K
+      (call@7 jRecord~7 kind@1 key@7
+       (prefix@C \40
+        (bracket@1
+         (prefix@1 $ rc@1)
+         (prefix@6 $
+          (call@A hostErrno~9))))))))))
+ (proc@,2F hostMkdir@5 x . .
+  (params@F
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 jrc . . . 0@6)
+   (if@,2
+    (elif@3
+     (call@5 jLeaf~5 "mkdir"@1
+      (call@I portPath~8 p@1)jrc@N)
+     (stmts@Y
+      (ret jrc@7))))
+   (if@,3
+    (elif@3
+     (call@F blockedByPolicy~F "mkdir\282\29"@1 capFsWrite@D p@P)
+     (stmts@i
+      (ret -1@7))))
+   (let@4,4 code . . .
+    (call@O tryCreateFinalDir~H
+     (call@5 path~4 p@1)))
+   (cmd@,5 setHostErrno
+    (call@K errnoOf~7 code@1))
+   (asgn@7,6 result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@5 == code~5 Success@3)0@H)
+      (else@M -1@6))))
+   (call@9,7 jLeafDone~9 "mkdir"@1
+    (call@I portPath~8 p@1)result@N)))
+ (proc@,2P hostRmdir@5 x . .
+  (params@F
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 jrc . . . 0@6)
+   (if@,2
+    (elif@3
+     (call@5 jLeaf~5 "rmdir"@1
+      (call@I portPath~8 p@1)jrc@N)
+     (stmts@Y
+      (ret jrc@7))))
+   (if@,3
+    (elif@3
+     (call@F blockedByPolicy~F "rmdir\282\29"@1 capFsWrite@D p@P)
+     (stmts@i
+      (ret -1@7))))
+   (let@4,4 code . . .
+    (call@O tryRemoveFinalDir~H
+     (call@5 path~4 p@1)))
+   (cmd@,5 setHostErrno
+    (call@K errnoOf~7 code@1))
+   (asgn@7,6 result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@5 == code~5 Success@3)0@H)
+      (else@M -1@6))))
+   (call@9,7 jLeafDone~9 "rmdir"@1
+    (call@I portPath~8 p@1)result@N)))
+ (proc@,2Z hostUnlink@5 x . .
+  (params@G
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 jrc . . . 0@6)
+   (if@,2
+    (elif@3
+     (call@5 jLeaf~5 "unlink"@1
+      (call@J portPath~8 p@1)jrc@O)
+     (stmts@Z
+      (ret jrc@7))))
+   (if@,3
+    (elif@3
+     (call@F blockedByPolicy~F "unlink\282\29"@1 capFsWrite@E p@Q)
+     (stmts@j
+      (ret -1@7))))
+   (let@4,4 code . . .
+    (call@K tryRemoveFile~D
+     (call@5 path~4 p@1)))
+   (cmd@,5 setHostErrno
+    (call@K errnoOf~7 code@1))
+   (asgn@7,6 result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@5 == code~5 Success@3)0@H)
+      (else@M -1@6))))
+   (call@9,7 jLeafDone~9 "unlink"@1
+    (call@J portPath~8 p@1)result@O)))
+ (proc@,2j hostGetCwd@5 x . .
+  (params@G)string@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@G journalReplaying~G)
+     (stmts~1,1
+      (let@4 a . . .
+       (call@A jServe~6 "getcwd"@1 ""@B))
+      (cmd@,1 setHostErrno 0@D)
+      (ret@,2
+       (call@D jField~6 a@1 0@4)))))
+   (try@,5
+    (stmts@2,1
+     (asgn@7 result~7
+      (prefix@2 $
+       (call@J
+        (dot~E dirs~4 getCurrentDir@1))))
+     (cmd@,1 setHostErrno 0@D))
+    (except@,3 .
+     (stmts@2,1
+      (cmd setHostErrno EACCES@D)
+      (asgn@7,1 result~7 ""@2))))
+   (if@,D
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts@K
+      (call@7 jRecord~7 "getcwd"@1 ""@B
+       (prefix@F \40
+        (bracket@1 result@1))))))))
+ (proc@,2z hostChdir@5 x . .
+  (params@F
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 jrc . . . 0@6)
+   (if@,2
+    (elif@3
+     (call@5 jLeaf~5 "chdir"@1
+      (call@I portPath~8 p@1)jrc@N)
+     (stmts@Y
+      (ret jrc@7))))
+   (if@,3
+    (elif@3
+     (call@F blockedByPolicy~F "chdir\282\29"@1 capFsWrite@D p@P)
+     (stmts@i
+      (ret -1@7))))
+   (try@,4
+    (stmts@2,1
+     (call@D setCurrentDir~D
+      (call@5 path~4 p@1))
+     (cmd@,1 setHostErrno 0@D)
+     (asgn@7,2 result~7 0@2))
+    (except@,4 .
+     (stmts@2,1
+      (cmd setHostErrno ENOENT@D)
+      (asgn@7,1 result~7 -1@2))))
+   (call@9,B jLeafDone~9 "chdir"@1
+    (call@I portPath~8 p@1)result@N)))
+ (proc@,3D hostSystem@5 x . .
+  (params@G
+   (param@1 cmd . . string@5 .))int@F . .
+  (stmts@2,1
+   (comment)
+   (var@4,8 jrc . . . 0@6)
+   (if@,9
+    (elif@3
+     (call@5 jLeaf~5 "system"@1 cmd@B jrc@G)
+     (stmts@R
+      (ret jrc@7))))
+   (if@,A
+    (elif@3
+     (call@F blockedByPolicy~F "system\283\29"@1 capProcess@E)
+     (stmts@g
+      (ret -1@7))))
+   (try@,B
+    (stmts@2,1
+     (asgn@7 result~7
+      (call@9 execCmd~7 cmd@1))
+     (cmd@,1 setHostErrno 0@D))
+    (except@,3 .
+     (stmts@2,1
+      (cmd setHostErrno EINVAL@D)
+      (asgn@7,1 result~7 -1@2))))
+   (call@9,H jLeafDone~9 "system"@1 cmd@B result@G)))
+ (proc@,3X hostFdSize@5 x . .
+  (params@G
+   (param@1 f . . File@3 .))int@B . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 n . . .
+    (suf@4 0 "i64"))
+   (try@,3
+    (stmts@2,1
+     (let@4 pos . . .
+      (call@G getFilePos~A f@1))
+     (call@A,1 setFilePos~A f@1
+      (suf@4 0 "i64")fspEnd@B)
+     (asgn@2,2 n~2
+      (call@C getFilePos~A f@1))
+     (call@A,3 setFilePos~A f@1 pos@4 fspSet@9))
+    (except@,5 .
+     (stmts@2,1
+      (asgn@2 n~2
+       (suf@2 -1 "i64")))))
+   (asgn@7,A result~7
+    (call@5 int~3 n@1))))
+ (proc@,3k hostClockGettime@5 x . .
+  (params@M
+   (param@1 clockId . . int@9 .)
+   (param@F sec . .
+    (mut@5 int@4).)
+   (param@T nsec . .
+    (mut@6 int@4).)). . .
+  (stmts@2,1
+   (comment)
+   (if@,7
+    (elif@3
+     (call@G journalReplaying~G)
+     (stmts~1,1
+      (let@4 a . . .
+       (call@A jServe~6 "clock"@1
+        (prefix@A $ clockId@1)))
+      (asgn@4,1 sec~4
+       (call@6 jInt~4
+        (call@7 jField~6 a@1 0@4)))
+      (asgn@5,2 nsec~5
+       (call@6 jInt~4
+        (call@7 jField~6 a@1 1@4)))
+      (ret@,3 .))))
+   (if@,C
+    (elif@3
+     (infix@8 == clockId~8 0@3)
+     (stmts~1,1
+      (let@4 t . . .
+       (call@B getTime~7))
+      (asgn@4,1 sec~4
+       (call@5 int~3
+        (dot@2 t~1 seconds@1)))
+      (asgn@5,2 nsec~5
+       (call@5 int~3
+        (dot@2 t~1 nanosecond@1)))))
+    (else@,4
+     (stmts@2,1
+      (let@4 ticks . . .
+       (dot@L
+        (call~2 getMonoTime~B)ticks@1))
+      (asgn@4,1 sec~4
+       (call@5 int~3
+        (infix@7 div ticks~6
+         (suf@4 1000000000 "i64"))))
+      (asgn@5,2 nsec~5
+       (call@5 int~3
+        (infix@7 mod ticks~6
+         (suf@4 1000000000 "i64")))))))
+   (if@,K
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts@K
+      (call@7 jRecord~7 "clock"@1
+       (prefix@A $ clockId@1)
+       (prefix@K \40
+        (bracket@1
+         (prefix@1 $ sec@1)
+         (prefix@7 $ nsec@1)))))))))
+ (proc@,47 cGetpid@5 . . .
+  (params@C)cint@4
+  (pragmas@L
+   (kv@9 importc~7 "getpid"@2)). .)
+ (proc@,4B hostGetPid@5 x . .
+  (params@G)int@4 . .
+  (stmts@2,1
+   (comment)
+   (var@4,G jrc . . . 0@6)
+   (if@,H
+    (elif@3
+     (call@5 jLeaf~5 "getpid"@1 ""@B jrc@F)
+     (stmts@Q
+      (ret jrc@7))))
+   (asgn@7,I result~7
+    (call@5 int~3
+     (call@8 cGetpid~7)))
+   (cmd@,J setHostErrno 0@D)
+   (call@9,K jLeafDone~9 "getpid"@1 ""@B result@F)))
+ (proc@,4Y hostFileSize@5 x . .
+  (params@I
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 jrc . . . 0@6)
+   (if@,2
+    (elif@3
+     (call@5 jLeaf~5 "fsize"@1
+      (call@I portPath~8 p@1)jrc@N)
+     (stmts@Y
+      (ret jrc@7))))
+   (var@4,3 f . . File@3 .)
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@8 open~4 f@1 p@4 fmRead@7))
+     (stmts~1,1
+      (cmd setHostErrno ENOENT@D)
+      (call@9,1 jLeafDone~9 "fsize"@1
+       (call@I portPath~8 p@1)-1@N)
+      (ret@,2 -1@7))))
+   (var@4,8 n . . .
+    (suf@4 0 "i64"))
+   (try@,9
+    (stmts@2,1
+     (call@A setFilePos~A f@1
+      (suf@4 0 "i64")fspEnd@B)
+     (asgn@2,1 n~2
+      (call@C getFilePos~A f@1)))
+    (except@,3 .
+     (stmts@2,1
+      (asgn@2 n~2
+       (suf@2 -1 "i64")))))
+   (call@5,E close~5 f@1)
+   (cmd@,F setHostErrno 0@D)
+   (asgn@7,G result~7
+    (call@5 int~3 n@1))
+   (call@9,H jLeafDone~9 "fsize"@1
+    (call@I portPath~8 p@1)result@N)))
+ (type@E,4v DirSnapshot~C . . .
+  (object@2 .
+   (fld~C,1 names . .
+    (at@A seq~3 string@1).)
+   (fld~C,2 kinds . .
+    (at@A seq~3 int@1).)
+   (fld~C,3 pos . . int@5 .)
+   (fld~C,4 live . . bool@6 .)))
+ (var@4,51 gDirs . .
+  (at@A seq~3 DirSnapshot@1)
+  (prefix@Q \40
+   (bracket@1)))
+ (proc@,53 installSnapshot@5 . . .
+  (params@K
+   (param@1 snap . . DirSnapshot@6 .))int@L . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@7 gDirs~5 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (prefix not
+        (dot@C
+         (at~3 gDirs~5 i@1)live@1))
+       (stmts~1,1
+        (asgn@9
+         (at~4 gDirs~5 i@1)snap@2)
+        (ret@,1
+         (infix@9 \2B i~2 1@2)))))
+     (cmd@,3 inc i@4)))
+   (cmd@5,7
+    (dot gDirs~5 add@1)snap@5)
+   (asgn@7,8 result~7
+    (dot@7 gDirs~5 len@1))))
+ (proc@,5E hostOpenDir@5 x . .
+  (params@H
+   (param@1 p . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (call@G journalReplaying~G)
+     (stmts~1,1
+      (let@4 a . . .
+       (call@A jServe~6 "opendir"@1
+        (call@K portPath~8 p@1)))
+      (if@,1
+       (elif@3
+        (infix@J <=
+         (call~F jInt~4
+          (call@7 jField~6 a@1 0@4))0@3)
+        (stmts~1,1
+         (cmd setHostErrno ENOENT@D)
+         (ret@,1 0@7))))
+      (var@4,4 rsnap . . .
+       (oconstr@J DirSnapshot~B
+        (kv@6 names~5
+         (prefix@2 \40
+          (bracket@1)))
+        (kv@I kinds~5
+         (prefix@2 \40
+          (bracket@1)))
+        (kv@S pos~3 0@2)
+        (kv@b live~4 true@2)))
+      (var@4,5 i . . . 1@4)
+      (while@,6
+       (infix@C <
+        (infix~4 \2B i~2 1@2)
+        (dot@3 a~1 len@1))
+       (stmts@2,1
+        (cmd@B
+         (dot
+          (dot~6 rsnap~5 names@1)add@1)
+         (at@6 a~1 i@1))
+        (cmd@B,1
+         (dot
+          (dot~6 rsnap~5 kinds@1)add@1)
+         (call@9 jInt~4
+          (at@2 a~1
+           (infix@2 \2B i~1 1@1))))
+        (asgn@2,2 i~2
+         (infix@4 \2B i~2 2@2))))
+      (cmd@,A setHostErrno 0@D)
+      (ret@,B
+       (call@M installSnapshot~F rsnap@1)))))
+   (if@,J
+    (elif@3
+     (call@F blockedByPolicy~F "opendir\283\29"@1 capFsRead@F p@Q)
+     (stmts@j
+      (ret 0@7))))
+   (var@4,K snap . . .
+    (oconstr@I DirSnapshot~B
+     (kv@6 names~5
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@I kinds~5
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@S pos~3 0@2)
+     (kv@b live~4 true@2)))
+   (try@,N
+    (stmts@2,1
+     (for@4
+      (call@M walkDir~7
+       (call@5 path~4 p@1)
+       (vv@J relative~9 true@2)
+       (vv@a checkDir~9 true@2))
+      (unpackflat
+       (let kind . . ..)
+       (let entry@6 . . ..))
+      (stmts~2,1
+       (cmd@A
+        (dot
+         (dot~6 snap~4 names@1)add@1)
+        (prefix@5 $ entry@1))
+       (cmd@A,1
+        (dot
+         (dot~6 snap~4 kinds@1)add@1)
+        (call@8 ord~3 kind@1)))))
+    (except@,4 .
+     (stmts@2,1
+      (cmd setHostErrno ENOENT@D)
+      (if@,1
+       (elif@3
+        (call@G journalRecording~G)
+        (stmts@K
+         (call@7 jRecord~7 "opendir"@1
+          (call@K portPath~8 p@1)
+          (prefix@P \40
+           (bracket@1 "0"@1))))))
+      (ret@,2 0@7))))
+   (cmd@,V setHostErrno 0@D)
+   (var@4,a fs . .
+    (at@7 seq~3 string@1)
+    (prefix@I \40
+     (bracket@1)))
+   (if@,b
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts~1,1
+      (var@4 k . . . 0@4)
+      (while@,1
+       (infix@8 < k~2
+        (dot@C
+         (dot~6 snap~4 names@1)len@1))
+       (stmts@2,1
+        (cmd@2
+         (dot fs~2 add@1)
+         (at@F
+          (dot~6 snap~4 names@1)k@1))
+        (cmd@2,1
+         (dot fs~2 add@1)
+         (prefix@5 $
+          (at@B
+           (dot~6 snap~4 kinds@1)k@1)))
+        (cmd@,2 inc k@4))))))
+   (asgn@7,h result~7
+    (call@H installSnapshot~F snap@1))
+   (if@,i
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts~1,1
+      (var@4 fs2 . .
+       (at@8 seq~3 string@1)
+       (prefix@J \40
+        (bracket@1)))
+      (cmd@3,1
+       (dot fs2~3 add@1)
+       (prefix@5 $ result@1))
+      (var@4,2 k . . . 0@4)
+      (while@,3
+       (infix@8 < k~2
+        (dot@4 fs~2 len@1))
+       (stmts@2,1
+        (cmd@3
+         (dot fs2~3 add@1)
+         (at@7 fs~2 k@1))
+        (cmd@,1 inc k@4)))
+      (call@7,6 jRecord~7 "opendir"@1
+       (call@K portPath~8 p@1)fs2@P))))))
+ (proc@,66 hostNextDir@5 x . .
+  (params@H
+   (param@1 handle . . int@8 .)
+   (param@E name . .
+    (mut@6 string@4).)
+   (param@W kind . .
+    (mut@6 int@4).))bool@m . .
+  (stmts@2,1
+   (comment)
+   (asgn@5,2 name~5 ""@2)
+   (asgn@5,3 kind~5 0@2)
+   (let@4,4 i . . .
+    (infix@B \2D handle~7 1@2))
+   (if@,5
+    (elif@3
+     (infix@O or
+      (infix~I or
+       (infix~4 < i~2 0@2)
+       (infix@5 >= i~2
+        (dot@8 gDirs~5 len@1)))
+      (prefix@3 not
+       (dot@C
+        (at~3 gDirs~5 i@1)live@1)))
+     (stmts@k
+      (ret false@7))))
+   (if@,6
+    (elif@3
+     (infix@D >=
+      (dot~5
+       (at~3 gDirs~5 i@1)pos@1)
+      (dot@H
+       (dot~6
+        (at~3 gDirs~5 i@1)names@1)len@1))
+     (stmts~1,1
+      (cmd setHostErrno 0@D)
+      (ret@,1 false@7))))
+   (asgn@5,9 name~5
+    (at@G
+     (dot~6
+      (at~3 gDirs~5 i@1)names@1)
+     (dot@9
+      (at~3 gDirs~5 i@1)pos@1)))
+   (asgn@5,A kind~5
+    (at@G
+     (dot~6
+      (at~3 gDirs~5 i@1)kinds@1)
+     (dot@9
+      (at~3 gDirs~5 i@1)pos@1)))
+   (cmd@,B inc
+    (dot@C
+     (at~3 gDirs~5 i@1)pos@1))
+   (asgn@7,C result~7 true@2)))
+ (proc@,6L hostCloseDir@5 x . .
+  (params@I
+   (param@1 handle . . int@8 .))int@F . .
+  (stmts@2,1
+   (comment)
+   (let@4,1 i . . .
+    (infix@B \2D handle~7 1@2))
+   (if@,2
+    (elif@3
+     (infix@O or
+      (infix~I or
+       (infix~4 < i~2 0@2)
+       (infix@5 >= i~2
+        (dot@8 gDirs~5 len@1)))
+      (prefix@3 not
+       (dot@C
+        (at~3 gDirs~5 i@1)live@1)))
+     (stmts~1,1
+      (cmd setHostErrno EBADF@D)
+      (ret@,1 -1@7))))
+   (asgn@F,5
+    (dot~7
+     (at~3 gDirs~5 i@1)names@1)
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@F,6
+    (dot~7
+     (at~3 gDirs~5 i@1)kinds@1)
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@D,7
+    (dot~5
+     (at~3 gDirs~5 i@1)pos@1)0@2)
+   (asgn@E,8
+    (dot~6
+     (at~3 gDirs~5 i@1)live@1)false@2)
+   (cmd@,9 setHostErrno 0@D)
+   (asgn@7,A result~7 0@2))))

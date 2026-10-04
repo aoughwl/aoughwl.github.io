@@ -1,0 +1,86 @@
+(.nif27)
+(stmts
+ (cmd :lengc "/home/savant/nimony/bin/lengc" "c" "--compileOnly" "--bits\3A64"(args)(input))
+ (cmd :hexer "/home/savant/nimony/bin/hexer" "c" "--bits\3A64" "--cpu\3Ale" "--flags\3Abr"(args)
+  (input 0))
+ (cmd :dce "/home/savant/nimony/bin/hexer" "d" "--bits\3A64" "--cpu\3Ale"(args)
+  (input 0 -1))
+ (cmd :dceLive "/home/savant/nimony/bin/hexer" "dl" "--bits\3A64" "--cpu\3Ale"(args)
+  (input 0 -1)(output))
+ (cmd :dceEmit "/home/savant/nimony/bin/hexer" "de" "--bits\3A64" "--cpu\3Ale"(args)
+  (input 0 1))
+ (cmd :cc "gcc" "-c" "-Wno-attributes" "-O1" "-I."(args)(input)"-o"(output))
+ (cmd :link "/home/savant/nimony/bin/niflink"
+  (input 0 0)(output))
+ (do dceLive
+  (input "nc_twomod/twopgd4ba/twopgd4ba.dce.nif")
+  (input "nc_twomod/sysvq0asl.dce.nif")
+  (input "nc_twomod/depu5ylde.dce.nif")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.live.nif"))
+ (do dceEmit
+  (args "--outdir\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.x.nif")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.live.nif")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.c.nif"))
+ (do dceEmit
+  (args "--outdir\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/sysvq0asl.x.nif")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.live.nif")
+  (output "nc_twomod/twopgd4ba/sysvq0asl.c.nif"))
+ (do dceEmit
+  (args "--outdir\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/depu5ylde.x.nif")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.live.nif")
+  (output "nc_twomod/twopgd4ba/depu5ylde.c.nif"))
+ (do link
+  (input "nc_twomod/twopgd4ba/twopgd4ba.linkmanifest.nif")
+  (input "/home/savant/nimony/nimcache_static/static.o")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.o")
+  (input "nc_twomod/twopgd4ba/sysvq0asl.o")
+  (input "nc_twomod/twopgd4ba/depu5ylde.o")
+  (output "nc_twomod/twopgd4ba/twomod"))
+ (do cc
+  (input "../../../../../../../../../home/savant/nimony/vendor/mimalloc/src/static.c")
+  (args "-DMI_STAT=1" "-I/home/savant/nimony/vendor/mimalloc/include")
+  (output "/home/savant/nimony/nimcache_static/static.o"))
+ (do cc
+  (input "nc_twomod/twopgd4ba/twopgd4ba.c")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.o"))
+ (do lengc
+  (args "--nimcache\3Anc_twomod/twopgd4ba")
+  (args "--isMain")
+  (input "nc_twomod/twopgd4ba/twopgd4ba.c.nif")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.c"))
+ (do hexer
+  (args "--isMain")
+  (args "--app\3Aconsole")
+  (args "--outdir\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/twopgd4ba.s.nif")
+  (input "nc_twomod/sysvq0asl.s.idx.nif")
+  (input "nc_twomod/depu5ylde.s.idx.nif")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.x.nif")
+  (output "nc_twomod/twopgd4ba/twopgd4ba.dce.nif"))
+ (do cc
+  (input "nc_twomod/twopgd4ba/sysvq0asl.c")
+  (output "nc_twomod/twopgd4ba/sysvq0asl.o"))
+ (do lengc
+  (args "--nimcache\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/twopgd4ba/sysvq0asl.c.nif")
+  (output "nc_twomod/twopgd4ba/sysvq0asl.c"))
+ (do hexer
+  (input "nc_twomod/sysvq0asl.s.nif")
+  (input "nc_twomod/sysvq0asl.s.idx.nif")
+  (output "nc_twomod/sysvq0asl.x.nif")
+  (output "nc_twomod/sysvq0asl.dce.nif"))
+ (do cc
+  (input "nc_twomod/twopgd4ba/depu5ylde.c")
+  (output "nc_twomod/twopgd4ba/depu5ylde.o"))
+ (do lengc
+  (args "--nimcache\3Anc_twomod/twopgd4ba")
+  (input "nc_twomod/twopgd4ba/depu5ylde.c.nif")
+  (output "nc_twomod/twopgd4ba/depu5ylde.c"))
+ (do hexer
+  (input "nc_twomod/depu5ylde.s.nif")
+  (input "nc_twomod/sysvq0asl.s.idx.nif")
+  (output "nc_twomod/depu5ylde.x.nif")
+  (output "nc_twomod/depu5ylde.dce.nif")))

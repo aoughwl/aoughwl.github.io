@@ -1,0 +1,38 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/floatfmt.nim
+ (comment)
+ (fromimport@,A
+  (infix@8 / std~3 strutils@1)formatBiggestFloat@P FloatFormatMode@j ffDefault@2,1 ffDecimal@D,1 ffScientific@O,1)
+ (fromimport@,C
+  (infix@8 / std~3 parseutils@1)parseBiggestFloat@R)
+ (proc@,E fmtBigFloat@5 x . .
+  (params@H
+   (param@1 f . . BiggestFloat@3 .)
+   (param@I modeSel . . int@9 .)
+   (param@W prec . . int@6 .)
+   (param@h sep . . char@5 .))string@t . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 mode . . . ffDefault@7)
+   (if@,3
+    (elif@3
+     (infix@8 == modeSel~8 1@3)
+     (stmts@E
+      (asgn@5 mode~5 ffDecimal@2)))
+    (elif@5,1
+     (infix@8 == modeSel~8 2@3)
+     (stmts@E
+      (asgn@5 mode~5 ffScientific@2))))
+   (asgn@7,5 result~7
+    (call@K formatBiggestFloat~I f@1 mode@4 prec@A sep@G))))
+ (proc@,M parseBigFloat@5 x . .
+  (params@J
+   (param@1 s . . string@3 .))BiggestFloat@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 f . . BiggestFloat@3 0.0@I)
+   (discard@,2
+    (call@P parseBiggestFloat~H s@1 f@4))
+   (asgn@7,3 result~7 f@2))))

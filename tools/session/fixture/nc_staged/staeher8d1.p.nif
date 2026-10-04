@@ -1,0 +1,80 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,staged_probe.nim
+ (comment)
+ (import@,7 jester@7)
+ (type@B,9 Probe~6 . . .
+  (enum@2 .
+   (efld@5 PA . . . .)
+   (efld@9 PB . . . .)
+   (efld@D PC . . . .)
+   (efld@H PD . . . .)))
+ (proc@,B enumOrds@5 . . .
+  (params@D)int@4 . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@f \2B
+     (infix~G \2B
+      (infix~F \2B
+       (call~5 ord~3 PA@1)
+       (infix@A *
+        (call~5 ord~3 PB@1)10@2))
+      (infix@A *
+       (call~5 ord~3 PC@1)100@2))
+     (infix@A *
+      (call~5 ord~3 PD@1)1000@2)))))
+ (proc@,E enumMask@5 . . .
+  (params@D)int@4 . .
+  (stmts@2,1
+   (let@4 a . . . PA@4)
+   (asgn@7,1 result~7 0@2)
+   (if@,2
+    (elif@3
+     (infix@2 == a~2 PA@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 1@2)))))
+   (if@,3
+    (elif@3
+     (infix@2 == a~2 PB@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 2@2)))))
+   (if@,4
+    (elif@3
+     (infix@2 == a~2 PC@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 4@2)))))
+   (if@,5
+    (elif@3
+     (infix@2 == a~2 PD@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 8@2)))))))
+ (proc@,M enumCase@5 . . .
+  (params@D)int@4 . .
+  (stmts@2,1
+   (let@4 a . . . PA@4)
+   (case@,1 a@5
+    (of@,1
+     (ranges PA@3)
+     (stmts@7
+      (asgn@7 result~7 1@2)))
+    (of@,2
+     (ranges PB@3)
+     (stmts@7
+      (asgn@7 result~7 2@2)))
+    (of@,3
+     (ranges PC@3)
+     (stmts@7
+      (asgn@7 result~7 3@2)))
+    (of@,4
+     (ranges PD@3)
+     (stmts@7
+      (asgn@7 result~7 4@2))))))
+ (proc@,U start@5 . . .
+  (params@A). . .
+  (stmts@F
+   (discard .))))

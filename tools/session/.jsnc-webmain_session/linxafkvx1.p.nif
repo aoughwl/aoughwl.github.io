@@ -1,0 +1,378 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,O,../../../../../../home/savant/nimony/src/lib/lineinfos.nim
+ (import
+  (infix@B / std~4 assertions@2))
+ (const@2,3 AsideBit . . . 1@B)
+ (const@2,4 FileBits . . . 10@B)
+ (const@2,5 LineBits . . . 14@B)
+ (const@2,6 ColBits . . . 7@A)
+ (const@2,7 FileMax . . .
+  (infix@R \2D
+   (par~H
+    (infix@3 shl 1~2 FileBits@4))1@2))
+ (const@2,8 LineMax . . .
+  (infix@R \2D
+   (par~H
+    (infix@3 shl 1~2 LineBits@4))1@2))
+ (const@2,9 ColMax . . .
+  (infix@P \2D
+   (par~G
+    (infix@3 shl 1~2 ColBits@4))1@2))
+ (when@,B
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (staticstmt
+     (stmts@2,1
+      (cmd assert
+       (infix@m ==
+        (infix~A \2B
+         (infix~B \2B
+          (infix~B \2B AsideBit~9 FileBits@2)LineBits@2)ColBits@2)32@3)))))))
+ (type@I,G PackedLineInfo~G x . .
+  (distinct@2 uint32@9))
+ (type@A,I FileId~8 x . .
+  (distinct@2 uint32@9))
+ (import@,K
+  (infix@A / std~3 hashes@1))
+ (func@,M
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . FileId@6 .)
+   (param@4 b . . FileId@3 .))bool@G
+  (pragmas@V borrow@2). .)
+ (func@,N
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . PackedLineInfo@6 .)
+   (param@4 b . . PackedLineInfo@3 .))bool@O
+  (pragmas@d borrow@2). .)
+ (func@,P hash@5 x . .
+  (params@A
+   (param@1 a . . FileId@3 .))Hash@D
+  (pragmas@S borrow@2). .)
+ (func@,Q hash@5 x . .
+  (params@A
+   (param@1 a . . PackedLineInfo@3 .))Hash@L
+  (pragmas@a borrow@2). .)
+ (type@K,T LineInfoUnpacked~I x . .
+  (object@2 .
+   (fld~E,1 file~4 x . FileId@3 .)
+   (fld~E,2 line~4 x . int32@3 .)
+   (fld~F,3 col~3 x . int32@3 .)
+   (fld~B,4 comment~7 x . uint32@3 .)))
+ (type@J,a LineInfoManager~H x . .
+  (object@2 .
+   (fld~H,1 aside . .
+    (at@A seq~3 LineInfoUnpacked@1).)))
+ (const@C,e NoLineInfo~A x . .
+  (call@I PackedLineInfo~E
+   (suf@1 0u "u32")))
+ (const@8,f NoFile~6 x . .
+  (call@A FileId~6
+   (suf@1 0u "u32")))
+ (proc@,h isValid@5 x . .
+  (params@D
+   (param@1 x . . PackedLineInfo@3 .))bool@L
+  (pragmas@d inline@2).
+  (stmts@q
+   (infix@A !=
+    (call~4 uint32~6 x@1)
+    (call@9 uint32~6 NoLineInfo@1))))
+ (proc@,i isValid@5 x . .
+  (params@D
+   (param@1 x . . FileId@3 .))bool@D
+  (pragmas@V inline@2).
+  (stmts@i
+   (infix@2 != x~2 NoFile@3)))
+ (proc@,k pack@5 x . .
+  (params@A
+   (param@1 m . .
+    (mut@3 LineInfoManager@4).)
+   (param@P file . . FileId@6 .)
+   (param@d line . . int32@B .)
+   (param@j col . . int32@5 .))PackedLineInfo@w . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@o and
+      (infix~K and
+       (infix~I <=
+        (dot~8 file~4 uint32@1)
+        (dot@A FileMax~7 uint32@1))
+       (infix@9 <= line~5 LineMax@3))
+      (infix@8 <= col~4 ColMax@3))
+     (stmts~1,1
+      (let@4 col . . .
+       (if@6
+        (elif@3
+         (infix@4 < col~4
+          (suf@2 0 "i32"))
+         (stmts@D
+          (suf 0u "u32")))
+        (else@M
+         (stmts@6
+          (dot@3 col~3 uint32@1)))))
+      (let@4,1 line . . .
+       (if@7
+        (elif@3
+         (infix@5 < line~5
+          (suf@2 0 "i32"))
+         (stmts@E
+          (suf 0u "u32")))
+        (else@N
+         (stmts@6
+          (dot@4 line~4 uint32@1)))))
+      (asgn@7,3 result~7
+       (call@G PackedLineInfo~E
+        (infix@15 or
+         (infix~g or
+          (par~O
+           (infix@D shl
+            (dot~8 file~4 uint32@1)
+            (suf@4 1u "u32")))
+          (par@3
+           (infix@6 shl line~5
+            (call@A uint32~6
+             (infix@A \2B AsideBit~9 FileBits@2)))))
+         (par~1Q,1
+          (infix@5 shl col~4
+           (call@A uint32~6
+            (infix@L \2B
+             (infix~B \2B AsideBit~9 FileBits@2)LineBits@2)))))))))
+    (else@,6
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@G PackedLineInfo~E
+        (infix@L or
+         (par~K
+          (infix@D shl
+           (dot~5
+            (dot~6 m~1 aside@1)len@1)2@4))AsideBit@3)))
+      (cmd@7,1
+       (dot
+        (dot~6 m~1 aside@1)add@1)
+       (oconstr@L LineInfoUnpacked~G
+        (kv@5 file~4 file@2)
+        (kv@H line~4 line@2)
+        (kv@S col~3 col@2))))))))
+ (proc@,v packWithComment@5 x . .
+  (params@L
+   (param@1 m . .
+    (mut@3 LineInfoManager@4).)
+   (param@P file . . FileId@6 .)
+   (param@d line . . int32@B .)
+   (param@j col . . int32@5 .)
+   (param@,1 comment . . uint32@9 .))PackedLineInfo@I,1 . .
+  (stmts@2,2
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@8 == comment~8
+      (suf@3 0u "u32"))
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@6 pack~4 m@1 file@4 line@A col@G))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@G PackedLineInfo~E
+        (infix@L or
+         (par~K
+          (infix@D shl
+           (dot~5
+            (dot~6 m~1 aside@1)len@1)2@4))AsideBit@3)))
+      (cmd@7,1
+       (dot
+        (dot~6 m~1 aside@1)add@1)
+       (oconstr@L LineInfoUnpacked~G
+        (kv@5 file~4 file@2)
+        (kv@H line~4 line@2)
+        (kv@S col~3 col@2)
+        (kv@g comment~7 comment@2))))))))
+ (proc@,17 isPayload@5 x . .
+  (params@F
+   (param@1 i . . PackedLineInfo@3 .))bool@L
+  (pragmas@f inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@N ==
+     (par~L
+      (infix@A and
+       (dot~8 i~1 uint32@1)
+       (suf@4 3u "u32")))
+     (suf@3 3u "u32")))))
+ (proc@,1A unpack@5 x . .
+  (params@C
+   (param@1 m . . LineInfoManager@3 .)
+   (param@L info . . PackedLineInfo@6 .))LineInfoUnpacked@i . .
+  (stmts@2,1
+   (let@4 i . . .
+    (dot@8 info~4 uint32@1))
+   (if@,1
+    (elif@3
+     (infix@E ==
+      (par~E
+       (infix@3 and i~2
+        (suf@4 1u "u32")))
+      (suf@3 0u "u32"))
+     (stmts~1,2
+      (asgn@7 result~7
+       (oconstr@I LineInfoUnpacked~G
+        (kv@5 file~4
+         (call@8 FileId~6
+          (infix@F and
+           (par~E
+            (infix@3 shr i~2
+             (suf@4 1u "u32")))
+           (dot@B FileMax~7 uint32@1))))
+        (kv~J,1 line~4
+         (call@7 int32~5
+          (infix@b and
+           (par~a
+            (infix@3 shr i~2
+             (call@A uint32~6
+              (infix@A \2B AsideBit~9 FileBits@2))))
+           (dot@B LineMax~7 uint32@1))))
+        (kv~K,2 col~3
+         (call@7 int32~5
+          (infix@m and
+           (par~l
+            (infix@3 shr i~2
+             (call@A uint32~6
+              (infix@L \2B
+               (infix~B \2B AsideBit~9 FileBits@2)LineBits@2))))
+           (dot@A ColMax~6 uint32@1))))))))
+    (elif@5,5
+     (prefix not
+      (call@D isPayload~9 info@1))
+     (stmts~3,1
+      (asgn@7 result~7
+       (at@9
+        (dot~6 m~1 aside@1)
+        (call@4 int~3
+         (infix@3 shr i~2
+          (suf@4 2u "u32")))))))
+    (else@,7
+     (stmts@2,1
+      (asgn@7 result~7
+       (oconstr@I LineInfoUnpacked~G
+        (kv@5 file~4 NoFile@2))))))))
+ (proc@,1M stripComment@5 x . .
+  (params@I
+   (param@1 m . .
+    (mut@3 LineInfoManager@4).)
+   (param@P info . . PackedLineInfo@6 .))PackedLineInfo@m . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 raw . . .
+    (call@C unpack~6 m@1 info@4))
+   (if@,4
+    (elif@3
+     (infix@C ==
+      (dot~9 raw~3 comment@1)
+      (suf@3 0u "u32"))
+     (stmts@M
+      (asgn@7 result~7 info@2)))
+    (else@,1
+     (stmts@6
+      (asgn@7 result~7
+       (call@6 pack~4 m@1
+        (dot@7 raw~3 file@1)
+        (dot@H raw~3 line@1)
+        (dot@R raw~3 col@1))))))))
+ (proc@,1U getPayload@5 x . .
+  (params@G
+   (param@1 i . . PackedLineInfo@3 .))uint32@L
+  (pragmas@i inline@2).
+  (stmts@2,1
+   (cmd assert
+    (call@G isPayload~9 i@1))
+   (asgn@7,1 result~7
+    (infix@B shr
+     (dot~8 i~1 uint32@1)
+     (suf@4 2u "u32")))))
+ (proc@,1Y toPayload@5 x . .
+  (params@F
+   (param@1 val . . uint32@5 .))PackedLineInfo@F
+  (pragmas@j inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@G PackedLineInfo~E
+     (infix@H or
+      (par~G
+       (infix@5 shl val~4
+        (suf@4 2u "u32")))
+      (suf@3 3u "u32"))))))
+ (proc@,1b getFileId@5 x . .
+  (params@F
+   (param@1 m . . LineInfoManager@3 .)
+   (param@L i . . PackedLineInfo@3 .))FileId@f . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (dot@E
+     (call~6 unpack~6 m@1 i@4)file@1))))
+ (proc@,1e memSize@5 x . .
+  (params@D
+   (param@1 m . . LineInfoManager@3 .))int@M . .
+  (stmts@f
+   (dot@7
+    (dot~6 m~1 aside@1)len@1)))
+ (when@,1g
+  (elif@5
+   (infix@D and isMainModule~D
+    (prefix@4 not
+     (call@B defined~7 nimony@1)))
+   (stmts~3,1
+    (var@4 m . . .
+     (oconstr@J LineInfoManager~F
+      (kv@6 aside~5
+       (prefix@2 \40
+        (bracket@1)))))
+    (for@4,1
+     (infix@A \2E\2E<
+      (suf~5 0 "i32")
+      (suf@3 16388 "i32"))
+     (unpackflat
+      (let i . . ..))
+     (stmts~2,1
+      (for@4
+       (infix@C \2E\2E<
+        (suf~5 0 "i32")
+        (suf@3 100 "i32"))
+       (unpackflat
+        (let col . . ..))
+       (stmts~2,1
+        (let@4 packed . . .
+         (call@D pack~4 m@1
+          (call@A FileId~6 1023@1)i@I col@L))
+        (call@6,1 assert~6
+         (prefix@1 not
+          (call@D isPayload~9 packed@1)))
+        (let@4,2 u . . .
+         (call@A unpack~6 m@1 packed@4))
+        (cmd@,3 assert
+         (infix@E ==
+          (dot~6 u~1 file@1)
+          (call@9 FileId~6 1023@1)))
+        (cmd@,4 assert
+         (infix@E ==
+          (dot~6 u~1 line@1)i@3))
+        (cmd@,5 assert
+         (infix@D ==
+          (dot~5 u~1 col@1)col@3))))))
+    (cmd@,9 echo
+     (dot@C
+      (dot~6 m~1 aside@1)len@1))
+    (let@4,B i . . .
+     (call@D toPayload~9
+      (suf@1 8000u "u32")))
+    (cmd@,C assert
+     (call@G isPayload~9 i@1))
+    (cmd@,D assert
+     (infix@L ==
+      (call~4 getPayload~A i@1)
+      (suf@3 8000u "u32")))))))

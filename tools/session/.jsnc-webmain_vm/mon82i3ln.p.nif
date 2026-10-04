@@ -1,0 +1,263 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/monotimes.nim
+ (comment)
+ (call@,7 runnableExamples
+  (stmts@2,1
+   (let@4 a . . .
+    (call@F getMonoTime~B))
+   (let@4,1 b . . .
+    (call@F getMonoTime~B))
+   (cmd@,2 assert
+    (infix@9 <= a~2 b@3))))
+ (type@C,W MonoTime~A x . .
+  (object@2 .
+   (fld~A,1 ticks . . int64@7 .)))
+ (when@,Z
+  (elif@5
+   (call@7 defined~7 macosx@1)
+   (stmts~3,1
+    (type@b,2 MachTimebaseInfoData~Z,~1 . .
+     (pragmas~E,~1 pure@2 final@8
+      (kv@M importc~7 "mach_timebase_info_data_t"@2)
+      (kv~B,1 header~6 "<mach/mach_time.h>"@2))
+     (object@2 .
+      (fld~T,1 numer~6 .
+       (pragmas exportc@2)int32@Y .)
+      (fld~9,1 denom~6 .
+       (pragmas exportc@2)int32@E .)))
+    (proc@,5 mach_absolute_time@5 . . .
+     (params@N)int64@4
+     (pragmas@X importc@2
+      (kv@H header~6 "<mach/mach.h>"@2)). .)
+    (proc@,6 mach_timebase_info@5 . . .
+     (params@N
+      (param@1 info . .
+       (mut@6 MachTimebaseInfoData@4).)).
+     (pragmas@u importc@2
+      (kv~m,1 header~6 "<mach/mach_time.h>"@2)). .))))
+ (when@,j
+  (elif@5
+   (call@7 defined~7 js@1)
+   (stmts~3,1
+    (proc getJsTicks@5 . . .
+     (params@F)float@2 . .
+     (stmts@2,1
+      (comment)
+      (when@,1
+       (elif@5
+        (call@7 defined~7 nodejs@1)
+        (stmts~3,1
+         (pragmas
+          (kv@6 emit~4
+           (suf@2 "      let process = require\28\27process\27\29;\0A      let time = process.hrtime\28\29;\0A      `result` = time\5B0\5D + time\5B1\5D / 1000000000;\0A      " "T")))))
+       (else@,6
+        (stmts@2,1
+         (proc jsNow@5 . . .
+          (params@A)float@4
+          (pragmas@K
+           (kv@A importjs~8 "window.performance.now\28\29"@2)). .)
+         (asgn@7,1 result~7
+          (infix@A /
+           (call~3 jsNow~5)1000@2)))))))
+    (pragmas@,D push@2
+     (kv@L overflowChecks~E off@2))
+    (proc@,E
+     (quoted@5 \2D@1). . .
+     (params@8
+      (param@1 a . . int64@6 .)
+      (param@4 b . . int64@3 .))int64@F . .
+     (stmts@2,1
+      (call@A
+       (dot~4 system~6
+        (quoted@1 \2D@1))a@1 b@4)))
+    (proc@,G
+     (quoted@5 \2B@1). . .
+     (params@8
+      (param@1 a . . int64@6 .)
+      (param@4 b . . int64@3 .))int64@F . .
+     (stmts@2,1
+      (call@A
+       (dot~4 system~6
+        (quoted@1 \2B@1))a@1 b@4)))
+    (pragmas@,I pop@2)))
+  (elif@5,L
+   (infix@F and
+    (call~8 defined~7 posix@1)
+    (prefix@4 not
+     (call@B defined~7 osx@1)))
+   (stmts~3,1
+    (import
+     (infix@C / posix~5 posix@1)))))
+ (when@,17
+  (elif@5
+   (call@7 defined~7 zephyr@1)
+   (stmts~3,1
+    (proc k_uptime_ticks@5 . . .
+     (params@J)int64@4
+     (pragmas@T
+      (kv@9 importc~7 "k_uptime_ticks"@2)
+      (kv@Z header~6 "<kernel.h>"@2)). .)
+    (proc@,1 k_ticks_to_ns_floor64@5 . . .
+     (params@Q
+      (param@1 ticks . . int64@7 .))int64@G
+     (pragmas@m
+      (kv@9 importc~7 "k_ticks_to_ns_floor64"@2)
+      (kv@g header~6 "<kernel.h>"@2)). .)))
+  (elif@5,4
+   (call@7 defined~7 windows@1)
+   (stmts~3,1
+    (proc QueryPerformanceCounter@5 . . .
+     (params@S
+      (param@1 res . .
+       (mut@5 uint64@4).)).
+     (pragmas@k
+      (kv~b,1 importc~7 "QueryPerformanceCounter"@2)stdcall~8,1
+      (kv@7,1 dynlib~6 "kernel32"@2)). .)
+    (proc@,2 QueryPerformanceFrequency@5 . . .
+     (params@U
+      (param@1 res . .
+       (mut@5 uint64@4).)).
+     (pragmas@m
+      (kv~d,1 importc~7 "QueryPerformanceFrequency"@2)stdcall~8,1
+      (kv@7,1 dynlib~6 "kernel32"@2)). .))))
+ (proc@,1H getMonoTime@5 x . .
+  (params@H)MonoTime@4
+  (pragmas@U
+   (kv@6 tags~4
+    (bracket@2 TimeEffect@1))).
+  (stmts@2,1
+   (comment)
+   (when@,6
+    (elif@5
+     (call@7 defined~7 js@1)
+     (stmts~3,1
+      (let@4 ticks . . .
+       (call@I getJsTicks~A))
+      (asgn@7,1 result~7
+       (oconstr@A MonoTime~8
+        (kv@6 ticks~5
+         (dot@P
+          (par~N
+           (infix@7 * ticks~6 1000000000@2))int64@1))))))
+    (elif@5,3
+     (call@7 defined~7 macosx@1)
+     (stmts~3,1
+      (let@4 ticks . . .
+       (call@Q mach_absolute_time~I))
+      (var@4,1 machAbsoluteTimeFreq . . MachTimebaseInfoData@M
+       (call@q default~7 MachTimebaseInfoData@1))
+      (call@I,2 mach_timebase_info~I machAbsoluteTimeFreq@1)
+      (asgn@7,3 result~7
+       (oconstr@A MonoTime~8
+        (kv@6 ticks~5
+         (infix@b div
+          (infix~T * ticks~6
+           (dot@M machAbsoluteTimeFreq~K numer@1))
+          (dot~c,1 machAbsoluteTimeFreq~K denom@1)))))))
+    (elif@5,9
+     (call@7 defined~7 zephyr@1)
+     (stmts~3,1
+      (let@4 ticks . . .
+       (call@T k_ticks_to_ns_floor64~L
+        (call@F k_uptime_ticks~E)))
+      (asgn@7,1 result~7
+       (oconstr@A MonoTime~8
+        (kv@6 ticks~5 ticks@2)))))
+    (elif@5,C
+     (call@7 defined~7 posix@1)
+     (stmts~3,1
+      (var@4 ts . . Timespec@4
+       (call@M default~7 Timespec@1))
+      (let@4,1 monotonic . . . CLOCK_MONOTONIC@C)
+      (discard@,2
+       (call@L clock_gettime~D monotonic@1 ts@C))
+      (asgn@7,3 result~7
+       (oconstr@A MonoTime~8
+        (kv@6 ticks~5
+         (infix@Y \2B
+          (infix~G *
+           (dot~7
+            (dot~7 ts~2 tv_sec@1)int64@1)1000000000@2)
+          (dot~j,1
+           (dot~8 ts~2 tv_nsec@1)int64@1)))))))
+    (elif@5,I
+     (call@7 defined~7 windows@1)
+     (stmts~3,1
+      (var@4 ticks . . uint64@7
+       (suf@G 0u "u64"))
+      (call@N,1 QueryPerformanceCounter~N ticks@1)
+      (var@4,3 freq . . uint64@6
+       (suf@F 0u "u64"))
+      (call@P,4 QueryPerformanceFrequency~P freq@1)
+      (let@4,5 queryPerformanceCounterFreq . . .
+       (infix@m div
+        (suf~I 1000000000u "u64")freq@4))
+      (asgn@7,6 result~7
+       (oconstr@A MonoTime~8
+        (kv@6 ticks~5
+         (dot@d
+          (par~b
+           (infix@7 * ticks~6 queryPerformanceCounterFreq@2))int64@1)))))))))
+ (func@,1p ticks@5 x . .
+  (params@B
+   (param@1 t . . MonoTime@3 .))int64@F . .
+  (stmts@2,1
+   (comment)
+   (dot@1,2 t~1 ticks@1)))
+ (func@,1u
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 t . . MonoTime@3 .))string@F . .
+  (stmts@2,1
+   (prefix $
+    (dot@2 t~1 ticks@1))))
+ (func@,29
+  (quoted@5 <@1) x . .
+  (params@9
+   (param@1 a . . MonoTime@6 .)
+   (param@4 b . . MonoTime@3 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (infix@8,1 <
+    (dot~7 a~1 ticks@1)
+    (dot@3 b~1 ticks@1))))
+ (func@,2D
+  (quoted@5 <=@1) x . .
+  (params@A
+   (param@1 a . . MonoTime@6 .)
+   (param@4 b . . MonoTime@3 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (infix@8,1 <=
+    (dot~7 a~1 ticks@1)
+    (dot@4 b~1 ticks@1))))
+ (func@,2H
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . MonoTime@6 .)
+   (param@4 b . . MonoTime@3 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (infix@8,1 ==
+    (dot~7 a~1 ticks@1)
+    (dot@4 b~1 ticks@1))))
+ (func@,2L high@5 x . .
+  (params@A
+   (param@1 typ . .
+    (at@D typedesc~8 MonoTime@1).))MonoTime@R . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,1 MonoTime~8
+    (kv@6 ticks~5
+     (call@6 high~4 int64@1)))))
+ (func@,2P low@5 x . .
+  (params@9
+   (param@1 typ . .
+    (at@D typedesc~8 MonoTime@1).))MonoTime@R . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,1 MonoTime~8
+    (kv@6 ticks~5
+     (call@5 low~3 int64@1))))))

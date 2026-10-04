@@ -1,0 +1,13 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / private osseps))
+ (export osseps)
+ (import
+  (infix / private osappdirs))
+ (import pathnorm hashes strutils)
+ (fromimport
+  (infix / private ospaths2)joinPath splitPath isAbsolute relativePath normalizePathEnd isRelativeTo parentDir tailDir isRootDir parentDirs
+  (quoted /\2E\2E/)extractFilename lastPathPart changeFileExt addFileExt cmpPaths splitFile unixToNativePath absolutePath normalizeExe normalizePath))

@@ -1,0 +1,144 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlabi/src/aowlabi/heapspec.nim
+ (comment)
+ (import@,8
+  (prefix@7 \2E/ layout@2))
+ (const@K,A DefaultPtrSize~E x . . 8@4)
+ (const@D,N RefRcOffset~B x . . 0@4)
+ (const@F,O RefDataOffset~D x . . DefaultPtrSize@4)
+ (proc@,Q refDataOffset@5 x . .
+  (params@J
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S
+  (pragmas@p inline@2).
+  (stmts@2,1
+   (comment)
+   (call@5,1 align~5
+    (infix@3 \2B 0~2 ptrSize@2)ptrSize@E)))
+ (const@C,u StringSize~A x . .
+  (infix@6 * 2~2 DefaultPtrSize@2))
+ (const@D,v StringAlign~B x . . DefaultPtrSize@4)
+ (const@J,w StringBytesOffset~H x . . 0@4)
+ (const@I,x StringMoreOffset~G x . . DefaultPtrSize@4)
+ (const@M,y StringSlenByteOffset~K x . . 0@4)
+ (const@G,11 StrAlwaysAvail~E x . .
+  (infix@J \2D DefaultPtrSize~F 1@2))
+ (const@G,12 StrPayloadSize~E x . .
+  (infix@a \2D
+   (infix~H \2B StrAlwaysAvail~F DefaultPtrSize@2)1@2))
+ (const@D,13 StrHeapSlen~B x . . 255@4)
+ (const@F,14 StrStaticSlen~D x . . 254@4)
+ (const@P,1H LongStringFullLenOffset~N x . . 0@4)
+ (const@K,1I LongStringRcOffset~I x . . DefaultPtrSize@4)
+ (const@L,1J LongStringCapOffset~J x . .
+  (infix@6 * 2~2 DefaultPtrSize@2))
+ (const@M,1K LongStringDataOffset~K x . .
+  (infix@6 * 3~2 DefaultPtrSize@2))
+ (const@M,1L LongStringHeaderSize~K x . .
+  (infix@6 * 3~2 DefaultPtrSize@2))
+ (const@9,1Z SeqSize~7 x . .
+  (infix@6 * 2~2 DefaultPtrSize@2))
+ (const@A,1a SeqAlign~8 x . . DefaultPtrSize@4)
+ (const@E,1b SeqLenOffset~C x . . 0@4)
+ (const@F,1c SeqDataOffset~D x . . DefaultPtrSize@4)
+ (proc@,1u stringSize@5 x . .
+  (params@G
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@2,1
+   (dot@i
+    (call~Z sizeAlign~9
+     (oconstr@9 TypeDesc~8
+      (kv@5 kind~4 akString@2))ptrSize@R)size@1)))
+ (proc@,1w stringAlign@5 x . .
+  (params@H
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@2,1
+   (dot@i
+    (call~Z sizeAlign~9
+     (oconstr@9 TypeDesc~8
+      (kv@5 kind~4 akString@2))ptrSize@R)align@1)))
+ (proc@,1y stringBytesOffset@5 x . .
+  (params@N
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@v 0))
+ (proc@,1z stringMoreOffset@5 x . .
+  (params@M
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@u ptrSize))
+ (proc@,21 strAlwaysAvail@5 x . .
+  (params@K
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@s
+   (infix@8 \2D ptrSize~8 1@2)))
+ (proc@,23 strPayloadSize@5 x . .
+  (params@K
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@2,1
+   (comment)
+   (infix@Y,1 \2D
+    (infix~A \2B
+     (call~A strAlwaysAvail~E ptrSize@1)ptrSize@2)1@2)))
+ (proc@,2A longStringFullLenOffset@5 x . .
+  (params@T
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@11 0))
+ (proc@,2B longStringRcOffset@5 x . .
+  (params@O
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@w ptrSize))
+ (proc@,2C longStringCapOffset@5 x . .
+  (params@P
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@x
+   (infix@2 * 2~2 ptrSize@2)))
+ (proc@,2D longStringDataOffset@5 x . .
+  (params@Q
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@y
+   (infix@2 * 3~2 ptrSize@2)))
+ (proc@,2E longStringHeaderSize@5 x . .
+  (params@Q
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@y
+   (infix@2 * 3~2 ptrSize@2)))
+ (proc@,2G longStringDesc@5 x . .
+  (params@K)TypeDesc@4 . .
+  (stmts@2,1
+   (comment)
+   (call@A,9 objectDesc~A
+    (prefix@1 \40
+     (bracket@1
+      (call@7 scalar~6 akInt@1)
+      (call@M scalar~6 akInt@1)
+      (call@b scalar~6 akInt@1)
+      (call@E,1 uncheckedDesc~D
+       (call@7 scalar~6 akChar@1)))))))
+ (proc@,2T seqSize@5 x . .
+  (params@D
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@2,1
+   (dot@f
+    (call~W sizeAlign~9
+     (oconstr@9 TypeDesc~8
+      (kv@5 kind~4 akSeq@2))ptrSize@O)size@1)))
+ (proc@,2V seqAlign@5 x . .
+  (params@E
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@2,1
+   (dot@f
+    (call~W sizeAlign~9
+     (oconstr@9 TypeDesc~8
+      (kv@5 kind~4 akSeq@2))ptrSize@O)align@1)))
+ (proc@,2X seqLenOffset@5 x . .
+  (params@I
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@q 0))
+ (proc@,2Y seqDataOffset@5 x . .
+  (params@J
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@r ptrSize))
+ (proc@,2a refRcOffset@5 x . .
+  (params@H
+   (param@1 ptrSize . . . DefaultPtrSize@A))int@S . .
+  (stmts@p 0)))

@@ -1,0 +1,331 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlhl/src/aowlhl/hlwalk.nim
+ (comment)
+ (when@,H
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,K nifcursors@7 nifstreams@J nimony_model@V)
+ (import@,L tags@7)
+ (type@E,O LocalShape~C x . .
+  (object@2 .
+   (fld~8,2 name~4 x . SymId@3 .)
+   (fld~9,3 typ~3 x . Cursor@3 .)
+   (fld~5,4 hasInit~7 x . bool@3 .)
+   (fld~8,5 init~4 x . Cursor@3 .)))
+ (type@E,V ParamShape~C x . .
+  (object@2 .
+   (fld~8,2 name~4 x . SymId@3 .)
+   (fld~7,3 byRef~5 x . bool@3 .)))
+ (type@D,a ProcShape~B x . .
+  (object@2 .
+   (fld~7,2 name~4 x . SymId@3 .)
+   (fld~2,3 hasParams~9 x . bool@3 .)
+   (fld~5,4 params~6 x . Cursor@3 .)
+   (fld~4,5 hasBody~7 x . bool@3 .)
+   (fld~7,6 body~4 x . Cursor@3 .)))
+ (type@A,i Branch~8 x . .
+  (object@2 .
+   (fld~2,2 isElse~6 x . bool@3 .)
+   (fld~4,3 cond~4 x . Cursor@3 .)
+   (fld~4,4 body~4 x . Cursor@3 .)))
+ (type@E,o CaseBranch~C x . .
+  (object@2 .
+   (fld~6,2 isElse~6 x . bool@3 .)
+   (fld~6,3 ranges~6 x . Cursor@3 .)
+   (fld~8,4 body~4 x . Cursor@3 .)))
+ (proc@,u decodeLocal@5 x . .
+  (params@H
+   (param@1 n . .
+    (mut@3 Cursor@4).))LocalShape@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@9 default~7 LocalShape@1))
+   (cmd@,2 inc n@4)
+   (asgn@C,3
+    (dot~6 result~6 name@1)
+    (dot@3 n~1 symId@1))
+   (cmd@,4 inc n@4)
+   (cmd@,5 skip n@5)
+   (cmd@,6 skip n@5)
+   (asgn@B,7
+    (dot~5 result~6 typ@1)n@2)
+   (cmd@,8 skip n@5)
+   (if@,9
+    (elif@3
+     (infix@G or
+      (infix~9 ==
+       (dot~6 n~1 kind@1)ParRi@3)
+      (infix@A ==
+       (dot~6 n~1 kind@1)DotToken@3))
+     (stmts~1,1
+      (asgn@F
+       (dot~9 result~6 hasInit@1)false@2)
+      (if@,1
+       (elif@3
+        (infix@7 ==
+         (dot~6 n~1 kind@1)DotToken@3)
+        (stmts@K
+         (cmd inc n@4))))))
+    (else@,3
+     (stmts@2,1
+      (asgn@F
+       (dot~9 result~6 hasInit@1)true@2)
+      (asgn@C,1
+       (dot~6 result~6 init@1)n@2))))
+   (while@,F
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@N
+     (cmd skip n@5)))
+   (cmd@,G consumeParRi n@D)))
+ (proc@,1D decodeParam@5 x . .
+  (params@H
+   (param@1 n . .
+    (mut@3 Cursor@4).))ParamShape@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@9 default~7 ParamShape@1))
+   (cmd@,2 inc n@4)
+   (asgn@C,3
+    (dot~6 result~6 name@1)
+    (dot@3 n~1 symId@1))
+   (cmd@,4 inc n@4)
+   (cmd@,5 skip n@5)
+   (cmd@,6 skip n@5)
+   (if@,7
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 n~1 kind@1)ParLe@3)
+      (par@4
+       (infix@N or
+        (infix~C ==
+         (dot~9 n~1 tagEnum@1)MutTagId@3)
+        (infix@D ==
+         (dot~9 n~1 tagEnum@1)OutTagId@3))))
+     (stmts~1,1
+      (asgn@D
+       (dot~7 result~6 byRef@1)true@2))))
+   (while@,9
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@N
+     (cmd skip n@5)))
+   (cmd@,A consumeParRi n@D)))
+ (proc@,1Q decodeParams@5 x . .
+  (params@I
+   (param@1 n . .
+    (mut@3 Cursor@4).))
+  (at@K seq~3 ParamShape@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (cmd@,2 inc n@4)
+   (while@,3
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)ParamTagId@3))
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)
+         (call@G decodeParam~B n@1))))
+      (else@,2
+       (stmts@2,1
+        (cmd skip n@5))))))
+   (cmd@,8 consumeParRi n@D)))
+ (proc@,1b decodeProc@5 x . .
+  (params@G
+   (param@1 n . .
+    (mut@3 Cursor@4).))ProcShape@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@9 default~7 ProcShape@1))
+   (cmd@,3 inc n@4)
+   (asgn@C,4
+    (dot~6 result~6 name@1)
+    (dot@3 n~1 symId@1))
+   (cmd@,5 inc n@4)
+   (while@,6
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)ParamsTagId@3))
+       (stmts~1,1
+        (asgn@H
+         (dot~B result~6 hasParams@1)true@2)
+        (asgn@E,1
+         (dot~8 result~6 params@1)n@2)
+        (cmd@,2 skip n@5)))
+      (elif@5,4
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)StmtsTagId@3))
+       (stmts~3,1
+        (asgn@F
+         (dot~9 result~6 hasBody@1)true@2)
+        (asgn@C,1
+         (dot~6 result~6 body@1)n@2)
+        (cmd@,2 skip n@5)))
+      (else@,8
+       (stmts@2,1
+        (cmd skip n@5))))))
+   (cmd@,H consumeParRi n@D)))
+ (proc@,1v decodeIf@5 x . .
+  (params@E
+   (param@1 n . .
+    (mut@3 Cursor@4).))
+  (at@K seq~3 Branch@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (cmd@,3 inc n@4)
+   (while@,4
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)ElifTagId@3))
+       (stmts~1,1
+        (cmd inc n@4)
+        (var@4,1 br . . .
+         (oconstr@B Branch~6
+          (kv@7 isElse~6 false@2)))
+        (asgn@8,2
+         (dot~6 br~2 cond@1)n@2)
+        (cmd@,3 skip n@5)
+        (asgn@8,4
+         (dot~6 br~2 body@1)n@2)
+        (while@,5
+         (infix@D !=
+          (dot~6 n~1 kind@1)ParRi@3)
+         (stmts@N
+          (cmd skip n@5)))
+        (cmd@,6 consumeParRi n@D)
+        (cmd@6,7
+         (dot result~6 add@1)br@5)))
+      (elif@5,9
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)ElseTagId@3))
+       (stmts~3,1
+        (cmd inc n@4)
+        (var@4,1 br . . .
+         (oconstr@B Branch~6
+          (kv@7 isElse~6 true@2)))
+        (asgn@8,2
+         (dot~6 br~2 body@1)n@2)
+        (while@,3
+         (infix@D !=
+          (dot~6 n~1 kind@1)ParRi@3)
+         (stmts@N
+          (cmd skip n@5)))
+        (cmd@,4 consumeParRi n@D)
+        (cmd@6,5
+         (dot result~6 add@1)br@5)))
+      (else@,G
+       (stmts@2,1
+        (cmd skip n@5))))))
+   (cmd@,N consumeParRi n@D)))
+ (proc@,2L decodeCase@5 x . .
+  (params@G
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G sel . .
+    (mut@5 Cursor@4).))
+  (at@b seq~3 CaseBranch@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (cmd@,3 inc n@4)
+   (asgn@4,4 sel~4 n@2)
+   (cmd@,5 skip n@5)
+   (while@,6
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)OfTagId@3))
+       (stmts~1,1
+        (cmd inc n@4)
+        (var@4,1 br . . .
+         (oconstr@F CaseBranch~A
+          (kv@7 isElse~6 false@2)))
+        (asgn@A,2
+         (dot~8 br~2 ranges@1)n@2)
+        (cmd@,3 skip n@5)
+        (asgn@8,4
+         (dot~6 br~2 body@1)n@2)
+        (while@,5
+         (infix@D !=
+          (dot~6 n~1 kind@1)ParRi@3)
+         (stmts@N
+          (cmd skip n@5)))
+        (cmd@,6 consumeParRi n@D)
+        (cmd@6,7
+         (dot result~6 add@1)br@5)))
+      (elif@5,9
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 n~1 tagEnum@1)ElseTagId@3))
+       (stmts~3,1
+        (cmd inc n@4)
+        (var@4,1 br . . .
+         (oconstr@F CaseBranch~A
+          (kv@7 isElse~6 true@2)))
+        (asgn@8,2
+         (dot~6 br~2 body@1)n@2)
+        (while@,3
+         (infix@D !=
+          (dot~6 n~1 kind@1)ParRi@3)
+         (stmts@N
+          (cmd skip n@5)))
+        (cmd@,4 consumeParRi n@D)
+        (cmd@6,5
+         (dot result~6 add@1)br@5)))
+      (else@,G
+       (stmts@2,1
+        (cmd skip n@5))))))
+   (cmd@,P consumeParRi n@D))))

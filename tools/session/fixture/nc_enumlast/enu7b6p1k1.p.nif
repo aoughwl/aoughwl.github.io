@@ -1,0 +1,89 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,enumlast.nim
+ (comment)
+ (type@C,7 Action~7 . . .
+  (enum@2 .
+   (efld@5 ActNone . . . .)
+   (efld@E ActDelete . . . .)
+   (efld@P ActEdit . . . .)
+   (efld@Y ActCopy . . . .)))
+ (var@4,9 hit . . . 0@6)
+ (proc@,B decide@5 . . .
+  (params@B)Action@4 . .
+  (stmts@O ActNone))
+ (comment@,D)
+ (proc@,E lastBranch@5 . . .
+  (params@F)int@4 . .
+  (stmts@2,1
+   (asgn@4 hit~4 0@2)
+   (let@4,1 a . . .
+    (call@A decide~6))
+   (case@,2 a@5
+    (of@,1
+     (ranges ActDelete@3)
+     (stmts@E
+      (asgn@4 hit~4 1@2)))
+    (of@,2
+     (ranges ActEdit@3)
+     (stmts@C
+      (asgn@4 hit~4 2@2)))
+    (of@,3
+     (ranges ActCopy@3)
+     (stmts@C
+      (asgn@4 hit~4 3@2)))
+    (of@,4
+     (ranges ActNone@3)
+     (stmts@C
+      (asgn@4 hit~4 0@2))))
+   (asgn@7,7 result~7 hit@2)))
+ (comment@,O)
+ (proc@,P firstBranch@5 . . .
+  (params@G)int@4 . .
+  (stmts@2,1
+   (asgn@4 hit~4 0@2)
+   (let@4,1 a . . .
+    (call@A decide~6))
+   (case@,2 a@5
+    (of@,1
+     (ranges ActNone@3)
+     (stmts@C
+      (asgn@4 hit~4 0@2)))
+    (of@,2
+     (ranges ActDelete@3)
+     (stmts@E
+      (asgn@4 hit~4 1@2)))
+    (of@,3
+     (ranges ActEdit@3)
+     (stmts@C
+      (asgn@4 hit~4 2@2)))
+    (of@,4
+     (ranges ActCopy@3)
+     (stmts@C
+      (asgn@4 hit~4 3@2))))
+   (asgn@7,7 result~7 hit@2)))
+ (comment@,Z)
+ (proc@,a lastBranchOnCall@5 . . .
+  (params@L)int@4 . .
+  (stmts@2,1
+   (asgn@4 hit~4 0@2)
+   (case@,1
+    (call@B decide~6)
+    (of@,1
+     (ranges ActDelete@3)
+     (stmts@E
+      (asgn@4 hit~4 1@2)))
+    (of@,2
+     (ranges ActEdit@3)
+     (stmts@C
+      (asgn@4 hit~4 2@2)))
+    (of@,3
+     (ranges ActCopy@3)
+     (stmts@C
+      (asgn@4 hit~4 3@2)))
+    (of@,4
+     (ranges ActNone@3)
+     (stmts@C
+      (asgn@4 hit~4 0@2))))
+   (asgn@7,6 result~7 hit@2))))

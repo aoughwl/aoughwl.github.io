@@ -1,0 +1,851 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/xints.nim
+ (comment)
+ (type@8,5 xint~6 x . .
+  (object@2 .
+   (fld~6,1 nan . . bool@5 .)
+   (fld~6,2 neg . . bool@5 .)
+   (fld~6,3 val . . uint64@5 .)))
+ (proc@,A zero@5 x . .
+  (params@A)xint@4 . .
+  (stmts@L
+   (oconstr@4 xint~4
+    (kv@4 val~3 0@2))))
+ (proc@,C createNaN@5 x . .
+  (params@F)xint@4 . .
+  (stmts@Q
+   (oconstr@4 xint~4
+    (kv@4 nan~3 true@2))))
+ (proc@,E isNaN@5 x . .
+  (params@B
+   (param@1 x . . xint@3 .))bool@B
+  (pragmas@R inline@2).
+  (stmts@e
+   (dot@1 x~1 nan@1)))
+ (proc@,F isNegative@5 x . .
+  (params@G
+   (param@1 x . . xint@3 .))bool@B
+  (pragmas@W inline@2).
+  (stmts@j
+   (dot@1 x~1 neg@1)))
+ (proc@,H asSigned@5 x . .
+  (params@E
+   (param@1 x . . xint@3 .)
+   (param@A err . .
+    (mut@5 bool@4).))int64@Q . .
+  (stmts@2,1
+   (asgn@7 result~7 0@2)
+   (if@,1
+    (elif@3
+     (dot@1 x~1 nan@1)
+     (stmts~1,1
+      (asgn@4 err~4 true@2)))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 x~1 neg@1)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@6 >
+            (dot~5 x~1 val@1)
+            (infix@L \2B
+             (call~D uint64~6
+              (call@5 high~4 int64@1))1@1))
+           (stmts~1,1
+            (asgn@4 err~4 true@2)))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result~7
+             (prefix@2 \2D
+              (call@6 int64~5
+               (dot@2 x~1 val@1)))))))))
+       (else@,5
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@6 >
+            (dot~5 x~1 val@1)
+            (call@8 uint64~6
+             (call@5 high~4 int64@1)))
+           (stmts~1,1
+            (asgn@4 err~4 true@2)))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result~7
+             (call@7 int64~5
+              (dot@2 x~1 val@1))))))))))))))
+ (proc@,X asUnsigned@5 x . .
+  (params@G
+   (param@1 x . . xint@3 .)
+   (param@A err . .
+    (mut@5 bool@4).))uint64@Q . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (suf@2 0u "u64"))
+   (if@,1
+    (elif@3
+     (dot@1 x~1 nan@1)
+     (stmts~1,1
+      (asgn@4 err~4 true@2)))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@6 and
+         (dot~5 x~1 neg@1)
+         (infix@A !=
+          (dot~5 x~1 val@1)
+          (suf@3 0u "u64")))
+        (stmts~1,1
+         (asgn@4 err~4 true@2)))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (dot@3 x~1 val@1))))))))))
+ (proc@,h
+  (quoted@5 \2D@1) x . .
+  (params@9
+   (param@1 a . . xint@3 .))xint@B . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@4 nan~3
+     (dot@3 a~1 nan@1))
+    (kv@G neg~3
+     (prefix@2 not
+      (dot@5 a~1 neg@1)))
+    (kv@W val~3
+     (dot@3 a~1 val@1)))))
+ (proc@,k negate@5 x . .
+  (params@C
+   (param@1 a . .
+    (mut@3 xint@4).)).
+  (pragmas@Q inline@2).
+  (stmts@d
+   (asgn@6
+    (dot~5 a~1 neg@1)
+    (prefix@2 not
+     (dot@5 a~1 neg@1)))))
+ (proc@,m
+  (quoted@5 \2B@1) x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (if@,4
+    (elif@3
+     (infix@A and
+      (prefix~A not
+       (dot@5 a~1 neg@1))
+      (prefix@4 not
+       (dot@5 b~1 neg@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (oconstr@6 xint~4
+        (kv@4 neg~3 false@2)
+        (kv@G val~3
+         (infix@8 \2B
+          (dot~5 a~1 val@1)
+          (dot@3 b~1 val@1)))))
+      (if@,1
+       (elif@3
+        (infix@B <
+         (dot~5 result~6 val@1)
+         (dot@3 a~1 val@1))
+        (stmts~1,1
+         (asgn@B
+          (dot~5 result~6 nan@1)true@2))))
+      (ret@,3 result@7))))
+   (if@,B
+    (elif@3
+     (infix@6 and
+      (dot~5 a~1 neg@1)
+      (dot@5 b~1 neg@1))
+     (stmts~1,1
+      (asgn@7 result~7
+       (oconstr@6 xint~4
+        (kv@4 neg~3 true@2)
+        (kv@F val~3
+         (infix@8 \2B
+          (dot~5 a~1 val@1)
+          (dot@3 b~1 val@1)))))
+      (if@,1
+       (elif@3
+        (infix@B <
+         (dot~5 result~6 val@1)
+         (dot@3 a~1 val@1))
+        (stmts~1,1
+         (asgn@B
+          (dot~5 result~6 nan@1)true@2))))
+      (ret@,3 result@7))))
+   (if@,I
+    (elif@3
+     (dot@1 a~1 neg@1)
+     (stmts~1,2
+      (if
+       (elif@3
+        (infix@6 >
+         (dot~5 a~1 val@1)
+         (dot@3 b~1 val@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (oconstr@6 xint~4
+           (kv@4 neg~3 true@2)
+           (kv@F val~3
+            (infix@8 \2D
+             (dot~5 a~1 val@1)
+             (dot@3 b~1 val@1)))))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (oconstr@6 xint~4
+           (kv@4 neg~3 false@2)
+           (kv@G val~3
+            (infix@8 \2D
+             (dot~5 b~1 val@1)
+             (dot@3 a~1 val@1))))))))))
+    (else@,6
+     (stmts@2,2
+      (if
+       (elif@3
+        (infix@6 >
+         (dot~5 b~1 val@1)
+         (dot@3 a~1 val@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (oconstr@6 xint~4
+           (kv@4 neg~3 true@2)
+           (kv@F val~3
+            (infix@8 \2D
+             (dot~5 b~1 val@1)
+             (dot@3 a~1 val@1)))))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (oconstr@6 xint~4
+           (kv@4 neg~3 false@2)
+           (kv@G val~3
+            (infix@8 \2D
+             (dot~5 a~1 val@1)
+             (dot@3 b~1 val@1)))))))))))))
+ (proc@,1I
+  (quoted@5 \2D@1) x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,2
+   (asgn@7 result~7
+    (infix@4 \2B a~2
+     (par@2
+      (prefix@1 \2D b@1))))))
+ (proc@,1M
+  (quoted@5 *@1) x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (asgn@7,3 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,2 neg~3
+      (infix@8 !=
+       (dot~5 a~1 neg@1)
+       (dot@4 b~1 neg@1)))
+     (kv~8,3 val~3
+      (infix@8 *
+       (dot~5 a~1 val@1)
+       (dot@3 b~1 val@1)))))
+   (if@,A
+    (elif@3
+     (infix@L !=
+      (infix~A div
+       (dot~5 result~6 val@1)
+       (dot@5 a~1 val@1))
+      (dot@4 b~1 val@1))
+     (stmts~1,1
+      (asgn@B
+       (dot~5 result~6 nan@1)true@2))))))
+ (proc@,1a
+  (quoted@5 div@1) x . .
+  (params@B
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@F or
+      (infix~9 or
+       (dot~5 a~1 nan@1)
+       (dot@4 b~1 nan@1))
+      (infix@9 ==
+       (dot~5 b~1 val@1)0@3))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (asgn@7,3 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,2 neg~3
+      (infix@8 !=
+       (dot~5 a~1 neg@1)
+       (dot@4 b~1 neg@1)))
+     (kv~8,3 val~3
+      (infix@8 div
+       (dot~5 a~1 val@1)
+       (dot@5 b~1 val@1)))))))
+ (proc@,1k
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 a . . xint@3 .))string@B . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (dot@1 a~1 nan@1)
+     (stmts@7 "nan"))
+    (elif@5,1
+     (dot@1 a~1 neg@1)
+     (stmts@7
+      (infix@4 & "-"~4
+       (prefix@2 $
+        (dot@2 a~1 val@1)))))
+    (else@,2
+     (stmts@6
+      (prefix $
+       (dot@2 a~1 val@1)))))))
+ (proc@,1p createXint@5 x . .
+  (params@G
+   (param@1 x . . int64@3 .))xint@C . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@2 == x~2
+      (call@6 low~3 int64@1))
+     (stmts~1,1
+      (oconstr@4 xint~4
+       (kv@4 neg~3 true@2)
+       (kv@F val~3
+        (infix@M \2B
+         (call~E uint64~6
+          (call@5 high~4 int64@1))
+         (suf@2 1u "u64"))))))
+    (elif@5,2
+     (infix@2 < x~2 0@2)
+     (stmts~3,1
+      (oconstr@4 xint~4
+       (kv@4 neg~3 true@2)
+       (kv@F val~3
+        (call@8 uint64~6
+         (prefix@1 \2D x@1))))))
+    (else@,4
+     (stmts@2,1
+      (oconstr@4 xint~4
+       (kv@4 neg~3 false@2)
+       (kv@G val~3
+        (call@8 uint64~6 x@1))))))))
+ (template@,1x createXint@9 x . .
+  (params@K
+   (param@1 x . . uint64@3 .))xint@D . .
+  (stmts@2,1
+   (comment)
+   (oconstr@4,3 xint~4
+    (kv@4 neg~3 false@2)
+    (kv@G val~3
+     (call@8 uint64~6 x@1)))))
+ (proc@,23
+  (quoted@5 shl@1) x . .
+  (params@B
+   (param@1 a . . xint@3 .)
+   (param@A b . . int@3 .))xint@J . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (infix@5 < b~2 0@2))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (asgn@7,3 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,2 neg~3
+      (dot@3 a~1 neg@1))
+     (kv~8,3 val~3
+      (infix@8 shl
+       (dot~5 a~1 val@1)b@4))))
+   (if@,A
+    (elif@3
+     (infix@8 or
+      (infix~6 >= b~2 64@3)
+      (infix@N !=
+       (infix~6 shr
+        (par~E
+         (infix@7 shl
+          (dot~5 a~1 val@1)b@4))b@4)
+       (dot@4 a~1 val@1)))
+     (stmts~1,1
+      (asgn@B
+       (dot~5 result~6 nan@1)true@2))))))
+ (proc@,2H
+  (quoted@5 shr@1) x . .
+  (params@B
+   (param@1 a . . xint@3 .)
+   (param@A b . . int@3 .))xint@J . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (infix@5 < b~2 0@2))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (asgn@7,3 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,2 neg~3
+      (dot@3 a~1 neg@1))
+     (kv~8,3 val~3
+      (infix@8 shr
+       (dot~5 a~1 val@1)b@4))))))
+ (proc@,2S
+  (quoted@5 and@1) x . .
+  (params@B
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@1,1 nan~3
+     (infix@8 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1)))
+    (kv@1,2 neg~3
+     (infix@8 and
+      (dot~5 a~1 neg@1)
+      (dot@5 b~1 neg@1)))
+    (kv@1,3 val~3
+     (infix@8 and
+      (dot~5 a~1 val@1)
+      (dot@5 b~1 val@1))))))
+ (proc@,2Z
+  (quoted@5 or@1) x . .
+  (params@A
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@1,1 nan~3
+     (infix@8 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1)))
+    (kv@1,2 neg~3
+     (infix@8 or
+      (dot~5 a~1 neg@1)
+      (dot@4 b~1 neg@1)))
+    (kv@1,3 val~3
+     (infix@8 or
+      (dot~5 a~1 val@1)
+      (dot@4 b~1 val@1))))))
+ (proc@,2g
+  (quoted@5 xor@1) x . .
+  (params@B
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@1,1 nan~3
+     (infix@8 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1)))
+    (kv@1,2 neg~3
+     (infix@8 xor
+      (dot~5 a~1 neg@1)
+      (dot@5 b~1 neg@1)))
+    (kv@1,3 val~3
+     (infix@8 xor
+      (dot~5 a~1 val@1)
+      (dot@5 b~1 val@1))))))
+ (proc@,2n
+  (quoted@5 not@1) x . .
+  (params@B
+   (param@1 a . . xint@3 .))xint@B . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@1,1 nan~3
+     (dot@3 a~1 nan@1))
+    (kv@1,2 neg~3
+     (dot@3 a~1 neg@1))
+    (kv@1,3 val~3
+     (prefix@2 not
+      (dot@5 a~1 val@1))))))
+ (proc@,2u
+  (quoted@5 mod@1) x . .
+  (params@B
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@F or
+      (infix~9 or
+       (dot~5 a~1 nan@1)
+       (dot@4 b~1 nan@1))
+      (infix@9 ==
+       (dot~5 b~1 val@1)0@3))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (asgn@7,3 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,3 neg~3
+      (dot@3 a~1 neg@1))
+     (kv~8,4 val~3
+      (infix@8 mod
+       (dot~5 a~1 val@1)
+       (dot@5 b~1 val@1)))))))
+ (proc@,37 mask@5 x . .
+  (params@A
+   (param@1 a . . xint@3 .)
+   (param@A bits . . int@6 .)
+   (param@L signed . . bool@8 false@F))xint@i . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@I or
+      (infix~C or
+       (dot~5 a~1 nan@1)
+       (infix@8 < bits~5 0@2))
+      (infix@8 > bits~5 64@2))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (let@4,3 mask . . .
+    (if@7
+     (elif@3
+      (infix@5 == bits~5 64@3)
+      (stmts@C
+       (call@4 high~4 uint64@1)))
+     (else@S
+      (stmts@6
+       (par
+        (infix@I \2D
+         (par~H
+          (infix@7 shl
+           (suf~6 1u "u64")bits@4))1@2))))))
+   (asgn@7,4 result~7
+    (oconstr@6 xint~4
+     (kv~8,1 nan~3 false@2)
+     (kv~8,2 neg~3
+      (dot@3 a~1 neg@1))
+     (kv~8,3 val~3
+      (infix@8 and
+       (dot~5 a~1 val@1)mask@4))))
+   (if@,9
+    (elif@3
+     (infix@7 and signed~7
+      (infix@U !=
+       (infix~F shr
+        (dot~5 result~6 val@1)
+        (par@4
+         (infix@6 \2D bits~5 1@2)))0@3))
+     (stmts~1,2
+      (asgn@B
+       (dot~5 result~6 val@1)
+       (infix@S \2B
+        (par~Q
+         (infix@G and
+          (prefix~F not
+           (dot@A result~6 val@1))mask@4))1@2))
+      (asgn@B,1
+       (dot~5 result~6 neg@1)
+       (prefix@2 not
+        (dot@A result~6 neg@1))))))))
+ (proc@,3O getBit@5 x . .
+  (params@C
+   (param@1 a . . xint@3 .)
+   (param@A pos . . int@5 .))xint@L . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@H or
+      (infix~B or
+       (dot~5 a~1 nan@1)
+       (infix@7 < pos~4 0@2))
+      (infix@7 >= pos~4 64@3))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (oconstr@4,3 xint~4
+    (kv@1,1 nan~3 false@2)
+    (kv@1,2 neg~3 false@2)
+    (kv@1,3 val~3
+     (call@8 uint64~6
+      (infix@H and
+       (par~G
+        (infix@7 shr
+         (dot~5 a~1 val@1)pos@4))1@4))))))
+ (proc@,3Z setBit@5 x . .
+  (params@C
+   (param@1 a . . xint@3 .)
+   (param@A pos . . int@5 .))xint@L . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@H or
+      (infix~B or
+       (dot~5 a~1 nan@1)
+       (infix@7 < pos~4 0@2))
+      (infix@7 >= pos~4 64@3))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (oconstr@4,3 xint~4
+    (kv@1,1 nan~3 false@2)
+    (kv@1,2 neg~3
+     (dot@3 a~1 neg@1))
+    (kv@1,3 val~3
+     (infix@8 or
+      (dot~5 a~1 val@1)
+      (par@3
+       (infix@7 shl
+        (suf~6 1u "u64")pos@4)))))))
+ (proc@,3k clearBit@5 x . .
+  (params@E
+   (param@1 a . . xint@3 .)
+   (param@A pos . . int@5 .))xint@L . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@H or
+      (infix~B or
+       (dot~5 a~1 nan@1)
+       (infix@7 < pos~4 0@2))
+      (infix@7 >= pos~4 64@3))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (oconstr@4,3 xint~4
+    (kv@1,1 nan~3 false@2)
+    (kv@1,2 neg~3
+     (dot@3 a~1 neg@1))
+    (kv@1,3 val~3
+     (infix@8 and
+      (dot~5 a~1 val@1)
+      (prefix@4 not
+       (par@3
+        (infix@7 shl
+         (suf~6 1u "u64")pos@4))))))))
+ (proc@,3w
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))bool@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (dot@1 a~1 nan@1)
+     (stmts~1,1
+      (ret
+       (dot@8 b~1 nan@1))))
+    (elif@5,2
+     (dot@1 b~1 nan@1)
+     (stmts~3,1
+      (ret false@7))))
+   (infix@F,6 and
+    (infix~9 ==
+     (dot~5 a~1 neg@1)
+     (dot@4 b~1 neg@1))
+    (infix@A ==
+     (dot~5 a~1 val@1)
+     (dot@4 b~1 val@1)))))
+ (proc@,45
+  (quoted@5 <@1) x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))bool@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1))
+     (stmts~1,1
+      (ret false@7))))
+   (if@,4
+    (elif@3
+     (infix@6 and
+      (dot~5 a~1 neg@1)
+      (prefix@4 not
+       (dot@5 b~1 neg@1)))
+     (stmts~1,1
+      (ret true@7))))
+   (if@,6
+    (elif@3
+     (infix@A and
+      (prefix~A not
+       (dot@5 a~1 neg@1))
+      (dot@5 b~1 neg@1))
+     (stmts~1,1
+      (ret false@7))))
+   (if@,A
+    (elif@3
+     (dot@1 a~1 neg@1)
+     (stmts~1,2
+      (infix@6 >
+       (dot~5 a~1 val@1)
+       (dot@3 b~1 val@1))))
+    (else@,3
+     (stmts@2,2
+      (infix@6 <
+       (dot~5 a~1 val@1)
+       (dot@3 b~1 val@1)))))))
+ (proc@,4N
+  (quoted@5 <=@1) x . .
+  (params@A
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))bool@E . .
+  (stmts@2,1
+   (infix@6 or
+    (infix~4 < a~2 b@2)
+    (infix@5 == a~2 b@3))))
+ (proc@,4Q abs@5 x . .
+  (params@9
+   (param@1 a . . xint@3 .))xint@B . .
+  (stmts@2,1
+   (oconstr@4 xint~4
+    (kv@1,1 nan~3
+     (dot@3 a~1 nan@1))
+    (kv@1,2 neg~3 false@2)
+    (kv@1,3 val~3
+     (dot@3 a~1 val@1)))))
+ (proc@,4X min@5 x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (if@,3
+    (elif@3
+     (infix@2 < a~2 b@2)
+     (stmts@7 a))
+    (else@C
+     (stmts@6 b)))))
+ (proc@,4d max@5 x . .
+  (params@9
+   (param@1 a . . xint@6 .)
+   (param@4 b . . xint@3 .))xint@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (dot~5 a~1 nan@1)
+      (dot@4 b~1 nan@1))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint~4
+        (kv@4 nan~3 true@2))))))
+   (if@,3
+    (elif@3
+     (infix@2 > a~2 b@2)
+     (stmts@7 a))
+    (else@C
+     (stmts@6 b)))))
+ (proc@,4j succ@5 x . .
+  (params@A
+   (param@1 a . . xint@3 .))xint@B . .
+  (stmts@S
+   (infix@2 \2B a~2
+    (cmd@D createXint~B
+     (suf 1u "u64")))))
+ (proc@,4k pred@5 x . .
+  (params@A
+   (param@1 a . . xint@3 .))xint@B . .
+  (stmts@S
+   (infix@2 \2D a~2
+    (cmd@D createXint~B
+     (suf 1u "u64")))))
+ (proc@,4m inc@5 x . .
+  (params@9
+   (param@1 x . .
+    (mut@3 xint@4).)). . .
+  (stmts@P
+   (asgn@2 x~2
+    (infix@4 \2B x~2
+     (cmd@D createXint~B
+      (suf 1u "u64"))))))
+ (proc@,4o toFloat64@5 x . .
+  (params@F
+   (param@1 x . . xint@3 .))float64@B . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (dot@1 x~1 nan@1)
+     (stmts~1,1 NaN))
+    (elif@5,2
+     (dot@1 x~1 neg@1)
+     (stmts~3,1
+      (prefix \2D
+       (call@8 float64~7
+        (dot@2 x~1 val@1)))))
+    (else@,4
+     (stmts@2,1
+      (call@7 float64~7
+       (dot@2 x~1 val@1)))))))
+ (when@,4w
+  (elif@5
+   (infix@D and isMainModule~D
+    (prefix@4 not
+     (call@B defined~7 nimony@1)))
+   (stmts~3,1
+    (var@4 a . . .
+     (call@E createXint~A
+      (suf@1 10 "i64")))
+    (var@4,1 b . . .
+     (call@E createXint~A
+      (suf@1 -5 "i64")))
+    (cmd@,2 echo
+     (infix@7 \2B a~2 b@2))
+    (cmd@,3 echo
+     (infix@7 \2D a~2 b@2))
+    (cmd@,4 echo
+     (infix@7 * a~2 b@2))
+    (cmd@,5 echo
+     (infix@7 div a~2 b@4))))))

@@ -1,0 +1,680 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/nifconfig.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4
+   (bracket@2 os@1 sets@5 strutils@B)))
+ (when@,3
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (import
+     (infix@B / std~4 syncio@2))))
+  (else@,2
+   (stmts@2,1
+    (import
+     (infix@B / std~4 sequtils@2)))))
+ (import@,8
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)platform@2))
+ (include@,A
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (when@,C
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (func addUnique@5 . . .
+     (params@E
+      (param@1 s . .
+       (mut@3
+        (at@7 seq~3 string@1)).)
+      (param@L x . .
+       (cmd@8 sink~5 string).)). . .
+     (stmts@2,1
+      (for@4
+       (infix@7 \2E\2E< 0~2
+        (dot@5 s~1 len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@5 ==
+           (at~4 s~1 i@1)x@3)
+          (stmts@B
+           (ret .))))))
+      (cmd@1,2
+       (dot s~1 add@1)x@5)))
+    (const@2,8 hostCPU . . .
+     (when@2,1
+      (elif@5
+       (call@7 defined~7 amd64@1)
+       (stmts@G "amd64"))
+      (elif@5,1
+       (call@7 defined~7 i386@1)
+       (stmts@F "i386"))
+      (elif@5,2
+       (call@7 defined~7 arm64@1)
+       (stmts@G "arm64"))
+      (elif@5,3
+       (call@7 defined~7 arm@1)
+       (stmts@E "arm"))
+      (elif@5,4
+       (call@7 defined~7 riscv64@1)
+       (stmts@I "riscv64"))
+      (elif@5,5
+       (call@7 defined~7 powerpc64le@1)
+       (stmts@M "powerpc64el"))
+      (elif@5,6
+       (call@7 defined~7 powerpc64@1)
+       (stmts@K "powerpc64"))
+      (elif@5,7
+       (call@7 defined~7 powerpc@1)
+       (stmts@I "powerpc"))
+      (elif@5,8
+       (call@7 defined~7 mips64@1)
+       (stmts@H "mips64"))
+      (elif@5,9
+       (call@7 defined~7 mips@1)
+       (stmts@F "mips"))
+      (elif@5,A
+       (call@7 defined~7 sparc64@1)
+       (stmts@I "sparc64"))
+      (elif@5,B
+       (call@7 defined~7 sparc@1)
+       (stmts@G "sparc"))
+      (elif@5,C
+       (call@7 defined~7 wasm32@1)
+       (stmts@H "wasm32"))
+      (else@,D
+       (stmts@6 "amd64"))))
+    (const@2,N hostOS . . .
+     (when@2,1
+      (elif@5
+       (call@7 defined~7 windows@1)
+       (stmts@I "windows"))
+      (elif@5,1
+       (call@7 defined~7 macosx@1)
+       (stmts@H "macosx"))
+      (elif@5,2
+       (call@7 defined~7 linux@1)
+       (stmts@G "linux"))
+      (elif@5,3
+       (call@7 defined~7 freebsd@1)
+       (stmts@I "freebsd"))
+      (elif@5,4
+       (call@7 defined~7 netbsd@1)
+       (stmts@H "netbsd"))
+      (elif@5,5
+       (call@7 defined~7 openbsd@1)
+       (stmts@I "openbsd"))
+      (elif@5,6
+       (call@7 defined~7 dragonfly@1)
+       (stmts@K "dragonfly"))
+      (elif@5,7
+       (call@7 defined~7 solaris@1)
+       (stmts@I "solaris"))
+      (elif@5,8
+       (call@7 defined~7 haiku@1)
+       (stmts@G "haiku"))
+      (elif@5,9
+       (call@7 defined~7 android@1)
+       (stmts@I "android"))
+      (elif@5,A
+       (call@7 defined~7 ios@1)
+       (stmts@E "ios"))
+      (else@,B
+       (stmts@6 "linux")))))))
+ (type@D,p TrackMode~B x . .
+  (enum@2 .
+   (efld~B,1 TrackNone . . . .)
+   (efld@,1 TrackUsages . . . .)
+   (efld@D,1 TrackDef . . . .)))
+ (type@H,r TrackPosition~F x . .
+  (object@2 .
+   (fld~B,1 mode~4 x . TrackMode@3 .)
+   (fld~B,2 line~4 x . int32@9 .)
+   (fld~5,2 col~3 x . int32@3 .)
+   (fld~7,3 filename~8 x . string@3 .)))
+ (type@B,w AppType~9 x . .
+  (enum@2 .
+   (efld@4,1 appConsole~D . . . "console")
+   (efld@,2 appGui~9 . . . "gui")
+   (efld@,3 appLib~9 . . . "lib")
+   (efld@6,4 appStaticLib~F . . . "staticlib")))
+ (type@B,12 Backend~9 x . .
+  (enum@2 .
+   (efld@2,1 backendC~B . . . "c")
+   (efld@5,2 backendLLVM~E . . . "llvm")
+   (efld@7,3 backendNative~G . . . "native")))
+ (type@C,17 OptLevel~A x . .
+  (enum@2 .
+   (efld~A,1 optDebug . . . .)
+   (efld~A,2 optNone . . . .)
+   (efld~A,3 optSize . . . .)
+   (efld~A,4 optSpeed . . . .)))
+ (type@D,1D NifConfig~B x . .
+  (object@2 .
+   (fld~4,1 defines~7 x .
+    (at@6 seq~3 string@1).)
+   (fld~6,2 paths~5 x .
+    (at@K seq~3 string@1).)
+   (fld@8,2 nimblePaths~B x .
+    (at@6 seq~3 string@1).)
+   (fld~4,3 baseDir~7 x . string@3 .)
+   (fld@1,4 nifcachePath~C x . string@3 .)
+   (fld~7,5 bits~4 x . int@3 .)
+   (fld~5,6 compat~6 x . bool@3 .)
+   (fld~2,7 targetCPU~9 x . TSystemCPU@3 .)
+   (fld~3,8 targetOS~8 x . TSystemOS@3 .)
+   (fld~4,9 toTrack~7 x . TrackPosition@3 .)
+   (fld~9,A cc~2 x . string@3 .)
+   (fld~5,B linker~6 x . string@3 .)
+   (fld~6,C ccKey~5 x . string@3 .)
+   (fld~4,D appType~7 x . AppType@3 .)
+   (fld~4,E backend~7 x . Backend@3 .)
+   (fld~3,F optLevel~8 x . OptLevel@3 .)
+   (fld~1,G noValidate~A x . bool@3 .)
+   (fld~4,H verbose~7 x . bool@3 .)
+   (fld~4,I outFile~7 x . string@3 .)
+   (fld~5,K outDir~6 x . string@3 .)
+   (fld~1,M checkFlags~A x . string@3 .)))
+ (proc@,1d addDefine@5 x . .
+  (params@F
+   (param@1 config . .
+    (mut@8 NifConfig@4).)
+   (param@O symbol . . string@8 .)). . .
+  (stmts@2,1
+   (cmd@E
+    (dot
+     (dot~8 config~6 defines@1)addUnique@1)symbol@B)))
+ (proc@,1g arkhamArch@5 x . .
+  (params@G
+   (param@1 config . . NifConfig@8 .))string@L . .
+  (stmts@2,1
+   (comment)
+   (case@,1
+    (dot@B config~6 targetCPU@1)
+    (of@,1
+     (ranges cpuAmd64@3 cpuI386@D)
+     (stmts@M "x64"))
+    (of@,2
+     (ranges cpuArm64@3 cpuArm@D)
+     (stmts@L "arm64"))
+    (else@,3
+     (stmts@6 "x64")))))
+ (proc@,1n initNifConfig@5 x . .
+  (params@J
+   (param@1 baseDir . .
+    (cmd@E sink~5 string).))NifConfig@O . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@B NifConfig~9
+     (kv~9,1 baseDir~7 baseDir@2)
+     (kv~4,2 nifcachePath~C "nimcache"@2)
+     (kv~9,3 defines~7
+      (prefix@2 \40
+       (bracket@1 "nimony"@1)))
+     (kv~C,4 bits~4
+      (infix@D *
+       (call~5 sizeof~6 int@1)8@1))
+     (kv~7,5 targetCPU~9
+      (call@K
+       (dot~A platform~8 nameToCPU@1)hostCPU@1))
+     (kv~8,6 targetOS~8
+      (call@J
+       (dot~9 platform~8 nameToOS@1)hostOS@1))
+     (kv~E,7 cc~2 "gcc"@2)
+     (kv~A,8 linker~6 ""@2)
+     (kv~9,9 appType~7 appConsole@2)
+     (kv~6,A checkFlags~A "br"@2)))))
+ (proc@,22 setTargetCPU@5 x . .
+  (params@I
+   (param@1 config . .
+    (mut@8 NifConfig@4).)
+   (param@O symbol . . string@8 .))bool@f . .
+  (stmts@2,1
+   (asgn@7 result~7 false@2)
+   (let@4,1 cpu . . .
+    (call@O
+     (dot~A platform~8 nameToCPU@1)symbol@1))
+   (if@,2
+    (elif@3
+     (infix@4 != cpu~4 cpuNone@3)
+     (stmts~1,1
+      (asgn@H
+       (dot~B config~6 targetCPU@1)cpu@2)
+      (asgn@7,1 result~7 true@2))))))
+ (proc@,29 setTargetOS@5 x . .
+  (params@H
+   (param@1 config . .
+    (mut@8 NifConfig@4).)
+   (param@O symbol . . string@8 .))bool@f . .
+  (stmts@2,1
+   (asgn@7 result~7 false@2)
+   (let@4,1 os . . .
+    (call@M
+     (dot~9 platform~8 nameToOS@1)symbol@1))
+   (if@,2
+    (elif@3
+     (infix@3 != os~3 osNone@3)
+     (stmts~1,1
+      (asgn@G
+       (dot~A config~6 targetOS@1)os@2)
+      (asgn@7,1 result~7 true@2))))))
+ (proc@,2G parseConfig@5 . . .
+  (params@G
+   (param@1 c . . Cursor@3 .)
+   (param@C result . .
+    (mut@8 NifConfig@4).)). . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (var@4,1 nested . . . 0@9)
+   (while@,2 true@6
+    (stmts@2,1
+     (case
+      (dot@6 c~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd inc nested@4)
+        (case@,1
+         (at@E
+          (dot~5 pool~4 tags@1)
+          (dot@2 c~1 tag@1))
+         (of@,1
+          (ranges "defines"@3)
+          (stmts@2,1
+           (cmd inc c@4)
+           (while@,1
+            (dot@7 c~1 hasMore@1)
+            (stmts@2,1
+             (if
+              (elif@3
+               (infix@7 ==
+                (dot~6 c~1 kind@1)StringLit@3)
+               (stmts~1,1
+                (cmd@E
+                 (dot
+                  (dot~8 result~6 defines@1)addUnique@1)
+                 (at@N
+                  (dot~8 pool~4 strings@1)
+                  (dot@2 c~1 litId@1))))))
+             (cmd@,2 inc c@4)))))
+         (of@,7
+          (ranges "paths"@3)
+          (stmts@2,1
+           (cmd inc c@4)
+           (while@,1
+            (dot@7 c~1 hasMore@1)
+            (stmts@2,1
+             (if
+              (elif@3
+               (infix@7 ==
+                (dot~6 c~1 kind@1)StringLit@3)
+               (stmts~1,1
+                (cmd@C
+                 (dot
+                  (dot~6 result~6 paths@1)add@1)
+                 (at@H
+                  (dot~8 pool~4 strings@1)
+                  (dot@2 c~1 litId@1))))))
+             (cmd@,2 inc c@4)))))
+         (of@,D
+          (ranges "nimblepaths"@3)
+          (stmts@2,1
+           (cmd inc c@4)
+           (while@,1
+            (dot@7 c~1 hasMore@1)
+            (stmts@2,1
+             (if
+              (elif@3
+               (infix@7 ==
+                (dot~6 c~1 kind@1)StringLit@3)
+               (stmts~1,1
+                (cmd@I
+                 (dot
+                  (dot~C result~6 nimblePaths@1)add@1)
+                 (at@H
+                  (dot~8 pool~4 strings@1)
+                  (dot@2 c~1 litId@1))))))
+             (cmd@,2 inc c@4)))))
+         (of@,J
+          (ranges "intbits"@3)
+          (stmts@2,1
+           (cmd inc c@4)
+           (if@,1
+            (elif@3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)IntLit@3)
+             (stmts~1,1
+              (asgn@C
+               (dot~6 result~6 bits@1)
+               (cmd@6 int~4
+                (at@D
+                 (dot~9 pool~4 integers@1)
+                 (dot@2 c~1 intId@1))))
+              (cmd@,1 inc c@4))))))
+         (of@,O
+          (ranges "compat"@3)
+          (stmts@2,1
+           (cmd inc c@4)
+           (if@,1
+            (elif@3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)IntLit@3)
+             (stmts~1,1
+              (asgn@E
+               (dot~8 result~6 compat@1)
+               (call@6 bool~4
+                (at@E
+                 (dot~9 pool~4 integers@1)
+                 (dot@2 c~1 intId@1))))
+              (cmd@,1 inc c@4))))))
+         (else@,T
+          (stmts@2,1
+           (cmd inc c@4))))))
+      (of@,Y
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts@D
+           (break .))))
+        (cmd@,2 inc c@4)))
+      (else@,c
+       (stmts@2,1
+        (cmd inc c@4))))))))
+ (proc@,2z parseNifConfig@5 x . .
+  (params@K
+   (param@1 configFile . . string@C .)
+   (param@L result . .
+    (mut@8 NifConfig@4).)). . .
+  (stmts@2,1
+   (var@4 f . . .
+    (call@J
+     (dot~5 nifstreams~A open@1)configFile@1))
+   (discard@,1
+    (call@P processDirectives~H
+     (dot@2 f~1 r@1)))
+   (var@4,2 buf . . .
+    (call@G fromStream~A f@1))
+   (var@4,3 c . . .
+    (call@D beginRead~9 buf@1))
+   (try@,4
+    (stmts@2,1
+     (call@B parseConfig~B c@1 result@4))
+    (fin@,2
+     (stmts@2,1
+      (call@7
+       (dot~6 f~1 close@1)))))))
+ (proc@,39 getOptionsAsOneString@5 x . .
+  (params@R
+   (param@1 config . . NifConfig@8 .))string@L . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (infix@C & "--base\3A"~A
+     (dot@8 config~6 baseDir@1)))
+   (for@4,3
+    (dot@B config~6 defines@1)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (call@A
+      (dot~4 result~6 add@1)
+      (infix@8 & " -d\3A"~7 i@2))))
+   (cmd@6,6
+    (dot result~6 add@1)
+    (infix@G & " --bits\3A"~B
+     (prefix@2 $
+      (dot@7 config~6 bits@1))))
+   (cmd@6,7
+    (dot result~6 add@1)
+    (infix@F & " --cpu\3A"~A
+     (dot@W
+      (at~I
+       (dot~4 platform~8 CPU@1)
+       (dot@7 config~6 targetCPU@1))name@1)))
+   (cmd@6,8
+    (dot result~6 add@1)
+    (infix@E & " --os\3A"~9
+     (dot@U
+      (at~H
+       (dot~3 platform~8 OS@1)
+       (dot@7 config~6 targetOS@1))name@1)))))
+ (proc@,3K isDefined@5 x . .
+  (params@F
+   (param@1 config . . NifConfig@8 .)
+   (param@K symbol . . string@8 .))bool@b . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 in symbol~7
+      (dot@9 config~6 defines@1))
+     (stmts~1,1
+      (asgn@7 result~7 true@2)))
+    (elif@5,2
+     (infix@y ==
+      (call~k cmpIgnoreStyle~E symbol@1
+       (dot@d
+        (at~I
+         (dot~4 platform~8 CPU@1)
+         (dot@7 config~6 targetCPU@1))name@1))0@3)
+     (stmts~3,1
+      (asgn@7 result~7 true@2)))
+    (elif@5,4
+     (infix@w ==
+      (call~i cmpIgnoreStyle~E symbol@1
+       (dot@b
+        (at~H
+         (dot~3 platform~8 OS@1)
+         (dot@7 config~6 targetOS@1))name@1))0@3)
+     (stmts~3,1
+      (asgn@7 result~7 true@2)))
+    (elif@5,6
+     (infix@b ==
+      (call~N cmpIgnoreStyle~E symbol@1
+       (dot@F config~6 ccKey@1))0@3)
+     (stmts~3,1
+      (asgn@7 result~7 true@2)))
+    (else@,8
+     (stmts@2,1
+      (case
+       (dot@B symbol~6 normalize@1)
+       (of@,1
+        (ranges "x86"@3)
+        (stmts@A
+         (asgn@7 result~7
+          (infix@J ==
+           (dot~B config~6 targetCPU@1)cpuI386@3))))
+       (of@,2
+        (ranges "itanium"@3)
+        (stmts@E
+         (asgn@7 result~7
+          (infix@J ==
+           (dot~B config~6 targetCPU@1)cpuIa64@3))))
+       (of@,3
+        (ranges "x8664"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@J ==
+           (dot~B config~6 targetCPU@1)cpuAmd64@3))))
+       (of@,4
+        (ranges "posix"@3 "unix"@C)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osLinux@1 osMorphos@A osSkyos@L osIrix@U osPalmos@c osQnx~6,1 osAtari@1,1 osAix@A,1 osHaiku~6,2 osVxWorks@3,2 osSolaris@E,2 osNetbsd@P,2 osFreebsd~6,3 osOpenbsd@5,3 osDragonfly@G,3 osMacosx@T,3 osIos@d,3 osAndroid~6,4 osNintendoSwitch@5,4 osFreeRTOS@N,4 osCrossos@Z,4 osZephyr@k,4 osNuttX@u,4)))))
+       (of@,A
+        (ranges "linux"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osLinux@1 osAndroid@A)))))
+       (of@,C
+        (ranges "bsd"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osNetbsd@1 osFreebsd@B osOpenbsd@M osDragonfly@X osCrossos@k)))))
+       (of@,E
+        (ranges "freebsd"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osFreebsd@1 osCrossos@C)))))
+       (of@,G
+        (ranges "emulatedthreadvars"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@j
+           (dot~9
+            (dot~6
+             (at~H
+              (dot~3 platform~8 OS@1)
+              (dot@7 config~6 targetOS@1))props@1)contains@1)ospLacksThreadVars@1))))
+       (of@,I
+        (ranges "msdos"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@I ==
+           (dot~A config~6 targetOS@1)osDos@3))))
+       (of@,J
+        (ranges "mswindows"@3 "win32"@G)
+        (stmts@P
+         (asgn@7 result~7
+          (infix@I ==
+           (dot~A config~6 targetOS@1)osWindows@3))))
+       (of@,K
+        (ranges "macintosh"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osMacos@1 osMacosx@A osIos@K)))))
+       (of@,M
+        (ranges "osx"@3 "macosx"@A)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osMacosx@1 osIos@B)))))
+       (of@,O
+        (ranges "sunos"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@I ==
+           (dot~A config~6 targetOS@1)osSolaris@3))))
+       (of@,P
+        (ranges "freertos"@3 "lwip"@F)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I ==
+           (dot~A config~6 targetOS@1)osFreeRTOS@3))))
+       (of@,R
+        (ranges "littleendian"@3)
+        (stmts@J
+         (asgn@7 result~7
+          (infix@V ==
+           (dot~8
+            (at~I CPU~3
+             (dot@7 config~6 targetCPU@1))endian@1)littleEndian@3))))
+       (of@,S
+        (ranges "bigendian"@3)
+        (stmts@G
+         (asgn@7 result~7
+          (infix@V ==
+           (dot~8
+            (at~I CPU~3
+             (dot@7 config~6 targetCPU@1))endian@1)bigEndian@3))))
+       (of@,T
+        (ranges "cpu8"@3)
+        (stmts@B
+         (asgn@7 result~7
+          (infix@E ==
+           (dot~6 config~6 bits@1)8@3))))
+       (of@,U
+        (ranges "cpu16"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@E ==
+           (dot~6 config~6 bits@1)16@3))))
+       (of@,V
+        (ranges "cpu32"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@E ==
+           (dot~6 config~6 bits@1)32@3))))
+       (of@,W
+        (ranges "cpu64"@3)
+        (stmts@C
+         (asgn@7 result~7
+          (infix@E ==
+           (dot~6 config~6 bits@1)64@3))))
+       (of@,X
+        (ranges "nimrawsetjmp"@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (infix@I in
+           (dot~A config~6 targetOS@1)
+           (curly@3 osSolaris@1 osNetbsd@C osFreebsd@M osOpenbsd@X osDragonfly~6,1 osMacosx@7,1)))))
+       (of@,a
+        (ranges "executable"@3)
+        (stmts@H
+         (asgn@7 result~7
+          (infix@H in
+           (dot~9 config~6 appType@1)
+           (curly@3 appConsole@1 appGui@D)))))
+       (of@,b
+        (ranges "library"@3)
+        (stmts@E
+         (asgn@7 result~7
+          (infix@H in
+           (dot~9 config~6 appType@1)
+           (curly@3 appLib@1 appStaticLib@9)))))
+       (of@,c
+        (ranges "dll"@3)
+        (stmts@A
+         (asgn@7 result~7
+          (infix@H ==
+           (dot~9 config~6 appType@1)appLib@3))))
+       (of@,d
+        (ranges "staticlib"@3)
+        (stmts@G
+         (asgn@7 result~7
+          (infix@H ==
+           (dot~9 config~6 appType@1)appStaticLib@3))))
+       (of@,e
+        (ranges "consoleapp"@3)
+        (stmts@H
+         (asgn@7 result~7
+          (infix@H ==
+           (dot~9 config~6 appType@1)appConsole@3))))
+       (of@,f
+        (ranges "guiapp"@3)
+        (stmts@D
+         (asgn@7 result~7
+          (infix@H ==
+           (dot~9 config~6 appType@1)appGui@3))))
+       (else@,g
+        (stmts@6
+         (asgn@7 result~7 false@2)))))))))
+ (when@,4C
+  (elif@5 isMainModule
+   (stmts~3,1
+    (var@4 conf . . .
+     (call@E default~7 NifConfig@1))
+    (cmd@,1 parseNifConfig "src/nifler/nifler.cfg.nif"@F conf@i)
+    (cmd@,2 echo
+     (prefix@5 $
+      (dot@5 conf~4 bits@1)))))))

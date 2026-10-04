@@ -1,0 +1,742 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/trace.nim
+ (comment)
+ (import@,F
+  (infix@A / std~3 tables@1))
+ (import@,G values@7)
+ (type@D,J TraceMode~B x . .
+  (enum@2 .
+   (efld~B,1 tmOff . . . .)
+   (efld~B,2 tmCalls . . . .)
+   (efld~B,3 tmFull . . . .)
+   (efld~B,4 tmProfile . . . .)))
+ (type@D,R EvalEvent~B x . .
+  (object@2 .
+   (fld~7,1 code~4 x . string@3 .)
+   (fld~7,2 line~4 x . int@3 .)
+   (fld~8,3 col~3 x . int@3 .)
+   (fld~8,4 val~3 x . Value@3 .)))
+ (type@F,X BranchEvent~D x . .
+  (object@2 .
+   (fld~9,7 form~4 x . string@3 .)
+   (fld~A,8 sel~3 x . string@3 .)
+   (fld~8,9 chose~5 x . string@3 .)
+   (fld~7,A callee~6 x . string@3 .)
+   (fld~9,B line~4 x . int@3 .)
+   (fld~8,C depth~5 x . int@3 .)))
+ (type@C,l StepKind~A x . .
+  (enum@2 .
+   (efld~A,1 skEnter . . . .)
+   (efld~A,2 skExit . . . .)
+   (efld~A,3 skBranch . . . .)))
+ (type@8,q Step~6 x . .
+  (object@2 .
+   (fld~2,8 kind~4 x . StepKind@3 .)
+   (fld~2,9 name~4 x . string@3 .)
+   (fld~2,A site~4 x . string@3 .)))
+ (type@D,15 CallEvent~B x . .
+  (object@2 .
+   (fld~5,1 callee~6 x . string@3 .)
+   (fld~7,2 args~4 x .
+    (at@6 seq~3 Value@1).)
+   (fld~6,3 argsR~5 x .
+    (at@6 seq~3 string@1).)
+   (fld~8,6 ret~3 x . Value@3 .)
+   (fld~7,7 retR~4 x . string@3 .)
+   (fld~6,8 depth~5 x . int@3 .)
+   (fld~7,9 line~4 x . int@3 .)
+   (fld~7,A file~4 x . string@3 .)))
+ (type@9,1L Trace~7 x . .
+  (ref@2
+   (object@4 .
+    (fld~7,1 mode~4 x . TraceMode@3 .)
+    (fld~6,2 depth~5 x . int@3 .)
+    (fld~7,3 text~4 x . string@3 .)
+    (fld~6,4 calls~5 x .
+     (at@6 seq~3 CallEvent@1).)
+    (fld~6,5 evals~5 x .
+     (at@6 seq~3 EvalEvent@1).)
+    (fld~3,6 branches~8 x .
+     (at@6 seq~3 BranchEvent@1).)
+    (fld~6,7 steps~5 x .
+     (at@6 seq~3 Step@1).)
+    (fld~5,8 nCalls~6 x . int@3 .)
+    (fld~3,9 maxDepth~8 x . int@3 .)
+    (fld~2,A truncated~9 x . bool@3 .)
+    (fld~B,B lines . . int@7 .)
+    (fld~B,C frames . .
+     (at@B seq~3 int@1).)
+    (fld~7,F prof~4 x .
+     (at@8 Table~5 string@1 int@9).)
+    (fld@3,G maxRecordDepth~E x . int@3 .)
+    (fld~B,L recStack . .
+     (at@D seq~3 bool@1).))))
+ (const@6,1k LineCap . . . 200000@A)
+ (proc@,1m newTrace@5 x . .
+  (params@E
+   (param@1 mode . . . tmOff@7))Trace@G . .
+  (stmts@2,1
+   (oconstr@5 Trace~5
+    (kv@5 mode~4 mode@2)
+    (kv@I depth~5 0@2)
+    (kv@R text~4 ""@2)
+    (kv@c calls~5
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@o evals~5
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@13 branches~8
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@6,1 steps~5
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@J,1 nCalls~6 0@2)
+    (kv@W,1 maxDepth~8 0@2)
+    (kv@k,1 truncated~9 false@2)
+    (kv@y,1 lines~5 0@2)
+    (kv@19,1 frames~6
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@5,2 prof~4
+     (call@O
+      (at~D initTable~9 string@1 int@9)))
+    (kv@l,2 maxRecordDepth~E 0@2)
+    (kv@y,2 recStack~8
+     (prefix@2 \40
+      (bracket@1))))))
+ (proc@,1r recordHere@5 . . .
+  (params@F
+   (param@1 t . . Trace@3 .))bool@C
+  (pragmas@W inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@M,2 or
+    (infix~5 <=
+     (dot~G t~1 maxRecordDepth@1)0@3)
+    (infix@B <=
+     (dot~7 t~1 depth@1)
+     (dot@4 t~1 maxRecordDepth@1)))))
+ (proc@,1w enabled@5 x . .
+  (params@D
+   (param@1 t . . Trace@3 .))bool@C
+  (pragmas@U inline@2).
+  (stmts@h
+   (infix@7 !=
+    (dot~6 t~1 mode@1)tmOff@3)))
+ (proc@,21 indent@5 . . .
+  (params@B
+   (param@1 t . . Trace@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ""@2)
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@3 t~1 depth@1))
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)"  "@5)
+     (cmd@,1 inc i@4)))))
+ (var@4,29 argCap . . . 48@9)
+ (proc@,2B setArgCap@5 x . .
+  (params@F
+   (param@1 n . . int@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 argCap~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@2 < n~2 0@2)0@7)
+      (else@C n@6))))))
+ (proc@,2I argText@5 . . .
+  (params@C
+   (param@1 v . . Value@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 s . . .
+    (prefix@4 $ v@1))
+   (if@,2
+    (elif@3
+     (infix@B and
+      (infix~4 > argCap~7 0@2)
+      (infix@A >
+       (dot~5 s~1 len@1)argCap@2))
+     (stmts~1,1
+      (asgn@2 s~2
+       (infix@L &
+        (at~I s~1
+         (infix@3 \2E\2E 0~2
+          (infix@A \2D argCap~7 4@2)))"..."@2)))))
+   (var@4,5 r . . . ""@4)
+   (for@4,6 s@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@3 == ch~3 '\0A'@3)
+       (stmts@C
+        (cmd@1
+         (dot r~1 add@1)"\5Cn"@5)))
+      (elif@5,1
+       (infix@3 == ch~3 '\09'@3)
+       (stmts@C
+        (cmd@1
+         (dot r~1 add@1)"\5Ct"@5)))
+      (else@,2
+       (stmts@6
+        (cmd@1
+         (dot r~1 add@1)ch@5))))))
+   (asgn@7,A result~7 r@2)))
+ (proc@,2V joinArgs@5 . . .
+  (params@D
+   (param@1 args . .
+    (at@9 seq~3 Value@1).))string@K . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@6 args~4 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@6
+         (dot result~6 add@1)", "@5))))
+     (cmd@6,1
+      (dot result~6 add@1)
+      (call@C argText~7
+       (at@5 args~4 i@1)))
+     (cmd@,2 inc i@4)))))
+ (proc@,2d emitLine@5 . . .
+  (params@D
+   (param@1 t . . Trace@3 .)
+   (param@B s . . string@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (dot@1 t~1 truncated@1)
+     (stmts@D
+      (ret .))))
+   (if@,1
+    (elif@3
+     (infix@8 >=
+      (dot~7 t~1 lines@1)LineCap@3)
+     (stmts~1,1
+      (cmd@6
+       (dot
+        (dot~5 t~1 text@1)add@1)"  ... \28trace truncated at "@5)
+      (cmd@6,1
+       (dot
+        (dot~5 t~1 text@1)add@1)
+       (prefix@5 $ LineCap@1))
+      (cmd@6,2
+       (dot
+        (dot~5 t~1 text@1)add@1)" lines\29\0A"@5)
+      (asgn@C,3
+       (dot~B t~1 truncated@1)true@2)
+      (ret@,4 .))))
+   (cmd@6,7
+    (dot
+     (dot~5 t~1 text@1)add@1)s@5)
+   (cmd@6,8
+    (dot
+     (dot~5 t~1 text@1)add@1)"\0A"@5)
+   (cmd@,9 inc
+    (dot@5 t~1 lines@1))))
+ (proc@,2s traceEnter@5 x . .
+  (params@G
+   (param@1 t . . Trace@3 .)
+   (param@B callee . . string@8 .)
+   (param@R args . .
+    (at@9 seq~3 Value@1).)
+   (param@j line . . . 0@7)
+   (param@1,1 file . . . ""@7)). . .
+  (stmts@2,2
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 mode@1)tmOff@3)
+     (stmts@H
+      (ret .))))
+   (cmd@,2 inc
+    (dot@5 t~1 nCalls@1))
+   (if@,3
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 mode@1)tmProfile@3)
+     (stmts~1,3
+      (asgn@F
+       (at~9
+        (dot~5 t~1 prof@1)callee@1)
+       (infix@X \2B
+        (call~C
+         (dot~D
+          (dot~5 t~1 prof@1)getOrDefault@1)callee@1 0@9)1@2))
+      (cmd@,1 inc
+       (dot@5 t~1 depth@1))
+      (if@,2
+       (elif@3
+        (infix@8 >
+         (dot~7 t~1 depth@1)
+         (dot@3 t~1 maxDepth@1))
+        (stmts@M
+         (asgn@B
+          (dot~A t~1 maxDepth@1)
+          (dot@3 t~1 depth@1)))))
+      (ret@,3 .))))
+   (let@4,C rec . . .
+    (call@G recordHere~A t@1))
+   (cmd@A,D
+    (dot
+     (dot~9 t~1 recStack@1)add@1)rec@5)
+   (if@,E
+    (elif@3 rec
+     (stmts~1,1
+      (var@4 ar . .
+       (at@7 seq~3 string@1)
+       (prefix@I \40
+        (bracket@1)))
+      (var@4,1 ai . . . 0@5)
+      (while@,2
+       (infix@9 < ai~3
+        (dot@6 args~4 len@1))
+       (stmts@2,1
+        (cmd@2
+         (dot ar~2 add@1)
+         (call@C argText~7
+          (at@5 args~4 ai@1)))
+        (cmd@,1 inc ai@4)))
+      (cmd@7,5
+       (dot
+        (dot~6 t~1 calls@1)add@1)
+       (oconstr@E CallEvent~9
+        (kv@7 callee~6 callee@2)
+        (kv@L args~4 args@2)
+        (kv@Y argsR~5 ar@2)
+        (kv@h ret~3
+         (call@6 vNil~4))
+        (kv@6,1 depth~5
+         (dot@3 t~1 depth@1))
+        (kv@L,1 line~4 line@2)
+        (kv@X,1 file~4 file@2)))
+      (cmd@7,7
+       (dot
+        (dot~6 t~1 steps@1)add@1)
+       (oconstr@9 Step~4
+        (kv@5 kind~4 skEnter@2)
+        (kv@K name~4 callee@2)))
+      (call@C,8
+       (dot~4
+        (dot~7 t~1 frames@1)add@1)
+       (infix@D \2D
+        (dot~5
+         (dot~6 t~1 calls@1)len@1)1@2))
+      (var@4,9 head . . .
+       (infix@15 &
+        (infix~H &
+         (infix~6 &
+          (infix~9 &
+           (infix~I &
+            (call~4 indent~6 t@1)"→ "@2)callee@2)"\28"@2)
+         (call@A joinArgs~8 args@1))"\29"@2))
+      (if@,A
+       (elif@3
+        (infix@5 > line~5 0@2)
+        (stmts~1,3
+         (cmd@4
+          (dot head~4 add@1)"  "@5)
+         (cmd@4,1
+          (dot head~4 add@1)file@5)
+         (cmd@4,2
+          (dot head~4 add@1)"\3A"@5)
+         (cmd@4,3
+          (dot head~4 add@1)
+          (prefix@5 $ line@1)))))
+      (call@8,H emitLine~8 t@1 head@4))))
+   (cmd@,X inc
+    (dot@5 t~1 depth@1))
+   (if@,Y
+    (elif@3
+     (infix@8 >
+      (dot~7 t~1 depth@1)
+      (dot@3 t~1 maxDepth@1))
+     (stmts@M
+      (asgn@B
+       (dot~A t~1 maxDepth@1)
+       (dot@3 t~1 depth@1)))))))
+ (proc@,3U traceExit@5 x . .
+  (params@F
+   (param@1 t . . Trace@3 .)
+   (param@B ret . . Value@5 .)
+   (param@N raised . . . false@9)). . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 mode@1)tmOff@3)
+     (stmts@H
+      (ret .))))
+   (if@,5
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 mode@1)tmProfile@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@8 >
+         (dot~7 t~1 depth@1)0@2)
+        (stmts@D
+         (cmd dec
+          (dot@5 t~1 depth@1)))))
+      (ret@,1 .))))
+   (var@4,A rec . . . true@6)
+   (if@,B
+    (elif@3
+     (infix@F >
+      (dot~5
+       (dot~9 t~1 recStack@1)len@1)0@2)
+     (stmts~1,1
+      (asgn@4 rec~4
+       (at@C
+        (dot~9 t~1 recStack@1)
+        (infix@G \2D
+         (dot~5
+          (dot~9 t~1 recStack@1)len@1)1@2)))
+      (call@H,1
+       (dot~7
+        (dot~9 t~1 recStack@1)setLen@1)
+       (infix@G \2D
+        (dot~5
+         (dot~9 t~1 recStack@1)len@1)1@2)))))
+   (if@,E
+    (elif@3
+     (infix@8 >
+      (dot~7 t~1 depth@1)0@2)
+     (stmts@D
+      (cmd dec
+       (dot@5 t~1 depth@1)))))
+   (if@,F
+    (elif@3
+     (prefix not rec@4)
+     (stmts@9
+      (ret .))))
+   (cmd@7,G
+    (dot
+     (dot~6 t~1 steps@1)add@1)
+    (oconstr@9 Step~4
+     (kv@5 kind~4 skExit@2)
+     (kv@J name~4 ""@2)))
+   (if@,J
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~7 t~1 frames@1)len@1)0@2)
+     (stmts~1,1
+      (let@4 idx . . .
+       (at@E
+        (dot~7 t~1 frames@1)
+        (infix@E \2D
+         (dot~5
+          (dot~7 t~1 frames@1)len@1)1@2)))
+      (call@F,1
+       (dot~7
+        (dot~7 t~1 frames@1)setLen@1)
+       (infix@E \2D
+        (dot~5
+         (dot~7 t~1 frames@1)len@1)1@2))
+      (asgn@H,2
+       (dot~5
+        (at~5
+         (dot~6 t~1 calls@1)idx@1)ret@1)ret@2)
+      (asgn@I,3
+       (dot~6
+        (at~5
+         (dot~6 t~1 calls@1)idx@1)retR@1)
+       (call@9 argText~7 ret@1)))))
+   (if@,O
+    (elif@3 raised
+     (stmts~1,1
+      (call@8 emitLine~8 t@1
+       (infix@E &
+        (call~4 indent~6 t@1)"⇑ raised"@2))))
+    (else@,2
+     (stmts@2,1
+      (call@8 emitLine~8 t@1
+       (infix@W &
+        (infix~I &
+         (call~4 indent~6 t@1)"← "@2)
+        (call@9 argText~7 ret@1))))))))
+ (proc@,3y traceStep@5 x . .
+  (params@F
+   (param@1 t . . Trace@3 .)
+   (param@B code . . string@6 .)
+   (param@P line . . . 0@7)
+   (param@Z col . . . 0@6)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@7 !=
+      (dot~6 t~1 mode@1)tmFull@3)
+     (stmts@I
+      (ret .))))
+   (if@,2
+    (elif@3
+     (prefix not
+      (call@E recordHere~A t@1))
+     (stmts@J
+      (ret .))))
+   (cmd@7,3
+    (dot
+     (dot~6 t~1 evals@1)add@1)
+    (oconstr@E EvalEvent~9
+     (kv@5 code~4 code@2)
+     (kv@H line~4 line@2)
+     (kv@S col~3 col@2)
+     (kv@c val~3
+      (call@6 vNil~4))))
+   (var@4,4 s . . .
+    (infix@S &
+     (infix~E &
+      (call~4 indent~6 t@1)"· "@2)code@2))
+   (if@,5
+    (elif@3
+     (infix@5 > line~5 0@2)
+     (stmts~1,1
+      (cmd@1
+       (dot s~1 add@1)"  \3A"@5)
+      (cmd@1,1
+       (dot s~1 add@1)
+       (prefix@5 $ line@1)))))
+   (call@8,8 emitLine~8 t@1 s@4)))
+ (proc@,49 traceBranch@5 x . .
+  (params@H
+   (param@1 t . . Trace@3 .)
+   (param@B form . . string@I .)
+   (param@H sel . . string@C .)
+   (param@M chose . . string@7 .)
+   (param@b line . . . 0@7)
+   (param@l site . . . 0@7)). . .
+  (stmts@2,1
+   (comment)
+   (if@,8
+    (elif@3
+     (infix@G or
+      (infix~9 ==
+       (dot~6 t~1 mode@1)tmOff@3)
+      (infix@A ==
+       (dot~6 t~1 mode@1)tmProfile@3))
+     (stmts@e
+      (ret .))))
+   (if@,9
+    (elif@3
+     (prefix not
+      (call@E recordHere~A t@1))
+     (stmts@J
+      (ret .))))
+   (var@4,A home . . . ""@7)
+   (if@,B
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~7 t~1 frames@1)len@1)0@2)
+     (stmts@I
+      (asgn@5 home~5
+       (dot@b
+        (at~S
+         (dot~6 t~1 calls@1)
+         (at@9
+          (dot~7 t~1 frames@1)
+          (infix@E \2D
+           (dot~5
+            (dot~7 t~1 frames@1)len@1)1@2)))callee@1)))))
+   (cmd@A,C
+    (dot
+     (dot~9 t~1 branches@1)add@1)
+    (oconstr@G BranchEvent~B
+     (kv@5 form~4 form@2)
+     (kv@G sel~3 sel@2)
+     (kv@S chose~5 chose@2)
+     (kv@h callee~6 home@2)
+     (kv@5,1 line~4 line@2)
+     (kv@I,1 depth~5
+      (dot@3 t~1 depth@1))))
+   (let@4,E siteKey . . .
+    (if@A
+     (elif@3
+      (infix@5 != site~5 0@3)
+      (stmts@B
+       (prefix $ site@1)))
+     (else@K
+      (stmts@6
+       (infix@B &
+        (infix~6 & home~5 "\3A"@2)
+        (prefix@2 $ line@1))))))
+   (cmd@7,F
+    (dot
+     (dot~6 t~1 steps@1)add@1)
+    (oconstr@9 Step~4
+     (kv@5 kind~4 skBranch@2)
+     (kv@L name~4 chose@2)
+     (kv@Y site~4 siteKey@2)))))
+ (proc@,4R summary@5 x . .
+  (params@D
+   (param@1 t . . Trace@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (infix@o &
+     (infix~N &
+      (infix~C & "-- trace\3A "~D
+       (prefix@2 $
+        (dot@2 t~1 nCalls@1)))" calls, max depth "@2)
+     (prefix@2 $
+      (dot@2 t~1 maxDepth@1))))
+   (if@,2
+    (elif@3
+     (dot@1 t~1 truncated@1)
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)" \28truncated\29"@5))))))
+ (proc@,4X profileText@5 x . .
+  (params@H
+   (param@1 t . . Trace@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (var@4,3 names . .
+    (at@A seq~3 string@1)
+    (prefix@L \40
+     (bracket@1)))
+   (for@4,4
+    (dot@B
+     (dot~5 t~1 prof@1)keys@1)
+    (unpackflat
+     (let k . . ..))
+    (stmts@I
+     (cmd@5
+      (dot names~5 add@1)k@5)))
+   (var@4,6 i . . . 1@4)
+   (while@,7
+    (infix@8 < i~2
+     (dot@7 names~5 len@1))
+    (stmts@2,1
+     (let@4 cur . . .
+      (at@B names~5 i@1))
+     (let@4,1 curC . . .
+      (call@Q
+       (dot~D
+        (dot~5 t~1 prof@1)getOrDefault@1)cur@1 0@6))
+     (var@4,2 j . . .
+      (infix@6 \2D i~2 1@2))
+     (while@,3
+      (infix@D and
+       (infix~5 >= j~2 0@3)
+       (par@4
+        (infix@f or
+         (infix~7 <
+          (call~E
+           (dot~D
+            (dot~5 t~1 prof@1)getOrDefault@1)
+           (at@6 names~5 j@1)0@B)curC@2)
+         (par~e,1
+          (infix@g and
+           (infix~8 ==
+            (call~E
+             (dot~D
+              (dot~5 t~1 prof@1)getOrDefault@1)
+             (at@6 names~5 j@1)0@B)curC@3)
+           (infix@D >
+            (at~4 names~5 j@1)cur@2))))))
+      (stmts@2,2
+       (let@4 moved . . .
+        (at@D names~5 j@1))
+       (asgn@D,1
+        (at~8 names~5
+         (infix@3 \2B j~2 1@2))moved@2)
+       (cmd@,2 dec j@4)))
+     (asgn@D,8
+      (at~8 names~5
+       (infix@3 \2B j~2 1@2))cur@2)
+     (cmd@,9 inc i@4)))
+   (asgn@7,I result~7
+    (infix@b,1 &
+     (infix~E &
+      (infix@Z,~1 &
+       (infix~C &
+        (infix~G &
+         (infix~D & "-- profile\3A "~F
+          (prefix@2 $
+           (dot@6 names~5 len@1)))" routines, "@2)
+        (prefix@2 $
+         (dot@2 t~1 nCalls@1)))" calls, max depth "~u,1)
+      (prefix@2 $
+       (dot@2 t~1 maxDepth@1)))"\0A"@2))
+   (for@4,K names@6
+    (unpackflat
+     (let nm . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)"  "@5)
+     (cmd@6,1
+      (dot result~6 add@1)
+      (call@9 itoa~4
+       (call@6 int64~5
+        (call@K
+         (dot~D
+          (dot~5 t~1 prof@1)getOrDefault@1)nm@1 0@5))))
+     (cmd@6,2
+      (dot result~6 add@1)"  "@5)
+     (cmd@6,3
+      (dot result~6 add@1)nm@5)
+     (cmd@6,4
+      (dot result~6 add@1)"\0A"@5)))))
+ (proc@,52 recordCall@5 x . .
+  (params@G
+   (param@1 t . . Trace@3 .)
+   (param@B callee . . string@8 .)
+   (param@R args . .
+    (at@9 seq~3 Value@1).)
+   (param@j ret . . Value@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (prefix not
+      (dot@5 t~1 enabled@1))
+     (stmts@F
+      (ret .))))
+   (call@A,2 traceEnter~A t@1 callee@4 args@C)
+   (call@9,3 traceExit~9 t@1 ret@4)))
+ (proc@,58 recordEval@5 x . .
+  (params@G
+   (param@1 t . . Trace@3 .)
+   (param@B code . . string@6 .)
+   (param@P line . . int@B .)
+   (param@V col . . int@5 .)
+   (param@f val . . Value@5 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 !=
+      (dot~6 t~1 mode@1)tmFull@3)
+     (stmts@I
+      (ret .))))
+   (cmd@7,1
+    (dot
+     (dot~6 t~1 evals@1)add@1)
+    (oconstr@E EvalEvent~9
+     (kv@5 code~4 code@2)
+     (kv@H line~4 line@2)
+     (kv@S col~3 col@2)
+     (kv@c val~3 val@2))))))

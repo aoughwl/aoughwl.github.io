@@ -1,0 +1,198 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,2,../../../../../../home/savant/nimony/lib/std/sets.nim
+ (import tables@7)
+ (type@N,3 HashSet~L x
+  (typevars~D
+   (typevar@1 T . . Keyable@3 .)).
+  (object@2 .
+   (fld~L,1 t . .
+    (at@8 Table~5 T@1 bool@4).)))
+ (func@,6 initHashSet@5 x .
+  (typevars@H
+   (typevar@1 T . . Keyable@3 .))
+  (params@T)
+  (at@B HashSet~7 T@1). .
+  (stmts@2,1
+   (comment)
+   (oconstr@A,1
+    (at~3 HashSet~7 T@1)
+    (kv@2 t~1
+     (call@K
+      (at~9 initTable~9 T@1 bool@4))))))
+ (func@,A incl@5 x .
+  (typevars@A
+   (typevar@1 T . . Keyable@3 .))
+  (params@M
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K x . .
+    (cmd@8 sink~5 T).)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1
+    (at~4
+     (dot~2 s~1 t@1)x@1)true@2)))
+ (func@,E excl@5 x .
+  (typevars@A
+   (typevar@1 T . . Keyable@3 .))
+  (params@M
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K x . . T@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1
+    (at~4
+     (dot~2 s~1 t@1)x@1)false@2)))
+ (func@,I contains@5 x .
+  (typevars@E
+   (typevar@1 T . . Keyable@3 .))
+  (params@Q
+   (param@1 s . .
+    (at@A HashSet~7 T@1).)
+   (param@G x . . T@3 .))bool@N . .
+  (stmts@2,1
+   (comment)
+   (call@G,1
+    (dot~D
+     (dot~2 s~1 t@1)getOrDefault@1)x@1)))
+ (func@,M containsOrIncl@5 x .
+  (typevars@K
+   (typevar@1 T . . Keyable@3 .))
+  (params@W
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K x . . T@3 .))bool@R . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@A contains~8 s@1 x@4))
+   (if@,2
+    (elif@3
+     (prefix not result@4)
+     (stmts~1,1
+      (cmd incl s@5 x@8))))))
+ (func@,S missingOrExcl@5 x .
+  (typevars@J
+   (typevar@1 T . . Keyable@3 .))
+  (params@V
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K x . . T@3 .))bool@R . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 not
+     (call@C contains~8 s@1 x@4)))
+   (if@,3
+    (elif@3
+     (prefix not result@4)
+     (stmts~1,1
+      (cmd excl s@5 x@8))))))
+ (iterator@,Z items@9 x .
+  (typevars@F
+   (typevar@1 T . . Keyable@3 .))
+  (params@R
+   (param@1 s . .
+    (at@A HashSet~7 T@1).))
+  (cmd@M lent~5 T). .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (call@D pairs~5
+     (dot@2 s~1 t@1))
+    (unpackflat
+     (let k . . ..)
+     (let v@3 . . ..))
+    (stmts~2,1
+     (if
+      (elif@3 v
+       (stmts@3
+        (yld k@6))))))))
+ (func@,e len@5 x .
+  (typevars@9
+   (typevar@1 T . . Keyable@3 .))
+  (params@L
+   (param@1 s . .
+    (at@A HashSet~7 T@1).))int@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 0@2)
+   (for@4,2
+    (call@D pairs~5
+     (dot@2 s~1 t@1))
+    (unpackflat
+     (let k . . ..)
+     (let v@3 . . ..))
+    (stmts~2,1
+     (if
+      (elif@3 v
+       (stmts@3
+        (cmd inc result@4))))))))
+ (func@,k intersection@5 x .
+  (typevars@I
+   (typevar@1 T . . Keyable@3 .))
+  (params@U
+   (param@1 a . .
+    (at@D HashSet~7 T@1).)
+   (param@4 b . .
+    (at@A HashSet~7 T@1).))
+  (at@R HashSet~7 T@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@G
+     (at~3 initHashSet~B T@1)))
+   (for@4,2
+    (call@A items~5 a@1)
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 in x~2 b@3)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 incl@1)x@6))))))))
+ (func@,r incl@5 x .
+  (typevars@A
+   (typevar@1 T . . Keyable@3 .))
+  (params@M
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K other . .
+    (at@E HashSet~7 T@1).)). . .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (call@A items~5 other@1)
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (cmd@1
+      (dot s~1 incl@1)x@6)))))
+ (func@,w excl@5 x .
+  (typevars@A
+   (typevar@1 T . . Keyable@3 .))
+  (params@M
+   (param@1 s . .
+    (mut@3
+     (at@B HashSet~7 T@1)).)
+   (param@K other . .
+    (at@E HashSet~7 T@1).)). . .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (call@A items~5 other@1)
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (cmd@1
+      (dot s~1 excl@1)x@6))))))

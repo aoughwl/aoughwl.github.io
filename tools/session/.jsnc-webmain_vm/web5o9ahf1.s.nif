@@ -1,0 +1,84 @@
+(.nif27)
+(.indexat 4696             )
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/webmain_vm.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv nifb6mq6y1 "../../../../../../home/savant/nimony/src/lib/nifcursors.nim")
+  (kv vfsc9jn7 "../../../../../../home/savant/nimony/src/lib/vfs.nim")
+  (kv prorcx25w1 "../../../../../../home/savant/nimony/src/nimony/programs.nim")
+  (kv natd5co251 "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/natives.nim")
+  (kv trakthy001 "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/trace.nim")
+  (kv chu5m1rja1 "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/chunk.nim")
+  (kv comaa5xpt1 "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/compiler.nim")
+  (kv vmtuaxp6 "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/vm.nim")
+  (kv web91l7of "../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/webvfs.nim")
+  (kv jsfc0lwq21 "../../../../../../home/savant/nimony-web/tests/jsbackend/jsffi.nim"))
+ (stmts@2,9)
+ (proc@,G :runNif.0.@5 . . .
+  (params@B
+   (param@1 :src.0 . . string.0.sysvq0asl@5 .))
+  (ref@D,g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/natives.nim OutSink.Obj.0.natd5co251@4
+   (unchecked)). .
+  (stmts@2,5
+   (result@D :result.0 . .
+    (ref@D,g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/natives.nim OutSink.Obj.0.natd5co251@4
+     (unchecked)).)
+   (call@D installWebVfs.0.web91l7of~D)
+   (call@E,1 loadWebModules.0.web91l7of~E
+    (call@N toStr.0.jsfc0lwq21@1
+     (call~G global.0.jsfc0lwq21~6 "__aowli_mods"@1)))
+   (call@H,5 publishMainModule.0.web91l7of~H src.0@1)
+   (call@M,6 setupProgramForTesting.0.prorcx25w1~M WebDir.0.web91l7of@1 MainModuleName.0.web91l7of@9 ".s.nif"@P)
+   (var@4,8 :buf.0 . . TokenBuf.0.nifb6mq6y1@w,Ev,../../../../../../home/savant/nimony/src/lib/nifcursors.nim
+    (call@L parseFromBuffer.0.nifb6mq6y1~F src.0@1 MainModuleName.0.web91l7of@6 100@1B,Ev,../../../../../../home/savant/nimony/src/lib/nifcursors.nim))
+   (var@4,9 :root.0 . . Cursor.0.nifb6mq6y1@J,8J,../../../../../../home/savant/nimony/src/lib/nifcursors.nim
+    (call@G beginRead.0.nifb6mq6y1~9
+     (haddr@1 buf.0)))
+   (let@4,B :sink.0 . .
+    (ref@D,g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/natives.nim OutSink.Obj.0.natd5co251@4
+     (unchecked))
+    (call@H newOutSink.0.natd5co251~A))
+   (asgn@B,C
+    (ddot~7 sink.0~4 inBuf.0 0)
+    (call@M toStr.0.jsfc0lwq21@1
+     (call~E global.0.jsfc0lwq21~6 "__aowli_in"@1)))
+   (asgn@B,D
+    (ddot~7 sink.0~4 inPos.0 0)0@2)
+   (let@4,E :tr.0 . .
+    (ref@B,1M,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/trace.nim Trace.Obj.0.trakthy001@4
+     (notnil))
+    (call@D newTrace.0.trakthy001~8 tmOff.0.trakthy001@1))
+   (let@4,F :prog.0 . . VmProgram.0.chu5m1rja1@r,yk,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/compiler.nim
+    (call@K compileModule.0.comaa5xpt1~D root.0@1
+     (hcall@15,yk,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/compiler.nim toOpenArray.0.Imravs1.comaa5xpt1
+      (aconstr
+       (array@l,G,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim Cursor.0.nifb6mq6y1@v,yk,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/compiler.nim
+        (rangetype@15,yk,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/compiler.nim
+         (i 32)0 -1))))))
+   (call@A,G runProgram.0.vmtuaxp6~A prog.0@1 sink.0@7 tr.0@D)
+   (asgn@7,H result.0~7 sink.0@2)
+   (ret~2,~5 result.0)))
+ (proc@,e :aowliRun.0.@5 . . .
+  (params@D). . .
+  (stmts@2,1
+   (let@4 :src.1 . . string.0.sysvq0asl@B,~P
+    (call@R toStr.0.jsfc0lwq21@1
+     (call~F global.0.jsfc0lwq21~6 "__aowli_src"@1)))
+   (let@4,1 :sink.1 . .
+    (ref@D,g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/natives.nim OutSink.Obj.0.natd5co251@4
+     (unchecked))
+    (call@D runNif.0.~6 src.1@1))
+   (let@4,2 :g.0 . . JsValue.0.jsfc0lwq21@G,2Q,../../../../../../home/savant/nimony-web/tests/jsbackend/jsffi.nim
+    (call@A global.0.jsfc0lwq21~6 "globalThis"@1))
+   (call@5,3 set.0.jsfc0lwq21~3 g.0~5 "__aowli_out"@1
+    (call@K toJs.3.jsfc0lwq21~4
+     (ddot@5 sink.1~4 outBuf.0 0)))
+   (call@5,4 set.0.jsfc0lwq21~3 g.0~5 "__aowli_err"@1
+    (call@K toJs.3.jsfc0lwq21~4
+     (ddot@5 sink.1~4 errBuf.0 0)))
+   (call@5,5 set.0.jsfc0lwq21~3 g.0~5 "__aowli_exit"@1
+    (call@L toJs.0.jsfc0lwq21~4
+     (ddot@5 sink.1~4 exitCode.0 0)))))
+ (call@8,m aowliRun.0.~8))(.index@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/webmain_vm.nim
+ (h runNif.0. 1163)
+ (h aowliRun.0. 2576))

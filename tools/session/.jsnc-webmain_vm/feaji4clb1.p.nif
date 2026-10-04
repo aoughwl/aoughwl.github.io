@@ -1,0 +1,105 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,8,../../../../../../home/savant/nimony/src/nimony/features.nim
+ (type@B,1 Feature~9 x . .
+  (enum@2 .
+   (efld~9,2 InvalidFeature . . . .)
+   (efld~9,3 ResemChoiceFeature . . . .)
+   (efld~9,4 UntypedFeature . . . .)
+   (efld~9,5 CanRaiseFeature . . . .)
+   (efld~9,6 LenientConvertersFeature . . . .)
+   (efld~9,7 EarlyMagicsFeature . . . .)
+   (efld~9,8 AutoClosuresFeature . . . .)
+   (efld~9,9 LenientNilsFeature . . . .)
+   (efld~9,A IgnoreStyleFeature . . . .)
+   (efld~9,E VarToverloadsFeature . . . .)
+   (efld~9,J LenientFloatsFeature . . . .)))
+ (proc@,R normalizeFeatureName@5 . . .
+  (params@P
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@G newStringOfCap~E
+     (dot@2 s~1 len@1)))
+   (for@4,1 s@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@3 == ch~3 '_'@3)
+       (stmts@B
+        (discard .)))
+      (elif@5,1
+       (infix@A and
+        (infix~7 >= ch~3 'A'@3)
+        (infix@7 <= ch~3 'Z'@3))
+       (stmts@P
+        (cmd@6
+         (dot result~6 add@1)
+         (call@8 chr~3
+          (infix@9 \2B
+           (call~5 ord~3 ch@1)
+           (par@2
+            (infix@A \2D
+             (call~6 ord~3 'a'@1)
+             (call@5 ord~3 'A'@1))))))))
+      (else@,2
+       (stmts@6
+        (cmd@6
+         (dot result~6 add@1)ch@5))))))))
+ (proc@,Y parseFeatures@5 x . .
+  (params@J
+   (param@1 s . . string@3 .))
+  (at@G set~3 Feature@1). .
+  (stmts@2,1
+   (case
+    (call@P normalizeFeatureName~K s@1)
+    (of@,1
+     (ranges "resemchoice"@3)
+     (stmts@I
+      (curly ResemChoiceFeature@1)))
+    (of@,2
+     (ranges "untyped"@3)
+     (stmts@E
+      (curly UntypedFeature@1)))
+    (of@,3
+     (ranges "canraise"@3)
+     (stmts@F
+      (curly CanRaiseFeature@1)))
+    (of@,4
+     (ranges "lenientconverters"@3)
+     (stmts@O
+      (curly LenientConvertersFeature@1)))
+    (of@,5
+     (ranges "earlymagics"@3)
+     (stmts@I
+      (curly EarlyMagicsFeature@1)))
+    (of@,6
+     (ranges "autoclosures"@3)
+     (stmts@J
+      (curly AutoClosuresFeature@1)))
+    (of@,7
+     (ranges "lenientnils"@3)
+     (stmts@I
+      (curly LenientNilsFeature@1)))
+    (of@,8
+     (ranges "ignorestyle"@3)
+     (stmts@I
+      (curly IgnoreStyleFeature@1)))
+    (of@,9
+     (ranges "vartoverloads"@3)
+     (stmts@K
+      (curly VarToverloadsFeature@1)))
+    (of@,A
+     (ranges "lenientfloats"@3)
+     (stmts@K
+      (curly LenientFloatsFeature@1)))
+    (of@,B
+     (ranges "v2"@3)
+     (stmts@9
+      (curly UntypedFeature@1 LenientConvertersFeature@H EarlyMagicsFeature@h AutoClosuresFeature@1,1 LenientNilsFeature@M,1 IgnoreStyleFeature@g,1 VarToverloadsFeature@1,2 LenientFloatsFeature@N,2)))
+    (else@,E
+     (stmts@6
+      (curly)))))))

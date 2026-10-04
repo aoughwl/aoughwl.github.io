@@ -1,0 +1,16 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std envvars))
+ (import ospaths2)
+ (import
+  (when
+   (call defined windows))
+  (infix /
+   (prefix \2E\2E/ windows)winlean))
+ (import
+  (when
+   (call defined windows))
+  (prefix \2E\2E/ widestrs)))

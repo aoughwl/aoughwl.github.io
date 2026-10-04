@@ -1,0 +1,295 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,8,../../../../../../home/savant/nimony/src/nimony/vtables_frontend.nim
+ (comment)
+ (import@,5
+  (infix@A / std~3 assertions@1))
+ (include@,6
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (include@,7
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (import@,8
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 nifindexes@1 symparser@D treemangler@O)))
+ (import@,9 nimony_model@7 decls@L programs@S typenav@c renderer@2,1 sigmatch@C,1 semdata@M,1 typeprops@V,1 builtintypes@g,1 typekeys@u,1)
+ (when@,C
+  (elif@5 false
+   (stmts~3,2
+    (proc sameMethodSignatures@5 . . .
+     (params@P
+      (param@1 a . . Cursor@6 .)
+      (param@4 b . . Cursor@3 .))bool@G . .
+     (stmts@2,1
+      (var@4 a . . . a@4)
+      (var@4,1 b . . . b@4)
+      (if@,2
+       (elif@3
+        (infix@J !=
+         (dot~I a~1 substructureKind@1)ParamsU@3)
+        (stmts@V
+         (ret false@7))))
+      (if@,3
+       (elif@3
+        (infix@J !=
+         (dot~I b~1 substructureKind@1)ParamsU@3)
+        (stmts@V
+         (ret false@7))))
+      (cmd@,4 inc a@4)
+      (cmd@,5 inc b@4)
+      (cmd@,7 skip a@5)
+      (cmd@,8 skip b@5)
+      (while@,9
+       (infix@G and
+        (dot~9 a~1 hasMore@1)
+        (dot@5 b~1 hasMore@1))
+       (stmts@2,1
+        (let@4 pa . . .
+         (call@E takeLocal~9 a@1 SkipFinalParRi@4))
+        (let@4,1 pb . . .
+         (call@E takeLocal~9 b@1 SkipFinalParRi@4))
+        (if@,2
+         (elif@3
+          (prefix not
+           (call@D sameTrees~9
+            (dot@3 pa~2 typ@1)
+            (dot@B pb~2 typ@1)))
+          (stmts~1,1
+           (ret false@7))))))
+      (if@,E
+       (elif@3
+        (infix@G and
+         (infix~9 ==
+          (dot~6 a~1 kind@1)ParRi@3)
+         (infix@B ==
+          (dot~6 b~1 kind@1)ParRi@3))
+        (stmts~1,1
+         (cmd inc a@4)
+         (cmd@,1 inc b@4)
+         (ret@,3
+          (call@G sameTrees~9 a@1 b@4))))
+       (else@,5
+        (stmts@2,1
+         (ret false@7)))))))))
+ (proc@,b methodKeyImpl@5 . . .
+  (params@I
+   (param@1 name . . string@6 .)
+   (param@F a . . Cursor@3 .))string@R . .
+  (stmts@2,2
+   (var@4 a . . . a@4)
+   (var@4,1 b . . .
+    (call@H createMangler~D 60@1))
+   (while@,2
+    (dot@7 a~1 hasMore@1)
+    (stmts@2,1
+     (let@4 pa . . .
+      (call@E takeLocal~9 a@1 SkipFinalParRi@4))
+     (cmd@,1 mangle b@7
+      (dot@C pa~2 typ@1)Frontend@I)))
+   (cmd@,5 inc a@4)
+   (cmd@,7 mangle b@7 a@A Frontend@D)
+   (cmd@,8 skip a@5)
+   (let@4,A props . . .
+    (call@O extractProcProps~G a@1))
+   (cmd@1,B
+    (dot b~1 addKeyw@1)
+    (prefix@9 $
+     (dot@6 props~5 cc@1)))
+   (if@,D
+    (elif@3
+     (dot@5 props~5 usesRaises@1)
+     (stmts~1,1
+      (if
+       (elif@3
+        (prefix not
+         (call@F cursorIsNil~B
+          (dot@6 props~5 raisesType@1)))
+        (stmts~1,1
+         (cmd@1
+          (dot b~1 addKeyw@1)"raises"@9)
+         (cmd@,1 mangle b@7
+          (dot@F props~5 raisesType@1)Frontend@S)))
+       (else@,3
+        (stmts@2,2
+         (cmd@1
+          (dot b~1 addKeyw@1)"raises"@9)
+         (var@4,1 errorCodeBuf . . .
+          (call@T createTokenBuf~E 1@1))
+         (cmd@C,2
+          (dot errorCodeBuf~C addSymUse@1)
+          (call@U
+           (dot~A
+            (dot~5 pool~4 syms@1)getOrIncl@1)ErrorCodeName@1)NoLineInfo@l)
+         (let@4,3 errorCodeCursor . . .
+          (call@Q cursorAt~8 errorCodeBuf@1 0@F))
+         (cmd@,4 mangle b@7 errorCodeCursor@A Frontend@R))))))
+    (else@,B
+     (stmts@2,1
+      (cmd@1
+       (dot b~1 addKeyw@1)"raisesNo"@9))))
+   (cmd@1,Q
+    (dot b~1 addKeyw@1)
+    (prefix@9 $
+     (dot@6 props~5 usesClosure@1)))
+   (asgn@7,R result~7
+    (infix@D &
+     (infix~6 & name~5 "\3A"@2)
+     (call@B
+      (dot~8 b~1 extract@1))))))
+ (proc@,16 destroyMethodKey@5 x . .
+  (params@M)string@4 . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 b . . .
+    (call@H createMangler~D 60@1))
+   (call@A,2
+    (dot~9 b~1 addEmpty@1))
+   (cmd@1,3
+    (dot b~1 addKeyw@1)"ccNone"@9)
+   (cmd@1,4
+    (dot b~1 addKeyw@1)"raisesNo"@9)
+   (cmd@1,5
+    (dot b~1 addKeyw@1)"closureNo"@9)
+   (asgn@7,6 result~7
+    (infix@E & "=destroy\3A"~C
+     (call@B
+      (dot~8 b~1 extract@1))))))
+ (proc@,1F traceMethodKey@5 x . .
+  (params@K)string@4 . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 b . . .
+    (call@H createMangler~D 60@1))
+   (cmd@1,2
+    (dot b~1 addKeyw@1)"pointer"@9)
+   (call@A,3
+    (dot~9 b~1 addEmpty@1))
+   (cmd@1,4
+    (dot b~1 addKeyw@1)"ccNone"@9)
+   (cmd@1,5
+    (dot b~1 addKeyw@1)"raisesNo"@9)
+   (cmd@1,6
+    (dot b~1 addKeyw@1)"closureNo"@9)
+   (asgn@7,7 result~7
+    (infix@C & "=trace\3A"~A
+     (call@B
+      (dot~8 b~1 extract@1))))))
+ (proc@,1P methodKey@5 x . .
+  (params@F
+   (param@1 methodName . . string@C .)
+   (param@L paramRest . . Cursor@B .))string@f . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@B == methodName~B "=destroy"@3)
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@I destroyMethodKey~G))))
+    (elif@5,2
+     (infix@B == methodName~B "=trace"@3)
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@G traceMethodKey~E))))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@F methodKeyImpl~D methodName@1 paramRest@D)))))))
+ (proc@,1a loadVTable@5 x . .
+  (params@G
+   (param@1 typ . . SymId@5 .))
+  (at@H seq~3
+   (dot@8 semdata~7 MethodIndexEntry@1)). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (let@4,3 res . . .
+    (call@G tryLoadSym~A typ@1))
+   (if@,4
+    (elif@3
+     (infix@B !=
+      (dot~8 res~3 status@1)LacksNothing@3)
+     (stmts~1,1
+      (ret .))))
+   (let@4,8 typeDecl . . .
+    (call@L asTypeDecl~A
+     (dot@4 res~3 decl@1)))
+   (var@4,9 pragmas . . .
+    (dot@I typeDecl~8 pragmas@1))
+   (if@,A
+    (elif@3
+     (infix@D ==
+      (dot~6 pragmas~7 kind@1)ParLe@3)
+     (stmts~1,1
+      (call@7
+       (dot pragmas~7 into@1)
+       (stmts~5,1
+        (while
+         (dot@D pragmas~7 hasMore@1)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@M and
+             (infix~9 ==
+              (dot~6 pragmas~7 kind@1)ParLe@3)
+             (infix@N ==
+              (dot~C pragmas~7 pragmaKind@1)MethodsP@3))
+            (stmts~1,1
+             (call@7
+              (dot pragmas~7 into@1)
+              (stmts~5,1
+               (while
+                (dot@D pragmas~7 hasMore@1)
+                (stmts@2,1
+                 (if
+                  (elif@3
+                   (infix@M and
+                    (infix~9 ==
+                     (dot~6 pragmas~7 kind@1)ParLe@3)
+                    (infix@T ==
+                     (dot~I pragmas~7 substructureKind@1)KvU@3))
+                   (stmts~1,1
+                    (cmd@7
+                     (dot pragmas~7 into@1)KvU@6
+                     (stmts~5,1
+                      (if
+                       (elif@3
+                        (infix@G and
+                         (dot~9 pragmas~7 hasMore@1)
+                         (infix@H ==
+                          (dot~6 pragmas~7 kind@1)StringLit@3))
+                        (stmts~1,1
+                         (let@4 signature . . .
+                          (dot@J pragmas~7 litId@1))
+                         (cmd@,1 inc pragmas@4 AnyExpr@D)
+                         (if@,2
+                          (elif@3
+                           (infix@G and
+                            (dot~9 pragmas~7 hasMore@1)
+                            (infix@H ==
+                             (dot~6 pragmas~7 kind@1)Symbol@3))
+                           (stmts~1,1
+                            (let@4 methodSym . . .
+                             (dot@J pragmas~7 symId@1))
+                            (cmd@6,1
+                             (dot result~6 add@1)
+                             (oconstr@T
+                              (dot~H semdata~7 MethodIndexEntry@1)
+                              (kv@3 fn~2 methodSym@2)
+                              (kv@P signature~9 signature@2)))
+                            (cmd@,2 inc pragmas@4 AnyExpr@D)))))))
+                      (while@,7
+                       (dot@D pragmas~7 hasMore@1)
+                       (stmts@N
+                        (cmd skip pragmas@5)))))))
+                  (else@,A
+                   (stmts@2,1
+                    (cmd skip pragmas@5))))))))))
+           (else@,F
+            (stmts@2,1
+             (cmd skip pragmas@5))))))))))))))

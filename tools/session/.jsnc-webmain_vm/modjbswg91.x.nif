@@ -1,0 +1,404 @@
+(.nif27)
+(.indexat 14945            )
+(stmts@,7,../../../../../../home/savant/nimony/src/gear2/modnames.nim
+ (const@B,B :strlit.0.I17272634879252420813. . LongString.0.sysvq0asl
+  (oconstr LongString.0.sysvq0asl
+   (kv fullLen.0 36)
+   (kv rc.0 0)
+   (kv capImpl.0 0)
+   (kv data.0 "0123456789abcdefghijklmnopqrstuvwxyz")))
+ (const@1F,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :strlit.0.I3193426178656842898. . LongString.0.sysvq0asl
+  (oconstr LongString.0.sysvq0asl
+   (kv fullLen.0 119)
+   (kv rc.0 0)
+   (kv capImpl.0 0)
+   (kv data.0 "../../../../../../home/savant/nimony/lib/std/system/openarrays.nim\2810, 49\29\3A 0 <= idx and idx < x.len \5BAssertionDefect\5D\0A")))
+ (proc@,5 :extractModulename.0.@5
+  (params@M
+   (param@1 :x.0 . string.0.sysvq0asl@3))string.0.sysvq0asl@D
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)result 0))
+  (stmts@i
+   (var@C :result.0 . string.0.sysvq0asl~U .)
+   (call@C =wasMoved.2.sysvq0asl
+    (addr result.0))
+   (call@C =destroy.2.sysvq0asl result.0)
+   (stmts@9
+    (var :`tmp.0 . `t.0.IAtupleSstring0sysvq0aslSR6SR6.@G,9f,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim
+     (call splitFile.0.ospaexnw61~9 x.0@1)))
+   (var@C :`x.0 . string.0.sysvq0asl@D,28,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim
+    (call =dup.2.sysvq0asl
+     (dot `tmp.0~3 fld.1 0)))
+   (asgn@C result.0 `x.0)
+   (call =destroy_AtupleSstring0sysvq0aslSR6SR6.0. `tmp.0)
+   (ret~i result.0)
+   (call =destroy_AtupleSstring0sysvq0aslSR6SR6.0. `tmp.0)
+   (ret result.0)))
+ (const@2,8 :PrefixLen.0. .
+  (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)
+  (suf@C 3 "i32"))
+ (const@2,B :Base36.0. . string.0.sysvq0asl@O,~6
+  (oconstr@9 string.0.sysvq0asl
+   (kv bytes.0 842084606u)
+   (kv more.0
+    (addr strlit.0.I17272634879252420813.))))
+ (proc@,D :uhashBase36.0.@5
+  (params@H
+   (param@1 :s.0 . string.0.sysvq0asl@3))string.0.sysvq0asl@D
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)))
+  (stmts@2,1
+   (var@4 :result.1 . string.0.sysvq0asl@K,~9 .)
+   (call@4 =wasMoved.2.sysvq0asl
+    (addr result.1))
+   (var@4 :id.0 .
+    (u@B,7,../../../../../../home/savant/nimony/src/lib/tinyhashes.nim 32)
+    (call@A uhash.0.tinqnz5i7~5 s.0@1))
+   (call@,1 =destroy.2.sysvq0asl result.1)
+   (var@N,1 :`x.1 . string.0.sysvq0asl@C,Ah,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim
+    (call newStringOfCap.0.sysvq0asl~E 8@1))
+   (asgn@7,1 result.1~7 `x.1@G)
+   (scope@,3
+    (stmts
+     (while
+      (lt@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (suf@D,O,../../../../../../home/savant/nimony/src/gear2/modnames.nim 0u "u32")id.0@8,O,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+      (stmts@2,1
+       (var@B :`x.2 .
+        (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+        (call \5B\5D.9.sysvq0asl
+         (oconstr~4,~7 string.0.sysvq0asl
+          (kv bytes.0 842084606u)
+          (kv more.0
+           (addr strlit.0.I17272634879252420813.)))
+         (conv@A
+          (i~3 32)
+          (mod@4
+           (u 32)id.0~3
+           (suf@4 36u "u32")))))
+       (call@6 add.1.sysvq0asl@1
+        (addr~6 result.1)`x.2@5)
+       (asgn@3,1 id.0~3
+        (div@5
+         (u 32)id.0~3
+         (suf@4 36u "u32")))))))
+   (lab@,3 :whileStmtLabel.0)
+   (ret~2,~1 result.1)))
+ (proc@,L :moduleSuffix.0.@5
+  (params@I
+   (param@1 :path.0 . string.0.sysvq0asl@6)
+   (param@F :searchPaths.0 . openArray.0.Ig73pnk.@M))string.0.sysvq0asl@m
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 0 reads writes escapes)))
+  (stmts@2,5
+   (var@4 :result.2 . string.0.sysvq0asl@K,~L .)
+   (call@4 =wasMoved.2.sysvq0asl
+    (addr result.2))
+   (var@4 :f.0 . string.0.sysvq0asl@J,~5
+    (call@4 =dup.2.sysvq0asl path.0))
+   (stmts@2,2
+    (stmts@G
+     (stmts@K
+      (var :`canRaise.1 . `t.0.IAtupleSX45rrorX43ode0sysvq0aslSstring0R20.@6,DU,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim
+       (call getCurrentDir.0.ospaexnw61~D))
+      (if
+       (elif
+        (dot `canRaise.1 fld.0 0)
+        (stmts
+         (jmp `exlab.0)))))
+     (var :`canRaise.0 . `t.0.IAtupleSX45rrorX43ode0sysvq0aslSstring0R20.@a,4Z,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim
+      (call relativePath.0.ospaexnw61~C path.0@1
+       (dot@K `canRaise.1 fld.1 0)'/'@O))
+     (if
+      (elif
+       (dot `canRaise.0 fld.0 0)
+       (stmts
+        (jmp `exlab.0)))))
+    (call =destroy.2.sysvq0asl f.0)
+    (var@G :`x.3 . string.0.sysvq0asl@D,28,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim
+     (call =dup.2.sysvq0asl
+      (dot `canRaise.0 fld.1 0)))
+    (asgn@2 f.0~2 `x.3@E))
+   (if@,3
+    (elif
+     (false)
+     (stmts
+      (lab :`exlab.0)
+      (stmts@2,1 .))))
+   (scope@4,6
+    (stmts
+     (var@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :`lf.0 . openArray.0.Ig73pnk.@C searchPaths.0@B,d,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+     (stmts@2,m,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+      (var@4 :`lf.1 .
+       (i@3,~e 32)0@4)
+      (scope@,1
+       (stmts
+        (while
+         (true)
+         (stmts
+          (var@D :`x.4 .
+           (i@4,~I 32)
+           (call len.6.Igv2wyu1.~3 `lf.0@1))
+          (if
+           (elif
+            (lt@8 `lf.1~2 `x.4@5)
+            (stmts@2,1
+             (scope
+              (stmts
+               (var@6,d,../../../../../../home/savant/nimony/src/gear2/modnames.nim :`ii.2 .
+                (ptr@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim string.0.sysvq0asl@u,S,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+                (call@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim \5B\5D.10.Ik9hgkq1. `lf.0 `lf.1@2))
+               (stmts@6,f,../../../../../../home/savant/nimony/src/gear2/modnames.nim
+                (var@4 :`ii.3 . `t.0.IAtupleSX45rrorX43ode0sysvq0aslSstring0R20.@G,~T
+                 (call@O relativePath.0.ospaexnw61~C path.0@1
+                  (deref@7 `ii.2)'/'@A))
+                (if@,1
+                 (elif
+                  (dot `ii.3 fld.0 0)
+                  (stmts
+                   (call =destroy.2.sysvq0asl
+                    (dot `ii.3 fld.1 0))
+                   (jmp `exlab.1))))
+                (var@C,1 :`x.5 .
+                 (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+                 (call len.4.sysvq0asl@1
+                  (dot~9 `ii.3 fld.1 0)))
+                (var@K,1 :`x.6 .
+                 (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+                 (call len.4.sysvq0asl@1 f.0~1))
+                (if@,1
+                 (elif@3
+                  (lt@E `x.5~5 `x.6@3)
+                  (stmts~1,1
+                   (call =destroy.2.sysvq0asl f.0)
+                   (asgn@2 f.0~2
+                    (dot@2 `ii.3 fld.1 0))
+                   (call@4 =wasMoved.2.sysvq0asl
+                    (addr
+                     (dot `ii.3 fld.1 0))))))
+                (call =destroy.2.sysvq0asl
+                 (dot `ii.3 fld.1 0)))
+               (if@4,i,../../../../../../home/savant/nimony/src/gear2/modnames.nim
+                (elif
+                 (false)
+                 (stmts
+                  (lab :`exlab.1)
+                  (stmts@2,1 .))))))
+             (call@,1 inc.1.I6wjjge.
+              (addr@4 `lf.1))))
+           (else
+            (stmts
+             (break))))))))
+      (lab@,1 :whileStmtLabel.1))))
+   (lab@4,6 :forStmtLabel.0)
+   (var@4,D :m.0 . string.0.sysvq0asl@K,~Y
+    (call@L extractModulename.0.~H f.0@1))
+   (var@4,E :id.1 .
+    (u@B,7,../../../../../../home/savant/nimony/src/lib/tinyhashes.nim 32)
+    (call@A uhash.0.tinqnz5i7~5 f.0@1))
+   (call@,F =destroy.2.sysvq0asl result.2)
+   (var@N,F :`x.7 . string.0.sysvq0asl@C,Ah,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim
+    (call newStringOfCap.0.sysvq0asl~E 10@1))
+   (asgn@7,F result.2~7 `x.7@G)
+   (scope@4,G
+    (stmts
+     (var@S,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim :`lf.2 .
+      (i 32)0@B,n,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+     (var@E :`x.8 .
+      (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+      (call len.4.sysvq0asl@1 m.0~1))
+     (var@V,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim :`lf.3 .
+      (i 32)
+      (call@I,n,../../../../../../home/savant/nimony/src/gear2/modnames.nim min.2.sysvq0asl~3 `x.8@2
+       (suf~4,~Y 3 "i32")))
+     (stmts@2,2,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+      (var@4 :`lf.4 .
+       (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)`lf.2@4)
+      (scope@,1
+       (stmts
+        (while
+         (lt@8 `lf.4~2 `lf.3@2)
+         (stmts@2,1
+          (scope
+           (stmts
+            (var@F,o,../../../../../../home/savant/nimony/src/gear2/modnames.nim :`x.9 .
+             (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+             (call \5B\5D.9.sysvq0asl m.0 `lf.4@2))
+            (call@A,o,../../../../../../home/savant/nimony/src/gear2/modnames.nim add.1.sysvq0asl@1
+             (addr~6 result.2)`x.9@5)))
+          (call@,1 inc.1.I6wjjge.
+           (addr@4 `lf.4))))))
+      (lab@,1 :whileStmtLabel.5))))
+   (lab@4,G :forStmtLabel.4)
+   (scope@,J
+    (stmts
+     (while
+      (lt@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (suf@D,q,../../../../../../home/savant/nimony/src/gear2/modnames.nim 0u "u32")id.1@8,q,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+      (stmts@2,1
+       (var@B :`x.10 .
+        (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+        (call \5B\5D.9.sysvq0asl
+         (oconstr~4,~Z string.0.sysvq0asl
+          (kv bytes.0 842084606u)
+          (kv more.0
+           (addr strlit.0.I17272634879252420813.)))
+         (conv@A
+          (i~3,~S 32)
+          (mod@4
+           (u 32)id.1~3
+           (suf@4 36u "u32")))))
+       (call@6 add.1.sysvq0asl@1
+        (addr~6 result.2)`x.10@5)
+       (asgn@3,1 id.1~3
+        (div@5
+         (u 32)id.1~3
+         (suf@4 36u "u32")))))))
+   (lab@,J :whileStmtLabel.6)
+   (call =destroy.2.sysvq0asl m.0)
+   (call =destroy.2.sysvq0asl f.0)
+   (ret~2,~5 result.2)
+   (call =destroy.2.sysvq0asl m.0)
+   (call =destroy.2.sysvq0asl f.0)
+   (ret result.2)))
+ (proc@F,n,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :len.6.Igv2wyu1.
+  (params~3,~I
+   (param@1 :a.5 . openArray.0.Ig73pnk.@C))
+  (i@4,~I 32)
+  (pragmas@K,~I
+   (inline 0 0)
+   (smry~K,I
+    (param 0 0 reads)result 0))
+  (stmts@X,~I
+   (var@1 :result.3 .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1 result.3
+    (dot a.5~1 len.0 0))
+   (ret~m result.3)))
+ (proc@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :\5B\5D.10.Ik9hgkq1.
+  (params@3,~e
+   (param@1 :x.3 . openArray.0.Ig73pnk.@C)
+   (param@I :idx.1 .
+    (i@5 32)))
+  (ptr@J,~e string.0.sysvq0asl@u,S,../../../../../../home/savant/nimony/src/gear2/modnames.nim)
+  (pragmas@c,~e
+   (inline 0 90 140)
+   (smry~c,e callsUnknown
+    (param 0 0 reads escapes)
+    (param 1 1 reads)result 0))
+  (stmts@1P,~e
+   (var~K :`x.11 .
+    (bool).)
+   (if~K
+    (elif
+     (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 0@1D,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim idx.1@16,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim)
+     (stmts
+      (asgn@8 `x.11
+       (lt idx.1~4
+        (dot@3 x.3~1 len.0 0)))))
+    (else
+     (stmts
+      (asgn `x.11
+       (false)))))
+   (if~K
+    (elif
+     (not `x.11)
+     (stmts
+      (call panic.0.sysvq0asl
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 791555838u)
+        (kv more.0
+         (addr strlit.0.I3193426178656842898.)))))))
+   (var@3 :result.4 .
+    (ptr~19 string.0.sysvq0asl@u,S,../../../../../../home/savant/nimony/src/gear2/modnames.nim).)
+   (asgn@3 result.4
+    (addr~2
+     (pat
+      (dot x.3~1 a.0 0)idx.1@3)))
+   (ret~1Z result.4)))
+ (proc@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :inc.1.I6wjjge.
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.4 .
+    (ptr@3
+     (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)))).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline 0 20)
+   (smry@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+    (param 0 0 reads writes)))
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (deref~2 x.4)
+    (add@6
+     (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)
+     (deref@1 x.4)
+     (conv@U,~F
+      (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)1@1)))))
+ (type@t,L :openArray.0.Ig73pnk. .
+  (object@R,6,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim .
+   (fld~N,1 :a.0 .
+    (ptr@3 string.0.sysvq0asl@u,S,../../../../../../home/savant/nimony/src/gear2/modnames.nim))
+   (fld~N,2 :len.0 .
+    (i@5 32))))
+ (proc@1c,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :=destroy_AtupleSstring0sysvq0aslSR6SR6.0.
+  (params
+   (param :dest.0 . `t.0.IAtupleSstring0sysvq0aslSR6SR6.@G,9f,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim)).
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)))
+  (stmts
+   (call =destroy.2.sysvq0asl
+    (dot dest.0 fld.0 0))
+   (call =destroy.2.sysvq0asl
+    (dot dest.0 fld.1 0))
+   (call =destroy.2.sysvq0asl
+    (dot dest.0 fld.2 0))))
+ (type@G,9f,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim :`t.0.IAtupleSstring0sysvq0aslSR6SR6. .
+  (object .
+   (fld@c :fld.0 . string.0.sysvq0asl)
+   (fld@c :fld.1 . string.0.sysvq0asl)
+   (fld@c :fld.2 . string.0.sysvq0asl)))
+ (type@6,DU,../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim :`t.0.IAtupleSX45rrorX43ode0sysvq0aslSstring0R20. .
+  (object .
+   (fld :fld.0 . ErrorCode.0.sysvq0asl)
+   (fld :fld.1 . string.0.sysvq0asl)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.tinqnz5i7)
+   (call `ini.0.oswd7dmm)
+   (call `ini.0.cmdqs323n1)
+   (call `ini.0.ospaexnw61)
+   (call `ini.0.osalirkw71)
+   (call `ini.0.osc4bsu0d1)
+   (call `ini.0.ossk30t39))))(.index@,7,../../../../../../home/savant/nimony/src/gear2/modnames.nim
+ (h strlit.0.I17272634879252420813. 107)
+ (h strlit.0.I3193426178656842898. 216)
+ (x extractModulename.0. 379)
+ (h PrefixLen.0. 875)
+ (h Base36.0. 127)
+ (x uhashBase36.0. 168)
+ (x moduleSuffix.0. 1560)
+ (x len.6.Igv2wyu1. 7202)
+ (x \5B\5D.10.Ik9hgkq1. 433)
+ (x inc.1.I6wjjge. 1295)
+ (h openArray.0.Ig73pnk. 908)
+ (x =destroy_AtupleSstring0sysvq0aslSR6SR6.0. 270)
+ (h `t.0.IAtupleSstring0sysvq0aslSR6SR6. 514)
+ (h `t.0.IAtupleSX45rrorX43ode0sysvq0aslSstring0R20. 249)
+ (h `iniGuard.0. 221)
+ (x `ini.0. 34))

@@ -1,0 +1,706 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,tools/session/webmain_session.nim
+ (comment)
+ (when@,1C
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,1F nifcursors@7 programs@J)
+ (import@,1G values@7 natives@F trace@O interp@V)
+ (import@,1H webvfs@7)
+ (import@,1I jsffi@7)
+ (var@2,1L sink . . OutSink@6
+  (nil@G))
+ (var@2,1M machine . . Interp@9
+  (nil@I))
+ (var@2,1N hot . . HotModule@5 .)
+ (var@2,1O live . . . false@7)
+ (var@2,1P hostFailed . . . false@D)
+ (var@2,1Q ranTo . . . 0@8)
+ (var@2,1R lastErr . . . ""@A)
+ (proc@,1T park@5 . . .
+  (params@9
+   (param@1 name . . string@6 .)
+   (param@F v . . JsValue@3 .)). . .
+  (stmts@2,1
+   (let@4 g . . .
+    (call@A global~6 "globalThis"@1))
+   (call@5,1
+    (dot~4 g~1 set@1)name@1 v@7)))
+ (proc@,1X jsText@5 . . .
+  (params@B
+   (param@1 v . . JsValue@3 .))string@E . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 ""@2)
+   (let@4,5 s . . .
+    (call@9 toStr~5 v@1))
+   (for@4,6
+    (infix@7 \2E\2E< 0~2
+     (dot@5 s~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts@I
+     (cmd@6
+      (dot result~6 add@1)
+      (at@6 s~1 i@1))))))
+ (proc@,1g sameText@5 . . .
+  (params@D
+   (param@1 a . . string@6 .)
+   (param@4 b . . string@3 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (if@,E
+    (elif@3
+     (infix@6 !=
+      (dot~5 a~1 len@1)
+      (dot@4 b~1 len@1))
+     (stmts@G
+      (ret false@7))))
+   (for@4,F
+    (infix@7 \2E\2E< 0~2
+     (dot@5 a~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@5 !=
+        (at~4 a~1 i@1)
+        (at@4 b~1 i@1))
+       (stmts@E
+        (ret false@7))))))true@,H))
+ (proc@,20 drain@5 . . .
+  (params@A). . .
+  (stmts@2,1
+   (comment)
+   (if@,8
+    (elif@3
+     (infix@5 == sink~5
+      (nil@3))
+     (stmts~1,1
+      (call@4 park~4 "__sess_out"@1
+       (call@J toJs~4 ""@1))
+      (call@4,1 park~4 "__sess_stderr"@1
+       (call@M toJs~4 ""@1))
+      (ret@,2 .))))
+   (call@4,C park~4 "__sess_out"@1
+    (call@J toJs~4
+     (dot@5 sink~4 outBuf@1)))
+   (asgn@C,D
+    (dot~8 sink~4 outBuf@1)""@2)
+   (comment@,E)
+   (asgn@8,N lastErr~8
+    (dot@6 sink~4 errBuf@1))
+   (asgn@C,O
+    (dot~8 sink~4 errBuf@1)""@2)
+   (call@4,P park~4 "__sess_stderr"@1
+    (call@M toJs~4 lastErr@1))))
+ (proc@,2S failWith@5 . . .
+  (params@D
+   (param@1 msg . . string@5 .)). . .
+  (stmts@2,1
+   (call@4 park~4 "__sess_ok"@1
+    (call@I toJs~4 false@1))
+   (call@4,1 park~4 "__sess_err"@1
+    (call@J toJs~4 msg@1))))
+ (proc@,2W succeed@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (call@4 park~4 "__sess_ok"@1
+    (call@I toJs~4 true@1))
+   (call@4,1 park~4 "__sess_err"@1
+    (call@J toJs~4 ""@1))))
+ (proc@,2a raised@5 . . .
+  (params@B)bool@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@8 == machine~8
+      (nil@3))
+     (stmts@G
+      (ret false@7))))
+   (if@,4
+    (elif@3
+     (call@9 hotRaised~9 machine@1)
+     (stmts~1,1
+      (call@D hotClearRaise~D machine@1)
+      (var@4,1 msg . . . lastErr@6)
+      (if@,2
+       (elif@3
+        (infix@C and
+         (infix~7 != sink~5
+          (nil@3))
+         (infix@K >
+          (dot~5
+           (dot~7 sink~4 errBuf@1)len@1)0@2))
+        (stmts~1,1
+         (asgn@4 msg~4
+          (infix@6 & msg~4
+           (dot@6 sink~4 errBuf@1)))
+         (asgn@C,1
+          (dot~8 sink~4 errBuf@1)""@2))))
+      (call@8,5 failWith~8 msg@1)
+      (ret@,6 true@7))))false@,C))
+ (proc@,2p jsHostCall@5 . . .
+  (params@F
+   (param@1 context . . int64@9 .)
+   (param@H name . . string@6 .)
+   (param@V args . .
+    (at@9 seq~3 Value@1).)
+   (param~B,1 handled . .
+    (mut@9 bool@4).))Value@9,1
+  (pragmas@U,1 nimcall@2).
+  (stmts@2,2
+   (comment)
+   (asgn@7,7 result~7
+    (call@6 vNil~4))
+   (let@4,8 hostFn . . .
+    (call@F global~6 "__sess_host"@1))
+   (if@,9
+    (elif@3
+     (call@5 isNil~5 hostFn@1)
+     (stmts~1,1
+      (ret .))))
+   (let@4,B arr . . .
+    (call@G newJsArray~A))
+   (for@4,C
+    (infix@7 \2E\2E< 0~2
+     (dot@8 args~4 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (let@4 value . . .
+      (at@C args~4 i@1))
+     (case@,1
+      (dot@A value~5 kind@1)
+      (of@,1
+       (ranges vkInt@3 vkUInt@A vkChar@I vkEnum@Q)
+       (stmts@2,1
+        (call@7
+         (dot~4 arr~3 add@1)
+         (call@5 toJs~4
+          (call@4 int~3
+           (call@6 asInt~5 value@1))))))
+      (of@,3
+       (ranges vkFloat@3)
+       (stmts@2,1
+        (call@7
+         (dot~4 arr~3 add@1)
+         (call@5 toJs~4
+          (dot@6 value~5 fval@1)))))
+      (of@,5
+       (ranges vkBool@3)
+       (stmts@2,1
+        (call@7
+         (dot~4 arr~3 add@1)
+         (call@5 toJs~4
+          (dot@6 value~5 bval@1)))))
+      (of@,7
+       (ranges vkString@3)
+       (stmts@2,1
+        (call@7
+         (dot~4 arr~3 add@1)
+         (call@5 toJs~4
+          (dot@6 value~5 sval@1)))))
+      (of@,9
+       (ranges vkNil@3)
+       (stmts@2,1
+        (comment)
+        (call@7,S
+         (dot~4 arr~3 add@1)
+         (call@7 global~6 "__sess_null"@1))))
+      (else@,d
+       (stmts@2,1
+        (asgn@B hostFailed~B true@2)
+        (call@8,1 failWith~8
+         (infix@n &
+          (infix~7 & "unsupported value passed to host API \27"~f name@2)"\27"@2))
+        (asgn@8,2 handled~8 true@2)
+        (ret@,3 .))))))
+   (let@4,w ret . . .
+    (call@A call~4
+     (call@7 global~6 "globalThis"@1)"__sess_host"@N
+     (call@g toJs~4 name@1)arr@o))
+   (if@,x
+    (elif@3
+     (infix@B or
+      (call~6 isNil~5 ret@1)
+      (call@B sameText~8
+       (call@9 jsTypeof~8 ret@1)"undefined"@G))
+     (stmts~1,1
+      (ret .))))
+   (asgn@8,z handled~8 true@2)
+   (let@4,10 kind . . .
+    (call@D jsText~6
+     (call@4 get~3 ret@1 "k"@6)))
+   (if@,11
+    (elif@3
+     (infix@5 == kind~5 "i"@3)
+     (stmts@D
+      (asgn@7 result~7
+       (call@6 vInt~4
+        (call@6 int64~5
+         (call@6 toInt~5
+          (call@4 get~3 ret@1 "v"@6)))))))
+    (elif@5,1
+     (infix@5 == kind~5 "f"@3)
+     (stmts@D
+      (asgn@7 result~7
+       (call@8 vFloat~6
+        (call@8 toFloat~7
+         (call@4 get~3 ret@1 "v"@6))))))
+    (elif@5,2
+     (infix@5 == kind~5 "b"@3)
+     (stmts@D
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (call@7 toBool~6
+         (call@4 get~3 ret@1 "v"@6))))))
+    (elif@5,3
+     (infix@5 == kind~5 "s"@3)
+     (stmts@D
+      (asgn@7 result~7
+       (call@6 vStr~4
+        (call@7 jsText~6
+         (call@4 get~3 ret@1 "v"@6))))))
+    (elif@5,4
+     (infix@5 == kind~5 "x"@3)
+     (stmts~3,1
+      (asgn@B hostFailed~B true@2)
+      (call@8,1 failWith~8
+       (infix@L &
+        (infix~7 & "host API \27"~D name@2)"\27 failed"@2))))
+    (else@,7
+     (stmts@6
+      (asgn@7 result~7
+       (call@6 vNil~4)))))))
+ (proc@,41 modulePath@5 . . .
+  (params@F)string@4 . .
+  (stmts@2,1
+   (infix@U &
+    (infix~H &
+     (infix~6 & WebDir~7 "/"@2)MainModuleName@2)".s.nif"@2)))
+ (proc@,44 republish@5 . . .
+  (params@E
+   (param@1 src . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@6,4 webPut~6
+    (call@B modulePath~A)src@F)))
+ (proc@,4B parkModuleFacts@5 . . .
+  (params@K). . .
+  (stmts@2,1
+   (call@4 park~4 "__sess_gen"@1
+    (call@J toJs~4
+     (dot@4 hot~3 generation@1)))
+   (call@4,1 park~4 "__sess_newglobals"@1
+    (call@Q toJs~4
+     (dot@4 hot~3 newGlobals@1)))
+   (var@4,2 names . . . ""@8)
+   (for@4,3
+    (infix@7 \2E\2E< 0~2
+     (dot@D
+      (dot~6 hot~3 bases@1)len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@5
+         (dot names~5 add@1)","@5))))
+     (cmd@5,1
+      (dot names~5 add@1)
+      (at@E
+       (dot~6 hot~3 bases@1)i@1))))
+   (call@4,6 park~4 "__sess_bases"@1
+    (call@L toJs~4 names@1))
+   (comment@,7)
+   (var@4,C d . . . ""@4)
+   (for@4,D
+    (infix@7 \2E\2E< 0~2
+     (dot@D
+      (dot~6 hot~3 drift@1)len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@1
+         (dot d~1 add@1)"\0A"@5))))
+     (cmd@1,1
+      (dot d~1 add@1)
+      (at@E
+       (dot~6 hot~3 drift@1)i@1))))
+   (call@4,G park~4 "__sess_drift"@1
+    (call@L toJs~4 d@1))))
+ (proc@,4U startSession@5 . . .
+  (params@H
+   (param@1 runInit . . bool@9 .)). . .
+  (stmts@2,1
+   (call@D installWebVfs~D)
+   (call@E,1 loadWebModules~E
+    (call@6 toStr~5
+     (call@7 global~6 "__sess_mods"@1)))
+   (let@4,2 src . . .
+    (call@B toStr~5
+     (call@7 global~6 "__sess_src"@1)))
+   (comment@,3)
+   (call@H,J publishMainModule~H src@1)
+   (call@9,K republish~9 src@1)
+   (call@M,L setupProgramForTesting~M WebDir@1 MainModuleName@9 ".s.nif"@P)
+   (asgn@5,M sink~5
+    (call@C newOutSink~A))
+   (asgn@H,N
+    (dot~D sink~4 hostContext@1)0@2)
+   (asgn@E,O
+    (dot~A sink~4 hostCall@1)jsHostCall@2)
+   (asgn@B,P
+    (dot~7 sink~4 inBuf@1)
+    (call@7 toStr~5
+     (call@7 global~6 "__sess_in"@1)))
+   (asgn@B,Q
+    (dot~7 sink~4 inPos@1)0@2)
+   (asgn@E,R
+    (dot~A sink~4 inLoaded@1)true@2)
+   (asgn@8,S machine~8
+    (call@B newInterp~9 sink@1
+     (call@F newTrace~8 tmOff@1)))
+   (call@O,T
+    (dot~H machine~7 enableAbortTrack@1))
+   (asgn@B,U hostFailed~B false@2)
+   (asgn@5,V live~5 false@2)
+   (asgn@6,W ranTo~6 0@2)
+   (asgn@8,X lastErr~8 ""@2)
+   (asgn@4,Y hot~4
+    (call@9 loadHot~7 machine@1
+     (call@K modulePath~A)runInit@O))
+   (call@5,Z drain~5)
+   (if@,a
+    (elif@3 hostFailed
+     (stmts@C
+      (ret .))))
+   (if@,b
+    (elif@3
+     (call@9 hotRaised~9 machine@1)
+     (stmts~1,1
+      (call@D hotClearRaise~D machine@1)
+      (var@4,1 msg . . . lastErr@6)
+      (if@,2
+       (elif@3
+        (infix@C and
+         (infix~7 != sink~5
+          (nil@3))
+         (infix@K >
+          (dot~5
+           (dot~7 sink~4 errBuf@1)len@1)0@2))
+        (stmts~1,1
+         (asgn@4 msg~4
+          (infix@6 & msg~4
+           (dot@6 sink~4 errBuf@1)))
+         (asgn@C,1
+          (dot~8 sink~4 errBuf@1)""@2))))
+      (call@8,5 failWith~8
+       (infix@c & "the program raised while loading\3A "~b msg@2))
+      (call@4,6 park~4 "__sess_live"@1
+       (call@K toJs~4 false@1))
+      (ret@,7 .))))
+   (asgn@5,k live~5 true@2)
+   (call@4,l park~4 "__sess_live"@1
+    (call@K toJs~4 true@1))
+   (call@F,m parkModuleFacts~F)
+   (call@7,n succeed~7)))
+ (proc@,5K bootImpl@5 . . .
+  (params@D).
+  (pragmas@G nimcall@2).
+  (stmts@2,1
+   (comment)
+   (call@C,2 startSession~C true@1)))
+ (proc@,5P loadImpl@5 . . .
+  (params@D).
+  (pragmas@G nimcall@2).
+  (stmts@2,1
+   (comment)
+   (call@C,3 startSession~C false@1)))
+ (proc@,5V hasImpl@5 . . .
+  (params@C
+   (param@1 name . . JsValue@6 .)).
+  (pragmas@S nimcall@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not live@4)
+     (stmts~1,1
+      (call@4 park~4 "__sess_bool"@1
+       (call@K toJs~4 false@1))))
+    (else@,2
+     (stmts@2,1
+      (call@4 park~4 "__sess_bool"@1
+       (call@K toJs~4
+        (call@7 hasHot~6 hot@1
+         (call@C jsText~6 name@1)))))))))
+ (proc@,5b parkReturn@5 . . .
+  (params@F
+   (param@1 v . . Value@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 obj . . .
+    (call@H newJsObject~B))
+   (case@,4
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkInt@3 vkUInt@A vkChar@I vkEnum@Q)
+     (stmts@2,1
+      (call@7
+       (dot~4 obj~3 set@1)"k"@1
+       (call@A toJs~4 "i"@1))
+      (call@W
+       (dot~4 obj~3 set@1)"v"@1
+       (call@A toJs~4
+        (call@4 int~3
+         (call@6 asInt~5 v@1))))))
+    (of@,3
+     (ranges vkFloat@3)
+     (stmts@2,1
+      (call@7
+       (dot~4 obj~3 set@1)"k"@1
+       (call@A toJs~4 "f"@1))
+      (call@W
+       (dot~4 obj~3 set@1)"v"@1
+       (call@A toJs~4
+        (dot@2 v~1 fval@1)))))
+    (of@,5
+     (ranges vkBool@3)
+     (stmts@2,1
+      (call@7
+       (dot~4 obj~3 set@1)"k"@1
+       (call@A toJs~4 "b"@1))
+      (call@W
+       (dot~4 obj~3 set@1)"v"@1
+       (call@A toJs~4
+        (dot@2 v~1 bval@1)))))
+    (of@,7
+     (ranges vkString@3)
+     (stmts@2,1
+      (call@7
+       (dot~4 obj~3 set@1)"k"@1
+       (call@A toJs~4 "s"@1))
+      (call@W
+       (dot~4 obj~3 set@1)"v"@1
+       (call@A toJs~4
+        (dot@2 v~1 sval@1)))))
+    (else@,9
+     (stmts@2,1
+      (call@7
+       (dot~4 obj~3 set@1)"k"@1
+       (call@A toJs~4 "n"@1)))))
+   (call@4,F park~4 "__sess_ret"@1 obj@F)))
+ (proc@,5t clearReturn@5 . . .
+  (params@G). . .
+  (stmts@2,1
+   (comment)
+   (let@4,5 obj . . .
+    (call@H newJsObject~B))
+   (call@7,6
+    (dot~4 obj~3 set@1)"k"@1
+    (call@A toJs~4 "n"@1))
+   (call@4,7 park~4 "__sess_ret"@1 obj@F)))
+ (proc@,63 callImpl@5 . . .
+  (params@D
+   (param@1 name . . JsValue@6 .)).
+  (pragmas@T nimcall@2).
+  (stmts@2,1
+   (call@B clearReturn~B)
+   (if@,1
+    (elif@3
+     (prefix not live@4)
+     (stmts~1,1
+      (call@8 failWith~8 "no session is running"@1)
+      (ret@,1 .))))
+   (call@7,4 succeed~7)
+   (asgn@B,5 hostFailed~B false@2)
+   (let@4,6 args . .
+    (at@9 seq~3 Value@1)
+    (prefix@J \40
+     (bracket@1)))
+   (let@4,7 v . . .
+    (call@B callHot~7 machine@1 hot@A
+     (call@L jsText~6 name@1)args@T))
+   (call@5,8 drain~5)
+   (if@,9
+    (elif@3 hostFailed
+     (stmts@C
+      (ret .))))
+   (if@,A
+    (elif@3
+     (call@6 raised~6)
+     (stmts@A
+      (ret .))))
+   (call@A,B parkReturn~A v@1)))
+ (proc@,6H swapImpl@5 . . .
+  (params@D).
+  (pragmas@G nimcall@2).
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (prefix not live@4)
+     (stmts~1,1
+      (call@8 failWith~8 "no session is running"@1)
+      (ret@,1 .))))
+   (comment@,7)
+   (if@,C
+    (elif@3
+     (prefix not
+      (call@B hotSafe~7 machine@1))
+     (stmts~1,1
+      (call@8 failWith~8 "inside a call — the swap will land at the next frame boundary"@1)
+      (ret@,1 .))))
+   (call@9,F republish~9
+    (call@6 toStr~5
+     (call@7 global~6 "__sess_src"@1)))
+   (asgn@B,G hostFailed~B false@2)
+   (if@,H
+    (elif@3
+     (prefix not
+      (call@B swapHot~7 machine@1 hot@A))
+     (stmts~1,1
+      (call@8 failWith~8 "the swap was refused\3A the program is inside a call"@1)
+      (ret@,1 .))))
+   (call@5,K drain~5)
+   (if@,L
+    (elif@3 hostFailed
+     (stmts@C
+      (ret .))))
+   (if@,M
+    (elif@3
+     (call@6 raised~6)
+     (stmts@A
+      (ret .))))
+   (call@F,N parkModuleFacts~F)
+   (call@7,O succeed~7)))
+ (proc@,6i appendImpl@5 . . .
+  (params@F
+   (param@1 fromStmt . . JsValue@A .)).
+  (pragmas@Z nimcall@2).
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (prefix not live@4)
+     (stmts~1,1
+      (call@8 failWith~8 "no session is running"@1)
+      (ret@,1 .))))
+   (if@,9
+    (elif@3
+     (prefix not
+      (call@B hotSafe~7 machine@1))
+     (stmts~1,1
+      (call@8 failWith~8 "inside a call — retry at the next frame boundary"@1)
+      (ret@,1 .))))
+   (call@9,C republish~9
+    (call@6 toStr~5
+     (call@7 global~6 "__sess_src"@1)))
+   (asgn@B,D hostFailed~B false@2)
+   (var@4,E upto . . . ranTo@7)
+   (let@4,F already . . .
+    (call@D int~3
+     (call@6 toInt~5 fromStmt@1)))
+   (if@,G
+    (elif@3
+     (infix@8 >= already~8 0@3)
+     (stmts@E
+      (asgn@5 upto~5 already@2))))
+   (var@4,H newTotal . . . upto@B)
+   (if@,I
+    (elif@3
+     (prefix not
+      (call@H swapHotAppend~D machine@1 hot@A upto@F newTotal@L))
+     (stmts~1,1
+      (call@8 failWith~8 "the append was refused\3A the program is inside a call"@1)
+      (ret@,1 .))))
+   (asgn@6,L ranTo~6 newTotal@2)
+   (call@4,M park~4 "__sess_ranto"@1
+    (call@L toJs~4 ranTo@1))
+   (call@5,N drain~5)
+   (if@,O
+    (elif@3 hostFailed
+     (stmts@C
+      (ret .))))
+   (if@,P
+    (elif@3
+     (call@6 raised~6)
+     (stmts@A
+      (ret .))))
+   (call@F,Q parkModuleFacts~F)
+   (call@7,R succeed~7)))
+ (proc@,7C stopImpl@5 . . .
+  (params@D).
+  (pragmas@G nimcall@2).
+  (stmts@2,1
+   (comment)
+   (asgn@5,5 live~5 false@2)
+   (asgn@8,6 machine~8
+    (nil@2))
+   (asgn@5,7 sink~5
+    (nil@2))
+   (asgn@6,8 ranTo~6 0@2)
+   (call@4,9 park~4 "__sess_live"@1
+    (call@K toJs~4 false@1))
+   (call@4,A park~4 "__sess_gen"@1
+    (call@J toJs~4 0@1))
+   (call@4,B park~4 "__sess_out"@1
+    (call@J toJs~4 ""@1))
+   (call@7,C succeed~7)))
+ (proc@,7R register@5 . . .
+  (params@D). . .
+  (stmts@2,1
+   (let@4 g . . .
+    (call@A global~6 "globalThis"@1))
+   (let@4,1 b . . JsProc0@3 bootImpl@D)
+   (let@4,2 l . . JsProc0@3 loadImpl@D)
+   (let@4,3 h . . JsProc1@3 hasImpl@D)
+   (let@4,4 c . . JsProc1@3 callImpl@D)
+   (let@4,5 s . . JsProc0@3 swapImpl@D)
+   (let@4,6 a . . JsProc1@3 appendImpl@D)
+   (let@4,7 x . . JsProc0@3 stopImpl@D)
+   (call@5,8
+    (dot~4 g~1 set@1)"__sess_boot"@1
+    (call@K toJs~4 b@1))
+   (call@5,9
+    (dot~4 g~1 set@1)"__sess_load"@1
+    (call@K toJs~4 l@1))
+   (call@5,A
+    (dot~4 g~1 set@1)"__sess_has"@1
+    (call@J toJs~4 h@1))
+   (call@5,B
+    (dot~4 g~1 set@1)"__sess_call"@1
+    (call@K toJs~4 c@1))
+   (call@5,C
+    (dot~4 g~1 set@1)"__sess_swap"@1
+    (call@K toJs~4 s@1))
+   (call@5,D
+    (dot~4 g~1 set@1)"__sess_append"@1
+    (call@M toJs~4 a@1))
+   (call@5,E
+    (dot~4 g~1 set@1)"__sess_stop"@1
+    (call@K toJs~4 x@1))
+   (call@5,F
+    (dot~4 g~1 set@1)"__sess_live"@1
+    (call@K toJs~4 false@1))
+   (call@5,G
+    (dot~4 g~1 set@1)"__sess_gen"@1
+    (call@J toJs~4 0@1))
+   (call@5,H
+    (dot~4 g~1 set@1)"__sess_ready"@1
+    (call@L toJs~4 true@1))))
+ (call@8,7l register~8))

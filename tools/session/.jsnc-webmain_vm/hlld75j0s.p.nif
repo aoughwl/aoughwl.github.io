@@ -1,0 +1,219 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlhl/src/aowlhl/hlload.nim
+ (comment)
+ (when@,F
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,I
+  (infix@A / std~3
+   (bracket@1 os@1 sets@5)))
+ (import@,J nifcursors@7 nifstreams@J)
+ (proc@,L containsSub@5 . . .
+  (params@G
+   (param@1 s . . string@8 .)
+   (param@4 sub . . string@5 .))bool@I . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 ==
+      (dot~5 sub~3 len@1)0@3)
+     (stmts@E
+      (ret true@7))))
+   (if@,1
+    (elif@3
+     (infix@8 >
+      (dot~5 sub~3 len@1)
+      (dot@3 s~1 len@1))
+     (stmts@H
+      (ret false@7))))
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@I <=
+     (infix~A \2B i~2
+      (dot@5 sub~3 len@1))
+     (dot@4 s~1 len@1))
+    (stmts@2,1
+     (var@4 j . . . 0@4)
+     (while@,1
+      (infix@I and
+       (infix~A < j~2
+        (dot@5 sub~3 len@1))
+       (infix@B ==
+        (at~6 s~1
+         (infix@2 \2B i~1 j@1))
+        (at@6 sub~3 j@1)))
+      (stmts@e
+       (cmd inc j@4)))
+     (if@,2
+      (elif@3
+       (infix@2 == j~2
+        (dot@6 sub~3 len@1))
+       (stmts@E
+        (ret true@7))))
+     (cmd@,3 inc i@4)))
+   (asgn@7,8 result~7 false@2)))
+ (proc@,W isUserModule@5 x . .
+  (params@I
+   (param@1 path . . string@6 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7
+    (infix@a and
+     (prefix~Y not
+      (call@F containsSub~B path@1 "lib/std/"@7))
+     (prefix@4 not
+      (call@F containsSub~B path@1 "/std/"@7))))))
+ (proc@,c collectUserImports@5 x . .
+  (params@O
+   (param@1 root . . Cursor@6 .))
+  (at@J seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,3 n . . . root@4)
+   (if@,4
+    (elif@3
+     (infix@7 !=
+      (dot~6 n~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (cmd@,5 inc n@4)
+   (while@,6
+    (infix@D !=
+     (dot~6 n~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 n~1 kind@1)ParLe@3)
+        (infix@N ==
+         (at~A
+          (dot~5 pool~4 tags@1)
+          (dot@2 n~1 tagId@1))"import"@3))
+       (stmts~1,1
+        (var@4 c . . . n@4)
+        (cmd@,1 inc c@4)
+        (while@,2
+         (infix@D !=
+          (dot~6 c~1 kind@1)ParRi@3)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@G and
+             (infix~9 ==
+              (dot~6 c~1 kind@1)ParLe@3)
+             (infix@N ==
+              (at~A
+               (dot~5 pool~4 tags@1)
+               (dot@2 c~1 tagId@1))"kv"@3))
+            (stmts~1,1
+             (var@4 k . . . c@4)
+             (cmd@,1 inc k@4)
+             (var@4,2 key . . . ""@6)
+             (if@,3
+              (elif@3
+               (infix@7 ==
+                (dot~6 k~1 kind@1)Ident@3)
+               (stmts@H
+                (asgn@4 key~4
+                 (at@E
+                  (dot~8 pool~4 strings@1)
+                  (dot@2 k~1 litId@1))))))
+             (cmd@,4 skip k@5)
+             (var@4,5 path . . . ""@7)
+             (if@,6
+              (elif@3
+               (infix@7 ==
+                (dot~6 k~1 kind@1)StringLit@3)
+               (stmts@L
+                (asgn@5 path~5
+                 (at@E
+                  (dot~8 pool~4 strings@1)
+                  (dot@2 k~1 litId@1))))))
+             (if@,7
+              (elif@3
+               (infix@C and
+                (infix~4 >
+                 (dot~5 key~3 len@1)0@2)
+                (call@G isUserModule~C path@1))
+               (stmts@a
+                (cmd@6
+                 (dot result~6 add@1)key@5)))))))
+          (cmd@,9 skip c@5)))
+        (break@,D .))))
+     (cmd@,F skip n@5)))))
+ (proc@,11 initOrderRec@5 . . .
+  (params@H
+   (param@1 dir . . string@A .)
+   (param@6 key . . string@5 .)
+   (param@J seen . .
+    (mut@6
+     (at@B HashSet~7 string@1)).)
+   (param@k order . .
+    (mut@7
+     (at@7 seq~3 string@1)).)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@4 in key~4 seen@3)
+     (stmts@D
+      (ret .))))
+   (cmd@4,3
+    (dot seen~4 incl@1)key@6)
+   (let@4,4 p . . .
+    (infix@8 / dir~4
+     (par@2
+      (infix@5 & key~4 ".s.nif"@2))))
+   (if@,5
+    (elif@3
+     (prefix not
+      (call@E fileExists~A p@1))
+     (stmts@J
+      (ret .))))
+   (var@4,6 buf . . .
+    (call@J parseFromFile~D p@1))
+   (var@4,7 root . . .
+    (call@G beginRead~9 buf@1))
+   (for@4,8
+    (call@P collectUserImports~I root@1)
+    (unpackflat
+     (let sub . . ..))
+    (stmts@X
+     (call@C initOrderRec~C dir@1 sub@6 seen@B order@H)))
+   (cmd@,9 endRead buf@8)
+   (cmd@5,A
+    (dot order~5 add@1)key@5)))
+ (proc@,1E moduleInitOrder@5 x . .
+  (params@L
+   (param@1 dir . . string@J .)
+   (param@6 mainSNifPath . . string@E .))
+  (at@W seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,4 seen . . .
+    (call@Q
+     (at~8 initHashSet~B string@1)))
+   (var@4,5 mbuf . . .
+    (call@K parseFromFile~D mainSNifPath@1))
+   (var@4,6 mroot . . .
+    (call@H beginRead~9 mbuf@1))
+   (let@4,7 imports . . .
+    (call@S collectUserImports~I mroot@1))
+   (cmd@,8 endRead mbuf@8)
+   (for@4,9 imports@7
+    (unpackflat
+     (let key . . ..))
+    (stmts@G
+     (call@C initOrderRec~C dir@1 key@6 seen@B result@H))))))

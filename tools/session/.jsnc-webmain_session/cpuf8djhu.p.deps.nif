@@ -1,0 +1,26 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (when
+   (call defined js))
+  (infix / std jsffi))
+ (import
+  (when
+   (prefix not
+    (call defined js))
+   (infix and
+    (call defined posix)
+    (prefix not
+     (par
+      (infix or
+       (call defined macosx)
+       (call defined bsd))))))
+  (infix / posix posix))
+ (import
+  (when
+   (prefix not
+    (call defined js))
+   (call defined genode))
+  (infix / genode env)))

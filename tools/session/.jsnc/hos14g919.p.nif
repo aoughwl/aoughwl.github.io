@@ -1,0 +1,364 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/hostshell.nim
+ (comment)
+ (import@,K
+  (infix@A / std~3
+   (bracket@1 syncio@1 os@9)))
+ (proc@,M winArg@5 x . .
+  (params@C
+   (param@1 p . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,E result~7 "\22"@2)
+   (for@4,F p@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (expr
+       (stmts@5)
+       (if@1
+        (elif@3
+         (infix@3 == ch~3 '/'@3)'\5C'@B)
+        (else@J ch@6))))))
+   (cmd@6,H
+    (dot result~6 add@1)'\22'@5)))
+ (proc@,g shMkdirP@5 x . .
+  (params@E
+   (param@1 d . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (when@,1
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,3
+      (infix@e &
+       (infix~C &
+        (infix~C & "if not exist "~G
+         (call@8 winArg~6 d@1))" mkdir "@2)
+       (call@8 winArg~6 d@1))))
+    (else@,4
+     (stmts@2,1
+      (infix@C & "mkdir -p "~C
+       (call@C quoteShell~A d@1)))))))
+ (proc@,p shRmF@5 x . .
+  (params@B
+   (param@1 f . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (when@,1
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,1
+      (infix@P &
+       (infix~C & "del /f /q "~D
+        (call@8 winArg~6 f@1))" 2>nul"@2)))
+    (else@,2
+     (stmts@2,1
+      (infix@9 & "rm -f "~9
+       (call@C quoteShell~A f@1)))))))
+ (proc@,w shListInto@5 x . .
+  (params@G
+   (param@1 pattern . . string@I .)
+   (param@A outFile . . string@9 .))string@S . .
+  (stmts@2,1
+   (comment)
+   (when@,6
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,5
+      (infix@v &
+       (infix~I &
+        (infix~8 &
+         (infix~I & "dir /b /s "~D
+          (call@8 winArg~6 pattern@1))" > "@2)
+        (call@8 winArg~6 outFile@1))" 2>nul"@2)))
+    (else@,6
+     (stmts@2,1
+      (infix@a &
+       (infix~K &
+        (infix~A & "ls "~6 pattern@2)" 2>/dev/null > "@2)
+       (call@C quoteShell~A outFile@1)))))))
+ (comment@2,1D)
+ (const@D,1F SharedFlags~B x . .
+  (when@4
+   (elif@5
+    (call@7 defined~7 windows@1)
+    (stmts@I "-shared -O2 -w"))
+   (else@,1
+    (stmts@6 "-shared -fPIC -O2 -w"))))
+ (const@C,1H SharedLibs~A x . .
+  (when@5
+   (elif@5
+    (call@7 defined~7 windows@1)
+    (stmts@I ""))
+   (else@Q
+    (stmts@6 " -lm"))))
+ (const@B,1I SharedExt~9 x . .
+  (when@6
+   (elif@5
+    (call@7 defined~7 windows@1)
+    (stmts@I ".dll"))
+   (else@U
+    (stmts@6 ".so"))))
+ (proc@,1O pathBaseName@5 x . .
+  (params@I
+   (param@1 p . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (var@4,3 cut . . . -1@6)
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@8 < i~2
+     (dot@3 p~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@C or
+        (infix~7 ==
+         (at~4 p~1 i@1)'/'@3)
+        (infix@8 ==
+         (at~4 p~1 i@1)'\5C'@3))
+       (stmts@T
+        (asgn@4 cut~4 i@2))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,8 result~7
+    (if@2
+     (elif@3
+      (infix@9 and
+       (infix~5 >= cut~4 0@3)
+       (infix@C <=
+        (infix~4 \2B cut~4 1@2)
+        (infix@9 \2D
+         (dot~5 p~1 len@1)1@2)))
+      (stmts@Z
+       (at@1 p~1
+        (infix@9 \2E\2E
+         (infix~4 \2B cut~4 1@2)
+         (infix@9 \2D
+          (dot~5 p~1 len@1)1@2)))))
+     (else@10
+      (stmts@6 p))))))
+ (proc@,1Z dropSuffix@5 x . .
+  (params@G
+   (param@1 s . . string@8 .)
+   (param@4 suf . . string@5 .))string@I . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@X and
+      (infix~G and
+       (infix~B >=
+        (dot~5 s~1 len@1)
+        (dot@6 suf~3 len@1))
+       (infix@C >
+        (dot~5 suf~3 len@1)0@2))
+      (infix@a ==
+       (at~V s~1
+        (infix@H \2E\2E
+         (infix~A \2D
+          (dot~5 s~1 len@1)
+          (dot@5 suf~3 len@1))
+         (infix@9 \2D
+          (dot~5 s~1 len@1)1@2)))suf@3))
+     (stmts~1,1
+      (asgn@7 result~7
+       (at@3 s~1
+        (infix@3 \2E\2E 0~2
+         (infix@J \2D
+          (infix~A \2D
+           (dot~5 s~1 len@1)
+           (dot@5 suf~3 len@1))1@2))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 s@2))))))
+ (proc@,1g trimTrailingWs@5 x . .
+  (params@K
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (asgn@7 result~7 s@2)
+   (while@,1
+    (infix@L and
+     (infix~4 >
+      (dot~5 result~6 len@1)0@2)
+     (par@4
+      (infix@T,2 or
+       (infix@1,~1 or
+        (infix@,~1 or
+         (infix~8 ==
+          (at~F result~6
+           (infix@B \2D
+            (dot~4 result~6 len@1)1@1))'\0A'@3)
+         (infix~8,1 ==
+          (at~F result~6
+           (infix@B \2D
+            (dot~4 result~6 len@1)1@1))'\0D'@3))
+        (infix~8,1 ==
+         (at~F result~6
+          (infix@B \2D
+           (dot~4 result~6 len@1)1@1))' '@3))
+       (infix~7,1 ==
+        (at~F result~6
+         (infix@B \2D
+          (dot~4 result~6 len@1)1@1))'\09'@3))))
+    (stmts@2,4
+     (asgn@7 result~7
+      (at@8 result~6
+       (infix@3 \2E\2E 0~2
+        (infix@D \2D
+         (dot~4 result~6 len@1)2@1))))))))
+ (proc@,1o stmtsHeaderSource@5 x . .
+  (params@N
+   (param@1 hdr . . string@5 .))string@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,5 result~7 ""@2)
+   (const@6,6 Marker . . . "\28stmts\40"@9)
+   (if@,7
+    (elif@3
+     (infix@8 <=
+      (dot~5 hdr~3 len@1)
+      (dot@9 Marker~6 len@1))
+     (stmts@N
+      (ret .))))
+   (if@,8
+    (elif@3
+     (infix@P !=
+      (at~M hdr~3
+       (infix@3 \2E\2E 0~2
+        (infix@E \2D
+         (dot~5 Marker~6 len@1)1@2)))Marker@3)
+     (stmts@a
+      (ret .))))
+   (var@4,9 i . . .
+    (dot@A Marker~6 len@1))
+   (var@4,A commas . . . 0@9)
+   (while@,B
+    (infix@I and
+     (infix~A < i~2
+      (dot@5 hdr~3 len@1))
+     (infix@B < commas~7 2@2))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (at~4 hdr~3 i@1)','@3)
+       (stmts@F
+        (cmd inc commas@4))))
+     (cmd@,1 inc i@4)))
+   (if@,E
+    (elif@3
+     (infix@7 < commas~7 2@2)
+     (stmts@C
+      (ret .))))
+   (if@,F
+    (elif@3
+     (infix@C and
+      (infix~A < i~2
+       (dot@5 hdr~3 len@1))
+      (infix@B ==
+       (at~4 hdr~3 i@1)'\22'@3))
+     (stmts@V
+      (cmd inc i@4))))
+   (while@,G
+    (infix@s and
+     (infix~I and
+      (infix~I and
+       (infix~A < i~2
+        (dot@5 hdr~3 len@1))
+       (infix@B !=
+        (at~4 hdr~3 i@1)'\22'@3))
+      (infix@B !=
+       (at~4 hdr~3 i@1)' '@3))
+     (infix@B !=
+      (at~4 hdr~3 i@1)'\29'@3))
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@8 hdr~3 i@1))
+     (cmd@,1 inc i@4)))))
+ (proc@,29 readLinesOf@5 x . .
+  (params@H
+   (param@1 path . . string@6 .))
+  (at@J seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,E result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,F body . . . ""@7)
+   (try@,G
+    (stmts@5
+     (asgn@5 body~5
+      (call@A readFile~8 path@1)))
+    (except@,1 .
+     (stmts@8
+      (ret .))))
+   (var@4,I cur . . . ""@6)
+   (for@4,J body@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@3 == ch~3 '\0A'@3)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)cur@5)
+        (asgn@4,1 cur~4 ""@2)))
+      (elif@5,3
+       (infix@3 != ch~3 '\0D'@3)
+       (stmts~3,1
+        (cmd@3
+         (dot cur~3 add@1)ch@5))))))
+   (if@,P
+    (elif@3
+     (infix@8 >
+      (dot~5 cur~3 len@1)0@2)
+     (stmts@D
+      (cmd@6
+       (dot result~6 add@1)cur@5))))))
+ (proc@,2b firstNonEmptyLine@5 x . .
+  (params@N
+   (param@1 path . . string@6 .))string@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ""@2)
+   (for@4,2
+    (call@G readLinesOf~B path@1)
+    (unpackflat
+     (let l . . ..))
+    (stmts~2,1
+     (let@4 t . . .
+      (call@I trimTrailingWs~E l@1))
+     (if@,1
+      (elif@3
+       (infix@6 >
+        (dot~5 t~1 len@1)0@2)
+       (stmts@B
+        (ret t@7))))))))
+ (proc@,2i firstStmtsHeader@5 x . .
+  (params@M
+   (param@1 path . . string@6 .))string@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ""@2)
+   (for@4,2
+    (call@G readLinesOf~B path@1)
+    (unpackflat
+     (let l . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@A and
+        (infix~4 >
+         (dot~5 l~1 len@1)7@2)
+        (infix@E ==
+         (at~9 l~1
+          (infix@3 \2E\2E 0~2 6@3))"\28stmts\40"@3))
+       (stmts~1,1
+        (ret l@7)))))))))

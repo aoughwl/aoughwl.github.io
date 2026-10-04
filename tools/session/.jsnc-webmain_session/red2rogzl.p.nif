@@ -1,0 +1,847 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/redecl.nim
+ (comment)
+ (import@,a
+  (infix@A / std~3
+   (bracket@1 syncio@1)))
+ (import@,b modload@7)
+ (import@,c nifcursors@7 nifstreams@J nimony_model@V programs@j symparser@t decls@14)
+ (import@,d tags@7)
+ (type@D,g RedeclSet~B x . .
+  (object@2 .
+   (fld~2,3 typeDecls~9 x .
+    (at@6 seq~3 string@1).)
+   (fld~2,4 procDecls~9 x .
+    (at@6 seq~3 string@1).)
+   (fld~B,5 seenTypes . .
+    (at@E seq~3 SymId@1).)
+   (fld~B,6 activeTypes . .
+    (at@G seq~3 SymId@1).)
+   (fld~B,7 usedNames . .
+    (at@E seq~3 string@1).)
+   (fld~B,8 sawImportc . . bool@C .)))
+ (proc@,q nodeTag@5 . . .
+  (params@C
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@Y
+   (at@9
+    (dot~5 pool~4 tags@1)
+    (dot@2 n~1 tagId@1))))
+ (proc@,s baseNameOf@5 . . .
+  (params@F
+   (param@1 s . . SymId@3 .))string@C . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (at@B
+     (dot~5 pool~4 syms@1)s@1))
+   (call@F,1 extractBasename~F result@1)))
+ (proc@,w isBuiltinScalarName@5 . . .
+  (params@O
+   (param@1 n . . string@3 .))bool@D . .
+  (stmts@2,1
+   (case n@5
+    (of@,1
+     (ranges "int"@3 "int8"@A "int16"@I "int32"@R "int64"@a "uint"@3,1 "uint8"@B,1 "uint16"@K,1 "uint32"@U,1 "uint64"@e,1 "float"@3,2 "float32"@C,2 "float64"@N,2 "bool"@Y,2 "char"@g,2 "byte"@o,2)
+     (stmts@w,2 true))
+    (else@,4
+     (stmts@6 false)))))
+ (proc@,13 litInt@5 . . .
+  (params@B
+   (param@1 c . . Cursor@3 .))int@D . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)IntLit@3)
+     (stmts@I
+      (call@3 int~3
+       (at@E
+        (dot~9 pool~4 integers@1)
+        (dot@2 c~1 intId@1)))))
+    (else@n
+     (stmts@6 0)))))
+ (proc@,16 intWidthName@5 . . .
+  (params@H
+   (param@1 tg . . string@4 .)
+   (param@D bits . . int@6 .))string@P . .
+  (stmts@2,1
+   (comment)
+   (case@,2 tg@5
+    (of@,1
+     (ranges "i"@3)
+     (stmts@8
+      (expr
+       (stmts)
+       (if@1
+        (elif@3
+         (infix@5 <= bits~5 0@3)"int"@B)
+        (else@K
+         (infix@C & "int"~6
+          (prefix@2 $ bits@1)))))))
+    (of@,2
+     (ranges "u"@3)
+     (stmts@8
+      (expr
+       (stmts)
+       (if@1
+        (elif@3
+         (infix@5 <= bits~5 0@3)"uint"@B)
+        (else@L
+         (infix@D & "uint"~7
+          (prefix@2 $ bits@1)))))))
+    (of@,3
+     (ranges "f"@3)
+     (stmts@8
+      (expr
+       (stmts)
+       (if@1
+        (elif@3
+         (infix@5 <= bits~5 0@3)"float"@B)
+        (else@M
+         (infix@E & "float"~8
+          (prefix@2 $ bits@1)))))))
+    (else@,4
+     (stmts@6 "")))))
+ (proc@,1H spellPragmas@5 . . .
+  (params@H
+   (param@1 pragmas . . Cursor@9 .)
+   (param@I ok . .
+    (mut@4 bool@4).)
+   (param@1,1 sawImportc . .
+    (mut@C bool@4).))string@O,1 . .
+  (stmts@2,2
+   (comment)
+   (asgn@7,5 result~7 ""@2)
+   (if@,6
+    (elif@3
+     (infix@D ==
+      (dot~6 pragmas~7 kind@1)DotToken@3)
+     (stmts@Q
+      (ret .))))
+   (if@,7
+    (elif@3
+     (infix@M or
+      (infix~9 !=
+       (dot~6 pragmas~7 kind@1)ParLe@3)
+      (infix@K !=
+       (call~A nodeTag~7 pragmas@1)"pragmas"@3))
+     (stmts~1,1
+      (asgn@3 ok~3 false@2)
+      (ret@,1 .))))
+   (var@4,A parts . .
+    (at@A seq~3 string@1)
+    (prefix@L \40
+     (bracket@1)))
+   (var@4,B c . . . pragmas@4)
+   (cmd@,C inc c@4)
+   (while@,D
+    (infix@D !=
+     (dot~6 c~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 c~1 kind@1)ParLe@3)
+       (stmts~1,1
+        (let@4 tg . . .
+         (call@C nodeTag~7 c@1))
+        (var@4,1 arg . . . c@6)
+        (cmd@,2 inc arg@4)
+        (case@,3 tg@5
+         (of@,1
+          (ranges "importc"@3)
+          (stmts@2,1
+           (asgn@B sawImportc~B true@2)
+           (if@,1
+            (elif@3
+             (infix@9 ==
+              (dot~6 arg~3 kind@1)StringLit@3)
+             (stmts~1,1
+              (cmd@5
+               (dot parts~5 add@1)
+               (infix@j &
+                (infix~Q & "importc\3A \22"~E
+                 (at@E
+                  (dot~8 pool~4 strings@1)
+                  (dot@4 arg~3 litId@1)))"\22"@2))))
+            (else@,2
+             (stmts@2,3
+              (cmd@5
+               (dot parts~5 add@1)"importc"@5))))))
+         (of@,9
+          (ranges "header"@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@9 ==
+              (dot~6 arg~3 kind@1)StringLit@3)
+             (stmts~1,1
+              (cmd@5
+               (dot parts~5 add@1)
+               (infix@i &
+                (infix~Q & "header\3A \22"~D
+                 (at@E
+                  (dot~8 pool~4 strings@1)
+                  (dot@4 arg~3 litId@1)))"\22"@2))))
+            (else@,2
+             (stmts@6
+              (asgn@3 ok~3 false@2))))))
+         (of@,D
+          (ranges "nodecl"@3)
+          (stmts@D
+           (cmd@5
+            (dot parts~5 add@1)"nodecl"@5)))
+         (of@,E
+          (ranges "packed"@3)
+          (stmts@D
+           (cmd@5
+            (dot parts~5 add@1)"packed"@5)))
+         (of@,F
+          (ranges "union"@3)
+          (stmts@C
+           (cmd@5
+            (dot parts~5 add@1)"union"@5)))
+         (of@,G
+          (ranges "bycopy"@3)
+          (stmts@D
+           (cmd@5
+            (dot parts~5 add@1)"bycopy"@5)))
+         (of@,H
+          (ranges "byref"@3)
+          (stmts@C
+           (cmd@5
+            (dot parts~5 add@1)"byref"@5)))
+         (of@,I
+          (ranges "incompletestruct"@3 "incompleteStruct"@N)
+          (stmts@h
+           (cmd@5
+            (dot parts~5 add@1)"incompleteStruct"@5)))
+         (of@,J
+          (ranges "varargs"@3)
+          (stmts@2,3
+           (asgn@3 ok~3 false@2)))
+         (else@,N
+          (stmts@2,1
+           (asgn@3 ok~3 false@2))))))
+      (elif@5,T
+       (infix@7 ==
+        (dot~6 c~1 kind@1)Ident@3)
+       (stmts~3,1
+        (asgn@3 ok~3 false@2))))
+     (cmd@,V skip c@5)))
+   (if@,k
+    (elif@3
+     (infix@A ==
+      (dot~5 parts~5 len@1)0@3)
+     (stmts@G
+      (ret .))))
+   (asgn@7,l result~7 " \7B."@2)
+   (var@4,m i . . . 0@4)
+   (while@,n
+    (infix@8 < i~2
+     (dot@7 parts~5 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@6
+         (dot result~6 add@1)", "@5))))
+     (cmd@6,1
+      (dot result~6 add@1)
+      (at@A parts~5 i@1))
+     (cmd@,2 inc i@4)))
+   (cmd@6,r
+    (dot result~6 add@1)".\7D"@5)))
+ (proc@,2E addTypeRedecl@5 . . .
+  (params@I
+   (param@1 sym . . SymId@5 .)
+   (param@D rs . .
+    (mut@4 RedeclSet@4).)
+   (param@W depth . . int@7 .))bool@j . . .)
+ (proc@,2G spellTypeExpr@5 . . .
+  (params@I
+   (param@1 c . . Cursor@3 .)
+   (param@C rs . .
+    (mut@4 RedeclSet@4).)
+   (param@V depth . . int@7 .))string@i . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@6 > depth~6 24@2)
+     (stmts@C
+      (ret ""@7))))
+   (if@,2
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (let@4 bn . . .
+       (call@F baseNameOf~A
+        (dot@2 c~1 symId@1)))
+      (if@,1
+       (elif@3
+        (call@J isBuiltinScalarName~J bn@1)
+        (stmts@P
+         (ret bn@7))))
+      (if@,2
+       (elif@3
+        (prefix not
+         (call@H addTypeRedecl~D
+          (dot@2 c~1 symId@1)rs@A
+          (infix@K \2B depth~6 1@2)))
+        (stmts@h
+         (ret ""@7))))
+      (ret@,3 bn@7))))
+   (if@,7
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret ""@7))))
+   (let@4,8 tg . . .
+    (call@C nodeTag~7 c@1))
+   (case@,9 tg@5
+    (of@,1
+     (ranges "i"@3 "u"@8 "f"@D)
+     (stmts@2,1
+      (var@4 w . . . c@4)
+      (cmd@,1 inc w@4)
+      (ret@,2
+       (call@J intWidthName~C tg@1
+        (expr
+         (stmts@5)
+         (if@1
+          (elif@3
+           (infix@7 ==
+            (dot~6 w~1 kind@1)IntLit@3)
+           (call@O litInt~6 w@1))
+          (else@V -1@6)))))))
+    (of@,5
+     (ranges "bool"@3)
+     (stmts@B
+      (ret "bool"@7)))
+    (of@,6
+     (ranges "c"@3)
+     (stmts@2,1
+      (var@4 w . . . c@4)
+      (cmd@,1 inc w@4)
+      (let@4,2 bits . . .
+       (expr
+        (stmts@7)
+        (if@1
+         (elif@3
+          (infix@7 ==
+           (dot~6 w~1 kind@1)IntLit@3)
+          (call@O litInt~6 w@1))
+         (else@V 8@6))))
+      (ret@,3
+       (expr
+        (stmts@7)
+        (if@1
+         (elif@3
+          (infix@5 <= bits~5 8@3)"char"@B)
+         (else@L ""@6))))))
+    (of@,B
+     (ranges "cstring"@3)
+     (stmts@2,8
+      (ret "cstring"@7)))
+    (of@,K
+     (ranges "ptr"@3)
+     (stmts@2,1
+      (var@4 e . . . c@4)
+      (cmd@,1 inc e@4)
+      (let@4,2 inner . . .
+       (call@L spellTypeExpr~D e@1 rs@4
+        (infix@E \2B depth~6 1@2)))
+      (if@,3
+       (elif@3
+        (infix@A ==
+         (dot~5 inner~5 len@1)0@3)
+        (stmts@G
+         (ret ""@7))))
+      (ret@,4
+       (infix@E & "ptr "~7 inner@2))))
+    (of@,Q
+     (ranges "array"@3)
+     (stmts@2,1
+      (var@4 e . . . c@4)
+      (cmd@,1 inc e@4)
+      (let@4,2 elem . . .
+       (call@K spellTypeExpr~D e@1 rs@4
+        (infix@E \2B depth~6 1@2)))
+      (if@,3
+       (elif@3
+        (infix@9 ==
+         (dot~5 elem~4 len@1)0@3)
+        (stmts@F
+         (ret ""@7))))
+      (cmd@,4 skip e@5)
+      (if@,5
+       (elif@3
+        (infix@G or
+         (infix~9 !=
+          (dot~6 e~1 kind@1)ParLe@3)
+         (infix@E !=
+          (call~4 nodeTag~7 e@1)"rangetype"@3))
+        (stmts@k
+         (ret ""@7))))
+      (var@4,6 r . . . e@4)
+      (cmd@,7 inc r@4)
+      (cmd@,8 skip r@5)
+      (if@,9
+       (elif@3
+        (infix@7 !=
+         (dot~6 r~1 kind@1)IntLit@3)
+        (stmts@I
+         (ret ""@7))))
+      (let@4,A lo . . .
+       (call@B litInt~6 r@1))
+      (cmd@,B skip r@5)
+      (if@,C
+       (elif@3
+        (infix@7 !=
+         (dot~6 r~1 kind@1)IntLit@3)
+        (stmts@I
+         (ret ""@7))))
+      (let@4,D hi . . .
+       (call@B litInt~6 r@1))
+      (if@,E
+       (elif@3
+        (infix@3 < hi~3 lo@2)
+        (stmts@9
+         (ret ""@7))))
+      (ret@,F
+       (infix@p &
+        (infix~7 &
+         (infix~7 &
+          (infix~6 &
+           (infix~9 &
+            (infix~6 & "array\5B"~9
+             (prefix@2 $ lo@1))" .. "@2)
+           (prefix@2 $ hi@1))", "@2)elem@2)"\5D"@2))))
+    (else@,h
+     (stmts@2,1
+      (ret ""@7))))))
+ (proc@,3A addTypeRedecl@5 . . .
+  (params@I
+   (param@1 sym . . SymId@5 .)
+   (param@D rs . .
+    (mut@4 RedeclSet@4).)
+   (param@W depth . . int@7 .))bool@j . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@C ==
+      (call~6 uint32~6 sym@1)
+      (suf@3 0u "u32"))
+     (stmts@M
+      (ret false@7))))
+   (for@4,4
+    (dot@7 rs~2 seenTypes@1)
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == s~2 sym@3)
+       (stmts@A
+        (ret true@7))))))
+   (for@4,6
+    (dot@7 rs~2 activeTypes@1)
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == s~2 sym@3)
+       (stmts@A
+        (ret false@7))))))
+   (if@,8
+    (elif@3
+     (infix@6 > depth~6 24@2)
+     (stmts@C
+      (ret false@7))))
+   (let@4,9 name . . .
+    (call@H baseNameOf~A sym@1))
+   (if@,A
+    (elif@3
+     (infix@9 ==
+      (dot~5 name~4 len@1)0@3)
+     (stmts@F
+      (ret false@7))))
+   (for@4,B
+    (dot@7 rs~2 usedNames@1)
+    (unpackflat
+     (let n . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == n~2 name@3)
+       (stmts@B
+        (ret false@7))))))
+   (let@4,D res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,E
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (infix~Z,1 !=
+       (call~B nodeTag~7
+        (dot@4 res~3 decl@1))"type"@3))
+     (stmts@T,1
+      (ret false@7))))
+   (let@4,G td . . .
+    (call@F asTypeDecl~A
+     (dot@4 res~3 decl@1)))
+   (if@,H
+    (elif@3
+     (infix@H !=
+      (dot~6
+       (dot~9 td~2 typevars@1)kind@1)DotToken@3)
+     (stmts@U
+      (ret false@7))))
+   (var@4,I pok . . . true@6)
+   (var@4,J pimp . . . false@7)
+   (let@4,K prag . . .
+    (call@J spellPragmas~C
+     (dot@3 td~2 pragmas@1)pok@D pimp@I))
+   (if@,L
+    (elif@3
+     (prefix not pok@4)
+     (stmts@9
+      (ret false@7))))
+   (cmd@E,M
+    (dot
+     (dot~C rs~2 activeTypes@1)add@1)sym@5)
+   (var@4,N text . . . ""@7)
+   (if@,O
+    (elif@3
+     (infix@M and
+      (infix~9 ==
+       (dot~6
+        (dot~5 td~2 body@1)kind@1)ParLe@3)
+      (infix@L ==
+       (call~A nodeTag~7
+        (dot@3 td~2 body@1))"object"@3))
+     (stmts~1,1
+      (var@4 b . . .
+       (dot@6 td~2 body@1))
+      (cmd@,1 inc b@4)
+      (if@,2
+       (elif@3
+        (infix@7 !=
+         (dot~6 b~1 kind@1)DotToken@3)
+        (stmts~1,1
+         (call@L
+          (dot~7
+           (dot~C rs~2 activeTypes@1)setLen@1)
+          (infix@K \2D
+           (dot~5
+            (dot~C rs~2 activeTypes@1)len@1)1@2))
+         (ret@,1 false@7))))
+      (cmd@,5 skip b@5)
+      (var@4,6 fields . . . ""@9)
+      (var@4,7 fok . . . true@6)
+      (while@,8
+       (infix@D !=
+        (dot~6 b~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@G or
+           (infix~9 !=
+            (dot~6 b~1 kind@1)ParLe@3)
+           (infix@E !=
+            (call~4 nodeTag~7 b@1)"fld"@3))
+          (stmts@e
+           (asgn@4 fok~4 false@2)
+           (break@D .))))
+        (var@4,1 f . . . b@4)
+        (cmd@,2 inc f@4)
+        (if@,3
+         (elif@3
+          (infix@7 !=
+           (dot~6 f~1 kind@1)SymbolDef@3)
+          (stmts@L
+           (asgn@4 fok~4 false@2)
+           (break@D .))))
+        (let@4,4 fname . . .
+         (call@I baseNameOf~A
+          (dot@2 f~1 symId@1)))
+        (cmd@,5 skip f@5)
+        (cmd@,6 skip f@5)
+        (var@4,7 fpok . . . true@7)
+        (var@4,8 fimp . . . false@7)
+        (let@4,9 fprag . . .
+         (call@K spellPragmas~C f@1 fpok@4 fimp@A))
+        (if@,A
+         (elif@3
+          (prefix not fpok@4)
+          (stmts@A
+           (asgn@4 fok~4 false@2)
+           (break@D .))))
+        (cmd@,B skip f@5)
+        (let@4,C ftyp . . .
+         (call@K spellTypeExpr~D f@1 rs@4
+          (infix@E \2B depth~6 1@2)))
+        (if@,D
+         (elif@3
+          (infix@9 ==
+           (dot~5 ftyp~4 len@1)0@3)
+          (stmts@F
+           (asgn@4 fok~4 false@2)
+           (break@D .))))
+        (cmd@6,E
+         (dot fields~6 add@1)
+         (infix@e &
+          (infix~7 &
+           (infix~7 &
+            (infix~8 &
+             (infix~8 & "  "~5 fname@2)fprag@2)"\3A "@2)ftyp@2)"\0A"@2))
+        (cmd@,F skip b@5)))
+      (if@,P
+       (elif@3
+        (infix@8 or
+         (prefix~8 not fok@4)
+         (infix@E ==
+          (dot~5 fields~6 len@1)0@3))
+        (stmts~1,1
+         (call@L
+          (dot~7
+           (dot~C rs~2 activeTypes@1)setLen@1)
+          (infix@K \2D
+           (dot~5
+            (dot~C rs~2 activeTypes@1)len@1)1@2))
+         (ret@,1 false@7))))
+      (asgn@5,S text~5
+       (infix@e &
+        (infix~G &
+         (infix~7 &
+          (infix~7 & "type "~8 name@2)prag@2)" = object\0A"@2)fields@2))))
+    (else@,U
+     (stmts@2,1
+      (let@4 bodyStr . . .
+       (call@N spellTypeExpr~D
+        (dot@3 td~2 body@1)rs@A
+        (infix@K \2B depth~6 1@2)))
+      (if@,1
+       (elif@3
+        (infix@C ==
+         (dot~5 bodyStr~7 len@1)0@3)
+        (stmts~1,1
+         (call@L
+          (dot~7
+           (dot~C rs~2 activeTypes@1)setLen@1)
+          (infix@K \2D
+           (dot~5
+            (dot~C rs~2 activeTypes@1)len@1)1@2))
+         (ret@,1 false@7))))
+      (asgn@5,4 text~5
+       (infix@g &
+        (infix~A &
+         (infix~8 &
+          (infix~7 &
+           (infix~7 & "type "~8 name@2)prag@2)" = "@2)bodyStr@2)"\0A"@2)))))
+   (call@L,y
+    (dot~7
+     (dot~C rs~2 activeTypes@1)setLen@1)
+    (infix@K \2D
+     (dot~5
+      (dot~C rs~2 activeTypes@1)len@1)1@2))
+   (cmd@C,z
+    (dot
+     (dot~A rs~2 seenTypes@1)add@1)sym@5)
+   (cmd@C,10
+    (dot
+     (dot~A rs~2 usedNames@1)add@1)name@5)
+   (cmd@C,11
+    (dot
+     (dot~A rs~2 typeDecls@1)add@1)text@5)
+   (asgn@7,12 result~7 true@2)))
+ (proc@,4H addProcRedecl@5 x . .
+  (params@J
+   (param@1 sym . . SymId@5 .)
+   (param@D decl . . Cursor@6 .)
+   (param@R rs . .
+    (mut@4 RedeclSet@4).))bool@l . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@A !=
+      (dot~6 decl~4 kind@1)ParLe@3)
+     (stmts@K
+      (ret false@7))))
+   (let@4,4 rt . . .
+    (call@E asRoutine~9 decl@1 SkipInclBody@7))
+   (if@,5
+    (elif@3
+     (infix@H !=
+      (dot~6
+       (dot~9 rt~2 typevars@1)kind@1)DotToken@3)
+     (stmts@U
+      (ret false@7))))
+   (let@4,6 name . . .
+    (call@H baseNameOf~A sym@1))
+   (if@,7
+    (elif@3
+     (infix@9 ==
+      (dot~5 name~4 len@1)0@3)
+     (stmts@F
+      (ret false@7))))
+   (for@4,8
+    (dot@7 rs~2 usedNames@1)
+    (unpackflat
+     (let n . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == n~2 name@3)
+       (stmts@B
+        (ret false@7))))))
+   (var@4,A pok . . . true@6)
+   (var@4,B pimp . . . false@7)
+   (let@4,C prag . . .
+    (call@J spellPragmas~C
+     (dot@3 rt~2 pragmas@1)pok@D pimp@I))
+   (if@,D
+    (elif@3
+     (prefix not pok@4)
+     (stmts@9
+      (ret false@7))))
+   (if@,H
+    (elif@3
+     (prefix not pimp@4)
+     (stmts@A
+      (ret false@7))))
+   (var@4,I params . . . ""@9)
+   (var@4,J n . . . 0@4)
+   (if@,K
+    (elif@3
+     (infix@O and
+      (infix~9 ==
+       (dot~6
+        (dot~7 rt~2 params@1)kind@1)ParLe@3)
+      (infix@N ==
+       (call~C nodeTag~7
+        (dot@3 rt~2 params@1))"params"@3))
+     (stmts~1,1
+      (var@4 p . . .
+       (dot@6 rt~2 params@1))
+      (cmd@,1 inc p@4)
+      (while@,2
+       (infix@D !=
+        (dot~6 p~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@G or
+           (infix~9 !=
+            (dot~6 p~1 kind@1)ParLe@3)
+           (infix@E !=
+            (call~4 nodeTag~7 p@1)"param"@3))
+          (stmts@g
+           (ret false@7))))
+        (var@4,1 q . . . p@4)
+        (cmd@,2 inc q@4)
+        (cmd@,3 skip q@5)
+        (cmd@,4 skip q@5)
+        (cmd@,5 skip q@5)
+        (var@4,6 pfx . . . ""@6)
+        (var@4,7 tc . . . q@5)
+        (if@,8
+         (elif@3
+          (infix@8 ==
+           (dot~6 tc~2 kind@1)ParLe@3)
+          (stmts~1,1
+           (let@4 ttg . . .
+            (call@D nodeTag~7 tc@1))
+           (if@,1
+            (elif@3
+             (infix@T or
+              (infix~G or
+               (infix~9 == ttg~4 "out"@3)
+               (infix@7 == ttg~4 "var"@3))
+              (infix@7 == ttg~4 "sink"@3))
+             (stmts~1,1
+              (asgn@4 pfx~4
+               (infix@6 & ttg~4 " "@2))
+              (cmd@,1 inc tc@4)))))))
+        (let@4,D ts . . .
+         (call@I spellTypeExpr~D tc@1 rs@5 0@9))
+        (if@,E
+         (elif@3
+          (infix@7 ==
+           (dot~5 ts~2 len@1)0@3)
+          (stmts@D
+           (ret false@7))))
+        (if@,F
+         (elif@3
+          (infix@2 > n~2 0@2)
+          (stmts@7
+           (cmd@6
+            (dot params~6 add@1)"; "@5))))
+        (cmd@6,G
+         (dot params~6 add@1)
+         (infix@R &
+          (infix~6 &
+           (infix~7 &
+            (infix~5 & "a"~4
+             (prefix@2 $ n@1))"\3A "@2)pfx@2)ts@2))
+        (cmd@,H inc n@4)
+        (cmd@,I skip p@5))))))
+   (var@4,h ret . . . ""@6)
+   (if@,i
+    (elif@3
+     (infix@G !=
+      (dot~6
+       (dot~8 rt~2 retType@1)kind@1)DotToken@3)
+     (stmts~1,1
+      (let@4 rs2 . . .
+       (call@J spellTypeExpr~D
+        (dot@3 rt~2 retType@1)rs@D 0@H))
+      (if@,1
+       (elif@3
+        (infix@8 ==
+         (dot~5 rs2~3 len@1)0@3)
+        (stmts@E
+         (ret false@7))))
+      (asgn@4,2 ret~4
+       (infix@7 & "\3A "~5 rs2@2)))))
+   (cmd@C,m
+    (dot
+     (dot~A rs~2 usedNames@1)add@1)name@5)
+   (cmd@C,n
+    (dot
+     (dot~A rs~2 procDecls@1)add@1)
+    (infix@s &
+     (infix~7 &
+      (infix~6 &
+       (infix~6 &
+        (infix~9 &
+         (infix~6 &
+          (infix~7 & "proc "~8 name@2)"\28"@2)params@2)"\29"@2)ret@2)prag@2)"\0A"@2))
+   (asgn@7,o result~7 true@2)))
+ (proc@,58 renderProcRedecls@5 x . .
+  (params@N
+   (param@1 rs . . RedeclSet@4 .))string@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7 ""@2)
+   (for@4,4
+    (dot@7 rs~2 procDecls@1)
+    (unpackflat
+     (let p . . ..))
+    (stmts@J
+     (cmd@6
+      (dot result~6 add@1)p@5))))))

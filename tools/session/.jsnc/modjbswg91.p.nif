@@ -1,0 +1,116 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/gear2/modnames.nim
+ (import
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)tinyhashes@2))
+ (fromimport@,1
+  (infix@9 / std~4 os@2)splitFile@L relativePath@W isAbsolute@k getCurrentDir@w
+  (quoted@1B /@1))
+ (include@,3
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (proc@,5 extractModulename@5 . . .
+  (params@M
+   (param@1 x . . string@3 .))string@D . .
+  (stmts@i
+   (dot@C
+    (call~3 splitFile~9 x@1)name@1)))
+ (const@2,8 PrefixLen . . . 3@C)
+ (const@2,B Base36 . . . "0123456789abcdefghijklmnopqrstuvwxyz"@9)
+ (proc@,D uhashBase36@5 x . .
+  (params@H
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (var@4 id . . .
+    (call@A uhash~5 s@1))
+   (asgn@7,1 result~7
+    (call@G newStringOfCap~E 8@1))
+   (while@,3
+    (infix@9 > id~3
+     (suf@2 0u "u32"))
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@B Base36~6
+       (call@4 int~3
+        (infix@4 mod id~3
+         (suf@4 36u "u32")))))
+     (asgn@3,1 id~3
+      (infix@5 div id~3
+       (suf@4 36u "u32")))))))
+ (proc@,L moduleSuffix@5 x . .
+  (params@I
+   (param@1 path . . string@6 .)
+   (param@F searchPaths . .
+    (at@M openArray~9 string@1).))string@m . .
+  (stmts@2,5
+   (var@4 f . . . path@4)
+   (try@,1
+    (stmts@2,1
+     (asgn@2 f~2
+      (call@E relativePath~C path@1
+       (call@K getCurrentDir~D)'/'@O)))
+    (except@,2 .
+     (stmts@2,1
+      (discard .))))
+   (for@4,6 searchPaths@5
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (try
+      (stmts@2,1
+       (let@4 candidate . . .
+        (call@O relativePath~C path@1 s@7 '/'@A))
+       (if@,1
+        (elif@3
+         (infix@E <
+          (dot~5 candidate~9 len@1)
+          (dot@3 f~1 len@1))
+         (stmts~1,1
+          (asgn@2 f~2 candidate@2)))))
+      (except@,4 .
+       (stmts@2,1
+        (discard .))))))
+   (let@4,D m . . .
+    (call@L extractModulename~H f@1))
+   (var@4,E id . . .
+    (call@A uhash~5 f@1))
+   (asgn@7,F result~7
+    (call@G newStringOfCap~E 10@1))
+   (for@4,G
+    (infix@6 \2E\2E< 0~1
+     (call@6 min~3
+      (dot@2 m~1 len@1)PrefixLen@8))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@6 m~1 i@1))))
+   (while@,J
+    (infix@9 > id~3
+     (suf@2 0u "u32"))
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@B Base36~6
+       (call@4 int~3
+        (infix@4 mod id~3
+         (suf@4 36u "u32")))))
+     (asgn@3,1 id~3
+      (infix@5 div id~3
+       (suf@4 36u "u32")))))))
+ (when@,n
+  (elif@5
+   (infix@D and isMainModule~D
+    (prefix@4 not
+     (call@B defined~7 nimony@1)))
+   (stmts~3,3
+    (cmd echo
+     (call@H moduleSuffix~C "/Users/rumpf/projects/nimony/lib/std/system.nim"@1
+      (bracket@q)))
+    (cmd@,1 echo
+     (call@H moduleSuffix~C "/Users/rumpf/projects/nimony/lib/std/system.nim"@1
+      (bracket@q "/Users/rumpf/projects/nimony/lib"@1)))))))

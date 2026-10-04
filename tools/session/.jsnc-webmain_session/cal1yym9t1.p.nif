@@ -1,0 +1,43 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,3,../../../../../../home/savant/nimony/src/models/callconv_tags.nim
+ (import tags@7)
+ (type@C,3 CallConv~A x . .
+  (enum@2 .
+   (efld~A,1 NoCallConv . . . .)
+   (efld~2,2 Cdecl~8 . . .
+    (tup
+     (call@4 ord~3 CdeclTagId@1)"cdecl"@I))
+   (efld@,3 Stdcall~A . . .
+    (tup
+     (call@4 ord~3 StdcallTagId@1)"stdcall"@K))
+   (efld@1,4 Safecall~B . . .
+    (tup
+     (call@4 ord~3 SafecallTagId@1)"safecall"@L))
+   (efld@,5 Syscall~A . . .
+    (tup
+     (call@4 ord~3 SyscallTagId@1)"syscall"@K))
+   (efld@1,6 Fastcall~B . . .
+    (tup
+     (call@4 ord~3 FastcallTagId@1)"fastcall"@L))
+   (efld@1,7 Thiscall~B . . .
+    (tup
+     (call@4 ord~3 ThiscallTagId@1)"thiscall"@L))
+   (efld~1,8 Noconv~9 . . .
+    (tup
+     (call@4 ord~3 NoconvTagId@1)"noconv"@J))
+   (efld~1,9 Member~9 . . .
+    (tup
+     (call@4 ord~3 MemberTagId@1)"member"@J))
+   (efld@,A Nimcall~A . . .
+    (tup
+     (call@4 ord~3 NimcallTagId@1)"nimcall"@K))))
+ (proc@,F rawTagIsCallConv@5 x . .
+  (params@M
+   (param@1 raw . . TagEnum@5 .))bool@G
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (infix@I and
+    (infix~E >= raw~4 CdeclTagId@3)
+    (infix@8 <= raw~4 NimcallTagId@3)))))

@@ -1,0 +1,21 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import strutils)
+ (import
+  (infix / posix posix))
+ (import cmdline)
+ (import envvars)
+ (import oserrors)
+ (import
+  (infix / private
+   (bracket ospaths2 osappdirs oscommons)))
+ (export cmdline)
+ (export ospaths2)
+ (export osappdirs)
+ (export oscommons)
+ (import
+  (when
+   (call defined windows))
+  (infix / windows winlean)))

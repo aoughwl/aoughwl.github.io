@@ -1,0 +1,64 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/langmodes.nim
+ (comment)
+ (type@D,3 CheckMode~B x . .
+  (enum@2 .
+   (efld~B,1 BoundCheck . . . .)
+   (efld~B,2 RangeCheck . . . .)))
+ (type@E,7 ModuleFlag~C x . .
+  (enum@2 .
+   (efld~C,1 IsSystem . . . .)
+   (efld~2,1 IsMain . . . .)
+   (efld@6,1 SkipSystem . . . .)))
+ (const@H,B DefaultSettings~F x . .
+  (curly@4 BoundCheck@1 RangeCheck@D))
+ (const@2,E shortcuts . .
+  (at@G array~5 CheckMode@1 char@C)
+  (bracket@a
+   (kv~O,1 BoundCheck~A 'b'@2)
+   (kv~O,2 RangeCheck~A 'r'@2)))
+ (proc@,J genFlags@5 x . .
+  (params@E
+   (param@1 s . .
+    (at@6 set~3 CheckMode@1).))string@L . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (for@4,1 s@5
+    (unpackflat
+     (let e . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@E shortcuts~9 e@1))))))
+ (proc@,O parseFlags@5 x . .
+  (params@G
+   (param@1 s . . string@3 .))
+  (at@G set~3 CheckMode@1). .
+  (stmts@2,1
+   (asgn@7 result~7
+    (curly@2))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 s~1 len@1))
+    (stmts@2,1
+     (let@4 c . . .
+      (at@5 s~1 i@1))
+     (for@4,1
+      (infix@K \2E\2E
+       (call~C low~3 CheckMode@1)
+       (call@7 high~4 CheckMode@1))
+      (unpackflat
+       (let m . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@2 == c~2
+          (at@C shortcuts~9 m@1))
+         (stmts~1,1
+          (cmd@6
+           (dot result~6 incl@1)m@6)
+          (break@,1 .))))))
+     (cmd@,5 inc i@4))))))

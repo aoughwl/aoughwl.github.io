@@ -1,0 +1,2999 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/nifcursors.nim
+ (comment)
+ (import@,1B
+  (infix@B / std~4
+   (bracket@2 assertions@1 syncio@D)))
+ (import@,1C nifreader@7 nifstreams@I bitabs@U lineinfos@c vfs@n)
+ (export@,1D
+  (dot@A vfs~3 FileWriteMode@1))
+ (include@,1F compat2@8)
+ (when@,1H
+  (elif@5
+   (call@7 defined~7 prepMutStats@1)
+   (stmts~3,1
+    (var@G cowFastCount~C x . int@3 .)
+    (var@G,1 cowSlowCount~C x . int@3 .)
+    (var@G,2 cowSlowBytes~C x . int@3 .))))
+ (type@A,1N Storage~8 . . .
+  (ptr@2
+   (at@I UncheckedArray~E PackedToken@1)))
+ (type@E,1O CursorOwner~C . . .
+  (ptr@2 CursorOwnerObj@4))
+ (type@H,1P CursorOwnerObj~F . . .
+  (object@2 .
+   (fld~F,1 rc . . int@4 .)
+   (fld~F,2 data . . Storage@6 .)))
+ (type@A,1T Cursor~8 x . .
+  (object@2 .
+   (fld~8,1 owner . . CursorOwner@7 .)
+   (fld~8,2 p . .
+    (ptr@3 PackedToken@4).)
+   (fld~8,3 rem . . int@5 .)))
+ (template@,1Y decRcAndFree@9 . . .
+  (params@L
+   (param@1 owner . . CursorOwner@7 .)). . .
+  (stmts@2,1
+   (cmd dec
+    (dot@9 owner~5 rc@1))
+   (if@,1
+    (elif@3
+     (infix@9 ==
+      (dot~4 owner~5 rc@1)0@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@B !=
+         (dot~6 owner~5 data@1)
+         (nil@3))
+        (stmts@J
+         (call@7 dealloc~7
+          (dot@6 owner~5 data@1)))))
+      (call@7,1 dealloc~7 owner@1))))))
+ (when@,1e
+  (elif@5
+   (infix@Y and
+    (call~R defined~7 nimAllowNonVarDestructor@1)
+    (call@B defined~7 gcDestructors@1))
+   (stmts~3,1
+    (proc
+     (quoted@5 =@1 destroy@2) x . .
+     (params@G
+      (param@1 c . . Cursor@3 .)).
+     (pragmas@S inline@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@8 !=
+         (dot~7 c~1 owner@1)
+         (nil@3))
+        (stmts~1,1
+         (call@C decRcAndFree~C
+          (dot@2 c~1 owner@1)))))))))
+  (else@,4
+   (stmts@2,1
+    (proc
+     (quoted@5 =@1 destroy@2) x . .
+     (params@G
+      (param@1 c . .
+       (mut@3 Cursor@4).)).
+     (pragmas@W inline@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@8 !=
+         (dot~7 c~1 owner@1)
+         (nil@3))
+        (stmts~1,1
+         (call@C decRcAndFree~C
+          (dot@2 c~1 owner@1))))))))))
+ (proc@,1n
+  (quoted@5 =@1 wasMoved@2) x . .
+  (params@H
+   (param@1 c . .
+    (mut@3 Cursor@4).)).
+  (pragmas@X inline@2).
+  (stmts@2,1
+   (asgn@8
+    (dot~7 c~1 owner@1)
+    (nil@2))
+   (asgn@4,1
+    (dot~3 c~1 p@1)
+    (nil@2))
+   (asgn@6,2
+    (dot~5 c~1 rem@1)0@2)))
+ (proc@,1s
+  (quoted@5 =@1 copy@2) x . .
+  (params@D
+   (param@1 dest . .
+    (mut@6 Cursor@4).)
+   (param@J src . . Cursor@5 .)).
+  (pragmas@j inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@O or
+      (infix~D !=
+       (dot~7 dest~4 owner@1)
+       (dot@6 src~3 owner@1))
+      (infix@A !=
+       (dot~3 dest~4 p@1)
+       (dot@6 src~3 p@1)))
+     (stmts~1,1
+      (call@A
+       (quoted~A =@1 destroy@2)dest@1)
+      (if@,1
+       (elif@3
+        (infix@A !=
+         (dot~7 src~3 owner@1)
+         (nil@3))
+        (stmts@I
+         (cmd inc
+          (dot@D
+           (dot~6 src~3 owner@1)rc@1)))))
+      (asgn@B,2
+       (dot~7 dest~4 owner@1)
+       (dot@5 src~3 owner@1))
+      (asgn@7,3
+       (dot~3 dest~4 p@1)
+       (dot@5 src~3 p@1))
+      (asgn@9,4
+       (dot~5 dest~4 rem@1)
+       (dot@5 src~3 rem@1)))))))
+ (proc@,20
+  (quoted@5 =@1 dup@2) x . .
+  (params@C
+   (param@1 src . . Cursor@5 .))Cursor@F
+  (pragmas@Y nodestroy@2 inline@D).
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@8 Cursor~6
+     (kv@6 owner~5
+      (dot@5 src~3 owner@1))
+     (kv@K p~1
+      (dot@5 src~3 p@1))
+     (kv@W rem~3
+      (dot@5 src~3 rem@1))))
+   (if@,1
+    (elif@3
+     (infix@D !=
+      (dot~7 result~6 owner@1)
+      (nil@3))
+     (stmts@L
+      (cmd inc
+       (dot@G
+        (dot~6 result~6 owner@1)rc@1)))))))
+ (let@2,25 ErrToken . . .
+  (bracket@B
+   (call@B parLeToken~A ErrT@1 NoLineInfo@7)
+   (call@B,1 parRiToken~A NoLineInfo@1)))
+ (proc@,28 errCursor@5 x . .
+  (params@F)Cursor@4 . .
+  (stmts@2,1
+   (oconstr@6 Cursor~6
+    (kv@2 p~1
+     (cmd@7 addr~5
+      (at@8 ErrToken~8 0@1)))
+    (kv@P rem~3 2@2))))
+ (proc@,2B fromBuffer@5 x . .
+  (params@G
+   (param@1 x . .
+    (at@C openArray~9 PackedToken@1).))Cursor@T
+  (pragmas@q inline@2).
+  (stmts@2,1
+   (oconstr@6 Cursor~6
+    (kv@2 p~1
+     (call@6 addr~4
+      (at@2 x~1 0@1)))
+    (kv@J rem~3
+     (dot@3 x~1 len@1)))))
+ (proc@,2E setSpan@5 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G beyondLast . . Cursor@C .)).
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (asgn@6
+    (dot~5 c~1 rem@1)
+    (infix@j div
+     (par~h
+      (infix@P \2D
+       (cast~O int@5
+        (dot@K beyondLast~A p@1))
+       (cast@2 int@5
+        (dot@B c~1 p@1))))
+     (call@A sizeof~6 PackedToken@1)))))
+ (proc@,2H load@5 x . .
+  (params@A
+   (param@1 c . . Cursor@3 .))PackedToken@D
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@I and
+     (infix~7 !=
+      (dot~3 c~1 p@1)
+      (nil@3))
+     (infix@A >
+      (dot~5 c~1 rem@1)0@2)))
+   (at@3,1
+    (dot~2 c~1 p@1))))
+ (proc@,2L kind@5 x . .
+  (params@A
+   (param@1 c . . Cursor@3 .))NifKind@D
+  (pragmas@V inline@2).
+  (stmts@i
+   (dot@6
+    (dot~5 c~1 load@1)kind@1)))
+ (proc@,2N info@5 x . .
+  (params@A
+   (param@1 c . . Cursor@3 .))PackedLineInfo@D
+  (pragmas@c inline@2).
+  (stmts@p
+   (dot@6
+    (dot~5 c~1 load@1)info@1)))
+ (proc@,2O setInfo@5 x . .
+  (params@D
+   (param@1 c . . Cursor@3 .)
+   (param@C info . . PackedLineInfo@6 .)).
+  (pragmas@l inline@2).
+  (stmts@y
+   (asgn@B
+    (dot~6
+     (at~2
+      (dot~2 c~1 p@1))info@1)info@2)))
+ (proc@,2Q litId@5 x . .
+  (params@B
+   (param@1 c . . Cursor@3 .))StrId@D
+  (pragmas@U inline@2).
+  (stmts@h
+   (call@G
+    (dot~6 nifstreams~A litId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2R symId@5 x . .
+  (params@B
+   (param@1 c . . Cursor@3 .))SymId@D
+  (pragmas@U inline@2).
+  (stmts@h
+   (call@G
+    (dot~6 nifstreams~A symId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2T charLit@5 x . .
+  (params@D
+   (param@1 c . . Cursor@3 .))char@D
+  (pragmas@V inline@2).
+  (stmts@i
+   (call@I
+    (dot~8 nifstreams~A charLit@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2V intId@5 x . .
+  (params@B
+   (param@1 c . . Cursor@3 .))IntId@D
+  (pragmas@U inline@2).
+  (stmts@h
+   (call@G
+    (dot~6 nifstreams~A intId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2W uintId@5 x . .
+  (params@C
+   (param@1 c . . Cursor@3 .))UIntId@D
+  (pragmas@W inline@2).
+  (stmts@j
+   (call@H
+    (dot~7 nifstreams~A uintId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2X floatId@5 x . .
+  (params@D
+   (param@1 c . . Cursor@3 .))FloatId@D
+  (pragmas@Y inline@2).
+  (stmts@l
+   (call@I
+    (dot~8 nifstreams~A floatId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2Y tagId@5 x . .
+  (params@B
+   (param@1 c . . Cursor@3 .))TagId@D
+  (pragmas@U inline@2).
+  (stmts@h
+   (call@G
+    (dot~6 nifstreams~A tagId@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2a tag@5 x . .
+  (params@9
+   (param@1 c . . Cursor@3 .))TagId@D
+  (pragmas@S inline@2).
+  (stmts@f
+   (call@E
+    (dot~4 nifstreams~A tag@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2c uoperand@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))uint32@D
+  (pragmas@Y inline@2).
+  (stmts@l
+   (call@J
+    (dot~9 nifstreams~A uoperand@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2d soperand@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))int32@D
+  (pragmas@X inline@2).
+  (stmts@k
+   (call@J
+    (dot~9 nifstreams~A soperand@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2f getInt28@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))int32@D
+  (pragmas@X inline@2).
+  (stmts@k
+   (call@J
+    (dot~9 nifstreams~A getInt28@1)
+    (dot@2 c~1 load@1))))
+ (proc@,2h inc@5 x . .
+  (params@9
+   (param@1 c . .
+    (mut@3 Cursor@4).)).
+  (pragmas@P inline@2).
+  (stmts@2,1
+   (when
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (cmd assert
+       (infix@D !=
+        (dot~5 c~1 rem@1)0@3)"advancing past end of scope"@J)
+      (asgn@4,1
+       (dot~3 c~1 p@1)
+       (cast@2
+        (ptr@5 PackedToken@4)
+        (infix@c \2B
+         (cast~G uint@5
+          (dot@C c~1 p@1))
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (if@,2
+       (elif@3
+        (infix@6 >
+         (dot~5 c~1 rem@1)0@2)
+        (stmts@B
+         (cmd dec
+          (dot@5 c~1 rem@1)))))))
+    (else@,4
+     (stmts@2,1
+      (cmd assert
+       (infix@D >
+        (dot~5 c~1 rem@1)0@2))
+      (asgn@4,1
+       (dot~3 c~1 p@1)
+       (cast@2
+        (ptr@5 PackedToken@4)
+        (infix@c \2B
+         (cast~G uint@5
+          (dot@C c~1 p@1))
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (cmd@,2 dec
+       (dot@5 c~1 rem@1)))))))
+ (proc@,2r consumeParRi@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)).
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (comment)
+   (cmd@,4 assert
+    (infix@E ==
+     (dot~6 c~1 kind@1)ParRi@3)"consumeParRi\3A cursor not at ParRi"@O)
+   (when@,5
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (asgn@4
+       (dot~3 c~1 p@1)
+       (cast@2
+        (ptr@5 PackedToken@4)
+        (infix@c \2B
+         (cast~G uint@5
+          (dot@C c~1 p@1))
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (if@,1
+       (elif@3
+        (infix@6 >
+         (dot~5 c~1 rem@1)0@2)
+        (stmts@B
+         (cmd dec
+          (dot@5 c~1 rem@1)))))))
+    (else@,3
+     (stmts@2,1
+      (cmd inc c@4))))))
+ (proc@,35 unsafeDec@5 x . .
+  (params@F
+   (param@1 c . .
+    (mut@3 Cursor@4).)).
+  (pragmas@V inline@2).
+  (stmts@2,1
+   (asgn@4
+    (dot~3 c~1 p@1)
+    (cast@2
+     (ptr@5 PackedToken@4)
+     (infix@c \2D
+      (cast~G uint@5
+       (dot@C c~1 p@1))
+      (dot@L
+       (call~D sizeof~6 PackedToken@1)uint@1))))
+   (cmd@,1 inc
+    (dot@5 c~1 rem@1))))
+ (proc@,39
+  (quoted@5 \2B!@1) x . .
+  (params@A
+   (param@1 c . . Cursor@3 .)
+   (param@C diff . . int@6 .))Cursor@O
+  (pragmas@f inline@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@C <= diff~5
+     (dot@4 c~1 rem@1)))
+   (asgn@7,1 result~7
+    (oconstr@8 Cursor~6
+     (kv@6 owner~5
+      (dot@3 c~1 owner@1))
+     (kv~B,1 p~1
+      (cast@2
+       (ptr@5 PackedToken@4)
+       (infix@c \2B
+        (cast~G uint@5
+         (dot@C c~1 p@1))
+        (infix@C *
+         (dot~6 diff~4 uint@1)
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1)))))
+     (kv~9,2 rem~3
+      (infix@8 \2D
+       (dot~5 c~1 rem@1)diff@2))))
+   (if@,4
+    (elif@3
+     (infix@D !=
+      (dot~7 result~6 owner@1)
+      (nil@3))
+     (stmts@L
+      (cmd inc
+       (dot@G
+        (dot~6 result~6 owner@1)rc@1)))))))
+ (proc@,3G cursorIsNil@5 x . .
+  (params@H
+   (param@1 c . . Cursor@3 .))bool@D
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@6 ==
+     (dot~3 c~1 p@1)
+     (nil@3)))))
+ (proc@,3J hasCurrentToken@5 x . .
+  (params@L
+   (param@1 c . . Cursor@3 .))bool@D
+  (pragmas@d inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,5 result~7
+    (infix@D and
+     (infix~7 !=
+      (dot~3 c~1 p@1)
+      (nil@3))
+     (infix@A >
+      (dot~5 c~1 rem@1)0@2)))))
+ (when@,3R
+  (elif@5
+   (call@7 defined~7 virtualParRi@1)
+   (stmts~3,1
+    (template subtreeSpan@9 . . .
+     (params@K
+      (param@1 n . . PackedToken@3 .))uint32@I . .
+     (stmts@2,1
+      (comment)
+      (case@,4
+       (dot@6 n~1 kind@1)
+       (of@,1
+        (ranges ParLe@3)
+        (stmts@2,1
+         (let@4 j . . .
+          (call@8 jump~4 n@1))
+         (if@,1
+          (elif@3
+           (infix@2 == j~2 MaxJump@3)
+           (stmts@E
+            (suf 0u "u32")))
+          (else@,1
+           (stmts@2,1
+            (when
+             (elif@5
+              (call@7 defined~7 preserveRealParRi@1)
+              (stmts@S
+               (infix@6 \2B
+                (suf~6 2u "u32")j@2)))
+             (else@,1
+              (stmts@6
+               (infix@6 \2B
+                (suf~6 1u "u32")j@2)))))))))
+       (else@,7
+        (stmts@6
+         (suf 1u "u32")))))))))
+ (proc@,3g skip@5 x . .
+  (params@A
+   (param@1 c . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (stmts~1,1
+         (let@4 span . . .
+          (call@I subtreeSpan~B
+           (dot@2 c~1 load@1)))
+         (if@,1
+          (elif@3
+           (infix@5 > span~5 0@2)
+           (stmts~1,1
+            (asgn@4
+             (dot~3 c~1 p@1)
+             (cast@2
+              (ptr@5 PackedToken@4)
+              (infix@c \2B
+               (cast~G uint@5
+                (dot@C c~1 p@1))
+               (infix@D *
+                (call~7 uint~4 span@1)
+                (dot@L
+                 (call~D sizeof~6 PackedToken@1)uint@1)))))
+            (if@,1
+             (elif@3
+              (infix@6 >
+               (dot~5 c~1 rem@1)0@2)
+              (stmts~1,1
+               (let@4 s . . .
+                (call@7 int~3 span@1))
+               (asgn@6,1
+                (dot~5 c~1 rem@1)
+                (if@2
+                 (elif@3
+                  (infix@6 >=
+                   (dot~5 c~1 rem@1)s@3)
+                  (stmts@C
+                   (infix@6 \2D
+                    (dot~5 c~1 rem@1)s@2)))
+                 (else@P
+                  (stmts@6 0)))))))
+            (ret@,4 .))))
+         (var@4,9 depth . . . 1@8)
+         (cmd@,A inc c@4)
+         (while@,B
+          (infix@C > depth~6 0@2)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)ParRi@3)
+             (stmts~1,1
+              (cmd dec depth@4)
+              (cmd@,1 inc c@4)))
+            (elif@5,3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)ParLe@3)
+             (stmts~3,1
+              (let@4 innerSpan . . .
+               (call@N subtreeSpan~B
+                (dot@2 c~1 load@1)))
+              (if@,1
+               (elif@3
+                (infix@A > innerSpan~A 0@2)
+                (stmts~1,1
+                 (asgn@4
+                  (dot~3 c~1 p@1)
+                  (cast@2
+                   (ptr@5 PackedToken@4)
+                   (infix@c \2B
+                    (cast~G uint@5
+                     (dot@C c~1 p@1))
+                    (infix@I *
+                     (call~C uint~4 innerSpan@1)
+                     (dot@L
+                      (call~D sizeof~6 PackedToken@1)uint@1)))))
+                 (if@,1
+                  (elif@3
+                   (infix@6 >
+                    (dot~5 c~1 rem@1)0@2)
+                   (stmts~1,1
+                    (let@4 s . . .
+                     (call@7 int~3 innerSpan@1))
+                    (asgn@6,1
+                     (dot~5 c~1 rem@1)
+                     (if@2
+                      (elif@3
+                       (infix@6 >=
+                        (dot~5 c~1 rem@1)s@3)
+                       (stmts@C
+                        (infix@6 \2D
+                         (dot~5 c~1 rem@1)s@2)))
+                      (else@P
+                       (stmts@6 0)))))))))
+               (else@,5
+                (stmts@2,1
+                 (cmd inc depth@4)
+                 (cmd@,1 inc c@4))))))
+            (else@,D
+             (stmts@2,1
+              (cmd inc c@4))))))))
+       (else@,S
+        (stmts@2,1
+         (cmd inc c@4))))))
+    (else@,V
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (stmts~1,1
+         (var@4 nested . . . 0@9)
+         (while@,1 true@6
+          (stmts@2,1
+           (cmd inc c@4)
+           (if@,1
+            (elif@3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)ParRi@3)
+             (stmts~1,1
+              (if
+               (elif@3
+                (infix@7 == nested~7 0@3)
+                (stmts@D
+                 (break .))))
+              (cmd@,1 dec nested@4)))
+            (elif@5,3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)ParLe@3)
+             (stmts@H
+              (cmd inc nested@4)))))))))
+      (cmd@,8 inc c@4))))))
+ (proc@,4N skipUntilEnd@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 nested . . . 0@9)
+   (while@,2 true@6
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 c~1 kind@1)ParRi@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (break .))))
+        (cmd@,2 dec nested@4)))
+      (elif@5,4
+       (infix@7 ==
+        (dot~6 c~1 kind@1)ParLe@3)
+       (stmts~3,1
+        (cmd inc nested@4))))
+     (cmd@,6 inc c@4)))))
+ (template@,4c hasMore@9 x . .
+  (params@H
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (when@,2
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (infix@A and
+       (infix~4 >
+        (dot~5 n~1 rem@1)0@2)
+       (infix@B !=
+        (dot~6 n~1 kind@1)ParRi@3))))
+    (else@,2
+     (stmts@2,1
+      (infix@7 !=
+       (dot~6 n~1 kind@1)ParRi@3))))))
+ (template@,4k into@9 x . .
+  (params@E
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,G assert
+    (infix@E ==
+     (dot~6 n~1 kind@1)ParLe@3)"into requires cursor at ParLe"@O)
+   (when@,H
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (let@4 savedRem . . .
+       (dot@C n~1 rem@1))
+      (let@4,1 savedP . . .
+       (dot@C n~1 p@1))
+      (let@4,2 j . . .
+       (call@F jump~4
+        (dot@2 n~1 load@1)))
+      (let@4,3 isOverflow . . .
+       (infix@F == j~2 MaxJump@3))
+      (asgn@4,4
+       (dot~3 n~1 p@1)
+       (cast@2
+        (ptr@5 PackedToken@4)
+        (infix@c \2B
+         (cast~G uint@5
+          (dot@C n~1 p@1))
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (asgn@6,5
+       (dot~5 n~1 rem@1)
+       (if@2
+        (elif@3 isOverflow
+         (stmts@C
+          (call@4 high~4 int@1)))
+        (else@P
+         (stmts@6
+          (call@3 int~3 j@1)))))body@,6
+      (if@,7
+       (elif@3 isOverflow
+        (stmts~1,1
+         (cmd assert
+          (infix@E ==
+           (dot~6 n~1 kind@1)ParRi@3)"into\3A overflow scope did not end at real ParRi"@O)
+         (asgn@4,1
+          (dot~3 n~1 p@1)
+          (cast@2
+           (ptr@5 PackedToken@4)
+           (infix@c \2B
+            (cast~G uint@5
+             (dot@C n~1 p@1))
+            (dot@L
+             (call~D sizeof~6 PackedToken@1)uint@1))))))
+       (else@,3
+        (stmts@2,1
+         (cmd assert
+          (infix@D ==
+           (dot~5 n~1 rem@1)0@3)"into\3A body did not consume all children of sealed scope"@J)
+         (when@,1
+          (elif@5
+           (call@7 defined~7 preserveRealParRi@1)
+           (stmts~3,1
+            (if
+             (elif@3
+              (infix@7 ==
+               (dot~6 n~1 kind@1)ParRi@3)
+              (stmts~1,1
+               (asgn@4
+                (dot~3 n~1 p@1)
+                (cast@2
+                 (ptr@5 PackedToken@4)
+                 (infix@c \2B
+                  (cast~G uint@5
+                   (dot@C n~1 p@1))
+                  (dot@L
+                   (call~D sizeof~6 PackedToken@1)uint@1)))))))))))))
+      (let@4,I consumed . . .
+       (call@E int~3
+        (infix@e div
+         (par~d
+          (infix@H \2D
+           (cast~G uint@5
+            (dot@C n~1 p@1))
+           (cast@2 uint@5 savedP@B)))
+         (dot@N
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (asgn@6,J
+       (dot~5 n~1 rem@1)
+       (if@2
+        (elif@3
+         (infix@9 >= savedRem~9 consumed@3)
+         (stmts@M
+          (infix@9 \2D savedRem~9 consumed@2)))
+        (else@j
+         (stmts@6 0))))))
+    (else@,L
+     (stmts@2,1
+      (cmd inc n@4)body@,1
+      (cmd@,2 assert
+       (infix@E ==
+        (dot~6 n~1 kind@1)ParRi@3)"into\3A body must consume all children"@O)
+      (cmd@,3 inc n@4))))))
+ (template@,5T peekInto@9 x . .
+  (params@I
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,8 assert
+    (infix@E ==
+     (dot~6 n~1 kind@1)ParLe@3)"peekInto requires cursor at ParLe"@O)
+   (when@,9
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,2
+      (let@4 savedParLe . . . n@D)
+      (let@4,1 j . . .
+       (call@8 jump~4
+        (dot@2 n~1 load@1)))
+      (let@4,2 isOverflow . . .
+       (infix@F == j~2 MaxJump@3))
+      (asgn@4,3
+       (dot~3 n~1 p@1)
+       (cast@2
+        (ptr@5 PackedToken@4)
+        (infix@c \2B
+         (cast~G uint@5
+          (dot@C n~1 p@1))
+         (dot@L
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (asgn@6,4
+       (dot~5 n~1 rem@1)
+       (if@2
+        (elif@3 isOverflow
+         (stmts@C
+          (call@4 high~4 int@1)))
+        (else@P
+         (stmts@6
+          (call@3 int~3 j@1)))))body@,5
+      (asgn@2,6 n~2 savedParLe@2)
+      (cmd@,7 skip n@5)))
+    (else@,A
+     (stmts@2,1
+      (cmd inc n@4)body@,1
+      (while@,2
+       (infix@D !=
+        (dot~6 n~1 kind@1)ParRi@3)
+       (stmts@N
+        (cmd skip n@5)))
+      (cmd@,3 inc n@4))))))
+ (template@,5t loopInto@9 x . .
+  (params@I
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,2 into n@5
+    (stmts@2,1
+     (while
+      (dot@7 n~1 hasMore@1)
+      (stmts@2,1 body))))))
+ (proc@,60 rootOf@5 x . .
+  (params@C
+   (param@1 c . . Cursor@3 .))SymId@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@7 SymId~5 0@1))
+   (var@4,3 n . . . c@4)
+   (if@,4
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (asgn@7 result~7
+       (dot@3 n~1 symId@1))))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 n~1 kind@1)ParLe@3)
+     (stmts~3,1
+      (call@1
+       (dot n~1 loopInto@1)
+       (stmts@1,1
+        (if
+         (elif@3
+          (infix@7 == result~7
+           (call@8 SymId~5 0@1))
+          (stmts~1,1
+           (let@4 inner . . .
+            (call@E rootOf~6 n@1))
+           (if@,1
+            (elif@3
+             (infix@6 != inner~6
+              (call@8 SymId~5 0@1))
+             (stmts@J
+              (asgn@7 result~7 inner@2)))))))
+        (cmd@,3 skip n@5))))))))
+ (template@,6E linearScan@9 x . .
+  (params@K
+   (param@1 n . .
+    (mut@3 Cursor@4).)
+   (param@G body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,8 nested . . . 0@9)
+   (if@,9
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (cmd inc nested@4)
+      (cmd@C inc n@4)
+      (while@,1
+       (infix@D > nested~7 0@2)
+       (stmts@2,1
+        (case
+         (dot@6 n~1 kind@1)
+         (of@,1
+          (ranges ParLe@3)
+          (stmts@2,1 body
+           (cmd@,1 inc nested@4)
+           (cmd@C,1 inc n@4)))
+         (of@,4
+          (ranges ParRi@3)
+          (stmts@2,1
+           (cmd dec nested@4)
+           (cmd@C inc n@4)))
+         (else@,6
+          (stmts@2,1
+           (cmd inc n@4)))))))))))
+ (type@C,6b TokenBuf~A x . .
+  (object@2 .
+   (fld~A,1 data . . Storage@6 .)
+   (fld~A,2 len . . int@A .)
+   (fld~5,2 cap . . int@5 .)
+   (fld~A,3 owner . . CursorOwner@7 .)
+   (when~A,6
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (fld openTags . .
+       (at@D seq~3 int@1).))))))
+ (proc@,6o
+  (quoted@5 =@1 copy@2). . .
+  (params@C
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . TokenBuf@5 .)).
+  (pragmas@m error@2). .)
+ (proc@,6p
+  (quoted@5 =@1 wasMoved@2). . .
+  (params@G
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)).
+  (pragmas@b inline@2).
+  (stmts@2,1
+   (asgn@A
+    (dot~6 dest~4 data@1)
+    (nil@2))
+   (asgn@9,1
+    (dot~5 dest~4 len@1)0@2)
+   (asgn@9,2
+    (dot~5 dest~4 cap@1)0@2)
+   (asgn@B,3
+    (dot~7 dest~4 owner@1)
+    (nil@2))))
+ (when@,6v
+  (elif@5
+   (infix@Y and
+    (call~R defined~7 nimAllowNonVarDestructor@1)
+    (call@B defined~7 gcDestructors@1))
+   (stmts~3,1
+    (proc
+     (quoted@5 =@1 destroy@2). . .
+     (params@F
+      (param@1 dest . . TokenBuf@6 .)).
+     (pragmas@W inline@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@B !=
+         (dot~7 dest~4 owner@1)
+         (nil@3))
+        (stmts~1,1
+         (call@C decRcAndFree~C
+          (dot@5 dest~4 owner@1))))
+       (else@,2
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@A !=
+            (dot~6 dest~4 data@1)
+            (nil@3))
+           (stmts@I
+            (call@7 dealloc~7
+             (dot@5 dest~4 data@1))))))))))))
+  (else@,6
+   (stmts@2,1
+    (proc
+     (quoted@5 =@1 destroy@2). . .
+     (params@F
+      (param@1 dest . .
+       (mut@6 TokenBuf@4).)).
+     (pragmas@a inline@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@B !=
+         (dot~7 dest~4 owner@1)
+         (nil@3))
+        (stmts~1,1
+         (call@C decRcAndFree~C
+          (dot@5 dest~4 owner@1))))
+       (else@,2
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@A !=
+            (dot~6 dest~4 data@1)
+            (nil@3))
+           (stmts@I
+            (call@7 dealloc~7
+             (dot@5 dest~4 data@1)))))))))))))
+ (template@,78 allocStorage@9 . . .
+  (params@L
+   (param@1 cap . . int@5 .))Storage@C . .
+  (stmts@2,1
+   (comment)
+   (cast@,A Storage@5
+    (call@J alloc~5
+     (infix@L *
+      (call~E sizeof~6 PackedToken@1)
+      (call@5 max~3 cap@1 8@6))))))
+ (proc@,7L createTokenBuf@5 x . .
+  (params@K
+   (param@1 cap . . . 100@6))TokenBuf@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@A TokenBuf~8
+     (kv@5 data~4
+      (call@E allocStorage~C cap@1))
+     (kv@T len~3 0@2)
+     (kv@b cap~3 cap@2)))))
+ (proc@,7O prepareMutation@5 x . .
+  (params@L
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)).
+  (pragmas@d inline@2).
+  (stmts@2,1
+   (comment)
+   (if@,G
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@B ==
+         (dot~4
+          (dot~6 b~1 owner@1)rc@1)1@3)
+        (stmts~1,6
+         (call@7 dealloc~7
+          (dot@2 b~1 owner@1))
+         (asgn@8,1
+          (dot~7 b~1 owner@1)
+          (nil@2))
+         (when@,2
+          (elif@5
+           (call@7 defined~7 prepMutStats@1)
+           (stmts@N
+            (cmd inc cowFastCount@4))))))
+       (else@,9
+        (stmts@2,1
+         (let@4 newData . . .
+          (call@M allocStorage~C
+           (dot@2 b~1 cap@1)))
+         (call@7,1 copyMem~7 newData@1
+          (dot@B b~1 data@1)
+          (infix@c *
+           (call~E sizeof~6 PackedToken@1)
+           (dot@3 b~1 len@1)))
+         (call@C,2 decRcAndFree~C
+          (dot@2 b~1 owner@1))
+         (asgn@8,3
+          (dot~7 b~1 owner@1)
+          (nil@2))
+         (asgn@7,4
+          (dot~6 b~1 data@1)newData@2)
+         (when@,5
+          (elif@5
+           (call@7 defined~7 prepMutStats@1)
+           (stmts~3,1
+            (cmd inc cowSlowCount@4)
+            (infix@D,1 \2B= cowSlowBytes~D
+             (infix@9 *
+              (dot~5 b~1 len@1)
+              (call@8 sizeof~6 PackedToken@1))))))))))))))
+ (proc@,7z freeze@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)).
+  (pragmas@U inline@2).
+  (stmts@h
+   (discard .)))
+ (proc@,80 thaw@5 x . .
+  (params@A
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)).
+  (pragmas@S inline@2).
+  (stmts@f
+   (discard .)))
+ (proc@,82 expectUnique@5 x . .
+  (params@I
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)).
+  (pragmas@a inline@2).
+  (stmts@2,1
+   (comment)
+   (when@,5
+    (elif@5
+     (call@7 defined~7 debug@1)
+     (stmts~3,1
+      (cmd assert
+       (infix@M or
+        (infix~7 ==
+         (dot~7 b~1 owner@1)
+         (nil@3))
+        (infix@E ==
+         (dot~4
+          (dot~6 b~1 owner@1)rc@1)1@3))"TokenBuf has live cursors; missing endRead before mutation"@2,1))))))
+ (proc@,8C beginRead@5 x . .
+  (params@F
+   (param@1 b . .
+    (mut@3 TokenBuf@4).))Cursor@J . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@8 ==
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts~1,1
+      (asgn@8
+       (dot~7 b~1 owner@1)
+       (cast@2 CursorOwner@5
+        (call@O alloc0~6
+         (call@7 sizeof~6 CursorOwnerObj@1))))
+      (asgn@D,1
+       (dot~6
+        (dot~6 b~1 owner@1)data@1)
+       (dot@3 b~1 data@1))
+      (asgn@B,2
+       (dot~4
+        (dot~6 b~1 owner@1)rc@1)1@2))))
+   (cmd@,6 inc
+    (dot@B
+     (dot~6 b~1 owner@1)rc@1))
+   (asgn@7,7 result~7
+    (oconstr@8 Cursor~6
+     (kv@6 owner~5
+      (dot@3 b~1 owner@1))
+     (kv@I p~1
+      (call@6 addr~4
+       (at@7
+        (dot~5 b~1 data@1)0@1)))
+     (kv@e rem~3
+      (dot@3 b~1 len@1))))))
+ (proc@,8M endRead@5 x . .
+  (params@D
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)).
+  (pragmas@V inline@2).
+  (stmts@i
+   (discard .)))
+ (proc@,8O endRead@5 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 Cursor@4).)).
+  (pragmas@T inline@2).
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@8 !=
+      (dot~7 c~1 owner@1)
+      (nil@3))
+     (stmts~1,1
+      (call@C decRcAndFree~C
+       (dot@2 c~1 owner@1)))))
+   (call@B,6
+    (quoted~B =@1 wasMoved@2)c@1)))
+ (proc@,8X addRaw@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I item . . PackedToken@6 .)).
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts@G
+      (call@F prepareMutation~F b@1))))
+   (if@,5
+    (elif@3
+     (infix@6 >=
+      (dot~5 b~1 len@1)
+      (dot@4 b~1 cap@1))
+     (stmts~1,1
+      (asgn@6
+       (dot~5 b~1 cap@1)
+       (call@5 max~3
+        (infix@D \2B
+         (infix~6 div
+          (dot~5 b~1 cap@1)2@4)
+         (dot@3 b~1 cap@1))8@M))
+      (asgn@7,1
+       (dot~6 b~1 data@1)
+       (cast@2 Storage@5
+        (call@L realloc~7
+         (dot@2 b~1 data@1)
+         (infix@S *
+          (call~D sizeof~6 PackedToken@1)
+          (dot@2 b~1 cap@1))))))))
+   (asgn@E,8
+    (at~8
+     (dot~5 b~1 data@1)
+     (dot@2 b~1 len@1))item@2)
+   (cmd@,9 inc
+    (dot@5 b~1 len@1))))
+ (proc@,8j add@5 x . .
+  (params@9
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I item . . PackedToken@6 .)).
+  (pragmas@k inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts@G
+      (call@F prepareMutation~F b@1))))
+   (when@,1
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (case
+       (dot@9 item~4 kind@1)
+       (of@,1
+        (ranges ParLe@3)
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@6 >=
+            (dot~5 b~1 len@1)
+            (dot@4 b~1 cap@1))
+           (stmts~1,1
+            (asgn@6
+             (dot~5 b~1 cap@1)
+             (call@5 max~3
+              (infix@D \2B
+               (infix~6 div
+                (dot~5 b~1 cap@1)2@4)
+               (dot@3 b~1 cap@1))8@M))
+            (asgn@7,1
+             (dot~6 b~1 data@1)
+             (cast@2 Storage@5
+              (call@L realloc~7
+               (dot@2 b~1 data@1)
+               (infix@S *
+                (call~D sizeof~6 PackedToken@1)
+                (dot@2 b~1 cap@1))))))))
+         (asgn@E,3
+          (at~8
+           (dot~5 b~1 data@1)
+           (dot@2 b~1 len@1))item@2)
+         (cmd@A,4
+          (dot
+           (dot~9 b~1 openTags@1)add@1)
+          (dot@6 b~1 len@1))
+         (cmd@,5 inc
+          (dot@5 b~1 len@1))))
+       (of@,8
+        (ranges ParRi@3)
+        (stmts@2,1
+         (var@4 elide . . . false@8)
+         (if@,1
+          (elif@3
+           (infix@F >
+            (dot~5
+             (dot~9 b~1 openTags@1)len@1)0@2)
+           (stmts~1,1
+            (let@4 openPos . . .
+             (call@O
+              (dot~4
+               (dot~9 b~1 openTags@1)pop@1)))
+            (let@4,1 count . . .
+             (call@E uint32~6
+              (infix@H \2D
+               (infix~A \2D
+                (dot~5 b~1 len@1)openPos@2)1@2)))
+            (if@,2
+             (elif@3
+              (infix@6 < count~6 MaxJump@2)
+              (stmts~1,1
+               (cmd@F
+                (dot
+                 (at~9
+                  (dot~5 b~1 data@1)openPos@1)setJump@1)count@9)
+               (asgn@6,1 elide~6 true@2)))
+             (else@,3
+              (stmts@2,1
+               (cmd@F
+                (dot
+                 (at~9
+                  (dot~5 b~1 data@1)openPos@1)setJump@1)MaxJump@9)))))))
+         (when@,9
+          (elif@5
+           (call@7 defined~7 preserveRealParRi@1)
+           (stmts~3,1
+            (if
+             (elif@3
+              (infix@6 >=
+               (dot~5 b~1 len@1)
+               (dot@4 b~1 cap@1))
+              (stmts~1,1
+               (asgn@6
+                (dot~5 b~1 cap@1)
+                (call@5 max~3
+                 (infix@D \2B
+                  (infix~6 div
+                   (dot~5 b~1 cap@1)2@4)
+                  (dot@3 b~1 cap@1))8@M))
+               (asgn@7,1
+                (dot~6 b~1 data@1)
+                (cast@2 Storage@5
+                 (call@L realloc~7
+                  (dot@2 b~1 data@1)
+                  (infix@S *
+                   (call~D sizeof~6 PackedToken@1)
+                   (dot@2 b~1 cap@1))))))))
+            (asgn@E,3
+             (at~8
+              (dot~5 b~1 data@1)
+              (dot@2 b~1 len@1))item@2)
+            (cmd@,4 inc
+             (dot@5 b~1 len@1))))
+          (else@,6
+           (stmts@2,1
+            (if
+             (elif@3
+              (prefix not elide@4)
+              (stmts~1,1
+               (if
+                (elif@3
+                 (infix@6 >=
+                  (dot~5 b~1 len@1)
+                  (dot@4 b~1 cap@1))
+                 (stmts~1,1
+                  (asgn@6
+                   (dot~5 b~1 cap@1)
+                   (call@5 max~3
+                    (infix@D \2B
+                     (infix~6 div
+                      (dot~5 b~1 cap@1)2@4)
+                     (dot@3 b~1 cap@1))8@M))
+                  (asgn@7,1
+                   (dot~6 b~1 data@1)
+                   (cast@2 Storage@5
+                    (call@L realloc~7
+                     (dot@2 b~1 data@1)
+                     (infix@S *
+                      (call~D sizeof~6 PackedToken@1)
+                      (dot@2 b~1 cap@1))))))))
+               (asgn@E,3
+                (at~8
+                 (dot~5 b~1 data@1)
+                 (dot@2 b~1 len@1))item@2)
+               (cmd@,4 inc
+                (dot@5 b~1 len@1))))))))))
+       (else@,V
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@6 >=
+            (dot~5 b~1 len@1)
+            (dot@4 b~1 cap@1))
+           (stmts~1,1
+            (asgn@6
+             (dot~5 b~1 cap@1)
+             (call@5 max~3
+              (infix@D \2B
+               (infix~6 div
+                (dot~5 b~1 cap@1)2@4)
+               (dot@3 b~1 cap@1))8@M))
+            (asgn@7,1
+             (dot~6 b~1 data@1)
+             (cast@2 Storage@5
+              (call@L realloc~7
+               (dot@2 b~1 data@1)
+               (infix@S *
+                (call~D sizeof~6 PackedToken@1)
+                (dot@2 b~1 cap@1))))))))
+         (asgn@E,3
+          (at~8
+           (dot~5 b~1 data@1)
+           (dot@2 b~1 len@1))item@2)
+         (cmd@,4 inc
+          (dot@5 b~1 len@1)))))))
+    (else@,c
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@6 >=
+         (dot~5 b~1 len@1)
+         (dot@4 b~1 cap@1))
+        (stmts~1,1
+         (asgn@6
+          (dot~5 b~1 cap@1)
+          (call@5 max~3
+           (infix@D \2B
+            (infix~6 div
+             (dot~5 b~1 cap@1)2@4)
+            (dot@3 b~1 cap@1))8@M))
+         (asgn@7,1
+          (dot~6 b~1 data@1)
+          (cast@2 Storage@5
+           (call@L realloc~7
+            (dot@2 b~1 data@1)
+            (infix@S *
+             (call~D sizeof~6 PackedToken@1)
+             (dot@2 b~1 cap@1))))))))
+      (asgn@E,3
+       (at~8
+        (dot~5 b~1 data@1)
+        (dot@2 b~1 len@1))item@2)
+      (cmd@,4 inc
+       (dot@5 b~1 len@1)))))))
+ (proc@,9U len@5 x . .
+  (params@9
+   (param@1 b . . TokenBuf@3 .))int@F
+  (pragmas@S inline@2).
+  (stmts@f
+   (dot@1 b~1 len@1)))
+ (when@,9W
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (proc
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 b . . TokenBuf@3 .)
+      (param@E i . . int@3 .))
+     (mut@N PackedToken@4)
+     (pragmas@n inline@2).
+     (stmts@2,1
+      (cmd assert
+       (infix@E and
+        (infix~5 >= i~2 0@3)
+        (infix@6 < i~2
+         (dot@3 b~1 len@1))))
+      (asgn@7,1 result~7
+       (at@8
+        (dot~5 b~1 data@1)i@1))))))
+  (else@,4
+   (stmts@2,1
+    (proc
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 b . . TokenBuf@3 .)
+      (param@E i . . int@3 .))PackedToken@N
+     (pragmas@j inline@2).
+     (stmts@2,1
+      (cmd assert
+       (infix@E and
+        (infix~5 >= i~2 0@3)
+        (infix@6 < i~2
+         (dot@3 b~1 len@1))))
+      (asgn@7,1 result~7
+       (at@8
+        (dot~5 b~1 data@1)i@1))))
+    (proc@,4
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 b . .
+       (mut@3 TokenBuf@4).)
+      (param@I i . . int@3 .))
+     (mut@R PackedToken@4)
+     (pragmas@r inline@2).
+     (stmts@2,1
+      (cmd assert
+       (infix@E and
+        (infix~5 >= i~2 0@3)
+        (infix@6 < i~2
+         (dot@3 b~1 len@1))))
+      (asgn@7,1 result~7
+       (at@8
+        (dot~5 b~1 data@1)i@1)))))))
+ (proc@,9j
+  (quoted@5 \5B\5D=@1) x . .
+  (params@B
+   (param@1 b . . TokenBuf@3 .)
+   (param@E i . . int@3 .)
+   (param@M val . . PackedToken@5 .)).
+  (pragmas@p inline@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@E and
+     (infix~5 >= i~2 0@3)
+     (infix@6 < i~2
+      (dot@3 b~1 len@1))))
+   (asgn@A,1
+    (at~4
+     (dot~5 b~1 data@1)i@1)val@2)))
+ (proc@,9n cursorAt@5 x . .
+  (params@E
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I i . . int@3 .))Cursor@R
+  (pragmas@m inline@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@E and
+     (infix~5 >= i~2 0@3)
+     (infix@6 < i~2
+      (dot@3 b~1 len@1))))
+   (if@,1
+    (elif@3
+     (infix@8 ==
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts~1,1
+      (asgn@8
+       (dot~7 b~1 owner@1)
+       (cast@2 CursorOwner@5
+        (call@O alloc0~6
+         (call@7 sizeof~6 CursorOwnerObj@1))))
+      (asgn@D,1
+       (dot~6
+        (dot~6 b~1 owner@1)data@1)
+       (dot@3 b~1 data@1))
+      (asgn@B,2
+       (dot~4
+        (dot~6 b~1 owner@1)rc@1)1@2))))
+   (cmd@,5 inc
+    (dot@B
+     (dot~6 b~1 owner@1)rc@1))
+   (asgn@7,6 result~7
+    (oconstr@8 Cursor~6
+     (kv@6 owner~5
+      (dot@3 b~1 owner@1))
+     (kv@I p~1
+      (cmd@7 addr~5
+       (at@6
+        (dot~5 b~1 data@1)i@1)))
+     (kv@d rem~3
+      (infix@7 \2D
+       (dot~4 b~1 len@1)i@1))))))
+ (proc@,9w readonlyCursorAt@5 x . .
+  (params@M
+   (param@1 b . . TokenBuf@3 .)
+   (param@E i . . int@3 .))Cursor@N
+  (pragmas@q inline@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@E and
+     (infix~5 >= i~2 0@3)
+     (infix@6 < i~2
+      (dot@3 b~1 len@1))))
+   (asgn@7,1 result~7
+    (oconstr@8 Cursor~6
+     (kv@2 p~1
+      (cmd@7 addr~5
+       (at@6
+        (dot~5 b~1 data@1)i@1)))
+     (kv@N rem~3
+      (infix@7 \2D
+       (dot~4 b~1 len@1)i@1))))
+   (if@,2
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts~1,1
+      (cmd inc
+       (dot@B
+        (dot~6 b~1 owner@1)rc@1))
+      (asgn@D,1
+       (dot~7 result~6 owner@1)
+       (dot@3 b~1 owner@1)))))))
+ (proc@,A3 shareRead@5 x . .
+  (params@F
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I c . . Cursor@3 .))Cursor@U . .
+  (stmts@2,1
+   (asgn@7 result~7 c@2)))
+ (proc@,A6 cursorToPosition@5 x . .
+  (params@M
+   (param@1 b . . TokenBuf@3 .)
+   (param@E c . . Cursor@3 .))int@Q
+  (pragmas@q inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@d div
+     (par~b
+      (infix@G \2D
+       (cast~F int@5
+        (dot@B c~1 p@1))
+       (cast@2 int@5
+        (dot@B b~1 data@1))))
+     (call@A sizeof~6 PackedToken@1)))))
+ (proc@,A9 cursorToPosition@5 x . .
+  (params@M
+   (param@1 base . . Cursor@9 .)
+   (param@7 c . . Cursor@3 .))int@J
+  (pragmas@j inline@2).
+  (stmts@2,1
+   (let@4 c . . .
+    (cast@4 int@5
+     (dot@B c~1 p@1)))
+   (let@4,1 base . . .
+    (cast@7 int@5
+     (dot@E base~4 p@1)))
+   (cmd@,2 assert
+    (infix@9 >= c~2 base@3))
+   (asgn@7,3 result~7
+    (infix@D div
+     (par~B
+      (infix@3 \2D c~2 base@2))
+     (call@A sizeof~6 PackedToken@1)))
+   (cmd@,4 assert
+    (infix@E < result~7 1000000@2))))
+ (proc@,AG toUniqueId@5 x . .
+  (params@G
+   (param@1 c . . Cursor@3 .))int@D
+  (pragmas@X inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (cast@2 int@5
+     (dot@B c~1 p@1)))))
+ (proc@,AJ add@5 x . .
+  (params@9
+   (param@1 result . .
+    (mut@8 TokenBuf@4).)
+   (param@N c . . Cursor@3 .)). . .
+  (stmts@2,1
+   (cmd@6
+    (dot result~6 add@1)
+    (dot@6 c~1 load@1))))
+ (proc@,AM addToken@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L t . . PackedToken@3 .)).
+  (pragmas@p inline@2).
+  (stmts@2,1
+   (comment)
+   (cmd@4,2
+    (dot dest~4 add@1)t@5)))
+ (proc@,AR addToken@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L c . . Cursor@3 .)).
+  (pragmas@k inline@2).
+  (stmts@2,1
+   (comment)
+   (cmd@4,1
+    (dot dest~4 add@1)
+    (dot@6 c~1 load@1))))
+ (proc@,AV addSymUse@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L s . . SymId@3 .)
+   (param@V info . . PackedLineInfo@6 .)).
+  (pragmas@16 inline@2).
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D symToken~8 s@1 info@4))))
+ (proc@,AY addSymDef@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L s . . SymId@3 .)
+   (param@V info . . PackedLineInfo@6 .)).
+  (pragmas@16 inline@2).
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@G symdefToken~B s@1 info@4))))
+ (proc@,Ab addSubtree@5 x . .
+  (params@G
+   (param@1 result . .
+    (mut@8 TokenBuf@4).)
+   (param@N c . . Cursor@3 .)). . .
+  (stmts@2,1
+   (cmd assert
+    (infix@E !=
+     (dot~6 c~1 kind@1)ParRi@3)"cursor at end?"@O)
+   (when@,1
+    (elif@5
+     (call@7 defined~7 virtualParRi@1)
+     (stmts~3,1
+      (if
+       (elif@3
+        (infix@7 !=
+         (dot~6 c~1 kind@1)ParLe@3)
+        (stmts~1,1
+         (cmd@6
+          (dot result~6 addRaw@1)
+          (dot@9 c~1 load@1))
+         (ret@,1 .))))
+      (var@4,7 c2 . . . c@5)
+      (let@4,8 startP . . .
+       (dot@B c2~2 p@1))
+      (cmd@,9 skip c2@5)
+      (let@4,A n . . .
+       (call@7 int~3
+        (infix@f div
+         (par~e
+          (infix@I \2D
+           (cast~H uint@5
+            (dot@D c2~2 p@1))
+           (cast@2 uint@5 startP@B)))
+         (dot@N
+          (call~D sizeof~6 PackedToken@1)uint@1))))
+      (if@,B
+       (elif@3
+        (infix@D !=
+         (dot~7 result~6 owner@1)
+         (nil@3))
+        (stmts@L
+         (call@F prepareMutation~F result@1))))
+      (if@,C
+       (elif@3
+        (infix@F >
+         (infix~4 \2B
+          (dot~5 result~6 len@1)n@2)
+         (dot@8 result~6 cap@1))
+        (stmts~1,1
+         (asgn@B
+          (dot~5 result~6 cap@1)
+          (call@5 max~3
+           (infix@I \2B
+            (infix~6 div
+             (dot~5 result~6 cap@1)2@4)
+            (dot@8 result~6 cap@1))
+           (infix@h \2B
+            (dot~5 result~6 len@1)n@2)))
+         (asgn@C,1
+          (dot~6 result~6 data@1)
+          (cast@2 Storage@5
+           (call@L realloc~7
+            (dot@7 result~6 data@1)
+            (infix@X *
+             (call~D sizeof~6 PackedToken@1)
+             (dot@7 result~6 cap@1))))))))
+      (call@7,F copyMem~7
+       (cmd@6 addr~5
+        (at@B
+         (dot~5 result~6 data@1)
+         (dot@7 result~6 len@1)))startP@V
+       (infix@f * n~2
+        (call@8 sizeof~6 PackedToken@1)))
+      (infix@B,G \2B=
+       (dot~5 result~6 len@1)n@3)))
+    (else@,I
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 !=
+         (dot~6 c~1 kind@1)ParLe@3)
+        (stmts~1,2
+         (cmd@6
+          (dot result~6 add@1)
+          (dot@6 c~1 load@1))))
+       (else@,3
+        (stmts@2,1
+         (var@4 c . . . c@4)
+         (var@4,1 nested . . . 0@9)
+         (while@,2 true@6
+          (stmts@2,1
+           (let@4 item . . .
+            (dot@8 c~1 load@1))
+           (cmd@6,1
+            (dot result~6 add@1)item@5)
+           (if@,2
+            (elif@3
+             (infix@A ==
+              (dot~6 item~4 kind@1)ParRi@3)
+             (stmts~1,1
+              (cmd dec nested@4)
+              (if@,1
+               (elif@3
+                (infix@7 == nested~7 0@3)
+                (stmts@D
+                 (break .))))))
+            (elif@5,3
+             (infix@A ==
+              (dot~6 item~4 kind@1)ParLe@3)
+             (stmts@K
+              (cmd inc nested@4))))
+           (cmd@,6 inc c@4)))
+         (cmd@,A inc c@4)))))))))
+ (proc@,BC addUnstructured@5 x . .
+  (params@L
+   (param@1 result . .
+    (mut@8 TokenBuf@4).)
+   (param@N c . . Cursor@3 .)). . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (while@,1
+    (infix@C >
+     (dot~5 c~1 rem@1)0@2)
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (dot@6 c~1 load@1))
+     (cmd@,1 inc c@4)))))
+ (proc@,BI add@5 x . .
+  (params@9
+   (param@1 result . .
+    (mut@8 TokenBuf@4).)
+   (param@N s . .
+    (mut@3 Stream@4).)). . .
+  (stmts@2,1
+   (let@4 c . . .
+    (call@8 next~4 s@1))
+   (cmd@,1 assert
+    (infix@E !=
+     (dot~6 c~1 kind@1)ParRi@3)"cursor at end?"@O)
+   (cmd@6,2
+    (dot result~6 add@1)c@5)
+   (if@,3
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (var@4 nested . . . 0@9)
+      (while@,1 true@6
+       (stmts@2,1
+        (let@4 item . . .
+         (call@B next~4 s@1))
+        (cmd@6,1
+         (dot result~6 add@1)item@5)
+        (if@,2
+         (elif@3
+          (infix@A ==
+           (dot~6 item~4 kind@1)ParRi@3)
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@7 == nested~7 0@3)
+             (stmts@D
+              (break .))))
+           (cmd@,1 dec nested@4)))
+         (elif@5,3
+          (infix@A ==
+           (dot~6 item~4 kind@1)ParLe@3)
+          (stmts@K
+           (cmd inc nested@4)))))))))))
+ (iterator@,BW items@9 x . .
+  (params@F
+   (param@1 b . . TokenBuf@3 .))PackedToken@F . .
+  (stmts@2,1
+   (for@4
+    (infix@7 \2E\2E< 0~2
+     (dot@5 b~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (yld
+      (at@C
+       (dot~5 b~1 data@1)i@1))))))
+ (proc@,Ba add@5 x . .
+  (params@9
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . TokenBuf@5 .)). . .
+  (stmts@2,1
+   (for@4
+    (call@A items~5 src@1)
+    (unpackflat
+     (let t . . ..))
+    (stmts@H
+     (cmd@4
+      (dot dest~4 add@1)t@5)))))
+ (proc@,Bd fromCursor@5 x . .
+  (params@G
+   (param@1 c . . Cursor@3 .))TokenBuf@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@G createTokenBuf~E 4@1))
+   (cmd@6,1
+    (dot result~6 add@1)c@5)))
+ (proc@,Bh fromStream@5 x . .
+  (params@G
+   (param@1 s . .
+    (mut@3 Stream@4).))TokenBuf@H . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@G createTokenBuf~E 4@1))
+   (cmd@6,1
+    (dot result~6 add@1)s@5)))
+ (proc@,Bl shrink@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I newLen . . int@8 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts@G
+      (call@F prepareMutation~F b@1))))
+   (cmd@,1 assert
+    (infix@J and
+     (infix~5 >= newLen~7 0@3)
+     (infix@B <= newLen~7
+      (dot@4 b~1 len@1))))
+   (asgn@6,2
+    (dot~5 b~1 len@1)newLen@2)))
+ (proc@,Bq grow@5 . . .
+  (params@9
+   (param@1 b . .
+    (mut@3 TokenBuf@4).)
+   (param@I newLen . . int@8 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 !=
+      (dot~7 b~1 owner@1)
+      (nil@3))
+     (stmts@G
+      (call@F prepareMutation~F b@1))))
+   (cmd@,1 assert
+    (infix@E > newLen~7
+     (dot@3 b~1 len@1)))
+   (if@,2
+    (elif@3
+     (infix@6 <
+      (dot~5 b~1 cap@1)newLen@2)
+     (stmts~1,1
+      (asgn@6
+       (dot~5 b~1 cap@1)
+       (call@5 max~3
+        (infix@D \2B
+         (infix~6 div
+          (dot~5 b~1 cap@1)2@4)
+         (dot@3 b~1 cap@1))newLen@M))
+      (asgn@7,1
+       (dot~6 b~1 data@1)
+       (cast@2 Storage@5
+        (call@L realloc~7
+         (dot@2 b~1 data@1)
+         (infix@S *
+          (call~D sizeof~6 PackedToken@1)
+          (dot@2 b~1 cap@1))))))))
+   (asgn@6,5
+    (dot~5 b~1 len@1)newLen@2)))
+ (template@,By buildTree@9 x . .
+  (params@J
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L tag . . TagId@5 .)
+   (param@X info . . PackedLineInfo@6 .)
+   (param@t body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A tag@1 info@6))body@,1
+   (call@D,2
+    (dot~9 dest~4 addParRi@1)info@1)))
+ (proc@,C3 addParLe@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L tag . . TagId@5 .)
+   (param@X info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A tag@1 info@6))))
+ (proc@,C6 addParRi@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parRiToken~A NoLineInfo@1))))
+ (proc@,C9 addParRi@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L info . . PackedLineInfo@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@4,3
+    (dot dest~4 add@1)
+    (call@F parRiToken~A info@1))))
+ (proc@,CF addParRi@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6
+     (at@7 seq~3 PackedToken@1)).)
+   (param@T info . . PackedLineInfo@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@4,2
+    (dot dest~4 add@1)
+    (call@F parRiToken~A info@1))))
+ (proc@,CK addDotToken@5 x . .
+  (params@H
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D dotToken~8 NoLineInfo@1))))
+ (proc@,CN addStrLit@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L s . . string@3 .)
+   (param@W info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D strToken~8
+     (call@N
+      (dot~A
+       (dot~8 pool~4 strings@1)getOrIncl@1)s@1)info@S))))
+ (proc@,CQ addIntLit@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L i . . BiggestInt@3 .)
+   (param@a info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D intToken~8
+     (call@O
+      (dot~A
+       (dot~9 pool~4 integers@1)getOrIncl@1)i@1)info@T))))
+ (proc@,CT addUIntLit@5 x . .
+  (params@G
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L i . . BiggestUInt@3 .)
+   (param@b info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@E uintToken~9
+     (call@P
+      (dot~A
+       (dot~A pool~4 uintegers@1)getOrIncl@1)i@1)info@U))))
+ (proc@,CW addIdent@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L s . . string@3 .)
+   (param@W info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F identToken~A
+     (call@N
+      (dot~A
+       (dot~8 pool~4 strings@1)getOrIncl@1)s@1)info@S))))
+ (proc@,CZ addCharLit@5 x . .
+  (params@G
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L c . . char@3 .)
+   (param@U info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@E charToken~9 c@1 info@4))))
+ (proc@,Cc addFloatLit@5 x . .
+  (params@H
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L f . . BiggestFloat@3 .)
+   (param@c info . . . NoLineInfo@7)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F floatToken~A
+     (call@M
+      (dot~A
+       (dot~7 pool~4 floats@1)getOrIncl@1)f@1)info@R))))
+ (proc@,Cf span@5 x . .
+  (params@A
+   (param@1 c . . Cursor@3 .))int@D . .
+  (stmts@2,1
+   (asgn@7 result~7 0@2)
+   (var@4,1 c . . . c@4)
+   (if@,2
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (var@4 nested . . . 0@9)
+      (while@,1 true@6
+       (stmts@2,1
+        (cmd inc c@4)
+        (cmd@,1 inc result@4)
+        (if@,2
+         (elif@3
+          (infix@7 ==
+           (dot~6 c~1 kind@1)ParRi@3)
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@7 == nested~7 0@3)
+             (stmts@D
+              (break .))))
+           (cmd@,1 dec nested@4)))
+         (elif@5,3
+          (infix@7 ==
+           (dot~6 c~1 kind@1)ParLe@3)
+          (stmts@H
+           (cmd inc nested@4)))))))))
+   (if@,B
+    (elif@3
+     (infix@6 >
+      (dot~5 c~1 rem@1)0@2)
+     (stmts~1,1
+      (cmd inc c@4)
+      (cmd@,1 inc result@4))))))
+ (proc@,Cv insert@5 x . .
+  (params@C
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . .
+    (at@E openArray~9 PackedToken@1).)
+   (param@o pos . . int@5 .)). . .
+  (stmts@2,1
+   (var@4 j . . .
+    (infix@E \2D
+     (call~7 len~3 dest@1)1@2))
+   (var@4,1 i . . .
+    (infix@6 \2B j~2
+     (call@5 len~3 src@1)))
+   (call@9,2
+    (dot~5 dest~4 grow@1)
+    (infix@3 \2B i~2 1@2))
+   (while@,5
+    (infix@8 >= j~2 pos@3)
+    (stmts@2,1
+     (asgn@8
+      (at~4 dest~4 i@1)
+      (at@6 dest~4 j@1))
+     (cmd@,1 dec i@4)
+     (cmd@,2 dec j@4)))
+   (cmd@,A inc j@4)
+   (for@4,B src@8
+    (unpackflat
+     (let item . . ..))
+    (stmts~2,1
+     (asgn@8
+      (at~4 dest~4 j@1)item@2)
+     (cmd@,1 inc j@4)))))
+ (proc@,DB insert@5 x . .
+  (params@C
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . Cursor@5 .)
+   (param@Y pos . . int@5 .)). . .
+  (stmts@2,1
+   (cmd insert dest@7
+    (call@O toOpenArray~B
+     (cast@1
+      (ptr@5
+       (at@J UncheckedArray~E PackedToken@1))
+      (dot@g src~3 p@1))0@m
+     (infix@y \2D
+      (call~5 span~4 src@1)1@1))pos@1R)))
+ (proc@,DE insert@5 x . .
+  (params@C
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . TokenBuf@5 .)
+   (param@a pos . . int@5 .)). . .
+  (stmts@2,1
+   (cmd insert dest@7
+    (call@O toOpenArray~B
+     (dot@4 src~3 data@1)0@B
+     (infix@L \2D
+      (dot~4 src~3 len@1)1@1))pos@o)))
+ (proc@,DH replace@5 x . .
+  (params@D
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L by . . Cursor@4 .)
+   (param@X pos . . int@5 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B !=
+      (dot~7 dest~4 owner@1)
+      (nil@3))
+     (stmts@J
+      (call@F prepareMutation~F dest@1))))
+   (let@4,1 len . . .
+    (call@A span~4
+     (oconstr@7 Cursor~6
+      (kv@2 p~1
+       (cmd@7 addr~5
+        (at@9
+         (dot~5 dest~4 data@1)pos@1)))
+      (kv@S rem~3
+       (infix@A \2D
+        (dot~4 dest~4 len@1)pos@1)))))
+   (let@4,2 actualLen . . .
+    (call@F min~3 len@1
+     (infix@F \2D
+      (dot~5 dest~4 len@1)pos@2)))
+   (let@4,3 byLen . . .
+    (call@C span~4 by@1))
+   (let@4,4 oldLen . . .
+    (dot@D dest~4 len@1))
+   (let@4,5 newLen . . .
+    (infix@O \2D
+     (infix~8 \2B oldLen~7 byLen@2)actualLen@2))
+   (if@,6
+    (elif@3
+     (infix@6 > byLen~6 actualLen@2)
+     (stmts~1,2
+      (call@9
+       (dot~5 dest~4 grow@1)newLen@1)
+      (for@4,2
+       (call@E countdown~9
+        (infix@8 \2D oldLen~7 1@2)
+        (infix@H \2B pos~4 actualLen@2))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (asgn@S
+         (at~O dest~4
+          (infix@B \2D
+           (infix~8 \2B i~2 byLen@2)actualLen@2))
+         (at@6 dest~4 i@1))))))
+    (elif@5,6
+     (infix@6 < byLen~6 actualLen@2)
+     (stmts~3,2
+      (for@4
+       (infix@H \2E\2E<
+        (infix~8 \2B pos~4 byLen@2)
+        (infix@D \2D
+         (dot~5 dest~4 len@1)
+         (par@2
+          (infix@B \2D actualLen~A byLen@2))))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (asgn@8
+         (at~4 dest~4 i@1)
+         (at@6 dest~4
+          (infix@F \2D
+           (infix~C \2B i~2 actualLen@2)byLen@2)))))
+      (call@B,2
+       (dot~7 dest~4 shrink@1)newLen@1))))
+   (var@4,I by . . . by@5)
+   (for@4,J
+    (infix@7 \2E\2E< 0~2 byLen@4)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (asgn@E
+      (at~A dest~4
+       (infix@5 \2B pos~4 i@2))
+      (dot@4 by~2 load@1))
+     (cmd@,1 inc by@4)))))
+ (proc@,Df toString@5 x . .
+  (params@E
+   (param@1 b . . TokenBuf@3 .)
+   (param@E produceLineInfo . . . true@I))string@d . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@L
+     (dot~9 nifstreams~A toString@1)
+     (call@C toOpenArray~B
+      (dot@2 b~1 data@1)0@9
+      (infix@H \2D
+       (dot~4 b~1 len@1)1@1))produceLineInfo@Y))))
+ (proc@,Di toString@5 x . .
+  (params@E
+   (param@1 b . . TokenBuf@3 .)
+   (param@E first . . int@7 .)
+   (param@Q produceLineInfo . . . true@I))string@p . .
+  (stmts@2,1
+   (var@4 last . . . first@7)
+   (var@4,1 nested . . . 0@9)
+   (while@,2
+    (infix@B < last~5
+     (dot@3 b~1 len@1))
+    (stmts@2,1
+     (case
+      (dot@C
+       (at~6 b~1 last@1)kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd inc nested@4)))
+      (of@,3
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)))
+      (else@,5
+       (stmts@6
+        (discard .))))
+     (if@,6
+      (elif@3
+       (infix@7 == nested~7 0@3)
+       (stmts@D
+        (break .))))
+     (cmd@,7 inc last@4)))
+   (if@,B
+    (elif@3
+     (infix@5 == last~5
+      (dot@4 b~1 len@1))
+     (stmts@F
+      (cmd dec last@4))))
+   (asgn@7,C result~7
+    (call@L
+     (dot~9 nifstreams~A toString@1)
+     (call@C toOpenArray~B
+      (dot@2 b~1 data@1)first@9 last@G)produceLineInfo@Z))))
+ (proc@,Dx toString@5 x . .
+  (params@E
+   (param@1 b . . Cursor@3 .)
+   (param@C produceLineInfo . . . true@I))string@b . .
+  (stmts@2,1
+   (let@4 counter . . .
+    (call@E span~4 b@1))
+   (asgn@7,1 result~7
+    (call@L
+     (dot~9 nifstreams~A toString@1)
+     (call@C toOpenArray~B
+      (cast@1
+       (ptr@5
+        (at@I UncheckedArray~E PackedToken@1))
+       (dot@d b~1 p@1))0@j
+      (infix@t \2D counter~7 1@1))produceLineInfo@1A))))
+ (proc@,E1 toStringDebug@5 x . .
+  (params@J
+   (param@1 b . . Cursor@3 .)
+   (param@C produceLineInfo . . . true@I))string@b . .
+  (stmts@2,1
+   (let@4 L . . .
+    (if@4
+     (elif@3
+      (infix@7 ==
+       (dot~6 b~1 kind@1)ParLe@3)
+      (stmts@H 1))
+     (else@M
+      (stmts@6 0))))
+   (asgn@7,1 result~7
+    (call@L
+     (dot~9 nifstreams~A toString@1)
+     (call@C toOpenArray~B
+      (cast@1
+       (ptr@5
+        (at@I UncheckedArray~E PackedToken@1))
+       (dot@d b~1 p@1))0@j L@m)produceLineInfo@12))))
+ (proc@,E5 writeFile@5 x . .
+  (params@F
+   (param@1 b . . TokenBuf@3 .)
+   (param@E filename . . string@A .)
+   (param@W mode . . FileWriteMode@6 AlwaysWrite@M)).
+  (pragmas@1K canRaise@2).
+  (stmts@2,1
+   (let@4 content . . .
+    (call@O toModuleString~E
+     (call@C toOpenArray~B
+      (dot@2 b~1 data@1)0@9
+      (infix@H \2D
+       (dot~4 b~1 len@1)1@1))
+     (infix@c & "."~4
+      (call@L extractModuleSuffix~J filename@1))))
+   (if@,1
+    (elif@3
+     (infix@5 == mode~5 OnlyIfChanged@3)
+     (stmts~1,1
+      (let@4 existingContent . . .
+       (try@I
+        (stmts@5
+         (call@7 vfsRead~7 filename@1))
+        (except@N .
+         (stmts@8 ""))))
+      (if@,1
+       (elif@3
+        (infix@G == existingContent~G content@3)
+        (stmts@S
+         (ret .)))))))
+   (call@8,4 vfsWrite~8 filename@1 content@B)))
+ (proc@,EC
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 c . . Cursor@3 .))string@D . .
+  (stmts@V
+   (call@8 toString~8 c@1 false@4)))
+ (template@,EE copyInto@9 x . .
+  (params@I
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L tag . . TagId@5 .)
+   (param@X info . . PackedLineInfo@6 .)
+   (param@t body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A tag@1 info@6))body@,1
+   (call@D,2
+    (dot~9 dest~4 addParRi@1))))
+ (proc@,EJ parLeTokenUnchecked@5 x . .
+  (params@P
+   (param@1 tag . . string@5 .)
+   (param@E info . . PackedLineInfo@6 .))PackedToken@b
+  (pragmas@1C inline@2).
+  (stmts@2,1
+   (call@A parLeToken~A
+    (call@K
+     (dot~A
+      (dot~5 pool~4 tags@1)getOrIncl@1)tag@1)info@R)))
+ (template@,EM copyIntoUnchecked@9 x . .
+  (params@R
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L tag . . string@5 .)
+   (param@Y info . . PackedLineInfo@6 .)
+   (param@u body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@O parLeTokenUnchecked~J tag@1 info@6))body@,1
+   (call@D,2
+    (dot~9 dest~4 addParRi@1))))
+ (proc@,ER parse@5 x . .
+  (params@B
+   (param@1 r . .
+    (mut@3 Stream@4).)
+   (param@G dest . .
+    (mut@6 TokenBuf@4).)
+   (param@1,1 parentInfo . . PackedLineInfo@C .)
+   (param@T,1 debug . . bool@7 false@E)). . .
+  (stmts@2,2
+   (comment)
+   (asgn@D,5
+    (at~4
+     (dot~8 r~1 parents@1)0@1)parentInfo@2)
+   (var@4,6 nested . . . 0@9)
+   (while@,7 true@6
+    (stmts@2,1
+     (let@4 tok . . .
+      (call@C
+       (dot~5 r~1 next@1)))
+     (cmd@4,1
+      (dot dest~4 add@1)tok@5)
+     (if@,2
+      (elif@3 debug
+       (stmts~1,1
+        (cmd echo "parsing "@5
+         (call@P toString~8
+          (bracket@1 tok@1)false@8))
+        (if@,1
+         (elif@3
+          (infix@9 ==
+           (dot~6 tok~3 kind@1)UnknownToken@3)
+          (stmts@Q
+           (break .)))))))
+     (if@,5
+      (elif@3
+       (infix@9 ==
+        (dot~6 tok~3 kind@1)EofToken@3)
+       (stmts~1,1
+        (break .)))
+      (elif@5,2
+       (infix@9 ==
+        (dot~6 tok~3 kind@1)ParLe@3)
+       (stmts~3,1
+        (cmd inc nested@4)))
+      (elif@5,4
+       (infix@9 ==
+        (dot~6 tok~3 kind@1)ParRi@3)
+       (stmts~3,1
+        (cmd dec nested@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts@D
+           (break .)))))))))))
+ (proc@,Eo parseFromBuffer@5 x . .
+  (params@L
+   (param@1 input . . string@7 .)
+   (param@G thisModule . .
+    (cmd@H sink~5 string).)
+   (param@f sizeHint . . . 100@B))TokenBuf@w . .
+  (stmts@2,1
+   (var@4 r . . .
+    (call@T
+     (dot~F nifstreams~A openFromBuffer@1)input@1 thisModule@8))
+   (asgn@7,1 result~7
+    (call@G createTokenBuf~E sizeHint@1))
+   (call@5,2 parse~5 r@1 result@4 NoLineInfo@C)))
+ (proc@,Et parseFromFile@5 x . .
+  (params@J
+   (param@1 filename . . string@A .)
+   (param@J sizeHint . . . 100@B))TokenBuf@a . .
+  (stmts@2,1
+   (var@4 r . . .
+    (call@J
+     (dot~5 nifstreams~A open@1)filename@1))
+   (discard@,1
+    (call@P processDirectives~H
+     (dot@2 r~1 r@1)))
+   (asgn@7,2 result~7
+    (call@G createTokenBuf~E sizeHint@1))
+   (call@5,3 parse~5 r@1 result@4 NoLineInfo@C)))
+ (proc@,Ez isLastSon@5 x . .
+  (params@F
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (cmd@,1 skip n@5)
+   (asgn@7,2 result~7
+    (infix@9 ==
+     (dot~6 n~1 kind@1)ParRi@3))))
+ (proc@,F4 firstSon@5 x . .
+  (params@E
+   (param@1 n . . Cursor@3 .))Cursor@D
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (asgn@7 result~7 n@2)
+   (cmd@,1 inc result@4)))
+ (proc@,F8 takeToken@5 x . .
+  (params@F
+   (param@1 buf . .
+    (mut@5 TokenBuf@4).)
+   (param@K n . .
+    (mut@3 Cursor@4).)).
+  (pragmas@o inline@2).
+  (stmts@2,1
+   (cmd@3
+    (dot buf~3 add@1)n@5)
+   (cmd@,1 inc n@4)))
+ (type@E,FD SkipIntent~C x . .
+  (enum@2 .
+   (efld~C,1 SkipTag . . . .)
+   (efld~C,2 SkipParRi . . . .)
+   (efld~C,3 SkipName . . . .)
+   (efld~C,4 SkipExport . . . .)
+   (efld~C,5 SkipPragmas . . . .)
+   (efld~C,6 SkipType . . . .)
+   (efld~C,7 SkipExpr . . . .)
+   (efld~C,8 SkipStmt . . . .)
+   (efld~C,9 SkipValue . . . .)
+   (efld~C,A SkipGenParams . . . .)
+   (efld~C,B SkipCond . . . .)
+   (efld~C,C SkipBody . . . .)
+   (efld~C,D SkipEffects . . . .)
+   (efld~C,E SkipResult . . . .)
+   (efld~C,F SkipFull . . . .)))
+ (proc@,FU skipIntentMatches@5 x . .
+  (params@N
+   (param@1 k . . NifKind@3 .)
+   (param@D intent . . SkipIntent@8 .))bool@Y
+  (pragmas@10 inline@2).
+  (stmts@2,1
+   (comment)
+   (case@,2 intent@5
+    (of@,1
+     (ranges SkipTag@3)
+     (stmts@J
+      (infix@2 == k~2 ParLe@3)))
+    (of@,2
+     (ranges SkipParRi@3)
+     (stmts@J
+      (infix@2 == k~2 ParRi@3)))
+    (of@,3
+     (ranges SkipName@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 SymbolDef@1 Symbol@C Ident@K DotToken@R ParLe@b))))
+    (of@,5
+     (ranges SkipExport@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 Ident@B ParLe@I))))
+    (of@,6
+     (ranges SkipPragmas@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 ParLe@B))))
+    (of@,7
+     (ranges SkipType@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 ParLe@1 Symbol@8 Ident@G DotToken@N IntLit@X UIntLit@f))))
+    (of@,8
+     (ranges SkipExpr@3)
+     (stmts@J
+      (infix@2 notin k~2
+       (curly@6 EofToken@1 ParRi@B))))
+    (of@,9
+     (ranges SkipStmt@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 ParLe@1 DotToken@8))))
+    (of@,A
+     (ranges SkipValue@3)
+     (stmts@J
+      (infix@2 notin k~2
+       (curly@6 EofToken@1 ParRi@B))))
+    (of@,B
+     (ranges SkipGenParams@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 ParLe@B))))
+    (of@,C
+     (ranges SkipCond@3)
+     (stmts@J
+      (infix@2 notin k~2
+       (curly@6 EofToken@1 ParRi@B))))
+    (of@,D
+     (ranges SkipBody@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 ParLe@B))))
+    (of@,E
+     (ranges SkipEffects@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 ParLe@B))))
+    (of@,F
+     (ranges SkipResult@3)
+     (stmts@J
+      (infix@2 in k~2
+       (curly@3 DotToken@1 ParLe@B Symbol@I SymbolDef@Q))))
+    (of@,G
+     (ranges SkipFull@3)
+     (stmts@J
+      (infix@2 != k~2 EofToken@3))))))
+ (template@,Fp skip@9 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G intent . . SkipIntent@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,2 assert
+    (call@O skipIntentMatches~H
+     (dot@2 c~1 kind@1)intent@9)
+    (infix@l,1 &
+     (infix~A &
+      (infix~H &
+       (infix~A & "skip "~8
+        (prefix@2 $ intent@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (call@4,4 skip~4 c@1)))
+ (template@,Fw inc@9 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G intent . . SkipIntent@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 assert
+    (call@O skipIntentMatches~H
+     (dot@2 c~1 kind@1)intent@9)
+    (infix@k,1 &
+     (infix~A &
+      (infix~H &
+       (infix~A & "inc "~7
+        (prefix@2 $ intent@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (cmd@,3 inc c@4)))
+ (type@C,G8 TagClass~A x . .
+  (enum@2 .
+   (efld~A,1 Anything . . . .)
+   (efld~A,2 AnyExpr . . . .)
+   (efld~A,3 AnyStmt . . . .)
+   (efld~A,4 AnyType . . . .)))
+ (proc@,GE tagClassMatches@5 x . .
+  (params@L
+   (param@1 k . . NifKind@3 .)
+   (param@D expected . . TagClass@A .))bool@Y
+  (pragmas@y inline@2).
+  (stmts@2,1
+   (case expected@5
+    (of@,1
+     (ranges Anything@3)
+     (stmts@D
+      (infix@2 != k~2 EofToken@3)))
+    (of@,2
+     (ranges AnyExpr@3)
+     (stmts@D
+      (infix@2 notin k~2
+       (curly@6 EofToken@1 ParRi@B))))
+    (of@,3
+     (ranges AnyStmt@3)
+     (stmts@D
+      (infix@2 in k~2
+       (curly@3 ParLe@1 DotToken@8))))
+    (of@,4
+     (ranges AnyType@3)
+     (stmts@D
+      (infix@2 in k~2
+       (curly@3 ParLe@1 Symbol@8 Ident@G DotToken@N)))))))
+ (template@,GL skip@9 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . TagClass@A .)). . .
+  (stmts@2,1
+   (cmd assert
+    (call@M tagClassMatches~F
+     (dot@2 c~1 kind@1)expected@9)
+    (infix@n,1 &
+     (infix~A &
+      (infix~H &
+       (infix~C & "skip "~8
+        (prefix@2 $ expected@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (call@4,2 skip~4 c@1)))
+ (template@,GQ inc@9 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . TagClass@A .)). . .
+  (stmts@2,1
+   (cmd assert
+    (call@M tagClassMatches~F
+     (dot@2 c~1 kind@1)expected@9)
+    (infix@m,1 &
+     (infix~A &
+      (infix~H &
+       (infix~C & "inc "~7
+        (prefix@2 $ expected@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (cmd@,2 inc c@4)))
+ (template@,GV into@9 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . TagClass@A .)
+   (param@a body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 assert
+    (call@M tagClassMatches~F
+     (dot@2 c~1 kind@1)expected@9)
+    (infix@n,1 &
+     (infix~A &
+      (infix~H &
+       (infix~C & "into "~8
+        (prefix@2 $ expected@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (cmd@,3 into c@5
+    (stmts@2,1 body))))
+ (template@,Gc loopInto@9 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . TagClass@A .)
+   (param@a body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd assert
+    (call@M tagClassMatches~F
+     (dot@2 c~1 kind@1)expected@9)
+    (infix@r,1 &
+     (infix~A &
+      (infix~H &
+       (infix~C & "loopInto "~C
+        (prefix@2 $ expected@1))"\3A cursor at "@2)
+      (prefix@2 $
+       (dot@2 c~1 kind@1)))" is incompatible"@2))
+   (cmd@,2 loopInto c@9
+    (stmts@2,1 body))))
+ (proc@,Gi takeTree@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L n . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 !=
+      (dot~6 n~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (cmd@4
+       (dot dest~4 add@1)n@5)
+      (cmd@,1 inc n@4)))
+    (else@,3
+     (stmts@2,1
+      (when
+       (elif@5
+        (call@7 defined~7 virtualParRi@1)
+        (stmts~3,1
+         (cmd@4
+          (dot dest~4 addSubtree@1)n@C)
+         (cmd@,1 skip n@5)))
+       (else@,3
+        (stmts@2,1
+         (var@4 nested . . . 0@9)
+         (while@,1 true@6
+          (stmts@2,1
+           (cmd@4
+            (dot dest~4 add@1)n@5)
+           (case@,1
+            (dot@6 n~1 kind@1)
+            (of@,1
+             (ranges ParLe@3)
+             (stmts@A
+              (cmd inc nested@4)))
+            (of@,2
+             (ranges ParRi@3)
+             (stmts@2,1
+              (cmd dec nested@4)
+              (if@,1
+               (elif@3
+                (infix@7 == nested~7 0@3)
+                (stmts~1,1
+                 (cmd inc n@4)
+                 (break@,1 .))))))
+            (of@,7
+             (ranges EofToken@3)
+             (stmts@2,1
+              (cmd raiseAssert "expected \27\29\27, but EOF reached"@C)))
+            (else@,9
+             (stmts@6
+              (discard .))))
+           (cmd@,B inc n@4)))))))))))
+ (when@,H6
+  (elif@5 isMainModule
+   (stmts~3,2
+    (block .
+     (stmts@2,1
+      (var@4 dest . . .
+       (call@L createTokenBuf~E 1@1))
+      (call@G,1
+       (dot~C dest~4 addDotToken@1))
+      (block@,2 .
+       (stmts@2,1
+        (let@4 by . . .
+         (bracket@5
+          (call@A charToken~9 'a'@1 NoLineInfo@6)))
+        (cmd@,1 replace dest@8
+         (call@O fromBuffer~A by@1)0@U)
+        (cmd@,2 assert
+         (infix@F ==
+          (at~4 dest~4 0@1)
+          (at@5 by~2 0@1)))))
+      (block@,6 .
+       (stmts@2,1
+        (let@4 by2 . . .
+         (bracket@6
+          (call@B parLeToken~A
+           (cmd@7 TagId~6 1)NoLineInfo@A)
+          (call@i parRiToken~A NoLineInfo@1)))
+        (cmd@,1 replace dest@8
+         (call@O fromBuffer~A by2@1)0@V)
+        (cmd@,2 assert
+         (infix@G ==
+          (dot~5 dest~4 len@1)2@3))
+        (cmd@,3 assert
+         (infix@P and
+          (infix~A ==
+           (at~4 dest~4 0@1)
+           (at@6 by2~3 0@1))
+          (infix@C ==
+           (at~4 dest~4 1@1)
+           (at@6 by2~3 1@1))))
+        (let@4,5 by1 . . .
+         (bracket@6
+          (call@9 strToken~8
+           (cmd@7 StrId~6 2)NoLineInfo@A)))
+        (cmd@,6 replace dest@8
+         (call@O fromBuffer~A by1@1)0@V)
+        (cmd@,7 assert
+         (infix@G ==
+          (dot~5 dest~4 len@1)1@3))
+        (cmd@,8 assert
+         (infix@F ==
+          (at~4 dest~4 0@1)
+          (at@6 by1~3 0@1)))))))
+    (block@,H .
+     (stmts@2,1
+      (var@4 dest . . .
+       (call@L createTokenBuf~E 3@1))
+      (let@4,1 dest0 . . .
+       (call@I parLeToken~A
+        (cmd@7 TagId~6 123)NoLineInfo@C))
+      (cmd@4,2
+       (dot dest~4 add@1)dest0@5)
+      (call@G,3
+       (dot~C dest~4 addDotToken@1))
+      (dot@4,4 dest~4 addParRi@1)
+      (block@,5 .
+       (stmts@2,1
+        (let@4 by . . .
+         (bracket@5
+          (call@A charToken~9 'a'@1 NoLineInfo@6)))
+        (cmd@,1 replace dest@8
+         (call@O fromBuffer~A by@1)1@U)
+        (cmd@,2 assert
+         (infix@G ==
+          (dot~5 dest~4 len@1)3@3))
+        (cmd@,3 assert
+         (infix@F ==
+          (at~4 dest~4 0@1)dest0@3))
+        (cmd@,4 assert
+         (infix@F ==
+          (at~4 dest~4 1@1)
+          (at@5 by~2 0@1)))
+        (cmd@,5 assert
+         (infix@K ==
+          (dot~6
+           (at~3 dest~4 2@1)kind@1)ParRi@3))
+        (let@4,7 by2 . . .
+         (bracket@6
+          (call@B parLeToken~A
+           (cmd@7 TagId~6 456)NoLineInfo@C)
+          (call@k parRiToken~A NoLineInfo@1)))
+        (cmd@,8 replace dest@8
+         (call@O fromBuffer~A by2@1)1@V)
+        (cmd@,9 assert
+         (infix@G ==
+          (dot~5 dest~4 len@1)4@3))
+        (cmd@,A assert
+         (infix@F ==
+          (at~4 dest~4 0@1)dest0@3))
+        (cmd@,B assert
+         (infix@P and
+          (infix~A ==
+           (at~4 dest~4 1@1)
+           (at@6 by2~3 0@1))
+          (infix@C ==
+           (at~4 dest~4 2@1)
+           (at@6 by2~3 1@1))))
+        (cmd@,C assert
+         (infix@K ==
+          (dot~6
+           (at~3 dest~4 3@1)kind@1)ParRi@3))
+        (let@4,E by1 . . .
+         (bracket@6
+          (call@9 strToken~8
+           (cmd@7 StrId~6 789)NoLineInfo@C)))
+        (cmd@,F replace dest@8
+         (call@O fromBuffer~A by1@1)1@V)
+        (cmd@,G assert
+         (infix@G ==
+          (dot~5 dest~4 len@1)3@3))
+        (cmd@,H assert
+         (infix@F ==
+          (at~4 dest~4 0@1)dest0@3))
+        (cmd@,I assert
+         (infix@F ==
+          (at~4 dest~4 1@1)
+          (at@6 by1~3 0@1)))
+        (cmd@,J assert
+         (infix@K ==
+          (dot~6
+           (at~3 dest~4 2@1)kind@1)ParRi@3))))))))))

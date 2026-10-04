@@ -1,0 +1,1058 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/iopolicy.nim
+ (comment)
+ (when@,l
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (const@B,p capFsRead~9 x . . 1@4)
+ (const@C,q capFsWrite~A x . . 2@4)
+ (const@B,r capFsMeta~9 x . . 4@4)
+ (const@C,s capProcess~A x . . 8@4)
+ (const@8,t capEnv~6 x . . 16@4)
+ (const@8,u capNet~6 x . . 32@4)
+ (const@8,v capFfi~6 x . . 64@4)
+ (const@9,10 capNone~7 x . . 0@4)
+ (const@8,11 capAll~6 x . . 127@4)
+ (const@G,13 policyExitCode~E x . . 77@4)
+ (proc@,18 capName@5 x . .
+  (params@D
+   (param@1 c . . int@3 .))string@A . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 s . . . ""@4)
+   (if@,2
+    (elif@3
+     (infix@I !=
+      (par~I
+       (infix@3 and c~2 capFsRead@4))0@3)
+     (stmts@O
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"fs.read"@2)))))
+   (if@,3
+    (elif@3
+     (infix@J !=
+      (par~J
+       (infix@3 and c~2 capFsWrite@4))0@3)
+     (stmts@P
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"fs.write"@2)))))
+   (if@,4
+    (elif@3
+     (infix@I !=
+      (par~I
+       (infix@3 and c~2 capFsMeta@4))0@3)
+     (stmts@O
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"fs.meta"@2)))))
+   (if@,5
+    (elif@3
+     (infix@J !=
+      (par~J
+       (infix@3 and c~2 capProcess@4))0@3)
+     (stmts@P
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"process"@2)))))
+   (if@,6
+    (elif@3
+     (infix@F !=
+      (par~F
+       (infix@3 and c~2 capEnv@4))0@3)
+     (stmts@L
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"env"@2)))))
+   (if@,7
+    (elif@3
+     (infix@F !=
+      (par~F
+       (infix@3 and c~2 capNet@4))0@3)
+     (stmts@L
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"net"@2)))))
+   (if@,8
+    (elif@3
+     (infix@F !=
+      (par~F
+       (infix@3 and c~2 capFfi@4))0@3)
+     (stmts@L
+      (asgn@2 s~2
+       (infix@Z &
+        (infix~V & s~2
+         (expr
+          (stmts@2)
+          (if@1
+           (elif@3
+            (infix@6 >
+             (dot~5 s~1 len@1)0@2)"+"@B)
+           (else@I ""@6))))"ffi"@2)))))
+   (asgn@7,9 result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@6 ==
+        (dot~5 s~1 len@1)0@3)"none"@C)
+      (else@M s@6))))))
+ (proc@,1K capsNeeded@5 x . .
+  (params@G
+   (param@1 name . . string@6 .))int@G . .
+  (stmts@2,1
+   (comment)
+   (case@,9 name@5
+    (of@,1
+     (ranges "readFile"@3)
+     (stmts@2,1
+      (asgn@7 result~7 capFsRead@2)))
+    (of@,3
+     (ranges "opendir"@3 "closedir"@E "readdir"@Q "tryNextDir"@b)
+     (stmts@2,1
+      (asgn@7 result~7 capFsRead@2)))
+    (of@,5
+     (ranges "open"@3 "fopen"@B)
+     (stmts@2,4
+      (asgn@7 result~7
+       (infix@C or capFsRead~A capFsWrite@3))))
+    (of@,A
+     (ranges "writeFile"@3)
+     (stmts@2,1
+      (asgn@7 result~7 capFsWrite@2)))
+    (of@,C
+     (ranges "mkdir"@3 "rmdir"@C "unlink"@L "rename"@V "chdir"@f "setCurrentDir"@o)
+     (stmts@2,1
+      (asgn@7 result~7 capFsWrite@2)))
+    (of@,E
+     (ranges "stat"@3 "lstat"@B "fstat"@K "expandFilename"@T "realpath"@l "getFileSize"@3,1 "getcwd"@I,1 "getCurrentDir"@S,1)
+     (stmts@2,2
+      (asgn@7 result~7 capFsMeta@2)))
+    (of@,H
+     (ranges "system"@3)
+     (stmts@2,1
+      (asgn@7 result~7 capProcess@2)))
+    (of@,J
+     (ranges "getEnv"@3 "putEnv"@D "existsEnv"@N "delEnv"@a "getEnvVarsC"@k)
+     (stmts@2,1
+      (asgn@7 result~7 capEnv@2)))
+    (of@,L
+     (ranges "socket"@3 "bind"@D "connect"@L "listen"@W "accept"@g "send"@q "recv"@y "setsockopt"@3,1)
+     (stmts@2,7
+      (asgn@7 result~7 capNet@2)))
+    (else@,T
+     (stmts@2,1
+      (asgn@7 result~7 capNone@2))))))
+ (type@D,29 PathGrant~B x . .
+  (object@2 .
+   (fld~5,3 prefix~6 x . string@3 .)
+   (fld~7,4 caps~4 x . int@3 .)
+   (fld~6,5 parts~5 x .
+    (at@6 seq~3 string@1).)))
+ (type@E,2G ReadRecord~C x . .
+  (object@2 .
+   (fld~8,3 path~4 x . string@3 .)
+   (fld~8,4 hash~4 x . uint64@3 .)
+   (fld~8,5 size~4 x . int@3 .)
+   (fld~6,6 hashed~6 x . bool@3 .)))
+ (type@C,2O IoPolicy~A x . .
+  (ref@2
+   (object@4 .
+    (fld~C,4 on~2 x . bool@3 .)
+    (fld~7,5 granted~7 x . int@3 .)
+    (fld~8,6 grants~6 x .
+     (at@6 seq~3 PathGrant@1).)
+    (fld~8,7 sealed~6 x . bool@3 .)
+    (fld~9,8 owner~5 x . string@3 .)
+    (fld~4,9 auditReads~A x . bool@3 .)
+    (fld~9,A reads~5 x .
+     (at@6 seq~3 ReadRecord@1).)
+    (fld~4,B violations~A x . int@3 .)
+    (fld~4,C violNative~A x . string@3 .)
+    (fld~4,D violNeeded~A x . int@3 .))))
+ (var@4,2d gProcess . . IoPolicy@A
+  (oconstr@T IoPolicy~8
+   (kv~T,1 on~2 false@2)
+   (kv~D,1 granted~7 capAll@2)
+   (kv@3,1 grants~6
+    (prefix@2 \40
+     (bracket@1)))
+   (kv@G,1 sealed~6 false@2)
+   (kv@U,1 owner~5 "process"@2)
+   (kv~L,2 auditReads~A false@2)
+   (kv~7,2 reads~5
+    (prefix@2 \40
+     (bracket@1)))
+   (kv@A,2 violations~A 0@2)
+   (kv@P,2 violNative~A ""@2)
+   (kv@f,2 violNeeded~A 0@2)))
+ (var@4,2l gCur . . IoPolicy@6 gProcess@H)
+ (var@4,2o gCurOn . . . false@9)
+ (var@4,2v gPerInterp . . . false@D)
+ (proc@,31 newIoPolicy@5 x . .
+  (params@H
+   (param@1 owner . . . ""@8))IoPolicy@E . .
+  (stmts@2,1
+   (comment)
+   (asgn@B,4 gPerInterp~B true@2)
+   (asgn@7,5 result~7
+    (oconstr@A IoPolicy~8
+     (kv@3 on~2 false@2)
+     (kv@J granted~7 capAll@2)
+     (kv@Z grants~6
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@m sealed~6 false@2)
+     (kv@6,1 owner~5 owner@2)
+     (kv@P,1 auditReads~A false@2)
+     (kv@d,1 reads~5
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@B,2 violations~A 0@2)
+     (kv@Q,2 violNative~A ""@2)
+     (kv@g,2 violNeeded~A 0@2)))))
+ (proc@,3B initIoPolicy@5 x . .
+  (params@I). . .
+  (stmts@2,1
+   (comment)
+   (if@,I
+    (elif@3
+     (infix@9 == gProcess~9
+      (nil@3))
+     (stmts~1,1
+      (asgn@9 gProcess~9
+       (oconstr@A IoPolicy~8
+        (kv~F,1 on~2 false@2)
+        (kv@1,1 granted~7 capAll@2)
+        (kv@H,1 grants~6
+         (prefix@2 \40
+          (bracket@1)))
+        (kv@U,1 sealed~6 false@2)
+        (kv@i,1 owner~5 "process"@2)
+        (kv~7,2 auditReads~A false@2)
+        (kv@7,2 reads~5
+         (prefix@2 \40
+          (bracket@1)))
+        (kv@O,2 violations~A 0@2)
+        (kv@d,2 violNative~A ""@2)
+        (kv~7,3 violNeeded~A 0@2))))))
+   (if@,N
+    (elif@3
+     (infix@5 == gCur~5
+      (nil@3))
+     (stmts~1,1
+      (asgn@5 gCur~5 gProcess@2)
+      (asgn@7,1 gCurOn~7
+       (dot@6 gCur~4 on@1)))))))
+ (proc@,3d perInterpPolicies@5 x . .
+  (params@N)bool@4 . .
+  (stmts@Y gPerInterp))
+ (proc@,3e processIoPolicy@5 x . .
+  (params@L)IoPolicy@4 . .
+  (stmts@a gProcess))
+ (proc@,3f currentIoPolicy@5 x . .
+  (params@L)IoPolicy@4 . .
+  (stmts@a gCur))
+ (proc@,3h useIoPolicy@5 x . .
+  (params@H
+   (param@1 p . . IoPolicy@3 .))IoPolicy@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 gCur@2)
+   (if@,5
+    (elif@3
+     (infix@2 == p~2
+      (nil@3))
+     (stmts~1,1
+      (asgn@5 gCur~5 gProcess@2)))
+    (else@,2
+     (stmts@2,1
+      (asgn@5 gCur~5 p@2))))
+   (asgn@7,9 gCurOn~7
+    (dot@6 gCur~4 on@1))))
+ (proc@,4R isSep@5 . . .
+  (params@A
+   (param@1 c . . char@3 .))bool@B . .
+  (stmts@S
+   (infix@9 or
+    (infix~7 == c~2 '/'@3)
+    (infix@5 == c~2 '\5C'@3))))
+ (proc@,4T foldc@5 . . .
+  (params@A
+   (param@1 c . . char@3 .))char@B . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,6
+      (if
+       (elif@3
+        (infix@9 and
+         (infix~7 >= c~2 'A'@3)
+         (infix@6 <= c~2 'Z'@3))
+        (stmts@N
+         (asgn@7 result~7
+          (call@6 char~4
+           (infix@8 \2B
+            (call~4 int~3 c@1)32@2)))))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7 c@2))))))
+    (else@,8
+     (stmts@2,1
+      (asgn@7 result~7 c@2))))))
+ (proc@,4f pathParts@5 x . .
+  (params@F
+   (param@1 p . . string@3 .))
+  (at@G seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,6 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,7 i . . . 0@4)
+   (var@4,8 cur . . . ""@6)
+   (var@4,9 rooted . . . false@9)
+   (var@4,Q uncRoot . . . false@A)
+   (when@,R
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,1
+      (asgn@8 uncRoot~8
+       (infix@T and
+        (infix~G and
+         (infix~5 >=
+          (dot~5 p~1 len@1)2@3)
+         (call@9 isSep~5
+          (at@2 p~1 0@1)))
+        (call@9 isSep~5
+         (at@2 p~1 1@1)))))))
+   (let@4,T driveAbs . . .
+    (infix@s and
+     (infix~G and
+      (infix~G and
+       (infix~5 >=
+        (dot~5 p~1 len@1)3@3)
+       (infix@9 ==
+        (at~4 p~1 1@1)'\3A'@3))
+      (call@9 isSep~5
+       (at@2 p~1 2@1)))
+     (par~t,1
+      (infix@V or
+       (par~U
+        (infix@D and
+         (infix~7 >=
+          (at~4 p~1 0@1)'a'@3)
+         (infix@9 <=
+          (at~4 p~1 0@1)'z'@3)))
+       (par@3
+        (infix@D and
+         (infix~7 >=
+          (at~4 p~1 0@1)'A'@3)
+         (infix@9 <=
+          (at~4 p~1 0@1)'Z'@3)))))))
+   (if@,V
+    (elif@3 driveAbs
+     (stmts~1,1
+      (var@4 drive . . . ""@8)
+      (cmd@5,1
+       (dot drive~5 add@1)
+       (call@A foldc~5
+        (at@2 p~1 0@1)))
+      (cmd@5,2
+       (dot drive~5 add@1)'\3A'@5)
+      (cmd@6,3
+       (dot result~6 add@1)drive@5)
+      (asgn@7,4 rooted~7 true@2)
+      (asgn@2,5 i~2 3@2)))
+    (elif@5,7 uncRoot
+     (stmts~3,1
+      (cmd@6
+       (dot result~6 add@1)"\5C\5C"@5)
+      (asgn@7,1 rooted~7 true@2)
+      (asgn@2,2 i~2 2@2)))
+    (elif@5,B
+     (infix@B and
+      (infix~5 >=
+       (dot~5 p~1 len@1)1@3)
+      (call@9 isSep~5
+       (at@2 p~1 0@1)))
+     (stmts~3,1
+      (cmd@6
+       (dot result~6 add@1)""@5)
+      (asgn@7,1 rooted~7 true@2)
+      (asgn@2,2 i~2 1@2))))
+   (while@,k
+    (infix@8 <= i~2
+     (dot@4 p~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@B or
+        (infix~9 == i~2
+         (dot@4 p~1 len@1))
+        (call@8 isSep~5
+         (at@2 p~1 i@1)))
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@C and
+           (infix~4 >
+            (dot~5 cur~3 len@1)0@2)
+           (infix@8 != cur~4 "."@3))
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@4 == cur~4 ".."@3)
+             (stmts~1,3
+              (if
+               (elif@3
+                (infix@a and
+                 (infix~P >
+                  (dot~5 result~6 len@1)
+                  (expr
+                   (stmts@2)
+                   (if@1
+                    (elif@3 rooted 1@8)
+                    (else@D 0@6))))
+                 (infix~D,1 !=
+                  (at~H result~6
+                   (infix@C \2D
+                    (dot~5 result~6 len@1)1@2))".."@3))
+                (stmts~1,2
+                 (call@D
+                  (dot~7 result~6 setLen@1)
+                  (infix@C \2D
+                   (dot~5 result~6 len@1)1@2))))
+               (elif@5,3
+                (prefix not rooted@4)
+                (stmts~3,1
+                 (cmd@6
+                  (dot result~6 add@1)".."@5))))))
+            (else@,8
+             (stmts@2,1
+              (cmd@6
+               (dot result~6 add@1)cur@5)))))))
+        (asgn@4,B cur~4 ""@2)))
+      (else@,D
+       (stmts@2,1
+        (cmd@3
+         (dot cur~3 add@1)
+         (call@A foldc~5
+          (at@2 p~1 i@1))))))
+     (cmd@,F inc i@4)))))
+ (proc@,5i partsCoverPath@5 . . .
+  (params@J
+   (param@1 gp . .
+    (at@7 seq~3 string@1).)
+   (param@I pp . .
+    (at@7 seq~3 string@1).))bool@a . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@7 ==
+      (dot~5 gp~2 len@1)0@3)
+     (stmts@D
+      (ret false@7))))
+   (if@,4
+    (elif@3
+     (infix@7 >
+      (dot~5 gp~2 len@1)
+      (dot@4 pp~2 len@1))
+     (stmts@H
+      (ret false@7))))
+   (var@4,5 i . . . 0@4)
+   (while@,6
+    (infix@8 < i~2
+     (dot@4 gp~2 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@6 !=
+        (at~4 gp~2 i@1)
+        (at@5 pp~2 i@1))
+       (stmts@G
+        (ret false@7))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,9 result~7 true@2)))
+ (proc@,5u grantPath@5 x . .
+  (params@F
+   (param@1 p . . IoPolicy@3 .)
+   (param@E prefix . . string@8 .)
+   (param@U caps . . int@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (dot@1 p~1 sealed@1)
+     (stmts@A
+      (ret .))))
+   (cmd@8,3
+    (dot
+     (dot~7 p~1 grants@1)add@1)
+    (oconstr@E PathGrant~9
+     (kv@7 prefix~6 prefix@2)
+     (kv@L caps~4 caps@2)
+     (kv@Y parts~5
+      (call@B pathParts~9 prefix@1))))))
+ (proc@,60 grantPath@5 x . .
+  (params@F
+   (param@1 prefix . . string@8 .)
+   (param@H caps . . int@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@9,1 grantPath~9 gProcess@1 prefix@B caps@J)))
+ (proc@,64 pathGrantCount@5 x . .
+  (params@K
+   (param@1 p . . IoPolicy@3 .))int@F . .
+  (stmts@f
+   (dot@8
+    (dot~7 p~1 grants@1)len@1)))
+ (proc@,65 pathGrantCount@5 x . .
+  (params@K)int@4 . .
+  (stmts@U
+   (dot@B
+    (dot~7 gCur~4 grants@1)len@1)))
+ (proc@,67 restrictTo@5 x . .
+  (params@G
+   (param@1 p . . IoPolicy@3 .)
+   (param@E granted . . int@9 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@5,4
+    (dot~4 p~1 on@1)true@2)
+   (asgn@A,5
+    (dot~9 p~1 granted@1)
+    (infix@C and
+     (dot~9 p~1 granted@1)granted@4))
+   (if@,6
+    (elif@3
+     (infix@2 == p~2 gCur@3)
+     (stmts@B
+      (asgn@7 gCurOn~7 true@2))))))
+ (proc@,6G restrictTo@5 x . .
+  (params@G
+   (param@1 granted . . int@9 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@A,2 restrictTo~A gProcess@1 granted@B)
+   (if@,3
+    (elif@3
+     (infix@5 == gCur~5 gProcess@3)
+     (stmts@I
+      (asgn@7 gCurOn~7 true@2))))))
+ (proc@,6M sealPolicy@5 x . .
+  (params@G
+   (param@1 p . . IoPolicy@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@9,3
+    (dot~8 p~1 sealed@1)true@2)))
+ (proc@,6S adoptPolicy@5 x . .
+  (params@H
+   (param@1 fresh . . IoPolicy@E .)
+   (param@8 prior . . IoPolicy@7 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@9,A
+    (dot~4 fresh~5 on@1)
+    (dot@7 prior~5 on@1))
+   (asgn@E,B
+    (dot~9 fresh~5 granted@1)
+    (dot@7 prior~5 granted@1))
+   (asgn@D,C
+    (dot~8 fresh~5 grants@1)
+    (dot@7 prior~5 grants@1))
+   (if@,G
+    (elif@3
+     (infix@G ==
+      (dot~5
+       (dot~6 fresh~5 owner@1)len@1)0@3)
+     (stmts@M
+      (asgn@C
+       (dot~7 fresh~5 owner@1)
+       (dot@7 prior~5 owner@1)))))
+   (asgn@H,H
+    (dot~C fresh~5 auditReads@1)
+    (dot@7 prior~5 auditReads@1))
+   (asgn@D,I
+    (dot~8 fresh~5 sealed@1)true@2)
+   (if@,J
+    (elif@3
+     (infix@6 == fresh~6 gCur@3)
+     (stmts@F
+      (asgn@7 gCurOn~7
+       (dot@7 fresh~5 on@1)))))))
+ (proc@,6o policyOn@5 x . .
+  (params@E)bool@4 . .
+  (stmts@2,1
+   (comment)gCurOn@,2))
+ (proc@,6t grantedCaps@5 x . .
+  (params@H
+   (param@1 p . . IoPolicy@3 .))int@F . .
+  (stmts@c
+   (dot@1 p~1 granted@1)))
+ (proc@,6u grantedCaps@5 x . .
+  (params@H)int@4 . .
+  (stmts@R
+   (dot@4 gCur~4 granted@1)))
+ (proc@,6v policyOwner@5 x . .
+  (params@H
+   (param@1 p . . IoPolicy@3 .))string@F . .
+  (stmts@f
+   (dot@1 p~1 owner@1)))
+ (proc@,6x policyDenies@5 x . .
+  (params@I
+   (param@1 name . . string@6 .)
+   (param@F needed . .
+    (mut@8 int@4).))bool@X . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 needed~7
+    (call@C capsNeeded~A name@1))
+   (asgn@7,3 result~7
+    (infix@E and
+     (infix~5 != needed~7 0@3)
+     (infix@U !=
+      (par~Q
+       (infix@8 and needed~7
+        (dot@8 gCur~4 granted@1)))needed@3)))))
+ (proc@,73 capsDeniedOn@5 x . .
+  (params@I
+   (param@1 p . . IoPolicy@3 .)
+   (param@E need . . int@6 .)
+   (param@P path . . string@6 .))bool@e . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (prefix not
+      (dot@5 p~1 on@1))
+     (stmts@A
+      (ret false@7))))
+   (if@,6
+    (elif@3
+     (infix@5 == need~5 0@3)
+     (stmts@B
+      (ret false@7))))
+   (if@,7
+    (elif@3
+     (infix@L ==
+      (par~L
+       (infix@6 and need~5
+        (dot@5 p~1 granted@1)))need@3)
+     (stmts@U
+      (ret false@7))))
+   (if@,8
+    (elif@3
+     (infix@D and
+      (infix~4 >
+       (dot~5 path~4 len@1)0@2)
+      (infix@H >
+       (dot~5
+        (dot~7 p~1 grants@1)len@1)0@2))
+     (stmts~1,1
+      (let@4 pp . . .
+       (call@E pathParts~9 path@1))
+      (var@4,1 i . . . 0@4)
+      (while@,2
+       (infix@8 < i~2
+        (dot@A
+         (dot~7 p~1 grants@1)len@1))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@a and
+           (infix~8 ==
+            (par~S
+             (infix@I and
+              (dot~6
+               (at~3
+                (dot~7 p~1 grants@1)i@1)caps@1)need@4))need@3)
+           (call~M,1 partsCoverPath~E
+            (dot@C
+             (at~3
+              (dot~7 p~1 grants@1)i@1)parts@1)pp@K))
+          (stmts~1,2
+           (ret false@7))))
+        (cmd@,3 inc i@4))))))
+   (asgn@7,G result~7 true@2)))
+ (proc@,7M capsDeniedOn@5 x . .
+  (params@I
+   (param@1 need . . int@6 .)
+   (param@C path . . string@6 .))bool@R . .
+  (stmts@2,1
+   (comment)
+   (call@C,4 capsDeniedOn~C gCur@1 need@7 path@D)))
+ (proc@,7T policyDeniesPath@5 x . .
+  (params@M
+   (param@1 name . . string@C .)
+   (param@7 path . . string@6 .)
+   (param@L needed . .
+    (mut@8 int@4).))bool@d . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 needed~7
+    (call@C capsNeeded~A name@1))
+   (asgn@7,3 result~7
+    (call@E capsDeniedOn~C gCur@1 needed@7 path@F))))
+ (proc@,7l enableReadAudit@5 x . .
+  (params@L
+   (param@1 p . . IoPolicy@3 .)). . .
+  (stmts@b
+   (asgn@D
+    (dot~C p~1 auditReads@1)true@2)))
+ (proc@,7m enableReadAudit@5 x . .
+  (params@L). . .
+  (stmts@Q
+   (asgn@K
+    (dot~C gProcess~8 auditReads@1)true@2)))
+ (proc@,7n readAuditOn@5 x . .
+  (params@H)bool@4 . .
+  (stmts@S
+   (dot@4 gCur~4 auditReads@1)))
+ (proc@,7p fnv1a@5 . . .
+  (params@A
+   (param@1 s . . string@3 .))uint64@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (suf@2 14695981039346656037u "u64"))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 s~1 len@1))
+    (stmts@2,1
+     (asgn@7 result~7
+      (infix@9 xor result~7
+       (call@A uint64~6
+        (call@6 uint8~5
+         (at@2 s~1 i@1)))))
+     (asgn@7,1 result~7
+      (infix@9 * result~7
+       (suf@2 1099511628211u "u64")))
+     (cmd@,2 inc i@4)))))
+ (proc@,7x recordRead@5 x . .
+  (params@G
+   (param@1 path . . string@F .)
+   (param@7 content . . string@9 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,4 p . . . gCur@4)
+   (if@,5
+    (elif@3
+     (prefix not
+      (dot@5 p~1 auditReads@1))
+     (stmts@I
+      (ret .))))
+   (let@4,6 h . . .
+    (call@9 fnv1a~5 content@1))
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@8 < i~2
+     (dot@9
+      (dot~6 p~1 reads@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@k and
+        (infix~S and
+         (dot~8
+          (at~3
+           (dot~6 p~1 reads@1)i@1)hashed@1)
+         (infix@K ==
+          (dot~6
+           (at~3
+            (dot~6 p~1 reads@1)i@1)path@1)path@3))
+        (infix@K ==
+         (dot~6
+          (at~3
+           (dot~6 p~1 reads@1)i@1)hash@1)h@3))
+       (stmts@1A
+        (ret .))))
+     (cmd@,1 inc i@4)))
+   (cmd@7,B
+    (dot
+     (dot~6 p~1 reads@1)add@1)
+    (oconstr@F ReadRecord~A
+     (kv@5 path~4 path@2)
+     (kv@H hash~4 h@2)
+     (kv@Q size~4
+      (dot@9 content~7 len@1))
+     (kv@l hashed~6 true@2)))))
+ (proc@,8B recordOpen@5 x . .
+  (params@G
+   (param@1 path . . string@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 p . . . gCur@4)
+   (if@,3
+    (elif@3
+     (prefix not
+      (dot@5 p~1 auditReads@1))
+     (stmts@I
+      (ret .))))
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@8 < i~2
+     (dot@9
+      (dot~6 p~1 reads@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@O and
+        (par~O
+         (prefix@1 not
+          (dot@E
+           (at~3
+            (dot~6 p~1 reads@1)i@1)hashed@1)))
+        (infix@K ==
+         (dot~6
+          (at~3
+           (dot~6 p~1 reads@1)i@1)path@1)path@3))
+       (stmts@r
+        (ret .))))
+     (cmd@,1 inc i@4)))
+   (cmd@7,8
+    (dot
+     (dot~6 p~1 reads@1)add@1)
+    (oconstr@F ReadRecord~A
+     (kv@5 path~4 path@2)
+     (kv@H hash~4
+      (suf@2 0u "u64"))
+     (kv@U size~4 0@2)
+     (kv@f hashed~6 false@2)))))
+ (proc@,8M toHex16@5 . . .
+  (params@C
+   (param@1 x . . uint64@3 .))string@D . .
+  (stmts@2,1
+   (const@6 digits . . . "0123456789abcdef"@9)
+   (asgn@7,1 result~7 ""@2)
+   (var@4,2 i . . . 60@4)
+   (while@,3
+    (infix@8 >= i~2 0@3)
+    (stmts@2,1
+     (asgn@7 result~7
+      (infix@9 & result~7
+       (at@8 digits~6
+        (call@4 int~3
+         (infix@J and
+          (par~I
+           (infix@3 shr x~2
+            (call@A uint64~6 i@1)))
+          (suf@4 15u "u64"))))))
+     (asgn@2,1 i~2
+      (infix@4 \2D i~2 4@2))))))
+ (proc@,8U readAuditText@5 x . .
+  (params@J
+   (param@1 p . . IoPolicy@3 .))string@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7 ""@2)
+   (for@4,4
+    (dot@6 p~1 reads@1)
+    (unpackflat
+     (let r . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@1 r~1 hashed@1)
+       (stmts~1,1
+        (asgn@7 result~7
+         (infix@A,1 &
+          (infix@p,~1 &
+           (infix~7 &
+            (infix~I &
+             (infix~7 &
+              (infix~9 &
+               (infix~B & result~7 "read\09"@2)
+               (dot@3 r~1 path@1))"\09"@2)
+             (call@9 toHex16~7
+              (dot@2 r~1 hash@1)))"\09"@2)
+           (prefix~x,1 $
+            (dot@2 r~1 size@1)))"\0A"@2))))
+      (else@,3
+       (stmts@2,1
+        (asgn@7 result~7
+         (infix@T &
+          (infix~9 &
+           (infix~B & result~7 "open\09"@2)
+           (dot@3 r~1 path@1))"\0A"@2)))))))))
+ (proc@,8g readAuditText@5 x . .
+  (params@J)string@4 . .
+  (stmts@W
+   (call@D readAuditText~D gCur@1)))
+ (proc@,8h readAuditCount@5 x . .
+  (params@K
+   (param@1 p . . IoPolicy@3 .))int@F . .
+  (stmts@f
+   (dot@7
+    (dot~6 p~1 reads@1)len@1)))
+ (proc@,8i readAuditCount@5 x . .
+  (params@K)int@4 . .
+  (stmts@U
+   (dot@A
+    (dot~6 gCur~4 reads@1)len@1)))
+ (proc@,8k recordViolation@5 x . .
+  (params@L
+   (param@1 p . . IoPolicy@3 .)
+   (param@E name . . string@6 .)
+   (param@S needed . . int@8 .)). . .
+  (stmts@2,1
+   (cmd inc
+    (dot@5 p~1 violations@1))
+   (if@,1
+    (elif@3
+     (infix@D ==
+      (dot~C p~1 violations@1)1@3)
+     (stmts~1,1
+      (asgn@D
+       (dot~C p~1 violNative@1)name@2)
+      (asgn@D,1
+       (dot~C p~1 violNeeded@1)needed@2))))))
+ (proc@,8q recordViolation@5 x . .
+  (params@L
+   (param@1 name . . string@6 .)
+   (param@F needed . . int@8 .)). . .
+  (stmts@2,1
+   (call@F recordViolation~F gCur@1 name@7 needed@D)))
+ (proc@,8t violationCount@5 x . .
+  (params@K
+   (param@1 p . . IoPolicy@3 .))int@F . .
+  (stmts@f
+   (dot@1 p~1 violations@1)))
+ (proc@,8u violationCount@5 x . .
+  (params@K)int@4 . .
+  (stmts@U
+   (dot@4 gCur~4 violations@1)))
+ (proc@,8v violationNative@5 x . .
+  (params@L
+   (param@1 p . . IoPolicy@3 .))string@F . .
+  (stmts@j
+   (dot@1 p~1 violNative@1)))
+ (proc@,8w violationNative@5 x . .
+  (params@L)string@4 . .
+  (stmts@Y
+   (dot@4 gCur~4 violNative@1)))
+ (proc@,8x violationNeeded@5 x . .
+  (params@L
+   (param@1 p . . IoPolicy@3 .))int@F . .
+  (stmts@g
+   (dot@1 p~1 violNeeded@1)))
+ (proc@,8y violationNeeded@5 x . .
+  (params@L)int@4 . .
+  (stmts@V
+   (dot@4 gCur~4 violNeeded@1)))
+ (proc@,90 policyMessage@5 x . .
+  (params@J
+   (param@1 p . . IoPolicy@3 .)
+   (param@E name . . string@6 .)
+   (param@S needed . . int@8 .)
+   (param@f path . . . ""@7))string@r . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,8 result~7
+    (infix@10 &
+     (infix~O &
+      (infix~7 & "aowli\3A policy violation\3A \27"~T name@2)"\27 needs capability "@2)
+     (call~y,1 capName~7 needed@1)))
+   (if@,A
+    (elif@3
+     (infix@9 >
+      (dot~5 path~4 len@1)0@2)
+     (stmts@E
+      (asgn@7 result~7
+       (infix@Q &
+        (infix~7 &
+         (infix~A & result~7 " on \27"@2)path@2)"\27"@2)))))
+   (asgn@7,B result~7
+    (infix@W &
+     (infix~N & result~7 "; this run grants "@2)
+     (call@9 capName~7
+      (dot@2 p~1 granted@1))))
+   (if@,C
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~7 p~1 grants@1)len@1)0@2)
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@a &
+        (infix~G &
+         (infix~B & result~7 " plus "@2)
+         (prefix@2 $
+          (dot@9
+           (dot~7 p~1 grants@1)len@1)))" path grant\28s\29"@2)))))
+   (asgn@7,E result~7
+    (infix@9 & result~7 ". Denied — the call did not reach the host."@2))
+   (if@,F
+    (elif@3
+     (infix@G and
+      (infix~4 >
+       (dot~5
+        (dot~6 p~1 owner@1)len@1)0@2)
+      (infix@C !=
+       (dot~7 p~1 owner@1)"process"@3))
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@Y &
+        (infix~A &
+         (infix~F & result~7 " \5Bpolicy\3A "@2)
+         (dot@3 p~1 owner@1))"\5D"@2)))))
+   (asgn@7,H result~7
+    (infix@9 & result~7 "\0A"@2))))
+ (proc@,9K policyMessage@5 x . .
+  (params@J
+   (param@1 name . . string@6 .)
+   (param@F needed . . int@8 .)
+   (param@S path . . . ""@7))string@e . .
+  (stmts@2,1
+   (call@D policyMessage~D gCur@1 name@7 needed@D path@L))))

@@ -1,0 +1,209 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/nifchecksums.nim
+ (import
+  (infix@B / std~4
+   (bracket@2 formatfloat@1)))
+ (import@,2 bitabs@7 nifreader@F nifstreams@Q nifcursors@c)
+ (when@,4
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (import
+     (infix@B / std~4 sha1@2))))
+  (else@,2
+   (stmts@2,6
+    (pragmas push@2
+     (kv@Q
+      (at~C warning~7 Deprecated@1)off@2))
+    (import@,1
+     (infix@B / std~4 sha1@2))
+    (pragmas@,2 pop@2))))
+ (proc@,G update@5 . . .
+  (params@B
+   (param@1 dest . .
+    (mut@6 Sha1State@4).)
+   (param@M n . . PackedToken@3 .)). . .
+  (stmts@2,1
+   (case
+    (dot@6 n~1 kind@1)
+    (of@,1
+     (ranges ParLe@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 "\28"@7)
+      (call@6,1 update~6 dest@1
+       (at@G
+        (dot~5 pool~4 tags@1)
+        (dot@2 n~1 tagId@1)))))
+    (of@,4
+     (ranges ParRi@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 "\29"@7)))
+    (of@,6
+     (ranges SymbolDef@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " \3A"@7)
+      (call@6,1 update~6 dest@1
+       (at@G
+        (dot~5 pool~4 syms@1)
+        (dot@2 n~1 symId@1)))))
+    (of@,9
+     (ranges Symbol@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (at@G
+        (dot~5 pool~4 syms@1)
+        (dot@2 n~1 symId@1)))))
+    (of@,C
+     (ranges Ident@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (at@J
+        (dot~8 pool~4 strings@1)
+        (dot@2 n~1 litId@1)))))
+    (of@,F
+     (ranges IntLit@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (prefix@7 $
+        (at@E
+         (dot~9 pool~4 integers@1)
+         (dot@2 n~1 intId@1))))))
+    (of@,I
+     (ranges UIntLit@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (prefix@7 $
+        (at@F
+         (dot~A pool~4 uintegers@1)
+         (dot@2 n~1 uintId@1))))))
+    (of@,L
+     (ranges FloatLit@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (prefix@7 $
+        (at@C
+         (dot~7 pool~4 floats@1)
+         (dot@2 n~1 floatId@1))))))
+    (of@,O
+     (ranges StringLit@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (at@J
+        (dot~8 pool~4 strings@1)
+        (dot@2 n~1 litId@1)))))
+    (of@,R
+     (ranges CharLit@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 " "@7)
+      (call@6,1 update~6 dest@1
+       (prefix@7 $
+        (dot@2 n~1 uoperand@1)))))
+    (of@,U
+     (ranges DotToken@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 "."@7)))
+    (of@,W
+     (ranges UnknownToken@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 "?"@7)))
+    (of@,Y
+     (ranges EofToken@3)
+     (stmts@2,1
+      (call@6 update~6 dest@1 "!EOF!"@7))))))
+ (proc@,s updateLoop@5 x . .
+  (params@G
+   (param@1 dest . .
+    (mut@6 Sha1State@4).)
+   (param@M n . .
+    (mut@3 Cursor@4).)
+   (param@b inlineT . . TagId@9 .)
+   (param@r foundInline . .
+    (mut@D bool@4).)). . .
+  (stmts@2,1
+   (var@4 nested . . . 0@9)
+   (while@,1 true@6
+    (stmts@2,1
+     (cmd update dest@7
+      (dot@E n~1 load@1))
+     (case@,1
+      (dot@6 n~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (dot~7 n~1 tagId@1)inlineT@3)
+          (stmts@K
+           (asgn@C foundInline~C true@2))))
+        (cmd@,1 inc nested@4)))
+      (of@,4
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)))
+      (else@,6
+       (stmts@6
+        (discard .))))
+     (cmd@,8 inc n@4)
+     (if@,9
+      (elif@3
+       (infix@7 <= nested~7 0@3)
+       (stmts~1,1
+        (break .))))))))
+ (proc@,17 computeChecksum@5 x . .
+  (params@L
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@2,1
+   (var@4 checksum . . .
+    (call@N newSha1State~C))
+   (var@4,1 n . . . n@4)
+   (var@4,2 nested . . . 0@9)
+   (while@,3 true@6
+    (stmts@2,1
+     (cmd update checksum@7
+      (dot@I n~1 load@1))
+     (case@,1
+      (dot@6 n~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd inc nested@4)))
+      (of@,3
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)))
+      (else@,5
+       (stmts@6
+        (discard .))))
+     (cmd@,7 inc n@4)
+     (if@,8
+      (elif@3
+       (infix@7 <= nested~7 0@3)
+       (stmts~1,1
+        (break .))))))
+   (let@4,E final . . .
+    (cmd@J SecureHash~B
+     (call@H
+      (dot~9 checksum~8 finalize@1))))
+   (asgn@7,F result~7
+    (prefix@2 $ final@1))))
+ (proc@,1P computeChecksum@5 x . .
+  (params@L
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (var@4 state . . .
+    (call@K newSha1State~C))
+   (call@C,1
+    (dot~7 state~5 update@1)s@1)
+   (prefix@,2 $
+    (call@B SecureHash~A
+     (call@F
+      (dot~9 state~5 finalize@1)))))))

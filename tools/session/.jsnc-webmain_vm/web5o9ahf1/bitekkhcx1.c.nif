@@ -1,0 +1,102 @@
+(.nif27)
+(.indexat 2836             )
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/bitabs.nim
+ (proc@,K :nextTry.0.@5
+  (params@C
+   (param@1 :h.0 .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32))
+   (param@4 :maxHash.0 .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32)))
+  (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32)
+  (pragmas@b
+   (inline 0 20 20)
+   (smry~b
+    (param 0 0 reads)
+    (param 1 1 reads)))
+  (stmts@2,1
+   (var@7 :result.0 .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32).)
+   (asgn@7 result.0~7
+    (bitand@A
+     (u 32)
+     (add~5
+      (u 32)h.0~2
+      (conv@2
+       (u@G,2R,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 32)1))maxHash.0@4))
+   (ret~2,~1 result.0)))
+ (proc@,S :mustRehash.0.@5
+  (params@F
+   (param@1 :length.0 .
+    (i@H 32))
+   (param@9 :counter.0 .
+    (i@9 32)))
+  (bool@O)
+  (pragmas@i
+   (inline 0 150 200)
+   (smry~i callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads)))
+  (stmts@2,1
+   (var@6 :result.1 .
+    (bool@6,~5).)
+   (stmts@2,4,../../../../../../home/savant/nimony/lib/std/assertions.nim
+    (if
+     (elif@3
+      (not
+       (lt@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim counter.0@I,a,../../../../../../home/savant/nimony/src/lib/bitabs.nim length.0@9,a,../../../../../../home/savant/nimony/src/lib/bitabs.nim))
+      (stmts~1,1
+       (stmts@2,7a,../../../../../../home/savant/nimony/lib/std/syncio.nim
+        (stmts@2,2
+         (call write.0.syn1lfpjv stdout.0.syn1lfpjv@6
+          (oconstr@9,5,../../../../../../home/savant/nimony/lib/std/assertions.nim string.0.sysvq0asl
+           (kv bytes.0 1933663230u)
+           (kv more.0
+            (addr strlit.0.I14676000009897902695.assy765wm)))))
+        (stmts@2,2
+         (call write.0.syn1lfpjv stdout.0.syn1lfpjv@6
+          (oconstr@Z,3,../../../../../../home/savant/nimony/lib/std/assertions.nim string.0.sysvq0asl
+           (kv bytes.0 0u)
+           (kv more.0
+            (nil)))))
+        (call@,3 write.7.syn1lfpjv stdout.0.syn1lfpjv@6 '\0A'@E))
+       (call@,1 quit.0.syn1lfpjv 1@5)))))
+   (var@i,1 :`x.0 .
+    (bool).)
+   (if@i,1
+    (elif
+     (lt~R length.0~7
+      (add@G
+       (i 32)
+       (div~6
+        (i 32)counter.0~8 2@4)counter.0@2))
+     (stmts
+      (asgn `x.0
+       (true))))
+    (else
+     (stmts
+      (asgn@L `x.0
+       (lt
+        (sub~A
+         (i 32)length.0~7 counter.0@2)4@2)))))
+   (asgn@7,1 result.1~7 `x.0@b)
+   (ret~2,~1 result.1)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.has9tn57v)
+   (call `ini.0.assy765wm))))(.index@,7,../../../../../../home/savant/nimony/src/lib/bitabs.nim
+ (x nextTry.0. 103)
+ (x mustRehash.0. 712)
+ (h `iniGuard.0. 1738)
+ (x `ini.0. 34))

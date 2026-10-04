@@ -1,0 +1,238 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim
+ (import
+  (infix@B / std~4 assertions@2))
+ (include@,1
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (include@,2
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (import@,4
+  (infix@L /
+   (infix~9 / ".."~5 models@2)
+   (bracket@2 tags@1 njvl_tags@7)))
+ (export@,5 njvl_tags@7)
+ (template@,7 tagEnum@9 . . .
+  (params@G
+   (param@1 c . . Cursor@3 .))TagEnum@D . .
+  (stmts@d
+   (cast TagEnum@5
+    (call@H tag~3 c@1))))
+ (template@,9 tagEnum@9 . . .
+  (params@G
+   (param@1 c . . PackedToken@3 .))TagEnum@I . .
+  (stmts@i
+   (cast TagEnum@5
+    (call@H tag~3 c@1))))
+ (proc@,B njvlKind@5 x . .
+  (params@E
+   (param@1 c . . PackedToken@3 .))NjvlKind@I
+  (pragmas@f inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 c~1 kind@1)ParLe@3)
+      (call@K rawTagIsNjvlKind~G
+       (call@8 tagEnum~7 c@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (cast@2 NjvlKind@5
+        (call@M tagEnum~7 c@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 NoVTag@2))))))
+ (proc@,H njvlKind@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))NjvlKind@D
+  (pragmas@a inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A njvlKind~8
+     (call@7
+      (dot~5 c~1 load@1))))))
+ (proc@,K parLeToken@5 x . .
+  (params@G
+   (param@1 kind . . NjvlKind@6 .)
+   (param@H info . . . NoLineInfo@7))PackedToken@b . .
+  (stmts@2,1
+   (call@A parLeToken~A
+    (cast@1 TagId@5 kind@C)info@K)))
+ (template@,N copyIntoKind@9 x . .
+  (params@M
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L kind . . NjvlKind@6 .)
+   (param@1,1 info . . PackedLineInfo@6 .)
+   (param@N,1 body . . untyped@6 .)). . .
+  (stmts@2,2
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A kind@1 info@7))body@,1
+   (call@D,2
+    (dot~9 dest~4 addParRi@1))))
+ (type@H,U IteTracker~F x
+  (typevars~4
+   (typevar@1 T . . . .)).
+  (object@2 .
+   (fld~F,5 data . .
+    (at@9 seq~3 T@1).)))
+ (proc@,b checkpoint@5 x .
+  (typevars@G
+   (typevar@1 T . . . .))
+  (params@J
+   (param@1 t . .
+    (at@D IteTracker~A T@1).))int@K
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (comment)
+   (dot@6,1
+    (dot~5 t~1 data@1)len@1)))
+ (proc@,f rollback@5 x .
+  (typevars@E
+   (typevar@1 T . . . .))
+  (params@H
+   (param@1 t . .
+    (mut@3
+     (at@E IteTracker~A T@1)).)
+   (param@N cp . . int@4 .)).
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (comment)
+   (cmd@6,1
+    (dot
+     (dot~5 t~1 data@1)shrink@1)cp@8)))
+ (proc@,j add@5 x .
+  (typevars@9
+   (typevar@1 T . . . .))
+  (params@C
+   (param@1 t . .
+    (mut@3
+     (at@E IteTracker~A T@1)).)
+   (param@N item . .
+    (cmd@B sink~5 T).)).
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (cmd@6
+    (dot
+     (dot~5 t~1 data@1)add@1)item@5)))
+ (proc@,m contains@5 x .
+  (typevars@E
+   (typevar@1 T . . Equatable@3 .))
+  (params@S
+   (param@1 t . .
+    (at@D IteTracker~A T@1).)
+   (param@J item . . T@6 .))bool@T
+  (pragmas@10 inline@2).
+  (stmts@2,1
+   (infix@5 in item~5
+    (dot@4 t~1 data@1))))
+ (iterator@,p since@9 x .
+  (typevars@F
+   (typevar@1 T . . . .))
+  (params@I
+   (param@1 t . .
+    (at@D IteTracker~A T@1).)
+   (param@J cp . . int@4 .))
+  (cmd@Y lent~5 T). .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (infix@8 \2E\2E< cp~3
+     (dot@A
+      (dot~5 t~1 data@1)len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (yld
+      (at@C
+       (dot~5 t~1 data@1)i@1))))))
+ (type@H,v SplitPoint~F x
+  (typevars~4
+   (typevar@1 T . . . .)).
+  (object@2 .
+   (fld~D,2 cp~2 x . int@3 .)
+   (fld~7,3 thenData~8 x .
+    (at@6 seq~3 T@1).)))
+ (proc@,10 split@5 x .
+  (typevars@B
+   (typevar@1 T . . . .))
+  (params@E
+   (param@1 t . .
+    (at@D IteTracker~A T@1).))
+  (at@U SplitPoint~A T@1)
+  (pragmas@m inline@2).
+  (stmts@2,1
+   (comment)
+   (oconstr@D,1
+    (at~3 SplitPoint~A T@1)
+    (kv@3 cp~2
+     (call@E
+      (dot~B t~1 checkpoint@1))))))
+ (proc@,14 thenDone@5 x .
+  (typevars@E
+   (typevar@1 T . . . .))
+  (params@H
+   (param@1 t . .
+    (mut@3
+     (at@E IteTracker~A T@1)).)
+   (param@N s . .
+    (mut@3
+     (at@E SplitPoint~A T@1)).)). . .
+  (stmts@2,1
+   (comment)
+   (for@4,2
+    (call@F
+     (dot~6 t~1 since@1)
+     (dot@2 s~1 cp@1))
+    (unpackflat
+     (let item . . ..))
+    (stmts@N
+     (cmd@A
+      (dot
+       (dot~9 s~1 thenData@1)add@1)item@5)))
+   (call@A,3
+    (dot~9 t~1 rollback@1)
+    (dot@2 s~1 cp@1))))
+ (proc@,1A join@5 x .
+  (typevars@A
+   (typevar@1 T . . Equatable@3 .))
+  (params@O
+   (param@1 t . .
+    (mut@3
+     (at@E IteTracker~A T@1)).)
+   (param@N s . .
+    (at@D SplitPoint~A T@1).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,3 elseData . .
+    (at@D seq~3 T@1)
+    (prefix@J \40
+     (bracket@1)))
+   (for@4,4
+    (call@F
+     (dot~6 t~1 since@1)
+     (dot@2 s~1 cp@1))
+    (unpackflat
+     (let item . . ..))
+    (stmts@N
+     (cmd@8
+      (dot elseData~8 add@1)item@5)))
+   (call@A,5
+    (dot~9 t~1 rollback@1)
+    (dot@2 s~1 cp@1))
+   (for@4,6
+    (dot@9 s~1 thenData@1)
+    (unpackflat
+     (let item . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@5 in item~5 elseData@3)
+       (stmts@I
+        (cmd@1
+         (dot t~1 add@1)item@5)))))))))

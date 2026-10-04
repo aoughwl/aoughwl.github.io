@@ -1,0 +1,867 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/runrung.nim
+ (comment)
+ (pragmas@,J
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,L
+  (infix@A / std~3 tables@1))
+ (import@,M nifcursors@7 nifstreams@J symparser@V xints@g lineinfos@n)
+ (import@,N values@7)
+ (type@E,Q RunEmitter~C x . .
+  (ref@2
+   (object@4 .
+    (fld~9,1 enabled~7 x . bool@3 .)
+    (fld~D,2 ops~3 x . bool@3 .)
+    (fld~G,6 buf . . TokenBuf@5 .)
+    (fld~C,7 base~4 x . Cursor@3 .)
+    (fld~G,8 cellId . .
+     (at@D Table~5 uint@1 int@7).)
+    (fld~G,9 nextId . . int@8 .)
+    (fld~G,A iterStack . .
+     (at@E seq~3 int@1).)
+    (fld~G,C tRunmod . . TagId@Y .)
+    (fld~7,C tRunstmts . . TagId@P .)
+    (fld@4,C tRunlet . . TagId@E .)
+    (fld@D,C tAt . . TagId@5 .)
+    (fld~G,D tRunloop . . TagId@Z .)
+    (fld~6,D tRuniter . . TagId@P .)
+    (fld@4,D tBinds . . TagId@F .)
+    (fld@C,D tBind . . TagId@7 .)
+    (fld~G,E tRunop . . TagId@I .)
+    (fld~8,E tRuncall . . TagId@A .)
+    (fld~G,F tVnil . . TagId@10 .)
+    (fld~9,F tVint . . TagId@t .)
+    (fld~2,F tVuint . . TagId@m .)
+    (fld@6,F tVfloat . . TagId@e .)
+    (fld@F,F tVbool . . TagId@V .)
+    (fld@N,F tVchar . . TagId@N .)
+    (fld@V,F tVstr . . TagId@F .)
+    (fld@c,F tVenum . . TagId@8 .)
+    (fld~G,G tVseq . . TagId@x .)
+    (fld~9,G tVarr . . TagId@q .)
+    (fld~2,G tVtup . . TagId@j .)
+    (fld@5,G tVobj . . TagId@c .)
+    (fld@C,G tFld . . TagId@V .)
+    (fld@I,G tVref . . TagId@P .)
+    (fld@P,G tVptr . . TagId@I .)
+    (fld@W,G tVrefback . . TagId@B .)
+    (fld~G,H tVset . . TagId@P .)
+    (fld~9,H tVproc . . TagId@I .)
+    (fld~1,H tVstream . . TagId@A .))))
+ (proc@,j newRunEmitter@5 x . .
+  (params@J)RunEmitter@4 . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@C RunEmitter~A
+     (kv@8 enabled~7 false@2)
+     (kv@K buf~3
+      (call@G createTokenBuf~E 64@1))
+     (kv@m nextId~6 0@2)))
+   (asgn@H,1
+    (dot~B result~6 tRunmod@1)
+    (call@D registerTag~B "runmod"@1))
+   (asgn@H,2
+    (dot~B result~6 tRunstmts@1)
+    (call@D registerTag~B "runstmts"@1))
+   (asgn@H,3
+    (dot~B result~6 tRunlet@1)
+    (call@D registerTag~B "runlet"@1))
+   (asgn@H,4
+    (dot~B result~6 tAt@1)
+    (call@D registerTag~B "at"@1))
+   (asgn@H,5
+    (dot~B result~6 tRunloop@1)
+    (call@D registerTag~B "runloop"@1))
+   (asgn@H,6
+    (dot~B result~6 tRuniter@1)
+    (call@D registerTag~B "runiter"@1))
+   (asgn@H,7
+    (dot~B result~6 tRunop@1)
+    (call@D registerTag~B "runop"@1))
+   (asgn@H,8
+    (dot~B result~6 tRuncall@1)
+    (call@D registerTag~B "runcall"@1))
+   (asgn@H,9
+    (dot~B result~6 tBinds@1)
+    (call@D registerTag~B "binds"@1))
+   (asgn@H,A
+    (dot~B result~6 tBind@1)
+    (call@D registerTag~B "bind"@1))
+   (asgn@H,B
+    (dot~B result~6 tVnil@1)
+    (call@D registerTag~B "vnil"@1))
+   (asgn@H,C
+    (dot~B result~6 tVint@1)
+    (call@D registerTag~B "vint"@1))
+   (asgn@H,D
+    (dot~B result~6 tVuint@1)
+    (call@D registerTag~B "vuint"@1))
+   (asgn@H,E
+    (dot~B result~6 tVfloat@1)
+    (call@D registerTag~B "vfloat"@1))
+   (asgn@H,F
+    (dot~B result~6 tVbool@1)
+    (call@D registerTag~B "vbool"@1))
+   (asgn@H,G
+    (dot~B result~6 tVchar@1)
+    (call@D registerTag~B "vchar"@1))
+   (asgn@H,H
+    (dot~B result~6 tVstr@1)
+    (call@D registerTag~B "vstr"@1))
+   (asgn@H,I
+    (dot~B result~6 tVenum@1)
+    (call@D registerTag~B "venum"@1))
+   (asgn@H,J
+    (dot~B result~6 tVseq@1)
+    (call@D registerTag~B "vseq"@1))
+   (asgn@H,K
+    (dot~B result~6 tVarr@1)
+    (call@D registerTag~B "varr"@1))
+   (asgn@H,L
+    (dot~B result~6 tVtup@1)
+    (call@D registerTag~B "vtup"@1))
+   (asgn@H,M
+    (dot~B result~6 tVobj@1)
+    (call@D registerTag~B "vobj"@1))
+   (asgn@H,N
+    (dot~B result~6 tFld@1)
+    (call@D registerTag~B "fld"@1))
+   (asgn@H,O
+    (dot~B result~6 tVref@1)
+    (call@D registerTag~B "vref"@1))
+   (asgn@H,P
+    (dot~B result~6 tVptr@1)
+    (call@D registerTag~B "vptr"@1))
+   (asgn@H,Q
+    (dot~B result~6 tVrefback@1)
+    (call@D registerTag~B "vrefback"@1))
+   (asgn@H,R
+    (dot~B result~6 tVset@1)
+    (call@D registerTag~B "vset"@1))
+   (asgn@H,S
+    (dot~B result~6 tVproc@1)
+    (call@D registerTag~B "vproc"@1))
+   (asgn@H,T
+    (dot~B result~6 tVstream@1)
+    (call@D registerTag~B "vstream"@1))))
+ (proc@,1I symName@5 . . .
+  (params@C
+   (param@1 s . . SymId@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (at@B
+     (dot~5 pool~4 syms@1)s@1))
+   (call@F,2 extractBasename~F result@1)))
+ (proc@,1N emitValue@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H v . . Value@3 .)). . . .)
+ (proc@,1O emitCell@5 . . .
+  (params@D
+   (param@1 em . . RunEmitter@4 .)
+   (param@H c . . Cell@3 .)). . . .)
+ (proc@,1P emitFields@5 . . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H obj . . ObjBox@5 .)). . . .)
+ (proc@,1R emitNil@5 . . .
+  (params@C
+   (param@1 em . . RunEmitter@4 .)). . .
+  (stmts@2,1
+   (call@F
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tVnil@1))
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,1V emitCell@5 . . .
+  (params@D
+   (param@1 em . . RunEmitter@4 .)
+   (param@H c . . Cell@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@2 == c~2
+      (nil@3))
+     (stmts@A
+      (call@7 emitNil~7 em@1)))
+    (else@,1
+     (stmts@6
+      (call@9 emitValue~9 em@1
+       (dot@6 c~1 v@1)))))))
+ (proc@,1Z emitFields@5 . . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H obj . . ObjBox@5 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@4 == obj~4
+      (nil@3))
+     (stmts@C
+      (ret .))))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@B
+      (dot~6 obj~3 cells@1)len@1))
+    (stmts@2,1
+     (call@F
+      (dot~9
+       (dot~4 em~2 buf@1)addParLe@1)
+      (dot@3 em~2 tFld@1))
+     (if@,1
+      (elif@3
+       (infix@2 < i~2
+        (dot@B
+         (dot~6 obj~3 names@1)len@1))
+       (stmts~1,1
+        (call@F
+         (dot~9
+          (dot~4 em~2 buf@1)addIdent@1)
+         (call@8 symName~7
+          (at@A
+           (dot~6 obj~3 names@1)i@1)))))
+      (else@,2
+       (stmts@2,1
+        (call@F
+         (dot~9
+          (dot~4 em~2 buf@1)addIdent@1)
+         (call@5 itoa~4
+          (call@6 int64~5 i@1))))))
+     (call@8,5 emitCell~8 em@1
+      (at@E
+       (dot~6 obj~3 cells@1)i@1))
+     (call@F,6
+      (dot~9
+       (dot~4 em~2 buf@1)addParRi@1))
+     (cmd@,7 inc i@4)))))
+ (proc@,1m emitRef@5 . . .
+  (params@C
+   (param@1 em . . RunEmitter@4 .)
+   (param@H cell . . Cell@6 .)
+   (param@T refTag . . TagId@H .)
+   (param@b backTag . . TagId@9 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@5 == cell~5
+      (nil@3))
+     (stmts~1,1
+      (call@7 emitNil~7 em@1)
+      (ret@,1 .))))
+   (let@4,5 key . . .
+    (cast@6 uint@5
+     (cast@B pointer@5 cell@E)))
+   (let@4,6 ex . . .
+    (call@R
+     (dot~D
+      (dot~7 em~2 cellId@1)getOrDefault@1)key@1 -1@6))
+   (if@,7
+    (elif@3
+     (infix@3 >= ex~3 0@3)
+     (stmts~1,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)backTag@1)
+      (call@G,1
+       (dot~A
+        (dot~4 em~2 buf@1)addIntLit@1)
+       (call@6 int64~5 ex@1))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (else@,4
+     (stmts@2,1
+      (let@4 id . . .
+       (dot@7 em~2 nextId@1))
+      (cmd@,1 inc
+       (dot@6 em~2 nextId@1))
+      (asgn@F,2
+       (at~6
+        (dot~7 em~2 cellId@1)key@1)id@2)
+      (call@F,3
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)refTag@1)
+      (call@G,4
+       (dot~A
+        (dot~4 em~2 buf@1)addIntLit@1)
+       (call@6 int64~5 id@1))
+      (call@9,5 emitValue~9 em@1
+       (dot@9 cell~4 v@1))
+      (call@F,6
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1)))))))
+ (proc@,27 emitValue@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H v . . Value@3 .)). . .
+  (stmts@2,1
+   (case
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkNil@3)
+     (stmts@2,1
+      (call@7 emitNil~7 em@1)))
+    (of@,3
+     (ranges vkInt@3)
+     (stmts@2,1
+      (var@4 err . . . false@6)
+      (call@F,1
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVint@1))
+      (call@G,2
+       (dot~A
+        (dot~4 em~2 buf@1)addIntLit@1)
+       (call@9 asSigned~8
+        (dot@2 v~1 ival@1)err@9))
+      (call@F,3
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,8
+     (ranges vkUInt@3)
+     (stmts@2,1
+      (var@4 err . . . false@6)
+      (call@F,1
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVuint@1))
+      (call@H,2
+       (dot~B
+        (dot~4 em~2 buf@1)addUIntLit@1)
+       (call@B asUnsigned~A
+        (dot@2 v~1 ival@1)err@9))
+      (call@F,3
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,D
+     (ranges vkFloat@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVfloat@1))
+      (call@I,1
+       (dot~C
+        (dot~4 em~2 buf@1)addFloatLit@1)
+       (dot@2 v~1 fval@1))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,H
+     (ranges vkBool@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVbool@1))
+      (call@F,1
+       (dot~9
+        (dot~4 em~2 buf@1)addIdent@1)
+       (if@1
+        (elif@3
+         (dot@1 v~1 bval@1)
+         (stmts@8 "true"))
+        (else@I
+         (stmts@6 "false"))))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,L
+     (ranges vkChar@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVchar@1))
+      (call@G,1
+       (dot~A
+        (dot~4 em~2 buf@1)addIntLit@1)
+       (call@6 int64~5
+        (call@4 ord~3
+         (dot@2 v~1 cval@1))))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,P
+     (ranges vkString@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVstr@1))
+      (call@G,1
+       (dot~A
+        (dot~4 em~2 buf@1)addStrLit@1)
+       (dot@2 v~1 sval@1))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,T
+     (ranges vkEnum@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVenum@1))
+      (call@G,1
+       (dot~A
+        (dot~4 em~2 buf@1)addStrLit@1)
+       (call@C enumDisplay~B v@1))
+      (call@G,2
+       (dot~A
+        (dot~4 em~2 buf@1)addIntLit@1)
+       (call@6 int64~5
+        (dot@2 v~1 eord@1)))
+      (call@F,3
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,Y
+     (ranges vkSeq@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVseq@1))
+      (if@,1
+       (elif@3
+        (infix@5 !=
+         (dot~4 v~1 sq@1)
+         (nil@3))
+        (stmts~1,1
+         (var@4 i . . . 0@4)
+         (while@,1
+          (infix@8 < i~2
+           (dot@C
+            (dot~6
+             (dot~3 v~1 sq@1)elems@1)len@1))
+          (stmts@2,1
+           (call@8 emitCell~8 em@1
+            (at@F
+             (dot~6
+              (dot~3 v~1 sq@1)elems@1)i@1))
+           (cmd@,1 inc i@4))))))
+      (call@F,6
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,g
+     (ranges vkArray@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVarr@1))
+      (if@,1
+       (elif@3
+        (infix@6 !=
+         (dot~5 v~1 arr@1)
+         (nil@3))
+        (stmts~1,1
+         (call@G
+          (dot~A
+           (dot~4 em~2 buf@1)addIntLit@1)
+          (call@6 int64~5
+           (dot@6
+            (dot~4 v~1 arr@1)lo@1)))
+         (var@4,1 i . . . 0@4)
+         (while@,2
+          (infix@8 < i~2
+           (dot@D
+            (dot~6
+             (dot~4 v~1 arr@1)elems@1)len@1))
+          (stmts@2,1
+           (call@8 emitCell~8 em@1
+            (at@G
+             (dot~6
+              (dot~4 v~1 arr@1)elems@1)i@1))
+           (cmd@,1 inc i@4))))))
+      (call@F,7
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,p
+     (ranges vkTuple@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVtup@1))
+      (call@A,1 emitFields~A em@1
+       (dot@6 v~1 obj@1))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,t
+     (ranges vkObject@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVobj@1))
+      (if@,1
+       (elif@3
+        (infix@6 !=
+         (dot~5 v~1 obj@1)
+         (nil@3))
+        (stmts~1,1
+         (call@F
+          (dot~9
+           (dot~4 em~2 buf@1)addIdent@1)
+          (call@8 symName~7
+           (dot@6
+            (dot~4 v~1 obj@1)typeSym@1))))))
+      (call@A,3 emitFields~A em@1
+       (dot@6 v~1 obj@1))
+      (call@F,4
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,z
+     (ranges vkRef@3)
+     (stmts@2,1
+      (call@7 emitRef~7 em@1
+       (dot@6 v~1 rf@1)
+       (dot@D em~2 tVref@1)
+       (dot@N em~2 tVrefback@1))))
+    (of@,11
+     (ranges vkPtr@3)
+     (stmts@2,1
+      (call@7 emitRef~7 em@1
+       (dot@6 v~1 loc@1)
+       (dot@E em~2 tVptr@1)
+       (dot@O em~2 tVptr@1))))
+    (of@,13
+     (ranges vkSet@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVset@1))
+      (if@,1
+       (elif@3
+        (infix@5 !=
+         (dot~4 v~1 st@1)
+         (nil@3))
+        (stmts~1,1
+         (var@4 w . . . 0@4)
+         (while@,1
+          (infix@8 < w~2 4@2)
+          (stmts@2,1
+           (call@H
+            (dot~B
+             (dot~4 em~2 buf@1)addUIntLit@1)
+            (at@B
+             (dot~6
+              (dot~3 v~1 st@1)words@1)w@1))
+           (cmd@,1 inc w@4))))))
+      (call@F,6
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,1B
+     (ranges vkProc@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVproc@1))
+      (call@F,1
+       (dot~9
+        (dot~4 em~2 buf@1)addIdent@1)
+       (call@8 symName~7
+        (dot@2 v~1 fn@1)))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,1F
+     (ranges vkStream@3)
+     (stmts@2,1
+      (call@F
+       (dot~9
+        (dot~4 em~2 buf@1)addParLe@1)
+       (dot@3 em~2 tVstream@1))
+      (call@F,1
+       (dot~9
+        (dot~4 em~2 buf@1)addIdent@1)
+       (if@1
+        (elif@3
+         (dot@1 v~1 toErr@1)
+         (stmts@9 "err"))
+        (else@I
+         (stmts@6 "out"))))
+      (call@F,2
+       (dot~9
+        (dot~4 em~2 buf@1)addParRi@1))))
+    (of@,1J
+     (ranges vkCont@3)
+     (stmts@2,1
+      (call@7 emitNil~7 em@1))))))
+ (proc@,3Y emitAt@5 . . .
+  (params@B
+   (param@1 em . . RunEmitter@4 .)
+   (param@H site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,4
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tAt@1))
+   (call@G,5
+    (dot~A
+     (dot~4 em~2 buf@1)addIntLit@1)
+    (call@6 int64~5
+     (call@H cursorToPosition~G
+      (dot@3 em~2 base@1)site@A)))
+   (let@4,6 u . . .
+    (call@A unpack~6
+     (dot@5 pool~4 man@1)
+     (dot@F site~4 info@1)))
+   (call@G,7
+    (dot~A
+     (dot~4 em~2 buf@1)addIntLit@1)
+    (call@6 int64~5
+     (dot@2 u~1 line@1)))
+   (call@G,8
+    (dot~A
+     (dot~4 em~2 buf@1)addIntLit@1)
+    (call@6 int64~5
+     (dot@2 u~1 col@1)))
+   (call@F,9
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,3k beginRun@5 x . .
+  (params@E
+   (param@1 em . . RunEmitter@4 .)
+   (param@H base . . Cursor@6 .)). . .
+  (stmts@2,1
+   (asgn@8
+    (dot~6 em~2 base@1)base@2)
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunmod@1))
+   (call@F,2
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunstmts@1))))
+ (proc@,3p emitRunLet@5 x . .
+  (params@G
+   (param@1 em . . RunEmitter@4 .)
+   (param@H name . . SymId@6 .)
+   (param@U v . . Value@3 .)
+   (param@e site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunlet@1))
+   (call@6,2 emitAt~6 em@1 site@5)
+   (call@F,3
+    (dot~9
+     (dot~4 em~2 buf@1)addIdent@1)
+    (call@8 symName~7 name@1))
+   (call@9,4 emitValue~9 em@1 v@5)
+   (call@F,5
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,3x emitRunOp@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H op . . string@4 .)
+   (param@T v . . Value@3 .)
+   (param@d site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,8
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunop@1))
+   (call@6,9 emitAt~6 em@1 site@5)
+   (call@F,A
+    (dot~9
+     (dot~4 em~2 buf@1)addIdent@1)op@1)
+   (call@9,B emitValue~9 em@1 v@5)
+   (call@F,C
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,4C beginCall@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H name . . string@6 .)
+   (param@V site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,5
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRuncall@1))
+   (call@6,6 emitAt~6 em@1 site@5)
+   (call@F,7
+    (dot~9
+     (dot~4 em~2 buf@1)addIdent@1)name@1)
+   (call@F,8
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunstmts@1))))
+ (proc@,4N endCall@5 x . .
+  (params@D
+   (param@1 em . . RunEmitter@4 .)). . .
+  (stmts@2,1
+   (call@F
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,4R beginLoop@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H kind . . string@6 .)
+   (param@V site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,2
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunloop@1))
+   (call@6,3 emitAt~6 em@1 site@5)
+   (call@F,4
+    (dot~9
+     (dot~4 em~2 buf@1)addIdent@1)kind@1)
+   (cmd@C,5
+    (dot
+     (dot~A em~2 iterStack@1)add@1)0@5)))
+ (proc@,4Z endLoop@5 x . .
+  (params@D
+   (param@1 em . . RunEmitter@4 .)). . .
+  (stmts@2,1
+   (call@F
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))
+   (if@,1
+    (elif@3
+     (infix@H >
+      (dot~5
+       (dot~A em~2 iterStack@1)len@1)0@2)
+     (stmts~1,1
+      (call@J
+       (dot~7
+        (dot~A em~2 iterStack@1)setLen@1)
+       (infix@I \2D
+        (dot~5
+         (dot~A em~2 iterStack@1)len@1)1@2)))))))
+ (proc@,4e beginIter@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)
+   (param@H names . .
+    (at@A seq~3 SymId@1).)
+   (param@a cells . .
+    (at@A seq~3 Cell@1).)
+   (param@s site . . Cursor@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,4 idx . . .
+    (if@6
+     (elif@3
+      (infix@H >
+       (dot~5
+        (dot~A em~2 iterStack@1)len@1)0@2)
+      (stmts@M
+       (at@C
+        (dot~A em~2 iterStack@1)
+        (prefix@1 ^ 1@1))))
+     (else@g
+      (stmts@6 0))))
+   (if@,5
+    (elif@3
+     (infix@H >
+      (dot~5
+       (dot~A em~2 iterStack@1)len@1)0@2)
+     (stmts@M
+      (cmd inc
+       (at@G
+        (dot~A em~2 iterStack@1)
+        (prefix@1 ^ 1@1))))))
+   (call@F,6
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRuniter@1))
+   (call@6,7 emitAt~6 em@1 site@5)
+   (call@G,8
+    (dot~A
+     (dot~4 em~2 buf@1)addIntLit@1)
+    (call@6 int64~5 idx@1))
+   (call@F,9
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tBinds@1))
+   (var@4,A i . . . 0@4)
+   (while@,B
+    (infix@8 < i~2
+     (dot@7 cells~5 len@1))
+    (stmts@2,1
+     (call@F
+      (dot~9
+       (dot~4 em~2 buf@1)addParLe@1)
+      (dot@3 em~2 tBind@1))
+     (if@,1
+      (elif@3
+       (infix@2 < i~2
+        (dot@7 names~5 len@1))
+       (stmts@F
+        (call@F
+         (dot~9
+          (dot~4 em~2 buf@1)addIdent@1)
+         (call@8 symName~7
+          (at@6 names~5 i@1)))))
+      (else@,1
+       (stmts@6
+        (call@F
+         (dot~9
+          (dot~4 em~2 buf@1)addIdent@1)
+         (call@5 itoa~4
+          (call@6 int64~5 i@1))))))
+     (call@8,3 emitCell~8 em@1
+      (at@A cells~5 i@1))
+     (call@F,4
+      (dot~9
+       (dot~4 em~2 buf@1)addParRi@1))
+     (cmd@,5 inc i@4)))
+   (call@F,I
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))
+   (call@F,J
+    (dot~9
+     (dot~4 em~2 buf@1)addParLe@1)
+    (dot@3 em~2 tRunstmts@1))))
+ (proc@,50 endIter@5 x . .
+  (params@D
+   (param@1 em . . RunEmitter@4 .)). . .
+  (stmts@2,1
+   (call@F
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,54 finishRun@5 x . .
+  (params@F
+   (param@1 em . . RunEmitter@4 .)). . .
+  (stmts@2,1
+   (call@F
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))
+   (call@F,1
+    (dot~9
+     (dot~4 em~2 buf@1)addParRi@1))))
+ (proc@,58 render@5 x . .
+  (params@C
+   (param@1 em . . RunEmitter@4 .))string@I . .
+  (stmts@2,1
+   (comment)
+   (call@8,1 toString~8
+    (dot@3 em~2 buf@1)false@9))))

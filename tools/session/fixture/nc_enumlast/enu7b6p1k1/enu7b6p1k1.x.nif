@@ -1,0 +1,249 @@
+(.nif27)
+(.indexat 4499             )
+(stmts@,1,enumlast.nim
+ (const@S,7 :strlit.0.I264955606659562444. . LongString.0.sysvq0asl
+  (oconstr LongString.0.sysvq0asl
+   (kv fullLen.0 9)
+   (kv rc.0 0)
+   (kv capImpl.0 0)
+   (kv data.0 "ActDelete")))
+ (type@C,7 :Action.0.~7 .
+  (enum@2
+   (u 8)
+   (efld@5 :ActNone.0. 0)
+   (efld@E :ActDelete.0. 1)
+   (efld@P :ActEdit.0. 2)
+   (efld@Y :ActCopy.0. 3)))
+ (proc@5,7 :dollar`.Action.0.
+  (params
+   (param :e.0 . Action.0.))string.0.sysvq0asl
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)))
+  (stmts
+   (var@9 :result.0 . string.0.sysvq0asl .)
+   (call@9 =wasMoved.2.sysvq0asl
+    (addr result.0))
+   (case@9 e.0
+    (of@5
+     (ranges 0)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 7308901628019687687u)
+        (kv more.0
+         (nil))))))
+    (of@E
+     (ranges 1)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 7308327640000315902u)
+        (kv more.0
+         (addr strlit.0.I264955606659562444.))))))
+    (of@P
+     (ranges 2)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 8388346030422442247u)
+        (kv more.0
+         (nil))))))
+    (of@Y
+     (ranges 3)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 8750616411487027463u)
+        (kv more.0
+         (nil)))))))
+   (ret result.0)))
+ (gvar@4,9 :hit.0. .
+  (i 64)0@6)
+ (proc@,B :decide.0.@5
+  (params@B)Action.0.@4
+  (pragmas
+   (smry))
+  (stmts@O
+   (var :result.1 . Action.0.~J,~4 .)
+   (asgn result.1 0~5,~4)
+   (ret~O result.1)))
+ (proc@,E :lastBranch.0.@5
+  (params@F)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.2 .
+    (i~2,~1 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (var@4,1 :a.0 . Action.0.~1,~9
+    (call@A decide.0.~6))
+   (case@,2 a.0@5
+    (of@,1
+     (ranges@3 1@N,~B)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,2
+     (ranges@3 2@Y,~C)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,3
+     (ranges@3 3@h,~D)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2)))
+    (of@,4
+     (ranges@3 0@E,~E)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2))))
+   (asgn@7,7 result.2~7 hit.0.@2)
+   (ret~2,~1 result.2)))
+ (proc@,P :firstBranch.0.@5
+  (params@G)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.3 .
+    (i~2,~C 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (var@4,1 :a.1 . Action.0.~1,~K
+    (call@A decide.0.~6))
+   (case@,2 a.1@5
+    (of@,1
+     (ranges@3 0@E,~M)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2)))
+    (of@,2
+     (ranges@3 1@N,~N)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,3
+     (ranges@3 2@Y,~O)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,4
+     (ranges@3 3@h,~P)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2))))
+   (asgn@7,7 result.3~7 hit.0.@2)
+   (ret~2,~1 result.3)))
+ (proc@,a :lastBranchOnCall.0.@5
+  (params@L)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.4 .
+    (i~2,~N 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (var@B,1 :`x.0 . Action.0.~9,~R
+    (call decide.0.~6))
+   (case@,1 `x.0@B
+    (of@,1
+     (ranges@3 1@N,~W)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,2
+     (ranges@3 2@Y,~X)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,3
+     (ranges@3 3@h,~Y)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2)))
+    (of@,4
+     (ranges@3 0@E,~Z)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2))))
+   (asgn@7,6 result.4~7 hit.0.@2)
+   (ret~2,~1 result.4)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)))
+ (type :`cchar.0.
+  (pragmas
+   (importc "char")
+   (nodecl))
+  (i 8))
+ (gvar :`cmdCount.0.
+  (pragmas
+   (exportc "cmdCount"))
+  (i 32).)
+ (gvar :`cmdLine.0.
+  (pragmas
+   (exportc "cmdLine"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (gvar :`nimEnviron.0.
+  (pragmas
+   (exportc "nimEnviron"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (proc :`main.0.
+  (params
+   (param :`argc.0. .
+    (i 32))
+   (param :`argv.0. .
+    (ptr
+     (ptr `cchar.0.)))
+   (param :`envp.0. .
+    (ptr
+     (ptr `cchar.0.))))
+  (i 32)
+  (pragmas
+   (exportc "main")
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads)
+    (param 2 2 reads)))
+  (stmts
+   (asgn `cmdCount.0. `argc.0.)
+   (asgn `cmdLine.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`argv.0.))
+   (asgn `nimEnviron.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`envp.0.))
+   (call `ini.0.)
+   (call nimFlushStdStreams.0.sysvq0asl)
+   (ret 0))))(.index@,1,enumlast.nim
+ (h strlit.0.I264955606659562444. 60)
+ (h Action.0. 186)
+ (x@E,7 ActNone.0. 45)
+ (x@E,7 ActDelete.0. 26)
+ (x@E,7 ActEdit.0. 28)
+ (x@E,7 ActCopy.0. 26)
+ (x dollar`.Action.0. 28)
+ (h hit.0. 978)
+ (x decide.0. 34)
+ (x lastBranch.0. 166)
+ (x firstBranch.0. 601)
+ (x lastBranchOnCall.0. 602)
+ (h `iniGuard.0. 607)
+ (x `ini.0. 34)
+ (x `cchar.0. 194)
+ (x `cmdCount.0. 71)
+ (x `cmdLine.0. 68)
+ (x `nimEnviron.0. 84)
+ (x `main.0. 90)
+ (h `argc.0. 27)
+ (h `argv.0. 34)
+ (h `envp.0. 54))

@@ -1,0 +1,75 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,enumcase.nim
+ (comment)
+ (type@C,7 Action~7 . . .
+  (enum@2 .
+   (efld@5 ActNone . . . .)
+   (efld@E ActDelete . . . .)
+   (efld@P ActEdit . . . .)
+   (efld@Y ActCopy . . . .)))
+ (var@4,9 log . . . 0@6)
+ (proc@,B decide@5 . . .
+  (params@B)Action@4 . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ActNone@2)))
+ (proc@,F runCase@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (case
+    (call@B decide~6)
+    (of@,1
+     (ranges ActDelete@3)
+     (stmts@E
+      (asgn@4 log~4 1@2)))
+    (of@,2
+     (ranges ActEdit@3)
+     (stmts@C
+      (asgn@4 log~4 2@2)))
+    (of@,3
+     (ranges ActCopy@3)
+     (stmts@C
+      (asgn@4 log~4 3@2)))
+    (else@,4
+     (stmts@6
+      (asgn@4 log~4 99@2))))))
+ (comment@,M)
+ (proc@,N runCaseViaLocal@5 . . .
+  (params@K). . .
+  (stmts@2,1
+   (let@4 a . . .
+    (call@A decide~6))
+   (case@,1 a@5
+    (of@,1
+     (ranges ActDelete@3)
+     (stmts@E
+      (asgn@4 log~4 1@2)))
+    (of@,2
+     (ranges ActEdit@3)
+     (stmts@C
+      (asgn@4 log~4 2@2)))
+    (of@,3
+     (ranges ActCopy@3)
+     (stmts@C
+      (asgn@4 log~4 3@2)))
+    (else@,4
+     (stmts@6
+      (asgn@4 log~4 99@2))))))
+ (proc@,V viaCall@5 . . .
+  (params@C)int@4 . .
+  (stmts@2,1
+   (call@7 runCase~7)
+   (asgn@7,1 result~7 log@2)))
+ (proc@,Z viaLocal@5 . . .
+  (params@D)int@4 . .
+  (stmts@2,1
+   (call@F runCaseViaLocal~F)
+   (asgn@7,1 result~7 log@2)))
+ (comment@,d)
+ (proc@,e ordOfDecide@5 . . .
+  (params@G)int@4 . .
+  (stmts@Q
+   (call@3 ord~3
+    (call@7 decide~6)))))

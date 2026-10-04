@@ -1,0 +1,138 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/dbgio.nim
+ (comment)
+ (import@,B
+  (infix@A / std~3 syncio@1))
+ (const@6,D HexDigits . . . "0123456789abcdef"@C)
+ (proc@,F jsonEscape@5 x . .
+  (params@G
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 ""@2)
+   (for@4,5 s@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (case ch@5
+      (of@,1
+       (ranges '\22'@3)
+       (stmts@8
+        (cmd@6
+         (dot result~6 add@1)"\5C\22"@5)))
+      (of@,2
+       (ranges '\5C'@3)
+       (stmts@9
+        (cmd@6
+         (dot result~6 add@1)"\5C\5C"@5)))
+      (of@,3
+       (ranges '\0A'@3)
+       (stmts@9
+        (cmd@6
+         (dot result~6 add@1)"\5Cn"@5)))
+      (of@,4
+       (ranges '\0D'@3)
+       (stmts@9
+        (cmd@6
+         (dot result~6 add@1)"\5Cr"@5)))
+      (of@,5
+       (ranges '\09'@3)
+       (stmts@9
+        (cmd@6
+         (dot result~6 add@1)"\5Ct"@5)))
+      (else@,6
+       (stmts@2,1
+        (let@4 o . . .
+         (call@7 ord~3 ch@1))
+        (if@,1
+         (elif@3
+          (infix@2 < o~2 32@2)
+          (stmts~1,1
+           (cmd@6
+            (dot result~6 add@1)"\5Cu00"@5)
+           (cmd@6,1
+            (dot result~6 add@1)
+            (at@E HexDigits~9
+             (infix@B and
+              (par~A
+               (infix@3 shr o~2 4@4))15@4)))
+           (cmd@6,2
+            (dot result~6 add@1)
+            (at@E HexDigits~9
+             (infix@3 and o~2 15@4)))))
+         (else@,4
+          (stmts@2,1
+           (cmd@6
+            (dot result~6 add@1)ch@5)))))))))))
+ (proc@,b dbgEmit@5 x . .
+  (params@D
+   (param@1 line . . string@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@5,3 write~5 stdout@1 line@9)
+   (call@5,4 write~5 stdout@1 "\0A"@9)
+   (call@9,5 flushFile~9 stdout@1)))
+ (when@,j
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (proc dbgRawRead@5 . . .
+     (params@F
+      (param@1 fd . . cint@4 .)
+      (param@B buf . . pointer@5 .)
+      (param@P n . . int@3 .))int@Y
+     (pragmas@r
+      (kv@9 importc~7 "read"@2)
+      (kv@P header~6 "<unistd.h>"@2)sideEffect@f). .))))
+ (proc@,m dbgReadCmd@5 x . .
+  (params@G)
+  (tup@4 string@1 bool@9). .
+  (stmts@2,1
+   (comment)
+   (when@,B
+    (elif@5
+     (call@7 defined~7 nimony@1)
+     (stmts~3,1
+      (var@4 line . . . ""@7)
+      (var@4,1 ch . . . '\00'@5)
+      (while@,2 true@6
+       (stmts@2,1
+        (let@4 k . . .
+         (call@E dbgRawRead~A
+          (dot@2 0~1 cint@1)
+          (cmd@E addr~5 ch)1@I))
+        (if@,1
+         (elif@3
+          (infix@2 <= k~2 0@3)
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@9 >
+              (dot~5 line~4 len@1)0@2)
+             (stmts@E
+              (ret
+               (tup@7 line@1 true@7)))))
+           (ret@,1
+            (tup@7 ""@1 false@5)))))
+        (if@,4
+         (elif@3
+          (infix@3 == ch~3 '\0A'@3)
+          (stmts@C
+           (break .))))
+        (if@,5
+         (elif@3
+          (infix@3 != ch~3 '\0D'@3)
+          (stmts@C
+           (cmd@4
+            (dot line~4 add@1)ch@5))))))
+      (ret@,9
+       (tup@7 line@1 true@7))))
+    (else@,B
+     (stmts@2,1
+      (var@4 line . . . ""@7)
+      (let@4,1 ok . . .
+       (call@D readLine~8 stdin@1 line@8))
+      (ret@,2
+       (tup@7 line@1 ok@7))))))))

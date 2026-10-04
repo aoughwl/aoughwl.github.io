@@ -1,0 +1,31 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket syncio os hashes tables sets)))
+ (import
+  (when
+   (prefix not
+    (call defined nimony)))
+  (infix / std
+   (bracket times sequtils)))
+ (include
+  (infix /
+   (infix / ".." lib)nifprelude))
+ (import
+  (infix /
+   (infix / ".." lib)
+   (bracket nifindexes symparser)))
+ (import
+  (infix /
+   (infix / ".." gear2)modnames))
+ (import reporters builtintypes decls nimony_model symtabs identstyle)
+ (import
+  (infix /
+   (infix / ".." models)
+   (bracket nifindex_tags)))
+ (include
+  (infix /
+   (infix / ".." lib)compat2)))

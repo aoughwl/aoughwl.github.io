@@ -1,0 +1,342 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/arena.nim
+ (comment)
+ (pragmas@,F
+  (kv@9 feature~7 "lenientnils"@2))
+ (proc@,H c_malloc@5 . . .
+  (params@D
+   (param@1 size . . uint@6 .))pointer@E
+  (pragmas@Z
+   (kv@9 importc~7 "malloc"@2)
+   (kv@R header~6 "<stdlib.h>"@2)). .)
+ (proc@,I c_free@5 . . .
+  (params@B
+   (param@1 p . . pointer@3 .)).
+  (pragmas@O
+   (kv@9 importc~7 "free"@2)
+   (kv@P header~6 "<stdlib.h>"@2)). .)
+ (proc@,J c_abort@5 . . .
+  (params@C).
+  (pragmas@F
+   (kv@9 importc~7 "abort"@2)
+   (kv@Q header~6 "<stdlib.h>"@2)). .)
+ (const@M,L DefaultChunkSize~G x . .
+  (infix@6 shl 1~2 20@4))
+ (type@9,O Arena~7 x . .
+  (ref@2
+   (object@4 .
+    (fld~B,1 chunks . .
+     (at@B seq~3 pointer@1).)
+    (fld~B,2 sizes . .
+     (at@A seq~3 int@1).)
+    (fld~B,3 chunkSize . . int@B .)
+    (fld~B,4 cur . . int@5 .)
+    (fld~B,5 off . . int@5 .)
+    (fld~B,6 total . . int@7 .))))
+ (proc@,W alignUp@5 . . .
+  (params@C
+   (param@1 x . . int@6 .)
+   (param@4 a . . int@3 .))int@D
+  (pragmas@T inline@2).
+  (stmts@2,1
+   (comment)
+   (let@4,1 m . . .
+    (expr
+     (stmts@4)
+     (if@1
+      (elif@3
+       (infix@2 < a~2 1@2)1@7)
+      (else@C a@6))))
+   (asgn@7,2 result~7
+    (infix@E and
+     (par~C
+      (infix@7 \2D
+       (infix~4 \2B x~2 m@2)1@2))
+     (prefix@4 not
+      (par@4
+       (infix@3 \2D m~2 1@2)))))))
+ (proc@,b newArena@5 x . .
+  (params@E
+   (param@1 chunkSize . . . DefaultChunkSize@C))Arena@W . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@7 Arena~5
+     (kv@7 chunks~6
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@J sizes~5
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@Z chunkSize~9
+      (call@5 max~3 chunkSize@1 64@C))
+     (kv@4,1 cur~3 -1@2)
+     (kv@D,1 off~3 0@2)
+     (kv@N,1 total~5 0@2)))))
+ (proc@,f addChunk@5 . . .
+  (params@D
+   (param@1 a . . Arena@3 .)
+   (param@B cap . . int@5 .))int@M . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 p . . .
+    (call@C c_malloc~8
+     (call@5 uint~4 cap@1)))
+   (if@,3
+    (elif@3
+     (infix@2 == p~2
+      (nil@3))
+     (stmts~1,1
+      (call@7 c_abort~7))))
+   (cmd@8,5
+    (dot
+     (dot~7 a~1 chunks@1)add@1)p@5)
+   (cmd@7,6
+    (dot
+     (dot~6 a~1 sizes@1)add@1)cap@5)
+   (asgn@7,7 result~7
+    (infix@F \2D
+     (dot~5
+      (dot~7 a~1 chunks@1)len@1)1@2))))
+ (proc@,p arenaAlloc@5 x . .
+  (params@G
+   (param@1 a . . Arena@3 .)
+   (param@B size . . int@6 .)
+   (param@M align . . . 8@8))pointer@Y . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 sz . . .
+    (call@8 max~3 size@1 0@7))
+   (let@4,4 al . . .
+    (expr
+     (stmts@5)
+     (if@1
+      (elif@3
+       (infix@6 < align~6 1@2)1@B)
+      (else@G align@6))))
+   (if@,6
+    (elif@3
+     (infix@6 <
+      (dot~5 a~1 cur@1)0@2)
+     (stmts~1,1
+      (asgn@6
+       (dot~5 a~1 cur@1)
+       (call@C
+        (dot~9 a~1 addChunk@1)
+        (dot@2 a~1 chunkSize@1)))
+      (asgn@6,1
+       (dot~5 a~1 off@1)0@2))))
+   (var@4,9 start . . .
+    (call@F alignUp~7
+     (dot@2 a~1 off@1)al@8))
+   (if@,A
+    (elif@3
+     (infix@B >
+      (infix~5 \2B start~6 sz@2)
+      (at@9
+       (dot~6 a~1 sizes@1)
+       (dot@2 a~1 cur@1)))
+     (stmts~1,2
+      (if
+       (elif@3
+        (infix@8 >
+         (infix~5 \2B sz~3 al@2)
+         (dot@3 a~1 chunkSize@1))
+        (stmts~1,3
+         (let@4 idx . . .
+          (call@G
+           (dot~9 a~1 addChunk@1)
+           (infix@4 \2B sz~3 al@2)))
+         (let@4,1 ubase . . .
+          (cast@8 uint@5
+           (at@J
+            (dot~7 a~1 chunks@1)idx@1)))
+         (let@4,2 addrU . . .
+          (infix@X and
+           (par~P
+            (infix@I \2D
+             (infix~B \2B ubase~6
+              (call@6 uint~4 al@1))1u@2))
+           (prefix@4 not
+            (par@4
+             (infix@A \2D
+              (call~5 uint~4 al@1)1u@2)))))
+         (asgn@8,3
+          (dot~7 a~1 total@1)
+          (infix@A \2B
+           (dot~7 a~1 total@1)sz@2))
+         (ret@,4
+          (cast@7 pointer@5 addrU@E)))))
+      (asgn@6,9
+       (dot~5 a~1 cur@1)
+       (call@C
+        (dot~9 a~1 addChunk@1)
+        (dot@2 a~1 chunkSize@1)))
+      (asgn@6,A
+       (dot~5 a~1 off@1)0@2)
+      (asgn@6,B start~6
+       (call@9 alignUp~7
+        (dot@2 a~1 off@1)al@8)))))
+   (let@4,O base . . .
+    (cast@7 uint@5
+     (at@J
+      (dot~7 a~1 chunks@1)
+      (dot@2 a~1 cur@1))))
+   (let@4,P addrU . . .
+    (infix@D \2B base~5
+     (call@6 uint~4 start@1)))
+   (asgn@6,Q
+    (dot~5 a~1 off@1)
+    (infix@8 \2B start~6 sz@2))
+   (asgn@8,R
+    (dot~7 a~1 total@1)
+    (infix@A \2B
+     (dot~7 a~1 total@1)sz@2))
+   (asgn@7,S result~7
+    (cast@2 pointer@5 addrU@E))))
+ (proc@,1K arenaBytesHandedOut@5 x . .
+  (params@P
+   (param@1 a . . Arena@3 .))int@C
+  (pragmas@f inline@2).
+  (stmts@s
+   (dot@1 a~1 total@1)))
+ (proc@,1N arenaChunkCount@5 x . .
+  (params@L
+   (param@1 a . . Arena@3 .))int@C
+  (pragmas@b inline@2).
+  (stmts@o
+   (dot@8
+    (dot~7 a~1 chunks@1)len@1)))
+ (proc@,1Q arenaReset@5 x . .
+  (params@G
+   (param@1 a . . Arena@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~7 a~1 chunks@1)len@1)0@2)
+     (stmts~1,1
+      (asgn@6
+       (dot~5 a~1 cur@1)0@2)
+      (asgn@6,1
+       (dot~5 a~1 off@1)0@2)))
+    (else@,3
+     (stmts@2,1
+      (asgn@6
+       (dot~5 a~1 cur@1)-1@2)
+      (asgn@6,1
+       (dot~5 a~1 off@1)0@2))))
+   (asgn@8,9
+    (dot~7 a~1 total@1)0@2)))
+ (proc@,1c arenaDestroy@5 x . .
+  (params@I
+   (param@1 a . . Arena@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@A
+      (dot~7 a~1 chunks@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@C !=
+        (at~4
+         (dot~7 a~1 chunks@1)i@1)
+        (nil@3))
+       (stmts@K
+        (call@6 c_free~6
+         (at@9
+          (dot~7 a~1 chunks@1)i@1)))))
+     (cmd@,1 inc i@4)))
+   (asgn@9,5
+    (dot~8 a~1 chunks@1)
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@8,6
+    (dot~7 a~1 sizes@1)
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@6,7
+    (dot~5 a~1 cur@1)-1@2)
+   (asgn@6,8
+    (dot~5 a~1 off@1)0@2)
+   (asgn@8,9
+    (dot~7 a~1 total@1)0@2)))
+ (proc@,1s pokeByte@5 x . .
+  (params@E
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .)
+   (param@N v . . byte@3 .)).
+  (pragmas@k inline@2).
+  (stmts@2,1
+   (asgn@x
+    (at~3
+     (cast~u
+      (ptr@5 byte@4)
+      (cast@F pointer@5
+       (infix@S \2B
+        (cast~E uint@5 p@B)
+        (call@6 uint~4 off@1)))))v@2)))
+ (proc@,1v peekByte@5 x . .
+  (params@E
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .))byte@O
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (at@u
+    (cast~u
+     (ptr@5 byte@4)
+     (cast@F pointer@5
+      (infix@S \2B
+       (cast~E uint@5 p@B)
+       (call@6 uint~4 off@1)))))))
+ (proc@,1y pokeU64@5 x . .
+  (params@D
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .)
+   (param@N v . . uint64@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2 8@2)
+    (stmts@2,1
+     (call@8 pokeByte~8 p@1
+      (infix@8 \2B off~4 i@2)
+      (call@H byte~4
+       (infix@P and
+        (par~O
+         (infix@3 shr v~2
+          (par@4
+           (infix@9 *
+            (call~4 uint~4 i@1)8u@2))))
+        (suf@4 255u "u64"))))
+     (cmd@14 inc i@4)))))
+ (proc@,24 peekU64@5 x . .
+  (params@D
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .))uint64@O . .
+  (stmts@2,1
+   (var@4 u . . .
+    (suf@4 0u "u64"))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2 8@2)
+    (stmts@2,1
+     (asgn@2 u~2
+      (infix@4 or u~2
+       (par@3
+        (infix@U shl
+         (call~N uint64~6
+          (call@9 peekByte~8 p@1
+           (infix@8 \2B off~4 i@2)))
+         (par@4
+          (infix@9 *
+           (call~4 uint~4 i@1)8u@2))))))
+     (cmd@z inc i@4)))
+   (asgn@7,4 result~7 u@2))))

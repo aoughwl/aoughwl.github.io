@@ -1,0 +1,644 @@
+(.nif27)
+(.indexat 23299            )
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/bitabs.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv has9tn57v "../../../../../../home/savant/nimony/lib/std/hashes.nim")
+  (kv assy765wm "../../../../../../home/savant/nimony/lib/std/assertions.nim"))
+ (stmts@2,4)
+ (type@I,D :BiTable.0.~G x
+  (typevars~8
+   (typevar@1 :Id.0. . . . .)
+   (typevar@5 :T.0. . . . .)).
+  (object@2 .
+   (fld~G,2 :vals.0 . .
+    (at@9 seq.0.sysvq0asl~3 T.0.@1).)
+   (fld~G,3 :keys.0 . .
+    (at@9 seq.0.sysvq0asl~3 Id.0.@1).)))
+ (proc@,I :initBiTable.0.@5 x .
+  (typevars@H
+   (typevar@1 :Id.2. . . . .)
+   (typevar@5 :T.1. . . . .))
+  (params@O)
+  (at@B BiTable.0.~7 Id.2.@1 T.1.@5)
+  (pragmas
+   (untyped)).
+  (stmts@j
+   (oconstr@E
+    (at~7 BiTable.0.~7 Id.2.@1 T.1.@5)
+    (kv@5 vals~4
+     (prefix@2
+      (ochoice \40.0.sysvq0asl \40.2.sysvq0asl \40.1.sysvq0asl)
+      (bracket@1)))
+    (kv@G keys~4
+     (prefix@2
+      (ochoice \40.0.sysvq0asl \40.2.sysvq0asl \40.1.sysvq0asl)
+      (bracket@1))))))
+ (proc@,K :nextTry.0.@5 . . .
+  (params@C
+   (param@1 :h.0 . .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32).)
+   (param@4 :maxHash.0 . .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32).))
+  (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32)
+  (pragmas@b
+   (inline@2)).
+  (stmts@2,1
+   (result@7 :result.0 . .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32).)
+   (asgn@7 result.0~7
+    (bitand@A
+     (u 32)
+     (add~5
+      (u 32)h.0~2
+      (hconv@2
+       (u@G,2R,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 32)1))maxHash.0@4))
+   (ret~2,~1 result.0)))
+ (template@,N :maxHash.0.@9 . . .
+  (params@G
+   (param@1 :t.0 . .
+    (untyped).))
+  (untyped@5)
+  (pragmas
+   (untyped)).
+  (stmts@V
+   (dot@C
+    (call~8
+     (ochoice~4 high.0.sysvq0asl high.4.sysvq0asl high.1.sysvq0asl high.3.sysvq0asl high.2.sysvq0asl high.5.sysvq0asl)
+     (dot@2 t.0~1 keys@1))Hash.0.has9tn57v@1)))
+ (template@,O :isFilled.0.@9 . . .
+  (params@H
+   (param@1 :x.0 . .
+    (untyped@3).))
+  (bool@E)
+  (pragmas
+   (untyped)).
+  (stmts@c
+   (infix@9 >.0.sysvq0asl
+    (dot~8 x.0~1 uint32.0.sysvq0asl@1)
+    (suf@2 0u "u32"))))
+ (proc@,Q :len.0.@5 x .
+  (typevars@9
+   (typevar@1 :Id.3. . . . .)
+   (typevar@5 :T.2. . . . .))
+  (params@G
+   (param@1 :t.1 . .
+    (at@A BiTable.0.~7 Id.3.@1 T.2.@5).))
+  (i@L 32)
+  (pragmas
+   (untyped)).
+  (stmts@h
+   (dot@6
+    (dot~5 t.1~1 vals@1)
+    (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))))
+ (proc@,S :mustRehash.0.@5 . . .
+  (params@F
+   (param@1 :length.0 . .
+    (i@H 32).)
+   (param@9 :counter.0 . .
+    (i@9 32).))
+  (bool@O)
+  (pragmas@i
+   (inline@2)).
+  (stmts@2,1
+   (result@6 :result.1 . .
+    (bool@6,~5).)
+   (stmts@2,4,../../../../../../home/savant/nimony/lib/std/assertions.nim
+    (if
+     (elif@3
+      (not
+       (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (lt@2,1
+         (i 32)counter.0@I,a,../../../../../../home/savant/nimony/src/lib/bitabs.nim length.0@9,a,../../../../../../home/savant/nimony/src/lib/bitabs.nim)))
+      (stmts~1,1
+       (stmts@2,7a,../../../../../../home/savant/nimony/lib/std/syncio.nim
+        (stmts@2,2
+         (cmd write.0.syn1lfpjv stdout.0.syn1lfpjv@6 "\5BAssertion Failure\5D "@9,5,../../../../../../home/savant/nimony/lib/std/assertions.nim))
+        (stmts@2,2
+         (cmd write.0.syn1lfpjv stdout.0.syn1lfpjv@6 ""@Z,3,../../../../../../home/savant/nimony/lib/std/assertions.nim))
+        (cmd@,3 write.7.syn1lfpjv stdout.0.syn1lfpjv@6 '\0A'@E))
+       (cmd@,1 quit.0.syn1lfpjv 1@5)))))
+   (asgn@7,1 result.1~7
+    (or@b
+     (lt~R
+      (i 32)length.0~7
+      (add@G
+       (i 32)
+       (div~6
+        (i 32)counter.0~8 2@4)counter.0@2))
+     (lt@L
+      (i 32)
+      (sub~A
+       (i 32)length.0~7 counter.0@2)4@2)))
+   (ret~2,~1 result.1)))
+ (const@2,X :idStart.0. . .
+  (i@J,~7 32)
+  (suf@A 1 "i32"))
+ (template@,Z :idToIdx.0.@9 . . .
+  (params@G
+   (param@1 :x.1 . .
+    (untyped@3).))
+  (i@E 32)
+  (pragmas
+   (untyped)).
+  (stmts@a
+   (infix@6
+    (ochoice \2D.4.sysvq0asl \2D.11.sysvq0asl \2D.7.sysvq0asl \2D.14.sysvq0asl \2D.3.sysvq0asl \2D.5.sysvq0asl \2D.15.sysvq0asl \2D.10.sysvq0asl \2D.1.sysvq0asl \2D.8.sysvq0asl \2D.12.sysvq0asl \2D.13.sysvq0asl \2D.0.sysvq0asl \2D.16.sysvq0asl \2D.6.sysvq0asl \2D.9.sysvq0asl \2D.2.sysvq0asl)
+    (dot~5 x.1~1 int.0.sysvq0asl@1)idStart.0.@2)))
+ (proc@,b :hasId.0.@5 x .
+  (typevars@B
+   (typevar@1 :Id.4. . . . .)
+   (typevar@5 :T.3. . . . .))
+  (params@I
+   (param@1 :t.2 . .
+    (at@A BiTable.0.~7 Id.4.@1 T.3.@5).)
+   (param@K :x.2 . . Id.4.@3 .))
+  (bool@S)
+  (pragmas@p
+   (inline@2)
+   (untyped)).
+  (stmts@2,1
+   (let@4 idx . . .
+    (call@D idToIdx.0.~7 x.2@1))
+   (asgn@7,1 result~7
+    (infix@B
+     (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)
+     (infix~5 >=.0.sysvq0asl idx~4 0@3)
+     (infix@8
+      (ochoice <.17.sysvq0asl <.9.sysvq0asl <.11.sysvq0asl <.5.sysvq0asl <.6.sysvq0asl <.1.sysvq0asl <.14.sysvq0asl <.3.sysvq0asl <.12.sysvq0asl <.15.sysvq0asl <.10.sysvq0asl <.2.sysvq0asl <.13.sysvq0asl <.8.sysvq0asl <.4.sysvq0asl <.0.sysvq0asl <.7.sysvq0asl)idx~4
+      (dot@8
+       (dot~5 t.2~1 vals@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)))))))
+ (proc@,f :enlarge.0.@5 . .
+  (typevars@C
+   (typevar@1 :Id.5. . . . .)
+   (typevar@5 :T.4. . . . .))
+  (params@J
+   (param@1 :t.3 . .
+    (mut@3
+     (at@B BiTable.0.~7 Id.5.@1 T.4.@5)).)).
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (var@4 n . .
+    (at@6 seq.0.sysvq0asl~3 Id.5.@1).)
+   (call@6,1
+    (ochoice~6 newSeq.1.sysvq0asl newSeq.0.sysvq0asl)n@1
+    (infix@G
+     (ochoice *.2.sysvq0asl *.1.sysvq0asl *.10.sysvq0asl *.9.sysvq0asl *.8.sysvq0asl *.6.sysvq0asl *.7.sysvq0asl *.5.sysvq0asl *.0.sysvq0asl *.4.sysvq0asl *.3.sysvq0asl)
+     (call~9
+      (ochoice~3 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)
+      (dot@2 t.3~1 keys@1))2@2))
+   (call@4,2 swap.0.sysvq0asl~4
+    (dot@2 t.3~1 keys@1)n@9)
+   (for@4,3
+    (infix@6
+     (ochoice \2E..0.sysvq0asl \2E..1.sysvq0asl)0~1
+     (call@6
+      (ochoice~4 high.0.sysvq0asl high.4.sysvq0asl high.1.sysvq0asl high.3.sysvq0asl high.2.sysvq0asl high.5.sysvq0asl)n@1))
+    (unpackflat
+     (let i . . . .))
+    (stmts~2,1
+     (let@4 eh . . .
+      (at@6 n~1 i@1))
+     (if@,1
+      (elif@3
+       (call@8 isFilled.0.~8 eh@1)
+       (stmts~1,1
+        (var@4 j . . .
+         (infix@T
+          (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)
+          (call~L
+           (ochoice~4 hash.0. hash.2.has9tn57v hash.12.has9tn57v hash.1.has9tn57v hash.10.has9tn57v hash.11.has9tn57v hash.7.has9tn57v hash.3.has9tn57v hash.8.has9tn57v hash.9.has9tn57v hash.4.has9tn57v hash.5.has9tn57v hash.6.has9tn57v)
+           (at@7
+            (dot~5 t.3~1 vals@1)
+            (cmd@9 idToIdx.0.~8 eh)))
+          (call@B maxHash.0.~7 t.3@1)))
+        (while@,1
+         (call@E isFilled.0.~8
+          (at@7
+           (dot~5 t.3~1 keys@1)j@1))
+         (stmts@2,1
+          (asgn@2 j~2
+           (call@9
+            (ochoice~7 nextTry.0. nextTry.0.has9tn57v)j@1
+            (call@B maxHash.0.~7 t.3@1)))))
+        (asgn@A,3
+         (at~4
+          (dot~5 t.3~1 keys@1)j@1)
+         (cmd@7 move.0.sysvq0asl~5
+          (at@1 n~1 i@1))))))))))
+ (proc@,r :getKeyId.0.@5 x .
+  (typevars@E
+   (typevar@1 :Id.6. . . . .)
+   (typevar@5 :T.5. . . . .))
+  (params@L
+   (param@1 :t.4 . .
+    (at@A BiTable.0.~7 Id.6.@1 T.5.@5).)
+   (param@K :v.0 . . T.5.@3 .))Id.6.@R
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (let@4 origH . . .
+    (call@C
+     (ochoice~4 hash.0. hash.2.has9tn57v hash.12.has9tn57v hash.1.has9tn57v hash.10.has9tn57v hash.11.has9tn57v hash.7.has9tn57v hash.3.has9tn57v hash.8.has9tn57v hash.9.has9tn57v hash.4.has9tn57v hash.5.has9tn57v hash.6.has9tn57v)v.0@1))
+   (var@4,1 h . . .
+    (infix@A
+     (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)origH~6
+     (call@B maxHash.0.~7 t.4@1)))
+   (if@,2
+    (elif@3
+     (infix@B !=.0.sysvq0asl
+      (dot~5
+       (dot~5 t.4~1 keys@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))0@3)
+     (stmts~1,1
+      (while true.0.sysvq0asl@6
+       (stmts@2,1
+        (let@4 litId . . .
+         (at@E
+          (dot~5 t.4~1 keys@1)h@1))
+        (if@,1
+         (elif@3
+          (prefix
+           (ochoice not.2.sysvq0asl not.1.sysvq0asl not.7.sysvq0asl not.3.sysvq0asl not.6.sysvq0asl not.5.sysvq0asl not.0.sysvq0asl not.4.sysvq0asl not.8.sysvq0asl)
+           (call@C isFilled.0.~8 litId@1))
+          (stmts@L
+           (break .))))
+        (if@,2
+         (elif@3
+          (infix@2
+           (ochoice ==.22.sysvq0asl ==.13.sysvq0asl ==.14.sysvq0asl ==.17.sysvq0asl ==.0.sysvq0asl ==.5.sysvq0asl ==.18.sysvq0asl ==.8.sysvq0asl ==.4.sysvq0asl ==.11.sysvq0asl ==.23.sysvq0asl ==.3.sysvq0asl ==.7.sysvq0asl ==.15.sysvq0asl ==.20.sysvq0asl ==.16.sysvq0asl ==.24.sysvq0asl ==.9.sysvq0asl ==.6.sysvq0asl ==.10.sysvq0asl ==.12.sysvq0asl ==.2.sysvq0asl ==.1.sysvq0asl)v.0~2
+           (at@9
+            (dot~5 t.4~1 vals@1)
+            (cmd@9 idToIdx.0.~8
+             (at@6
+              (dot~5 t.4~1 keys@1)h@1))))
+          (stmts@W
+           (ret litId@7))))
+        (asgn@2,3 h~2
+         (call@9
+          (ochoice~7 nextTry.0. nextTry.0.has9tn57v)h@1
+          (call@B maxHash.0.~7 t.4@1))))))))
+   (ret@,8
+    (call@9 Id.6.~2 0@1))))
+ (pragmas@2,12
+  (pragma maybeDirty@6)dirty@K)
+ (template@,14 :getOrInclImpl.0.@9 . . .
+  (params@M).
+  (pragmas@P
+   (dirty~3,~2)
+   (untyped)).
+  (stmts@2,1
+   (let@4 origH . . .
+    (call@C
+     (ochoice~4 hash.0. hash.2.has9tn57v hash.12.has9tn57v hash.1.has9tn57v hash.10.has9tn57v hash.11.has9tn57v hash.7.has9tn57v hash.3.has9tn57v hash.8.has9tn57v hash.9.has9tn57v hash.4.has9tn57v hash.5.has9tn57v hash.6.has9tn57v)v@1))
+   (var@4,1 h . . .
+    (infix@A
+     (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)origH~6
+     (call@B maxHash.0.~7 t@1)))
+   (if@,2
+    (elif@3
+     (infix@B !=.0.sysvq0asl
+      (dot~5
+       (dot~5 t~1 keys@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))0@3)
+     (stmts~1,1
+      (while true.0.sysvq0asl@6
+       (stmts@2,1
+        (let@4 litId . . .
+         (at@E
+          (dot~5 t~1 keys@1)h@1))
+        (if@,1
+         (elif@3
+          (prefix
+           (ochoice not.2.sysvq0asl not.1.sysvq0asl not.7.sysvq0asl not.3.sysvq0asl not.6.sysvq0asl not.5.sysvq0asl not.0.sysvq0asl not.4.sysvq0asl not.8.sysvq0asl)
+           (call@C isFilled.0.~8 litId@1))
+          (stmts@L
+           (break .))))
+        (if@,2
+         (elif@3
+          (infix@2
+           (ochoice ==.22.sysvq0asl ==.13.sysvq0asl ==.14.sysvq0asl ==.17.sysvq0asl ==.0.sysvq0asl ==.5.sysvq0asl ==.18.sysvq0asl ==.8.sysvq0asl ==.4.sysvq0asl ==.11.sysvq0asl ==.23.sysvq0asl ==.3.sysvq0asl ==.7.sysvq0asl ==.15.sysvq0asl ==.20.sysvq0asl ==.16.sysvq0asl ==.24.sysvq0asl ==.9.sysvq0asl ==.6.sysvq0asl ==.10.sysvq0asl ==.12.sysvq0asl ==.2.sysvq0asl ==.1.sysvq0asl)v~2
+           (at@9
+            (dot~5 t~1 vals@1)
+            (cmd@9 idToIdx.0.~8
+             (at@6
+              (dot~5 t~1 keys@1)h@1))))
+          (stmts@W
+           (ret litId@7))))
+        (asgn@2,3 h~2
+         (call@9
+          (ochoice~7 nextTry.0. nextTry.0.has9tn57v)h@1
+          (call@B maxHash.0.~7 t@1)))))
+      (if@,6
+       (elif@3
+        (call@A mustRehash.0.~A
+         (dot@7
+          (dot~5 t~1 keys@1)
+          (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+         (dot@J
+          (dot~5 t~1 vals@1)
+          (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)))
+        (stmts~1,1
+         (call@7 enlarge.0.~7 t@1)
+         (asgn@2,2 h~2
+          (infix@8
+           (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)origH~6
+           (call@B maxHash.0.~7 t@1)))
+         (while@,3 true.0.sysvq0asl@6
+          (stmts@2,1
+           (let@4 litId . . .
+            (at@E
+             (dot~5 t~1 keys@1)h@1))
+           (if@,1
+            (elif@3
+             (prefix
+              (ochoice not.2.sysvq0asl not.1.sysvq0asl not.7.sysvq0asl not.3.sysvq0asl not.6.sysvq0asl not.5.sysvq0asl not.0.sysvq0asl not.4.sysvq0asl not.8.sysvq0asl)
+              (call@C isFilled.0.~8 litId@1))
+             (stmts@L
+              (break .))))
+           (asgn@2,2 h~2
+            (call@9
+             (ochoice~7 nextTry.0. nextTry.0.has9tn57v)h@1
+             (call@B maxHash.0.~7 t@1))))))))))
+    (else@,F
+     (stmts@2,1
+      (call@6
+       (ochoice~6 setLen.0.sysvq0asl setLen.1.sysvq0asl)
+       (dot@2 t~1 keys@1)16@9)
+      (asgn@2,1 h~2
+       (infix@8
+        (ochoice and.8.sysvq0asl and.7.sysvq0asl and.4.sysvq0asl and.3.sysvq0asl and.5.sysvq0asl and.0.sysvq0asl and.6.sysvq0asl and.1.sysvq0asl and.2.sysvq0asl)origH~6
+        (call@B maxHash.0.~7 t@1))))))))
+ (proc@,1Q :getOrIncl.0.@5 x .
+  (typevars@F
+   (typevar@1 :Id.7. . . . .)
+   (typevar@5 :T.6. . . . .))
+  (params@M
+   (param@1 :t.5 . .
+    (mut@3
+     (at@B BiTable.0.~7 Id.7.@1 T.6.@5)).)
+   (param@O :v.1 . . T.6.@3 .))Id.7.@V
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (call@D getOrInclImpl.0.~D)
+   (asgn@7,1 result~7
+    (call@4 Id.7.~2
+     (infix@C
+      (ochoice \2B.3.sysvq0asl \2B.6.sysvq0asl \2B.12.sysvq0asl \2B.10.sysvq0asl \2B.14.sysvq0asl \2B.0.sysvq0asl \2B.15.sysvq0asl \2B.2.sysvq0asl \2B.9.sysvq0asl \2B.5.sysvq0asl \2B.13.sysvq0asl \2B.4.sysvq0asl \2B.7.sysvq0asl \2B.16.sysvq0asl \2B.11.sysvq0asl \2B.8.sysvq0asl \2B.1.sysvq0asl)
+      (dot~5
+       (dot~5 t.5~1 vals@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))idStart.0.@2)))
+   (asgn@A,2
+    (at~4
+     (dot~5 t.5~1 keys@1)h@1)result@2)
+   (cmd@6,3
+    (dot
+     (dot~5 t.5~1 vals@1)
+     (ochoice@1 add.2.sysvq0asl add.0.sysvq0asl add.1.sysvq0asl))v.1@5)))
+ (proc@,1W :getOrInclFromView.0.@5 x .
+  (typevars@N
+   (typevar@1 :Id.8. . . . .)
+   (typevar@5 :T.7. . . . .)
+   (typevar@8 :View.0. . . . .))
+  (params@a
+   (param@1 :t.6 . .
+    (mut@3
+     (at@B BiTable.0.~7 Id.8.@1 T.7.@5)).)
+   (param@O :v.2 . . View.0.@3 .))Id.8.@Y
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (comment)
+   (call@D,2 getOrInclImpl.0.~D)
+   (asgn@7,3 result~7
+    (call@4 Id.8.~2
+     (infix@C
+      (ochoice \2B.3.sysvq0asl \2B.6.sysvq0asl \2B.12.sysvq0asl \2B.10.sysvq0asl \2B.14.sysvq0asl \2B.0.sysvq0asl \2B.15.sysvq0asl \2B.2.sysvq0asl \2B.9.sysvq0asl \2B.5.sysvq0asl \2B.13.sysvq0asl \2B.4.sysvq0asl \2B.7.sysvq0asl \2B.16.sysvq0asl \2B.11.sysvq0asl \2B.8.sysvq0asl \2B.1.sysvq0asl)
+      (dot~5
+       (dot~5 t.6~1 vals@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))idStart.0.@2)))
+   (asgn@A,4
+    (at~4
+     (dot~5 t.6~1 keys@1)h@1)result@2)
+   (cmd@6,5
+    (dot
+     (dot~5 t.6~1 vals@1)
+     (ochoice@1 add.2.sysvq0asl add.0.sysvq0asl add.1.sysvq0asl))
+    (prefix@5
+     (ochoice $.8.sysvq0asl $.3.sysvq0asl $.4.sysvq0asl $.1.sysvq0asl $.6.sysvq0asl $.7.sysvq0asl $.0.sysvq0asl $.2.sysvq0asl)v.2@1))))
+ (stmts@2,1f
+  (proc :\5B\5D.0.@5 x .
+   (typevars@A
+    (typevar@1 :Id.9. . . . .)
+    (typevar@5 :T.8. . . . .))
+   (params@H
+    (param@1 :t.7 . .
+     (at@A BiTable.0.~7 Id.9.@1 T.8.@5).)
+    (param@K :litId.0 . . Id.9.@7 .))
+   (mut@W T.8.@4)
+   (pragmas@t
+    (inline@2)
+    (untyped)).
+   (stmts@2,1
+    (let@4 idx . . .
+     (cmd@E idToIdx.0.~8 litId.0))
+    (cmd@,1 assert.0.assy765wm
+     (infix@B
+      (ochoice <.17.sysvq0asl <.9.sysvq0asl <.11.sysvq0asl <.5.sysvq0asl <.6.sysvq0asl <.1.sysvq0asl <.14.sysvq0asl <.3.sysvq0asl <.12.sysvq0asl <.15.sysvq0asl <.10.sysvq0asl <.2.sysvq0asl <.13.sysvq0asl <.8.sysvq0asl <.4.sysvq0asl <.0.sysvq0asl <.7.sysvq0asl)idx~4
+      (dot@8
+       (dot~5 t.7~1 vals@1)
+       (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))))
+    (asgn@7,2 result~7
+     (at@8
+      (dot~5 t.7~1 vals@1)idx@1)))))
+ (proc@,1u :hash.0.@5 x .
+  (typevars@A
+   (typevar@1 :Id.10. . . . .)
+   (typevar@5 :T.9. . . . .))
+  (params@H
+   (param@1 :t.8 . .
+    (at@A BiTable.0.~7 Id.10.@1 T.9.@5).))
+  (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32)
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (comment)
+   (var@4,1 h . . Hash.0.has9tn57v@3 0@A)
+   (for@4,2
+    (cmd@E pairs.0.sysvq0asl~6
+     (dot@1 t.8~1 keys@1))
+    (unpackflat
+     (let i . . . .)
+     (let n@3 . . . .))
+    (stmts~2,1
+     (asgn@2 h~2
+      (infix@4 !&.0.has9tn57v h~2
+       (call@7
+        (ochoice~4 hash.0. hash.2.has9tn57v hash.12.has9tn57v hash.1.has9tn57v hash.10.has9tn57v hash.11.has9tn57v hash.7.has9tn57v hash.3.has9tn57v hash.8.has9tn57v hash.9.has9tn57v hash.4.has9tn57v hash.5.has9tn57v hash.6.has9tn57v)
+        (tup@1 i@1 n@4))))))
+   (asgn@7,4 result~7
+    (prefix@2 !$.0.has9tn57v h@2))))
+ (proc@,21 :memSize.0.@5 x .
+  (typevars@D
+   (typevar@1 :Id.11. . . . .)
+   (typevar@5 :T.10. . . . .))
+  (params@K
+   (param@1 :t.9 . .
+    (at@A BiTable.0.~7 Id.11.@1 T.10.@5).))
+  (i@L 32)
+  (pragmas
+   (untyped)).
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@2 is.0.sysvq0asl T.10.~2 string.0.sysvq0asl@3)
+     (stmts~3,1
+      (var@4 shorts . . . 0@9)
+      (asgn@7,1 result~7 0@2)
+      (for@4,2
+       (call@A
+        (ochoice~5 items.1.sysvq0asl items.0.sysvq0asl)
+        (dot@2 t.9~1 vals@1))
+       (unpackflat
+        (let x . . . .))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@6
+           (ochoice <=.13.sysvq0asl <=.4.sysvq0asl <=.2.sysvq0asl <=.11.sysvq0asl <=.10.sysvq0asl <=.1.sysvq0asl <=.15.sysvq0asl <=.16.sysvq0asl <=.8.sysvq0asl <=.3.sysvq0asl <=.14.sysvq0asl <=.12.sysvq0asl <=.5.sysvq0asl <=.19.sysvq0asl <=.17.sysvq0asl <=.9.sysvq0asl <=.7.sysvq0asl <=.6.sysvq0asl <=.0.sysvq0asl)
+           (dot~5 x~1
+            (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))3@3)
+          (stmts@C
+           (infix@7 \2B=.0.sysvq0asl shorts~7 1@3))))
+        (infix@7,1 \2B=.0.sysvq0asl result~7
+         (dot@4 x~1
+          (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)))))
+      (cmd@,5
+       (ochoice inc.1.sysvq0asl inc.0.sysvq0asl)result@4
+       (infix@Z
+        (ochoice \2B.3.sysvq0asl \2B.6.sysvq0asl \2B.12.sysvq0asl \2B.10.sysvq0asl \2B.14.sysvq0asl \2B.0.sysvq0asl \2B.15.sysvq0asl \2B.2.sysvq0asl \2B.9.sysvq0asl \2B.5.sysvq0asl \2B.13.sysvq0asl \2B.4.sysvq0asl \2B.7.sysvq0asl \2B.16.sysvq0asl \2B.11.sysvq0asl \2B.8.sysvq0asl \2B.1.sysvq0asl)
+        (infix~C
+         (ochoice *.2.sysvq0asl *.1.sysvq0asl *.10.sysvq0asl *.9.sysvq0asl *.8.sysvq0asl *.6.sysvq0asl *.7.sysvq0asl *.5.sysvq0asl *.0.sysvq0asl *.4.sysvq0asl *.3.sysvq0asl)
+         (dot~5
+          (dot~5 t.9~1 vals@1)
+          (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+         (call@8
+          (ochoice~6 sizeof.0.sysvq0asl sizeof.1.sysvq0asl)T.10.@1))
+        (infix@D
+         (ochoice *.2.sysvq0asl *.1.sysvq0asl *.10.sysvq0asl *.9.sysvq0asl *.8.sysvq0asl *.6.sysvq0asl *.7.sysvq0asl *.5.sysvq0asl *.0.sysvq0asl *.4.sysvq0asl *.3.sysvq0asl)
+         (dot~5
+          (dot~5 t.9~1 keys@1)
+          (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+         (call@8
+          (ochoice~6 sizeof.0.sysvq0asl sizeof.1.sysvq0asl)Id.11.@1))))
+      (cmd@,6 echo "SHORT STRINGS "@5 shorts@N)))
+    (else@,8
+     (stmts@2,1
+      (infix@N
+       (ochoice \2B.3.sysvq0asl \2B.6.sysvq0asl \2B.12.sysvq0asl \2B.10.sysvq0asl \2B.14.sysvq0asl \2B.0.sysvq0asl \2B.15.sysvq0asl \2B.2.sysvq0asl \2B.9.sysvq0asl \2B.5.sysvq0asl \2B.13.sysvq0asl \2B.4.sysvq0asl \2B.7.sysvq0asl \2B.16.sysvq0asl \2B.11.sysvq0asl \2B.8.sysvq0asl \2B.1.sysvq0asl)
+       (infix~C
+        (ochoice *.2.sysvq0asl *.1.sysvq0asl *.10.sysvq0asl *.9.sysvq0asl *.8.sysvq0asl *.6.sysvq0asl *.7.sysvq0asl *.5.sysvq0asl *.0.sysvq0asl *.4.sysvq0asl *.3.sysvq0asl)
+        (dot~5
+         (dot~5 t.9~1 vals@1)
+         (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+        (call@8
+         (ochoice~6 sizeof.0.sysvq0asl sizeof.1.sysvq0asl)T.10.@1))
+       (infix@D
+        (ochoice *.2.sysvq0asl *.1.sysvq0asl *.10.sysvq0asl *.9.sysvq0asl *.8.sysvq0asl *.6.sysvq0asl *.7.sysvq0asl *.5.sysvq0asl *.0.sysvq0asl *.4.sysvq0asl *.3.sysvq0asl)
+        (dot~5
+         (dot~5 t.9~1 keys@1)
+         (ochoice@1 len.0. len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+        (call@8
+         (ochoice~6 sizeof.0.sysvq0asl sizeof.1.sysvq0asl)Id.11.@1))))))))
+ (type@K,2G :BiTableFloat.0.~I x
+  (typevars~5
+   (typevar@1 :Id.1. . . . .)).
+  (distinct@2
+   (at@G BiTable.0.~7 Id.1.@1
+    (u@5 64))))
+ (proc@,2I :getOrIncl.1.@5 x .
+  (typevars@F
+   (typevar@1 :Id.12. . . . .))
+  (params@J
+   (param@1 :t.10 . .
+    (mut@3
+     (at@G BiTableFloat.0.~C Id.12.@1)).)
+   (param@Q :v.3 . .
+    (f@3 64).))Id.12.@d
+  (pragmas@z
+   (inline@2)
+   (untyped)).
+  (stmts@2,1
+   (call@W
+    (dot~A
+     (call~3
+      (at~C BiTable.0.~7 Id.12.@1 uint64.0.sysvq0asl@5)t.10@1)
+     (ochoice@1 getOrIncl.0. getOrIncl.1.))
+    (cast@1 uint64.0.sysvq0asl@5 v.3@D))))
+ (proc@,2L :\5B\5D.1.@5 x .
+  (typevars@A
+   (typevar@1 :Id.13. . . . .))
+  (params@E
+   (param@1 :t.11 . .
+    (at@F BiTableFloat.0.~C Id.13.@1).)
+   (param@M :litId.1 . . Id.13.@7 .))
+  (f@Y 64)
+  (pragmas@u
+   (inline@2)
+   (untyped)).
+  (stmts@2,1
+   (cast float64.0.sysvq0asl@5
+    (at@a
+     (call~3
+      (at~C BiTable.0.~7 Id.13.@1 uint64.0.sysvq0asl@5)t.11@1)litId.1@1))))
+ (comment@5,N untyped.0.sysvq0asl untyped.0.sysvq0asl@G,1 bool.0.sysvq0asl@9,1 int.0.sysvq0asl@G,3 int.0.sysvq0asl@S,5 int.0.sysvq0asl@S,5 bool.0.sysvq0asl@J,5 untyped.0.sysvq0asl@F,C int.0.sysvq0asl@9,C bool.0.sysvq0asl@N,E int.0.sysvq0asl@G,1e uint64.0.sysvq0asl@c,1t float64.0.sysvq0asl@h,1v float64.0.sysvq0asl@T,1y isMainModule.0.sysvq0asl@,21 >.0.sysvq0asl@B,6 assert.0.assy765wm@3,6))(.index@,7,../../../../../../home/savant/nimony/src/lib/bitabs.nim
+ (x BiTable.0. 355)
+ (h@A,D Id.0. 41)
+ (h@A,D T.0. 30)
+ (x initBiTable.0. 172)
+ (h@H,I Id.2. 46)
+ (h@H,I T.1. 30)
+ (h nextTry.0. 405)
+ (h maxHash.0. 669)
+ (h isFilled.0. 324)
+ (x len.0. 224)
+ (h@9,Q Id.3. 38)
+ (h@9,Q T.2. 30)
+ (h mustRehash.0. 326)
+ (h idStart.0. 1354)
+ (h idToIdx.0. 61)
+ (x hasId.0. 490)
+ (h@B,b Id.4. 40)
+ (h@B,b T.3. 30)
+ (h enlarge.0. 955)
+ (h@C,f Id.5. 42)
+ (h@C,f T.4. 30)
+ (x getKeyId.0. 2091)
+ (h@E,r Id.6. 43)
+ (h@E,r T.5. 30)
+ (h getOrInclImpl.0. 2220)
+ (x getOrIncl.0. 3782)
+ (h@F,1Q Id.7. 45)
+ (h@F,1Q T.6. 30)
+ (x getOrInclFromView.0. 955)
+ (h@N,1W Id.8. 53)
+ (h@N,1W T.7. 30)
+ (h@N,1W View.0. 29)
+ (x@2,1f \5B\5D.0. 1131)
+ (h@C,1f Id.9. 40)
+ (h@C,1f T.8. 31)
+ (x hash.0. 843)
+ (h@A,1u Id.10. 40)
+ (h@A,1u T.9. 31)
+ (x memSize.0. 804)
+ (h@D,21 Id.11. 43)
+ (h@D,21 T.10. 31)
+ (x BiTableFloat.0. 3943)
+ (h@F,2G Id.1. 47)
+ (x getOrIncl.1. 92)
+ (h@F,2I Id.12. 45)
+ (x \5B\5D.1. 404)
+ (h@A,2L Id.13. 42))

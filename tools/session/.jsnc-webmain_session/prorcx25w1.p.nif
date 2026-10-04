@@ -1,0 +1,1508 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/programs.nim
+ (when
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,3
+  (infix@B / std~4
+   (bracket@2 syncio@1 os@9 hashes@D tables@L sets@T)))
+ (when@,4
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (import
+     (infix@B / std~4
+      (bracket@2 times@1 sequtils@8))))))
+ (include@,6
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,7
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 nifindexes@1 symparser@D)))
+ (import@,8
+  (infix@K /
+   (infix~8 / ".."~5 gear2@2)modnames@2))
+ (import@,9 reporters@7 builtintypes@I decls@W nimony_model@d symtabs@r identstyle@10)
+ (import@,A
+  (infix@L /
+   (infix~9 / ".."~5 models@2)
+   (bracket@2 nifindex_tags@1)))
+ (include@,C
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (type@9,F Iface~7 x . .
+  (at@E OrderedTable~C StrId@1
+   (at@B seq~3 SymId@1)))
+ (type@D,H NifModule~B x . .
+  (ref@2
+   (object@4 .
+    (fld~F,1 stream . . Stream@8 .)
+    (fld~A,2 index~5 x . NifIndex@3 .)
+    (fld~9,3 public~6 x .
+     (at@8 Table~5 string@1 NifIndexEntry@9).)
+    (fld~8,4 private~7 x .
+     (at@8 Table~5 string@1 NifIndexEntry@9).))))
+ (type@C,N SemPhase~A x . .
+  (enum@2 .
+   (efld~A,1 SemcheckTopLevelSyms . . . .)
+   (efld~A,2 SemcheckSignaturesInProgress . . . .)
+   (efld~A,3 SemcheckSignatures . . . .)
+   (efld~A,4 SemcheckBodiesInProgress . . . .)
+   (efld~A,5 SemcheckBodies . . . .)))
+ (type@H,U ToplevelEntry~F x . .
+  (object@2 .
+   (fld~9,1 buffer~6 x . TokenBuf@3 .)
+   (fld~A,2 phase~5 x . SemPhase@3 .)))
+ (type@J,Y ToplevelEntries~H x . .
+  (object@2 .
+   (fld~H,3 entries . .
+    (at@C seq~3 ToplevelEntry@1).)
+   (fld~H,4 bySymId . .
+    (at@E Table~5 SymId@1 int@8).)))
+ (type@B,e Program~9 x . .
+  (object@2 .
+   (fld~9,1 mods . .
+    (at@B Table~5 string@1 NifModule@9).)
+   (fld~5,2 main~4 x . SplittedModulePath@3 .)
+   (fld~6,3 mem~3 x . ToplevelEntries@3 .)))
+ (type@K,j ImportFilterKind~I x . .
+  (enum@2 .
+   (efld~I,1 ImportAll . . . .)
+   (efld~7,1 FromImport . . . .)
+   (efld@5,1 ImportExcept . . . .)))
+ (type@G,m ImportFilter~E x . .
+  (object@2 .
+   (fld~A,1 kind~4 x . ImportFilterKind@3 .)
+   (fld~A,2 list~4 x .
+    (at@A HashSet~7 StrId@1).)))
+ (var@6,r prog~4 x . Program@3 .)
+ (iterator@,10 stylesOfIface@9 x . .
+  (params@N
+   (param@1 iface . . Iface@7 .)
+   (param@F name . . StrId@6 .)
+   (param@S ignoreStyle . . bool@D .))StrId@m
+  (pragmas@1F sideEffect@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not ignoreStyle@4)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@C
+         (dot~7 iface~5 hasKey@1)name@1)
+        (stmts@K
+         (yld name@6))))))
+    (else@,2
+     (stmts@2,1
+      (for@4
+       (call@I styleSiblings~D name@1)
+       (unpackflat
+        (let k . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@C
+           (dot~7 iface~5 hasKey@1)k@1)
+          (stmts@H
+           (yld k@6)))))))))))
+ (iterator@,17 stylesOfImport@9 x . .
+  (params@O
+   (param@1 importTab . .
+    (at@N OrderedTable~C StrId@1
+     (at@B seq~3 SymId@1)).)
+   (param@1,1 name . . StrId@6 .)
+   (param@E,1 ignoreStyle . . bool@D .))StrId@Y,1
+  (pragmas@12,1 sideEffect@2).
+  (stmts@2,2
+   (if
+    (elif@3
+     (prefix not ignoreStyle@4)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@G
+         (dot~7 importTab~9 hasKey@1)name@1)
+        (stmts@O
+         (yld name@6))))))
+    (else@,2
+     (stmts@2,1
+      (for@4
+       (call@I styleSiblings~D name@1)
+       (unpackflat
+        (let k . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@G
+           (dot~7 importTab~9 hasKey@1)k@1)
+          (stmts@L
+           (yld k@6)))))))))))
+ (proc@,1H len@5 x . .
+  (params@9
+   (param@1 t . . ToplevelEntries@3 .))int@M
+  (pragmas@Z inline@2).
+  (stmts@m
+   (dot@9
+    (dot~8 t~1 entries@1)len@1)))
+ (proc@,1J hasKey@5 x . .
+  (params@C
+   (param@1 t . . ToplevelEntries@3 .)
+   (param@L s . . SymId@3 .))bool@W
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (call@G
+    (dot~7
+     (dot~8 t~1 bySymId@1)hasKey@1)s@1)))
+ (proc@,1M inSignatureCheck@5 x . .
+  (params@M
+   (param@1 t . . ToplevelEntries@3 .)
+   (param@L s . . SymId@3 .))bool@W . .
+  (stmts@2,1
+   (let@4 d . . .
+    (call@Q
+     (dot~D
+      (dot~8 t~1 bySymId@1)getOrDefault@1)s@1 -1@4))
+   (if@,1
+    (elif@3
+     (infix@2 >= d~2 0@3)
+     (stmts~1,1
+      (infix@J in
+       (dot~7
+        (at~3
+         (dot~8 t~1 entries@1)d@1)phase@1)
+       (curly@3 SemcheckSignatures@1 SemcheckSignaturesInProgress@L))))
+    (else@,2
+     (stmts@2,1 false)))))
+ (when@,1T
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (proc
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 t . . ToplevelEntries@3 .)
+      (param@L s . . SymId@3 .))
+     (mut@W ToplevelEntry@4)
+     (pragmas@y inline@2).
+     (stmts@2,1
+      (at@9
+       (dot~8 t~1 entries@1)
+       (call@N
+        (dot~D
+         (dot~8 t~1 bySymId@1)getOrDefault@1)s@1))))))
+  (else@,3
+   (stmts@2,1
+    (proc
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 t . . ToplevelEntries@3 .)
+      (param@L s . . SymId@3 .))
+     (cmd@b lent~5 ToplevelEntry)
+     (pragmas@z inline@2).
+     (stmts@2,1
+      (at@9
+       (dot~8 t~1 entries@1)
+       (at@A
+        (dot~8 t~1 bySymId@1)s@1))))
+    (proc@,3
+     (quoted@5 \5B\5D@1) x . .
+     (params@A
+      (param@1 t . .
+       (mut@3 ToplevelEntries@4).)
+      (param@P s . . SymId@3 .))
+     (mut@a ToplevelEntry@4)
+     (pragmas@12 inline@2).
+     (stmts@2,1
+      (at@9
+       (dot~8 t~1 entries@1)
+       (at@A
+        (dot~8 t~1 bySymId@1)s@1)))))))
+ (proc@,1d
+  (quoted@5 \5B\5D=@1) x . .
+  (params@B
+   (param@1 t . .
+    (mut@3 ToplevelEntries@4).)
+   (param@P s . . SymId@3 .)
+   (param@Z entry . .
+    (cmd@C sink~5 ToplevelEntry).)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@G
+      (dot~7
+       (dot~8 t~1 bySymId@1)hasKey@1)s@1)
+     (stmts~1,1
+      (asgn@b
+       (at~S
+        (dot~8 t~1 entries@1)
+        (call@N
+         (dot~D
+          (dot~8 t~1 bySymId@1)getOrDefault@1)s@1))entry@2)))
+    (else@,2
+     (stmts@2,1
+      (let@4 idx . . .
+       (dot@F
+        (dot~8 t~1 entries@1)len@1))
+      (cmd@9,1
+       (dot
+        (dot~8 t~1 entries@1)add@1)entry@5)
+      (asgn@D,2
+       (at~4
+        (dot~8 t~1 bySymId@1)s@1)idx@2))))))
+ (type@L,1n EnsurePhaseResult~J x . .
+  (enum@2 .
+   (efld~J,1 PhaseOk . . . .)
+   (efld~J,2 PhaseCycle . . . .)
+   (efld~J,3 PhaseNotFound . . . .)))
+ (proc@,1s ensurePhase@5 x . .
+  (params@H
+   (param@1 symId . . SymId@7 .)
+   (param@F targetPhase . . SemPhase@D .))EnsurePhaseResult@d . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@J
+       (dot~7
+        (dot~4 prog~4 mem@1)hasKey@1)symId@1))
+     (stmts~1,1
+      (ret PhaseNotFound@7))))
+   (let@4,6 currentPhase . . .
+    (dot@U
+     (at~7
+      (dot~4 prog~4 mem@1)symId@1)phase@1))
+   (if@,7
+    (elif@3
+     (infix@D >= currentPhase~D targetPhase@3)
+     (stmts~1,1
+      (ret PhaseOk@7))))
+   (if@,9
+    (elif@3
+     (infix@D in currentPhase~D
+      (curly@3 SemcheckSignaturesInProgress@1 SemcheckBodiesInProgress@V))
+     (stmts~1,1
+      (ret PhaseCycle@7))))
+   (asgn@7,C result~7 PhaseOk@2)))
+ (proc@,27 add@5 x . .
+  (params@9
+   (param@1 t . .
+    (mut@3 ToplevelEntries@4).)
+   (param@P entry . .
+    (cmd@C sink~5 ToplevelEntry).)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@9,1
+    (dot
+     (dot~8 t~1 entries@1)add@1)entry@5)))
+ (proc@,2B del@5 x . .
+  (params@9
+   (param@1 t . .
+    (mut@3 ToplevelEntries@4).)
+   (param@P s . . SymId@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@G
+      (dot~7
+       (dot~8 t~1 bySymId@1)hasKey@1)s@1)
+     (stmts~1,1
+      (let@4 idx . . .
+       (call@S
+        (dot~D
+         (dot~8 t~1 bySymId@1)getOrDefault@1)s@1))
+      (asgn@M,1
+       (dot~8
+        (at~5
+         (dot~8 t~1 entries@1)idx@1)buffer@1)
+       (call@9 default~7 TokenBuf@1))
+      (call@D,2
+       (dot~4
+        (dot~8 t~1 bySymId@1)del@1)s@1))))))
+ (iterator@,2I items@9 x . .
+  (params@F
+   (param@1 t . . ToplevelEntries@3 .))
+  (cmd@R lent~5 ToplevelEntry). .
+  (stmts@2,1
+   (for@4
+    (dot@6 t~1 entries@1)
+    (unpackflat
+     (let e . . ..))
+    (stmts~2,1
+     (yld e@6)))))
+ (iterator@,2M mitems@9 x . .
+  (params@G
+   (param@1 t . .
+    (mut@3 ToplevelEntries@4).))
+  (mut@Q ToplevelEntry@4). .
+  (stmts@2,1
+   (for@4
+    (dot@E
+     (dot~8 t~1 entries@1)mitems@1)
+    (unpackflat
+     (let e . . ..))
+    (stmts~2,1
+     (yld e@6)))))
+ (iterator@,2Q pairs@9 x . .
+  (params@F
+   (param@1 t . . ToplevelEntries@3 .))
+  (tup@M int@1
+   (cmd@B lent~5 ToplevelEntry)). .
+  (stmts@2,1
+   (for@4
+    (dot@H
+     (dot~8 t~1 entries@1)pairs@1)
+    (unpackflat
+     (let i . . ..)
+     (let e@3 . . ..))
+    (stmts~2,1
+     (yld
+      (tup@6 i@1 e@4))))))
+ (iterator@,2U symIds@9 x . .
+  (params@G
+   (param@1 t . . ToplevelEntries@3 .))SymId@M . .
+  (stmts@2,1
+   (for@4
+    (dot@E
+     (dot~8 t~1 bySymId@1)keys@1)
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (yld s@6)))))
+ (proc@,2a newNifModule@5 . . .
+  (params@H
+   (param@1 infile . . string@8 .))NifModule@I . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@B NifModule~9
+     (kv@7 stream~6
+      (call@H
+       (dot~5 nifstreams~A open@1)infile@1))
+     (kv@7,1 public~6
+      (call@Y
+       (at~N initTable~9 string@1 NifIndexEntry@9)))
+     (kv@8,2 private~7
+      (call@Y
+       (at~N initTable~9 string@1 NifIndexEntry@9)))))
+   (discard@,3
+    (call@P processDirectives~H
+     (dot@E
+      (dot~7 result~6 stream@1)r@1)))))
+ (proc@,2g addEmbeddedIndex@5 . . .
+  (params@L
+   (param@1 public . .
+    (mut@H
+     (at@9 Table~5 string@1 NifIndexEntry@9)).)
+   (param@9 private . .
+    (mut@9
+     (at@9 Table~5 string@1 NifIndexEntry@9)).)
+   (param@1,1 embedded . .
+    (at@F Table~5 string@1 NifIndexEntry@9).)). . .
+  (stmts@2,2
+   (for@4 embedded@8
+    (unpackflat
+     (let k . . ..)
+     (let v@3 . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@6 ==
+        (dot~5 v~1 vis@1)Exported@3)
+       (stmts~1,1
+        (asgn@A
+         (at~4 public~6 k@1)v@2)))
+      (else@,2
+       (stmts@2,1
+        (asgn@B
+         (at~4 private~7 k@1)v@2))))))))
+ (proc@,2o loadModuleContent@5 x . .
+  (params@N
+   (param@1 infile . . string@8 .)
+   (param@H owningBuf . .
+    (mut@B TokenBuf@4).)
+   (param@g paths . .
+    (at@G openArray~9 string@1).))Cursor@17 . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 m . . .
+    (call@G newNifModule~C infile@1))
+   (asgn@A,3 owningBuf~A
+    (call@C fromStream~A
+     (dot@2 m~1 stream@1)))
+   (asgn@7,4 result~7
+    (call@B beginRead~9 owningBuf@1))
+   (let@4,5 suffix . . .
+    (call@L moduleSuffix~C infile@1 paths@9))
+   (asgn@I,6
+    (at~9
+     (dot~5 prog~4 mods@1)suffix@1)m@2)))
+ (proc@,2x loadModule@5 x . .
+  (params@G
+   (param@1 infile . . string@8 .)
+   (param@H owningBuf . .
+    (mut@B TokenBuf@4).)
+   (param@g suffix . . string@8 .))Cursor@x . .
+  (stmts@2,1
+   (comment)
+   (let@4,1 m . . .
+    (call@G newNifModule~C infile@1))
+   (asgn@A,2 owningBuf~A
+    (call@C fromStream~A
+     (dot@2 m~1 stream@1)))
+   (asgn@7,3 result~7
+    (call@B beginRead~9 owningBuf@1))
+   (asgn@I,4
+    (at~9
+     (dot~5 prog~4 mods@1)suffix@1)m@2)))
+ (proc@,34 suffixToNif@5 x . .
+  (params@H
+   (param@1 suffix . . string@8 .))string@I
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (comment)
+   (let@4,3 ext . . .
+    (if@6
+     (elif@3
+      (infix@E ==
+       (dot~5
+        (dot~5 prog~4 main@1)ext@1)".sc.nif"@3)
+      (stmts@S ".sc.nif"))
+     (else@f
+      (stmts@6 ".s.nif"))))
+   (infix@N,4 &
+    (infix~9 /
+     (dot~5
+      (dot~5 prog~4 main@1)dir@1)suffix@2)ext@2)))
+ (proc@,3B customToNif@5 x . .
+  (params@H
+   (param@1 suffix . . string@8 .))string@I
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (infix@N &
+    (infix~9 /
+     (dot~5
+      (dot~5 prog~4 main@1)dir@1)suffix@2)".nif"@2)))
+ (proc@,3E semIndexExt@5 . . .
+  (params@G)string@4
+  (pragmas@R inline@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@E ==
+      (dot~5
+       (dot~5 prog~4 main@1)ext@1)".sc.nif"@3)
+     (stmts@S ".sc.idx.nif"))
+    (else@,1
+     (stmts@6 ".s.idx.nif")))))
+ (proc@,3J needsRecompile@5 x . .
+  (params@K
+   (param@1 dep . . string@D .)
+   (param@6 output . . string@8 .))bool@N . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not
+      (call@E fileExists~A output@1))
+     (stmts~1,1
+      (ret true@7))))
+   (try@,4
+    (stmts@2,1
+     (asgn@7 result~7
+      (infix@Y <
+       (call~9 getLastModificationTime~N output@1)
+       (call@P getLastModificationTime~N dep@1))))
+    (except@,2 .
+     (stmts@2,1
+      (asgn@7 result~7 true@2))))))
+ (proc@,3T load@5 x . .
+  (params@A
+   (param@1 suffix . . string@8 .))NifModule@I . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not
+      (call@K
+       (dot~7
+        (dot~5 prog~4 mods@1)hasKey@1)suffix@1))
+     (stmts~1,1
+      (let@4 infile . . .
+       (cmd@L suffixToNif~C suffix))
+      (asgn@7,1 result~7
+       (call@E newNifModule~C infile@1))
+      (asgn@D,2
+       (dot~7 result~6 index@1)
+       (call@9 default~7 NifIndex@1))
+      (let@4,3 embedded . . .
+       (call@S readEmbeddedIndex~H
+        (dot@7 result~6 stream@1)))
+      (if@,4
+       (elif@3
+        (infix@D >
+         (dot~5 embedded~8 len@1)0@2)
+        (stmts~1,1
+         (call@G addEmbeddedIndex~G
+          (dot@7 result~6 public@1)
+          (dot@M result~6 private@1)embedded@W))))
+      (let@4,6 indexName . . .
+       (call@Y
+        (dot~G infile~6 changeModuleExt@1)
+        (call@C semIndexExt~B)))
+      (asgn@D,7
+       (dot~7 result~6 index@1)
+       (call@B readIndex~9 indexName@1))
+      (asgn@I,8
+       (at~9
+        (dot~5 prog~4 mods@1)suffix@1)result@2)))
+    (else@,A
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@O
+        (dot~D
+         (dot~5 prog~4 mods@1)getOrDefault@1)suffix@1)))))))
+ (proc@,3h mergeFilter@5 x . .
+  (params@H
+   (param@1 f . .
+    (mut@3 ImportFilter@4).)
+   (param@M g . . ImportFilter@3 .)). . .
+  (stmts@2,2
+   (case
+    (dot@6 g~1 kind@1)
+    (of@,1
+     (ranges ImportAll@3)
+     (stmts@E
+      (discard .)))
+    (of@,2
+     (ranges ImportExcept@3)
+     (stmts@2,1
+      (case
+       (dot@6 f~1 kind@1)
+       (of@,1
+        (ranges ImportAll@3)
+        (stmts@E
+         (asgn@2 f~2 g@2)))
+       (of@,2
+        (ranges ImportExcept@3)
+        (stmts@2,1
+         (call@B
+          (dot~5
+           (dot~5 f~1 list@1)incl@1)
+          (dot@2 g~1 list@1))))
+       (of@,4
+        (ranges FromImport@3)
+        (stmts@2,1
+         (call@B
+          (dot~5
+           (dot~5 f~1 list@1)excl@1)
+          (dot@2 g~1 list@1)))))))
+    (of@,9
+     (ranges FromImport@3)
+     (stmts@2,1
+      (case
+       (dot@6 f~1 kind@1)
+       (of@,1
+        (ranges ImportAll@3)
+        (stmts@E
+         (asgn@2 f~2 g@2)))
+       (of@,2
+        (ranges ImportExcept@3)
+        (stmts@2,1
+         (let@4 exc . . .
+          (dot@7 f~1 list@1))
+         (asgn@2,1 f~2 g@2)
+         (call@B,2
+          (dot~5
+           (dot~5 f~1 list@1)excl@1)exc@1)))
+       (of@,6
+        (ranges FromImport@3)
+        (stmts@2,1
+         (asgn@7
+          (dot~6 f~1 list@1)
+          (call@E intersection~C
+           (dot@2 f~1 list@1)
+           (dot@A g~1 list@1)))))))))))
+ (proc@,42 filterAllows@5 x . .
+  (params@I
+   (param@1 f . . ImportFilter@3 .)
+   (param@I name . . StrId@6 .))bool@W . .
+  (stmts@2,1
+   (case
+    (dot@6 f~1 kind@1)
+    (of@,1
+     (ranges ImportAll@3)
+     (stmts@E
+      (asgn@7 result~7 true@2)))
+    (of@,2
+     (ranges ImportExcept@3)
+     (stmts@H
+      (asgn@7 result~7
+       (infix@7 notin name~5
+        (dot@7 f~1 list@1)))))
+    (of@,3
+     (ranges FromImport@3)
+     (stmts@F
+      (asgn@7 result~7
+       (infix@7 in name~5
+        (dot@4 f~1 list@1))))))))
+ (proc@,48 loadInterface@5 x . .
+  (params@J
+   (param@1 suffix . . string@8 .)
+   (param@H iface . .
+    (mut@7 Iface@4).)
+   (param@1,1 module . . SymId@8 .)
+   (param@G,1 importTab . .
+    (mut@B
+     (at@G OrderedTable~C StrId@1
+      (at@B seq~3 SymId@1))).)
+   (param@1,2 converters . .
+    (mut@C
+     (at@9 Table~5 SymId@1
+      (at@B seq~3 SymId@1))).)
+   (param@1,3 exports . .
+    (mut@9
+     (at@7 seq~3
+      (tup@1 string@1 ImportFilter@9))).)
+   (param@1,4 filter . . ImportFilter@8 .)). . .
+  (stmts@2,5
+   (let@4 m . . .
+    (call@8 load~4 suffix@1))
+   (let@4,1 alreadyLoaded . . .
+    (infix@Q !=
+     (dot~5 iface~5 len@1)0@3))
+   (var@4,2 marker . . .
+    (dot@F filter~6 list@1))
+   (let@4,3 negateMarker . . .
+    (infix@R ==
+     (dot~6 filter~6 kind@1)FromImport@3))
+   (for@4,4
+    (dot@9 m~1 public@1)
+    (unpackflat
+     (let k . . ..)
+     (let _@3 . . ..))
+    (stmts~2,1
+     (var@4 base . . . k@7)
+     (call@F,1 extractBasename~F base@1)
+     (let@4,2 strId . . .
+      (call@U
+       (dot~A
+        (dot~8 pool~4 strings@1)getOrIncl@1)base@1))
+     (let@4,3 symId . . .
+      (call@R
+       (dot~A
+        (dot~5 pool~4 syms@1)getOrIncl@1)k@1))
+     (if@,4
+      (elif@3
+       (prefix not alreadyLoaded@4)
+       (stmts~1,1
+        (cmd@R
+         (dot
+          (call~C
+           (dot~A iface~5 mgetOrPut@1)strId@1
+           (prefix@8 \40
+            (bracket@1)))add@1)symId@5))))
+     (let@4,6 symMarked . . .
+      (if~2,1
+       (elif@3 negateMarker
+        (stmts@E
+         (call@K
+          (dot~E marker~6 missingOrExcl@1)strId@1)))
+       (else@,1
+        (stmts@6
+         (call@L
+          (dot~F marker~6 containsOrIncl@1)strId@1)))))
+     (if@,9
+      (elif@3
+       (prefix not symMarked@4)
+       (stmts~1,2
+        (call@f
+         (dot~A
+          (call~C
+           (dot~A importTab~9 mgetOrPut@1)strId@1
+           (prefix@8 \40
+            (bracket@1)))addUnique@1)module@1))))))
+   (for@4,H
+    (dot@Q
+     (dot~B
+      (dot~6 m~1 index@1)converters@1)items@1)
+    (unpackflat
+     (let k . . ..)
+     (let v@3 . . ..))
+    (stmts~2,1
+     (var@4 name . . . v@7)
+     (call@F,1 extractBasename~F name@1)
+     (let@4,2 nameId . . .
+      (call@V
+       (dot~A
+        (dot~8 pool~4 strings@1)getOrIncl@1)name@1))
+     (if@,4
+      (elif@3
+       (infix@K and
+        (infix~D in nameId~7 importTab@3)
+        (infix@B in module~7
+         (call@P
+          (dot~D importTab~9 getOrDefault@1)nameId@1)))
+       (stmts~1,1
+        (let@4 key . . .
+         (if@6
+          (elif@3
+           (infix@2 == k~2 "."@3)
+           (stmts@A
+            (call@5 SymId~5 0@1)))
+          (else@M
+           (stmts@6
+            (call@J
+             (dot~A
+              (dot~5 pool~4 syms@1)getOrIncl@1)k@1)))))
+        (let@4,1 val . . .
+         (call@P
+          (dot~A
+           (dot~5 pool~4 syms@1)getOrIncl@1)v@1))
+        (call@e,2
+         (dot~A
+          (call~A
+           (dot~A converters~A mgetOrPut@1)key@1
+           (prefix@6 \40
+            (bracket@1)))addUnique@1)val@1))))))
+   (for@4,Q
+    (dot@D
+     (dot~6 m~1 index@1)exports@1)
+    (unpackflat
+     (let ex . . ..))
+    (stmts~2,1
+     (unpackdecl@4 ex@M
+      (unpacktup
+       (let path@1 . . ..)
+       (let kind@7 . . ..)
+       (let names@D . . ..)))
+     (let@4,1 filterKind . . .
+      (case~2,1 kind@5
+       (of@,1
+        (ranges ExportIdx@3)
+        (stmts@E ImportAll))
+       (of@,2
+        (ranges FromexportIdx@3)
+        (stmts@I FromImport))
+       (of@,3
+        (ranges ExportexceptIdx@3)
+        (stmts@K ImportExcept))
+       (else@,4
+        (stmts@6 ImportAll))))
+     (var@4,7 exportFilter . . .
+      (oconstr@R ImportFilter~C
+       (kv@5 kind~4 filterKind@2)))
+     (for@4,8 names@5
+      (unpackflat
+       (let s . . ..))
+      (stmts~2,1
+       (call@M
+        (dot~5
+         (dot~5 exportFilter~C list@1)incl@1)s@1)))
+     (call@B,A mergeFilter~B exportFilter@1 filter@F)
+     (cmd@7,B
+      (dot exports~7 add@1)
+      (tup@5 path@1
+       (cmd@I ensureMove~B exportFilter)))))))
+ (type@E,4s LoadStatus~C x . .
+  (enum@2 .
+   (efld~C,1 LacksModuleName . . . .)
+   (efld@5,1 LacksOffset . . . .)
+   (efld@I,1 LacksPosition . . . .)
+   (efld@X,1 LacksNothing . . . .)))
+ (type@E,4u LoadResult~C x . .
+  (object@2 .
+   (fld~6,1 status~6 x . LoadStatus@3 .)
+   (fld~8,2 decl~4 x . Cursor@3 .)))
+ (proc@,4y tryLoadSym@5 x . .
+  (params@G
+   (param@1 s . . SymId@3 .))LoadResult@C . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@F
+      (dot~7
+       (dot~4 prog~4 mem@1)hasKey@1)s@1)
+     (stmts~1,1
+      (asgn@7 result~7
+       (oconstr@C LoadResult~A
+        (kv@7 status~6 LacksNothing@2)
+        (kv@R decl~4
+         (call@A cursorAt~8
+          (dot@C
+           (at~3
+            (dot~4 prog~4 mem@1)s@1)buffer@1)0@L))))))
+    (else@,2
+     (stmts@2,1
+      (let@4 nifName . . .
+       (at@J
+        (dot~5 pool~4 syms@1)s@1))
+      (let@4,1 modname . . .
+       (call@N extractModule~D nifName@1))
+      (if@,2
+       (elif@3
+        (infix@8 == modname~8 ""@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (oconstr@C LoadResult~A
+           (kv@7 status~6 LacksModuleName@2)))))
+       (else@,2
+        (stmts@2,1
+         (var@4 m . . .
+          (call@8 load~4 modname@1))
+         (var@4,1 indexEntry . . .
+          (call@Y
+           (dot~D
+            (dot~7 m~1 public@1)getOrDefault@1)nifName@1))
+         (if@,2
+          (elif@3
+           (infix@I ==
+            (dot~8 indexEntry~A offset@1)0@3)
+           (stmts~1,1
+            (asgn@B indexEntry~B
+             (call@O
+              (dot~D
+               (dot~8 m~1 private@1)getOrDefault@1)nifName@1)))))
+         (if@,4
+          (elif@3
+           (infix@I ==
+            (dot~8 indexEntry~A offset@1)0@3)
+           (stmts~1,1
+            (asgn@7 result~7
+             (oconstr@C LoadResult~A
+              (kv@7 status~6 LacksOffset@2)))))
+          (else@,2
+           (stmts@2,1
+            (cmd@A
+             (dot
+              (dot~2
+               (dot~7 m~1 stream@1)r@1)jumpTo@1)
+             (dot@I indexEntry~A offset@1))
+            (var@4,1 buf . . .
+             (call@K createTokenBuf~E 30@1))
+            (call@G,2
+             (dot~6 nifcursors~A parse@1)
+             (dot@2 m~1 stream@1)buf@B
+             (dot@Q indexEntry~A info@1))
+            (let@4,3 decl . . .
+             (call@F cursorAt~8 buf@1 0@6))
+            (asgn@C,4
+             (at~4
+              (dot~4 prog~4 mem@1)s@1)
+             (oconstr@F ToplevelEntry~D
+              (kv@7 buffer~6
+               (call@C ensureMove~A buf@1))
+              (kv@V phase~5 SemcheckBodies@2)))
+            (asgn@7,5 result~7
+             (oconstr@C LoadResult~A
+              (kv@7 status~6 LacksNothing@2)
+              (kv@R decl~4 decl@2))))))))))))))
+ (type@E,5M AttachedOp~C x . .
+  (enum@2 .
+   (efld~C,1 attachedDestroy . . . .)
+   (efld~C,2 attachedWasMoved . . . .)
+   (efld~C,3 attachedDup . . . .)
+   (efld~C,4 attachedCopy . . . .)
+   (efld~C,5 attachedSink . . . .)
+   (efld~C,6 attachedTrace . . . .)))
+ (type@G,5U HooksPerType~E x . .
+  (object@2 .
+   (fld~D,1 a~1 x .
+    (at@8 array~5 AttachedOp@1 SymId@D).)))
+ (proc@,5X hookName@5 x . .
+  (params@E
+   (param@1 op . . AttachedOp@4 .))string@I . .
+  (stmts@2,1
+   (case op@5
+    (of@,1
+     (ranges attachedDestroy@3)
+     (stmts@K "destroy"))
+    (of@,2
+     (ranges attachedWasMoved@3)
+     (stmts@L "wasmoved"))
+    (of@,3
+     (ranges attachedDup@3)
+     (stmts@G "dup"))
+    (of@,4
+     (ranges attachedCopy@3)
+     (stmts@H "copy"))
+    (of@,5
+     (ranges attachedSink@3)
+     (stmts@H "sinkh"))
+    (of@,6
+     (ranges attachedTrace@3)
+     (stmts@I "trace")))))
+ (proc@,5g hookToTag@5 x . .
+  (params@F
+   (param@1 op . . AttachedOp@4 .))TagId@I . .
+  (stmts@2,1
+   (case op@5
+    (of@,1
+     (ranges attachedDestroy@3)
+     (stmts@K
+      (call@5 TagId~5 DestroyH@1)))
+    (of@,2
+     (ranges attachedWasMoved@3)
+     (stmts@L
+      (call@5 TagId~5 WasmovedH@1)))
+    (of@,3
+     (ranges attachedDup@3)
+     (stmts@G
+      (call@5 TagId~5 DupH@1)))
+    (of@,4
+     (ranges attachedCopy@3)
+     (stmts@H
+      (call@5 TagId~5 CopyH@1)))
+    (of@,5
+     (ranges attachedSink@3)
+     (stmts@H
+      (call@5 TagId~5 SinkhH@1)))
+    (of@,6
+     (ranges attachedTrace@3)
+     (stmts@I
+      (call@5 TagId~5 TraceH@1))))))
+ (proc@,5p tryLoadHook@5 x . .
+  (params@H
+   (param@1 op . . AttachedOp@4 .)
+   (param@H typ . . SymId@5 .))SymId@U . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@7 SymId~5 0@1))
+   (let@4,1 d . . .
+    (call@E tryLoadSym~A typ@1))
+   (if@,2
+    (elif@3
+     (infix@9 ==
+      (dot~8 d~1 status@1)LacksNothing@3)
+     (stmts~1,1
+      (let@4 hooktag . . .
+       (call@J hookToTag~9 op@1))
+      (let@4,1 typedef . . .
+       (call@K asTypeDecl~A
+        (dot@2 d~1 decl@1)))
+      (var@4,2 n . . .
+       (dot@B typedef~7 pragmas@1))
+      (call@1,3
+       (dot n~1 linearScan@1)
+       (stmts@1,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (dot~7 n~1 tagId@1)hooktag@3)
+          (stmts~1,1
+           (var@4 c . . . n@4)
+           (cmd@,1 inc c@4)
+           (if@,2
+            (elif@3
+             (infix@7 ==
+              (dot~6 c~1 kind@1)Symbol@3)
+             (stmts~1,1
+              (asgn@7 result~7
+               (dot@3 c~1 symId@1))
+              (break@,1 .))))))))))))))
+ (proc@,64 tryLoadAllHooks@5 x . .
+  (params@L
+   (param@1 typ . . SymId@5 .))HooksPerType@E . .
+  (stmts@2,1
+   (template setRes@9 . . .
+    (params@F
+     (param@1 hookCursor . . Cursor@C .)
+     (param@L op . . AttachedOp@4 .)). . .
+    (stmts@2,1
+     (var@4 c . . . hookCursor@4)
+     (cmd@,1 inc c@4)
+     (if@,2
+      (elif@3
+       (infix@7 ==
+        (dot~6 c~1 kind@1)Symbol@3)
+       (stmts~1,1
+        (asgn@D
+         (at~5
+          (dot~2 result~6 a@1)op@1)
+         (dot@3 c~1 symId@1)))))))
+   (asgn@7,6 result~7
+    (oconstr@E HooksPerType~C
+     (kv@2 a~1
+      (call@9 default~7
+       (at@6 array~5 AttachedOp@1 SymId@D)))))
+   (let@4,7 d . . .
+    (call@E tryLoadSym~A typ@1))
+   (if@,8
+    (elif@3
+     (infix@9 ==
+      (dot~8 d~1 status@1)LacksNothing@3)
+     (stmts~1,1
+      (let@4 typedef . . .
+       (call@K asTypeDecl~A
+        (dot@2 d~1 decl@1)))
+      (var@4,1 n . . .
+       (dot@B typedef~7 pragmas@1))
+      (call@1,2
+       (dot n~1 linearScan@1)
+       (stmts@1,1
+        (case
+         (call@D hookKind~8
+          (dot@2 n~1 tagId@1))
+         (of@,1
+          (ranges NoHook@3)
+          (stmts@B
+           (discard .)))
+         (of@,2
+          (ranges WasmovedH@3)
+          (stmts@E
+           (call@6 setRes~6 n@1 attachedWasMoved@4)))
+         (of@,3
+          (ranges DestroyH@3)
+          (stmts@D
+           (call@6 setRes~6 n@1 attachedDestroy@4)))
+         (of@,4
+          (ranges DupH@3)
+          (stmts@9
+           (call@6 setRes~6 n@1 attachedDup@4)))
+         (of@,5
+          (ranges CopyH@3)
+          (stmts@A
+           (call@6 setRes~6 n@1 attachedCopy@4)))
+         (of@,6
+          (ranges SinkhH@3)
+          (stmts@B
+           (call@6 setRes~6 n@1 attachedSink@4)))
+         (of@,7
+          (ranges TraceH@3)
+          (stmts@B
+           (call@6 setRes~6 n@1 attachedTrace@4)))))))))))
+ (proc@,6Q loadSyms@5 x . .
+  (params@E
+   (param@1 suffix . . string@8 .)
+   (param@H identifier . . StrId@C .))
+  (at@e seq~3 SymId@1). .
+  (stmts@2,2
+   (asgn@7 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,1 m . . .
+    (call@8 load~4 suffix@1))
+   (for@4,2
+    (dot@9 m~1 public@1)
+    (unpackflat
+     (let k . . ..)
+     (let _@3 . . ..))
+    (stmts~2,1
+     (var@4 base . . . k@7)
+     (call@F,1 extractBasename~F base@1)
+     (let@4,2 strId . . .
+      (call@U
+       (dot~A
+        (dot~8 pool~4 strings@1)getOrIncl@1)base@1))
+     (if@,3
+      (elif@3
+       (infix@6 == strId~6 identifier@3)
+       (stmts~1,1
+        (let@4 symId . . .
+         (call@R
+          (dot~A
+           (dot~5 pool~4 syms@1)getOrIncl@1)k@1))
+        (cmd@6,1
+         (dot result~6 add@1)symId@5))))))))
+ (proc@,6c knowsSym@5 x . .
+  (params@E
+   (param@1 s . . SymId@3 .))bool@C
+  (pragmas@V inline@2).
+  (stmts@i
+   (call@F
+    (dot~7
+     (dot~4 prog~4 mem@1)hasKey@1)s@1)))
+ (proc@,6e getEntry@5 x . .
+  (params@E
+   (param@1 s . . SymId@3 .))
+  (ptr@C ToplevelEntry@4)
+  (pragmas@i inline@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@F
+      (dot~7
+       (dot~4 prog~4 mem@1)hasKey@1)s@1)
+     (stmts~1,1
+      (asgn@7 result~7
+       (cmd@7 addr~5
+        (at@8
+         (dot~4 prog~4 mem@1)s@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (nil@2)))))))
+ (proc@,6l publish@5 x . .
+  (params@D
+   (param@1 s . . SymId@3 .)
+   (param@B buf . .
+    (cmd@A sink~5 TokenBuf).)
+   (param@V phase . . . SemcheckBodies@8)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@F
+      (dot~7
+       (dot~4 prog~4 mem@1)hasKey@1)s@1)
+     (stmts~1,1
+      (asgn@J
+       (dot~8
+        (at~3
+         (dot~4 prog~4 mem@1)s@1)buffer@1)buf@2)
+      (asgn@I,1
+       (dot~7
+        (at~3
+         (dot~4 prog~4 mem@1)s@1)phase@1)phase@2)))
+    (else@,3
+     (stmts@2,1
+      (asgn@C
+       (at~4
+        (dot~4 prog~4 mem@1)s@1)
+       (oconstr@F ToplevelEntry~D
+        (kv@7 buffer~6 buf@2)
+        (kv@J phase~5 phase@2))))))))
+ (proc@,6s publish@5 x . .
+  (params@D
+   (param@1 s . . SymId@3 .)
+   (param@B dest . . TokenBuf@6 .)
+   (param@R start . . int@7 .)
+   (param@d phase . . . SemcheckBodies@8)). . .
+  (stmts@2,1
+   (var@4 buf . . .
+    (call@K createTokenBuf~E
+     (infix@I \2B
+      (infix~8 \2D
+       (dot~5 dest~4 len@1)start@2)1@2)))
+   (for@4,1
+    (infix@A \2E\2E< start~5
+     (dot@7 dest~4 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (cmd@3
+      (dot buf~3 add@1)
+      (at@9 dest~4 i@1))))
+   (cmd@,3 publish s@8 buf@B phase@G)))
+ (proc@,6y publishSignature@5 x . .
+  (params@M
+   (param@1 dest . . TokenBuf@6 .)
+   (param@H s . . SymId@3 .)
+   (param@R start . . int@7 .)). . .
+  (stmts@2,1
+   (var@4 buf . . .
+    (call@K createTokenBuf~E
+     (infix@I \2B
+      (infix~8 \2D
+       (dot~5 dest~4 len@1)start@2)3@2)))
+   (for@4,1
+    (infix@A \2E\2E< start~5
+     (dot@7 dest~4 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (cmd@3
+      (dot buf~3 add@1)
+      (at@9 dest~4 i@1))))
+   (call@F,3
+    (dot~C buf~3 addDotToken@1))
+   (call@C,4
+    (dot~9 buf~3 addParRi@1))
+   (cmd@,5 publish s@8 buf@B SemcheckSignatures@G)))
+ (proc@,76 publishStringType@5 x . .
+  (params@N). . .
+  (stmts@2,3
+   (let@4 symId . . .
+    (call@R
+     (dot~A
+      (dot~5 pool~4 syms@1)getOrIncl@1)StringName@1))
+   (let@4,1 exportMarker . . .
+    (call@b
+     (dot~A
+      (dot~8 pool~4 strings@1)getOrIncl@1)"x"@1))
+   (var@4,2 str . . .
+    (call@K createTokenBuf~E 10@1))
+   (when@,3
+    (elif@5 sso
+     (stmts~3,1
+      (let@4 bytesId . . .
+       (call@T
+        (dot~A
+         (dot~5 pool~4 syms@1)getOrIncl@1)StringBytesField@1))
+      (let@4,1 moreId . . .
+       (call@T
+        (dot~A
+         (dot~5 pool~4 syms@1)getOrIncl@1)StringMoreField@1))
+      (let@4,2 longStrSymId . . .
+       (call@Y
+        (dot~A
+         (dot~5 pool~4 syms@1)getOrIncl@1)LongStringName@1))
+      (cmd@3,3
+       (dot str~3 copyIntoUnchecked@1)"type"@J NoLineInfo@R
+       (stmts~1,1
+        (cmd@3
+         (dot str~3 add@1)
+         (call@G symdefToken~B symId@1 NoLineInfo@8))
+        (cmd@3,1
+         (dot str~3 add@1)
+         (call@F identToken~A exportMarker@1 NoLineInfo@F))
+        (call@F,2
+         (dot~C str~3 addDotToken@1))
+        (call@F,3
+         (dot~C str~3 addDotToken@1))
+        (cmd@3,4
+         (dot str~3 copyIntoUnchecked@1)"object"@J NoLineInfo@T
+         (stmts~1,1
+          (call@F
+           (dot~C str~3 addDotToken@1))
+          (cmd@3,1
+           (dot str~3 copyIntoUnchecked@1)"fld"@J NoLineInfo@Q
+           (stmts~1,1
+            (cmd@3
+             (dot str~3 add@1)
+             (call@G symdefToken~B bytesId@1 NoLineInfo@A))
+            (call@F,1
+             (dot~C str~3 addDotToken@1))
+            (call@F,2
+             (dot~C str~3 addDotToken@1))
+            (cmd@3,4
+             (dot str~3 copyIntoUnchecked@1)"u"@J NoLineInfo@O
+             (stmts~1,1
+              (cmd@3
+               (dot str~3 add@1)
+               (call@D intToken~8
+                (call@O
+                 (dot~A
+                  (dot~9 pool~4 integers@1)getOrIncl@1)-1@1)NoLineInfo@U))))
+            (call@F,6
+             (dot~C str~3 addDotToken@1))))
+          (cmd@3,A
+           (dot str~3 copyIntoUnchecked@1)"fld"@J NoLineInfo@Q
+           (stmts~1,1
+            (cmd@3
+             (dot str~3 add@1)
+             (call@G symdefToken~B moreId@1 NoLineInfo@9))
+            (call@F,1
+             (dot~C str~3 addDotToken@1))
+            (call@F,2
+             (dot~C str~3 addDotToken@1))
+            (cmd@3,4
+             (dot str~3 copyIntoUnchecked@1)"ptr"@J NoLineInfo@Q
+             (stmts~1,1
+              (cmd@3
+               (dot str~3 add@1)
+               (call@D symToken~8 longStrSymId@1 NoLineInfo@F))))
+            (call@F,6
+             (dot~C str~3 addDotToken@1))))))))))
+    (else@,S
+     (stmts@2,1
+      (let@4 aId . . .
+       (call@P
+        (dot~A
+         (dot~5 pool~4 syms@1)getOrIncl@1)StringAField@1))
+      (let@4,1 iId . . .
+       (call@P
+        (dot~A
+         (dot~5 pool~4 syms@1)getOrIncl@1)StringIField@1))
+      (cmd@3,2
+       (dot str~3 copyIntoUnchecked@1)"type"@J NoLineInfo@R
+       (stmts~1,1
+        (cmd@3
+         (dot str~3 add@1)
+         (call@G symdefToken~B symId@1 NoLineInfo@8))
+        (cmd@3,1
+         (dot str~3 add@1)
+         (call@F identToken~A exportMarker@1 NoLineInfo@F))
+        (call@F,2
+         (dot~C str~3 addDotToken@1))
+        (call@F,3
+         (dot~C str~3 addDotToken@1))
+        (cmd@3,4
+         (dot str~3 copyIntoUnchecked@1)"object"@J NoLineInfo@T
+         (stmts~1,1
+          (call@F
+           (dot~C str~3 addDotToken@1))
+          (cmd@3,1
+           (dot str~3 copyIntoUnchecked@1)"fld"@J NoLineInfo@Q
+           (stmts~1,1
+            (cmd@3
+             (dot str~3 add@1)
+             (call@G symdefToken~B aId@1 NoLineInfo@6))
+            (call@F,1
+             (dot~C str~3 addDotToken@1))
+            (call@F,2
+             (dot~C str~3 addDotToken@1))
+            (cmd@3,4
+             (dot str~3 copyIntoUnchecked@1)"ptr"@J NoLineInfo@Q
+             (stmts~1,1
+              (cmd@3
+               (dot str~3 copyIntoUnchecked@1)"uarray"@J NoLineInfo@T
+               (stmts~1,1
+                (cmd@3
+                 (dot str~3 copyIntoUnchecked@1)"c"@J NoLineInfo@O
+                 (stmts~1,1
+                  (cmd@3
+                   (dot str~3 add@1)
+                   (call@D intToken~8
+                    (call@O
+                     (dot~A
+                      (dot~9 pool~4 integers@1)getOrIncl@1)8@1)NoLineInfo@T))))))))
+            (call@F,8
+             (dot~C str~3 addDotToken@1))))
+          (cmd@3,C
+           (dot str~3 copyIntoUnchecked@1)"fld"@J NoLineInfo@Q
+           (stmts~1,1
+            (cmd@3
+             (dot str~3 add@1)
+             (call@G symdefToken~B iId@1 NoLineInfo@6))
+            (call@F,1
+             (dot~C str~3 addDotToken@1))
+            (call@F,2
+             (dot~C str~3 addDotToken@1))
+            (cmd@3,3
+             (dot str~3 copyIntoUnchecked@1)"i"@J NoLineInfo@O
+             (stmts~1,1
+              (cmd@3
+               (dot str~3 add@1)
+               (call@D intToken~8
+                (call@O
+                 (dot~A
+                  (dot~9 pool~4 integers@1)getOrIncl@1)-1@1)NoLineInfo@U))))
+            (call@F,5
+             (dot~C str~3 addDotToken@1)))))))))))
+   (cmd@,x publish symId@8 str@F SemcheckBodies@K)))
+ (proc@,88 setupProgram@5 x . .
+  (params@I
+   (param@1 infile . . string@H .)
+   (param@9 outfile . . string@9 .)
+   (param@Q owningBuf . .
+    (mut@B TokenBuf@4).)
+   (param@p hasIndex . . . false@9))Cursor@16 . .
+  (stmts@2,1
+   (asgn@A
+    (dot~6 prog~4 main@1)
+    (call@H splitModulePath~F infile@1))
+   (let@4,1 outp . . .
+    (call@M splitModulePath~F outfile@1))
+   (if@,2
+    (elif@3
+     (infix@I ==
+      (dot~5
+       (dot~4
+        (dot~5 prog~4 main@1)dir@1)len@1)0@3)
+     (stmts~1,1
+      (try
+       (stmts@2,1
+        (asgn@E
+         (dot~5
+          (dot~5 prog~4 main@1)dir@1)
+         (call@F getCurrentDir~D)))
+       (except@,2 .
+        (stmts@2,1
+         (asgn@E
+          (dot~5
+           (dot~5 prog~4 main@1)dir@1)"."@2)))))))
+   (asgn@E,7
+    (dot~5
+     (dot~5 prog~4 main@1)ext@1)
+    (dot@6 outp~4 ext@1))
+   (var@4,9 m . . .
+    (call@G newNifModule~C infile@1))
+   (if@,B
+    (elif@3 hasIndex
+     (stmts~1,1
+      (asgn@8
+       (dot~7 m~1 index@1)
+       (call@9 default~7 NifIndex@1))
+      (let@4,1 embedded . . .
+       (call@S readEmbeddedIndex~H
+        (dot@2 m~1 stream@1)))
+      (if@,2
+       (elif@3
+        (infix@D >
+         (dot~5 embedded~8 len@1)0@2)
+        (stmts~1,1
+         (call@G addEmbeddedIndex~G
+          (dot@2 m~1 public@1)
+          (dot@C m~1 private@1)embedded@M))))
+      (let@4,4 indexName . . .
+       (callstrlit@Y
+        (dot~G infile~6 changeModuleExt@1)
+        (suf ".s.idx.nif" "R")))
+      (asgn@8,5
+       (dot~7 m~1 index@1)
+       (call@B readIndex~9 indexName@1)))))
+   (asgn@A,K owningBuf~A
+    (call@C fromStream~A
+     (dot@2 m~1 stream@1)))
+   (asgn@7,M result~7
+    (call@B beginRead~9 owningBuf@1))
+   (asgn@Q,N
+    (at~H
+     (dot~5 prog~4 mods@1)
+     (dot@A
+      (dot~5 prog~4 main@1)name@1))m@2)))
+ (proc@,8Z setupProgramForTesting@5 x . .
+  (params@S
+   (param@1 dir . . string@G .)
+   (param@6 file . . string@B .)
+   (param@C ext . . string@5 .)). . .
+  (stmts@2,1
+   (asgn@E
+    (dot~5
+     (dot~5 prog~4 main@1)dir@1)dir@2)
+   (asgn@F,1
+    (dot~6
+     (dot~5 prog~4 main@1)name@1)file@2)
+   (asgn@E,2
+    (dot~5
+     (dot~5 prog~4 main@1)ext@1)ext@2)
+   (call@H,3 publishStringType~H)))
+ (proc@,8f takeParRi@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L n . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)ParRi@3)
+     (stmts~1,1
+      (cmd@4
+       (dot dest~4 add@1)n@5)
+      (cmd@,1 consumeParRi n@D)))
+    (else@,3
+     (stmts@2,1
+      (cmd bug "expected \27\29\27, but got\3A "@4 n@V))))))
+ (proc@,8m skipParRi@5 x . .
+  (params@F
+   (param@1 n . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)ParRi@3)
+     (stmts~1,1
+      (cmd consumeParRi n@D)))
+    (else@,2
+     (stmts@2,1
+      (cmd bug "expected \27\29\27, but got\3A "@4 n@V))))))
+ (template@,8s isLocalDecl@9 x . .
+  (params@L
+   (param@1 s . . SymId@3 .))bool@C . .
+  (stmts@2,1
+   (infix@S ==
+    (call~F extractModule~D
+     (at@A
+      (dot~5 pool~4 syms@1)s@1))""@3))))

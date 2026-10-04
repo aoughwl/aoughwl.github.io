@@ -1,0 +1,1821 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/nimony/src/nimony/typeprops.nim
+ (import
+  (infix@A / std~3
+   (bracket@1 assertions@1 sets@D)))
+ (fromimport@,1
+  (infix@8 / std~3 strutils@1)startsWith@P)
+ (include@,2
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,3 nimony_model@7 decls@L xints@S semdata@Z programs@i nifconfig@s)
+ (import@,4
+  (infix@L /
+   (infix~9 / ".."~5 models@2)tags@2))
+ (const@K,7 DefaultSetElements~I x . .
+  (call@E createXint~A
+   (infix@7 shl
+    (suf~6 1u "u64")8@4)))
+ (const@G,8 MaxSetElements~E x . .
+  (call@E createXint~A
+   (infix@7 shl
+    (suf~6 1u "u64")16@4)))
+ (proc@,A typebits@5 x . .
+  (params@E
+   (param@1 config . . NifConfig@8 .)
+   (param@K n . . PackedToken@3 .))int@b . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)IntLit@3)
+     (stmts~1,1
+      (asgn@7 result~7
+       (cmd@6 int~4
+        (at@D
+         (dot~9 pool~4 integers@1)
+         (dot@2 n~1 intId@1))))))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 n~1 kind@1)InlineInt@3)
+     (stmts~3,1
+      (asgn@7 result~7
+       (dot@3 n~1 soperand@1))))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7 0@2))))))
+ (proc@,I isOrdinalTypeKind@5 x . .
+  (params@N
+   (param@1 kind . . TypeKind@6 .))bool@I
+  (pragmas@k inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@7 in kind~5
+     (curly@3 EnumT@1 IntT@8 UIntT@E CharT@L BoolT@S RangetypeT@Z)))))
+ (proc@,L isOrdinalType@5 x . .
+  (params@J
+   (param@1 typ . . TypeCursor@5 .)
+   (param@I allowEnumWithHoles . . bool@K false@R))bool@r . .
+  (stmts@2,1
+   (case
+    (dot@8 typ~3 kind@1)
+    (of@,1
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 s . . .
+       (call@E tryLoadSym~A
+        (dot@4 typ~3 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@9 !=
+         (dot~8 s~1 status@1)LacksNothing@3)
+        (stmts~1,1
+         (ret false@7))))
+      (if@,3
+       (elif@3
+        (infix@F !=
+         (dot~9
+          (dot~5 s~1 decl@1)symKind@1)TypeY@3)
+        (stmts~1,1
+         (ret false@7))))
+      (let@4,5 decl . . .
+       (call@H asTypeDecl~A
+        (dot@2 s~1 decl@1)))
+      (case@,6
+       (dot@E
+        (dot~5 decl~4 body@1)typeKind@1)
+       (of@,1
+        (ranges EnumT@3 AnumT@A)
+        (stmts@2,1
+         (asgn@7 result~7 true@2)))
+       (of@,3
+        (ranges HoleyEnumT@3)
+        (stmts@2,1
+         (asgn@7 result~7 allowEnumWithHoles@2)))
+       (of@,5
+        (ranges DistinctT@3)
+        (stmts@2,2
+         (var@4 baseType . . .
+          (dot@F decl~4 body@1))
+         (cmd@,1 inc baseType@4)
+         (asgn@7,2 result~7
+          (call@F isOrdinalType~D baseType@1 allowEnumWithHoles@B))))
+       (else@,A
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@F isOrdinalType~D
+           (dot@5 decl~4 body@1)allowEnumWithHoles@C)))))))
+    (of@,K
+     (ranges ParLe@3)
+     (stmts@2,1
+      (case
+       (dot@8 typ~3 typeKind@1)
+       (of@,1
+        (ranges IntT@3 UIntT@9 CharT@G BoolT@N RangetypeT@U)
+        (stmts@2,1
+         (asgn@7 result~7 true@2)))
+       (of@,3
+        (ranges InvokeT@3)
+        (stmts@2,2
+         (var@4 base . . . typ@7)
+         (cmd@,1 inc base@4)
+         (asgn@7,2 result~7
+          (call@F isOrdinalType~D base@1 allowEnumWithHoles@7))))
+       (else@,8
+        (stmts@2,1
+         (asgn@7 result~7 false@2))))))
+    (else@,V
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,u firstOrd@5 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 SemContext@4).)
+   (param@K typ . . TypeCursor@5 .))xint@c . .
+  (stmts@2,1
+   (case
+    (dot@8 typ~3 kind@1)
+    (of@,1
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 s . . .
+       (call@E tryLoadSym~A
+        (dot@4 typ~3 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@9 !=
+         (dot~8 s~1 status@1)LacksNothing@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@B createNaN~9))
+         (ret@,1 .))))
+      (if@,4
+       (elif@3
+        (infix@F !=
+         (dot~9
+          (dot~5 s~1 decl@1)symKind@1)TypeY@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@B createNaN~9))
+         (ret@,1 .))))
+      (let@4,7 decl . . .
+       (call@H asTypeDecl~A
+        (dot@2 s~1 decl@1)))
+      (case@,8
+       (dot@E
+        (dot~5 decl~4 body@1)typeKind@1)
+       (of@,1
+        (ranges EnumT@3 HoleyEnumT@A AnumT@M)
+        (stmts@2,1
+         (let@4 edecl . . .
+          (call@I asEnumDecl~A
+           (dot@5 decl~4 body@1)))
+         (var@4,1 field . . .
+          (dot@D edecl~5 body@1))
+         (cmd@,2 inc field@4 SkipTag@B)
+         (cmd@,3 skip field@5 SkipType@C)
+         (if@,4
+          (elif@3
+           (infix@B ==
+            (dot~6 edecl~5 kind@1)AnumT@3)
+           (stmts~1,1
+            (cmd skip field@5 AnyType@C))))
+         (var@4,6 firstVal . . .
+          (dot@P
+           (call~7 asLocal~7 field@1)val@1))
+         (cmd@,7 inc firstVal@4)
+         (case@,8
+          (dot@D firstVal~8 kind@1)
+          (of@,1
+           (ranges IntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@D
+               (dot~9 pool~4 integers@1)
+               (dot@9 firstVal~8 intId@1))))))
+          (of@,3
+           (ranges UIntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@E
+               (dot~A pool~4 uintegers@1)
+               (dot@9 firstVal~8 uintId@1))))))
+          (else@,5
+           (stmts@2,2
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,I
+        (ranges DistinctT@3)
+        (stmts@2,2
+         (var@4 baseType . . .
+          (dot@F decl~4 body@1))
+         (cmd@,1 inc baseType@4)
+         (asgn@7,2 result~7
+          (call@A firstOrd~8 c@1 baseType@4))))
+       (else@,N
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@A firstOrd~8 c@1
+           (dot@8 decl~4 body@1))))))))
+    (of@,Z
+     (ranges ParLe@3)
+     (stmts@2,1
+      (case
+       (dot@8 typ~3 typeKind@1)
+       (of@,1
+        (ranges IntT@3)
+        (stmts@2,1
+         (var@4 bits . . . typ@7)
+         (cmd@,1 inc bits@4)
+         (case@,2
+          (call@D typebits~8
+           (dot@4
+            (dot~2 c~1 g@1)config@1)
+           (dot@H bits~4 load@1))
+          (of@,1
+           (ranges 8@3)
+           (stmts@6
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@9
+               (call~6 low~3 int8@1)int64@1)))))
+          (of@,2
+           (ranges 16@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@A
+               (call~7 low~3 int16@1)int64@1)))))
+          (of@,3
+           (ranges 32@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@A
+               (call~7 low~3 int32@1)int64@1)))))
+          (of@,4
+           (ranges 64@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (call@3 low~3 int64@1)))))
+          (else@,5
+           (stmts@6
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,A
+        (ranges UIntT@3 CharT@A BoolT@H)
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@6 zero~4))))
+       (of@,C
+        (ranges RangetypeT@3)
+        (stmts@2,1
+         (var@4 first . . . typ@8)
+         (cmd@,1 inc first@4)
+         (cmd@,2 skip first@5)
+         (case@,3
+          (dot@A first~5 kind@1)
+          (of@,1
+           (ranges IntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@D
+               (dot~9 pool~4 integers@1)
+               (dot@6 first~5 intId@1))))))
+          (of@,3
+           (ranges UIntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@E
+               (dot~A pool~4 uintegers@1)
+               (dot@6 first~5 uintId@1))))))
+          (else@,5
+           (stmts@2,1
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,N
+        (ranges InvokeT@3)
+        (stmts@2,2
+         (var@4 base . . . typ@7)
+         (cmd@,1 inc base@4)
+         (asgn@7,2 result~7
+          (call@A firstOrd~8 c@1 base@4))))
+       (else@,S
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@B createNaN~9)))))))
+    (else@,14
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@B createNaN~9)))))))
+ (proc@,22 lastOrd@5 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 SemContext@4).)
+   (param@K typ . . TypeCursor@5 .))xint@c . .
+  (stmts@2,1
+   (case
+    (dot@8 typ~3 kind@1)
+    (of@,1
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 s . . .
+       (call@E tryLoadSym~A
+        (dot@4 typ~3 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@9 !=
+         (dot~8 s~1 status@1)LacksNothing@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@B createNaN~9))
+         (ret@,1 .))))
+      (if@,4
+       (elif@3
+        (infix@F !=
+         (dot~9
+          (dot~5 s~1 decl@1)symKind@1)TypeY@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@B createNaN~9))
+         (ret@,1 .))))
+      (let@4,7 decl . . .
+       (call@H asTypeDecl~A
+        (dot@2 s~1 decl@1)))
+      (case@,8
+       (dot@E
+        (dot~5 decl~4 body@1)typeKind@1)
+       (of@,1
+        (ranges EnumT@3 HoleyEnumT@A AnumT@M)
+        (stmts@2,1
+         (let@4 edecl . . .
+          (call@I asEnumDecl~A
+           (dot@5 decl~4 body@1)))
+         (var@4,1 field . . .
+          (dot@D edecl~5 body@1))
+         (var@4,2 last . . . field@7)
+         (call@5,3
+          (dot field~5 into@1)
+          (stmts~3,1
+           (cmd skip field@5 SkipType@C)
+           (if@,1
+            (elif@3
+             (infix@B ==
+              (dot~6 edecl~5 kind@1)AnumT@3)
+             (stmts~1,1
+              (cmd skip field@5 AnyType@C))))
+           (asgn@5,3 last~5 field@2)
+           (while@,4
+            (dot@B field~5 hasMore@1)
+            (stmts@2,1
+             (if
+              (elif@3
+               (infix@N ==
+                (dot~I field~5 substructureKind@1)EfldU@3)
+               (stmts~1,1
+                (asgn@5 last~5 field@2))))
+             (cmd@,2 skip field@5)))))
+         (var@4,C lastVal . . .
+          (dot@N
+           (call~6 asLocal~7 last@1)val@1))
+         (cmd@,D inc lastVal@4)
+         (case@,E
+          (dot@C lastVal~7 kind@1)
+          (of@,1
+           (ranges IntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@D
+               (dot~9 pool~4 integers@1)
+               (dot@8 lastVal~7 intId@1))))))
+          (of@,3
+           (ranges UIntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@E
+               (dot~A pool~4 uintegers@1)
+               (dot@8 lastVal~7 uintId@1))))))
+          (else@,5
+           (stmts@2,2
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,O
+        (ranges DistinctT@3)
+        (stmts@2,2
+         (var@4 baseType . . .
+          (dot@F decl~4 body@1))
+         (cmd@,1 inc baseType@4)
+         (asgn@7,2 result~7
+          (call@9 lastOrd~7 c@1 baseType@4))))
+       (else@,T
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@9 lastOrd~7 c@1
+           (dot@8 decl~4 body@1))))))))
+    (of@,f
+     (ranges ParLe@3)
+     (stmts@2,1
+      (case
+       (dot@8 typ~3 typeKind@1)
+       (of@,1
+        (ranges IntT@3)
+        (stmts@2,1
+         (var@4 bits . . . typ@7)
+         (cmd@,1 inc bits@4)
+         (case@,2
+          (call@D typebits~8
+           (dot@4
+            (dot~2 c~1 g@1)config@1)
+           (dot@H bits~4 load@1))
+          (of@,1
+           (ranges 8@3)
+           (stmts@6
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@A
+               (call~6 high~4 int8@1)int64@1)))))
+          (of@,2
+           (ranges 16@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@B
+               (call~7 high~4 int16@1)int64@1)))))
+          (of@,3
+           (ranges 32@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@B
+               (call~7 high~4 int32@1)int64@1)))))
+          (of@,4
+           (ranges 64@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (call@4 high~4 int64@1)))))
+          (else@,5
+           (stmts@6
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,A
+        (ranges UIntT@3 CharT@A)
+        (stmts@2,1
+         (var@4 bits . . . typ@7)
+         (cmd@,1 inc bits@4)
+         (case@,2
+          (call@D typebits~8
+           (dot@4
+            (dot~2 c~1 g@1)config@1)
+           (dot@H bits~4 load@1))
+          (of@,1
+           (ranges 8@3)
+           (stmts@6
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@B
+               (call~7 high~4 uint8@1)uint64@1)))))
+          (of@,2
+           (ranges 16@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@C
+               (call~8 high~4 uint16@1)uint64@1)))))
+          (of@,3
+           (ranges 32@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (dot@C
+               (call~8 high~4 uint32@1)uint64@1)))))
+          (of@,4
+           (ranges 64@3)
+           (stmts@7
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (call@4 high~4 uint64@1)))))
+          (else@,5
+           (stmts@6
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,J
+        (ranges RangetypeT@3)
+        (stmts@2,1
+         (var@4 last . . . typ@7)
+         (cmd@,1 inc last@4)
+         (cmd@,2 skip last@5)
+         (cmd@,3 skip last@5)
+         (case@,4
+          (dot@9 last~4 kind@1)
+          (of@,1
+           (ranges IntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@D
+               (dot~9 pool~4 integers@1)
+               (dot@5 last~4 intId@1))))))
+          (of@,3
+           (ranges UIntLit@3)
+           (stmts@2,1
+            (asgn@7 result~7
+             (cmd@D createXint~B
+              (at@E
+               (dot~A pool~4 uintegers@1)
+               (dot@5 last~4 uintId@1))))))
+          (else@,5
+           (stmts@2,1
+            (asgn@7 result~7
+             (call@B createNaN~9)))))))
+       (of@,V
+        (ranges BoolT@3)
+        (stmts@2,1
+         (asgn@7 result~7
+          (cmd@D createXint~B
+           (dot@1 1~1 uint64@1)))))
+       (of@,X
+        (ranges InvokeT@3)
+        (stmts@2,2
+         (var@4 base . . . typ@7)
+         (cmd@,1 inc base@4)
+         (asgn@7,2 result~7
+          (call@9 lastOrd~7 c@1 base@4))))
+       (else@,c
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@B createNaN~9)))))))
+    (else@,1K
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@B createNaN~9)))))))
+ (proc@,3Q lengthOrd@5 x . .
+  (params@F
+   (param@1 c . .
+    (mut@3 SemContext@4).)
+   (param@K typ . . TypeCursor@5 .))xint@c . .
+  (stmts@2,1
+   (let@4 first . . .
+    (call@G firstOrd~8 c@1 typ@4))
+   (if@,1
+    (elif@3
+     (dot@5 first~5 isNaN@1)
+     (stmts@D
+      (ret first@7))))
+   (let@4,2 last . . .
+    (call@E lastOrd~7 c@1 typ@4))
+   (if@,3
+    (elif@3
+     (dot@4 last~4 isNaN@1)
+     (stmts@C
+      (ret last@7))))
+   (asgn@7,4 result~7
+    (infix@F \2B
+     (infix~8 \2D last~5 first@2)
+     (call@C createXint~A
+      (dot@2 1~1 uint64@1))))))
+ (proc@,3X containsGenericParamsAux@5 . . .
+  (params@T
+   (param@1 n . .
+    (mut@3 TypeCursor@4).))bool@L . .
+  (stmts@2,1
+   (comment)
+   (case@,3
+    (dot@6 n~1 kind@1)
+    (of@,1
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 res . . .
+       (call@G tryLoadSym~A
+        (dot@2 n~1 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@R and
+         (infix~G ==
+          (dot~8 res~3 status@1)LacksNothing@3)
+         (infix@L in
+          (dot~9
+           (dot~5 res~3 decl@1)tagEnum@1)
+          (curly@3 TypevarTagId@1 StaticTypevarTagId@F)))
+        (stmts~1,1
+         (ret true@7))))
+      (cmd@,3 inc n@4)))
+    (of@,6
+     (ranges ParLe@3)
+     (stmts@2,1
+      (call@1
+       (dot n~1 loopInto@1)
+       (stmts@1,1
+        (if
+         (elif@3
+          (call@O containsGenericParamsAux~O n@1)
+          (stmts@T
+           (ret true@7))))))))
+    (else@,9
+     (stmts@2,1
+      (cmd inc n@4))))
+   (ret@,E false@7)))
+ (proc@,3o containsGenericParams@5 x . .
+  (params@R
+   (param@1 n . . TypeCursor@3 .))bool@H . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (asgn@7,1 result~7
+    (call@Q containsGenericParamsAux~O n@1))))
+ (proc@,3s nominalRoot@5 x . .
+  (params@H
+   (param@1 t . . TypeCursor@3 .)
+   (param@G allowTypevar . . . false@F)
+   (param@c skipPtrs . . . false@B))SymId@v . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@7 SymId~5 0@1))
+   (var@4,1 t . . . t@4)
+   (var@4,2 ptrs . . . 1@7)
+   (while@,3 true@6
+    (stmts@2,1
+     (case
+      (dot@6 t~1 kind@1)
+      (of@,1
+       (ranges Symbol@3)
+       (stmts@2,1
+        (let@4 res . . .
+         (call@G tryLoadSym~A
+          (dot@2 t~1 symId@1)))
+        (cmd@,1 assert
+         (infix@I ==
+          (dot~8 res~3 status@1)LacksNothing@3))
+        (if@,2
+         (elif@3
+          (infix@H ==
+           (dot~9
+            (dot~5 res~3 decl@1)symKind@1)TypeY@3)
+          (stmts~1,1
+           (let@4 decl . . .
+            (call@H asTypeDecl~A
+             (dot@4 res~3 decl@1)))
+           (if@,1
+            (elif@3
+             (infix@N ==
+              (dot~A
+               (dot~9 decl~4 typevars@1)typeKind@1)InvokeT@3)
+             (stmts~1,1
+              (var@4 root . . .
+               (dot@B decl~4 typevars@1))
+              (cmd@,1 inc root@4)
+              (cmd@,2 assert
+               (infix@H ==
+                (dot~6 root~4 kind@1)Symbol@3))
+              (ret@,3
+               (dot@B root~4 symId@1))))
+            (else@,5
+             (stmts@2,1
+              (ret
+               (dot@8 t~1 symId@1)))))))
+         (elif@5,9
+          (infix@D and allowTypevar~D
+           (infix@L ==
+            (dot~9
+             (dot~5 res~3 decl@1)symKind@1)TypevarY@3))
+          (stmts~3,1
+           (ret
+            (dot@8 t~1 symId@1))))
+         (else@,B
+          (stmts@2,1
+           (break .))))))
+      (of@,H
+       (ranges ParLe@3)
+       (stmts@2,1
+        (case
+         (dot@6 t~1 typeKind@1)
+         (of@,1
+          (ranges MutT@3 OutT@9 LentT@F SinkT@M StaticT@T TypedescT@c)
+          (stmts@2,1
+           (cmd inc t@4)))
+         (of@,3
+          (ranges InvokeT@3)
+          (stmts@2,1
+           (cmd inc t@4)))
+         (of@,5
+          (ranges RefT@3 PtrT@9)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@9 and skipPtrs~9
+              (infix@9 > ptrs~5 0@2))
+             (stmts~1,1
+              (cmd inc t@4)
+              (cmd@,1 dec ptrs@4)))
+            (else@,3
+             (stmts@2,1
+              (break .))))))
+         (else@,B
+          (stmts@2,1
+           (break .))))))
+      (else@,V
+       (stmts@2,1
+        (break .))))))))
+ (proc@,4V getClass@5 x . .
+  (params@E
+   (param@1 t . . TypeCursor@3 .))SymId@H . .
+  (stmts@2,2
+   (asgn@7 result~7
+    (call@7 SymId~5 0@1))
+   (var@4,1 t . . . t@4)
+   (var@4,2 ptrs . . . 1@7)
+   (while@,3 true@6
+    (stmts@2,1
+     (case
+      (dot@6 t~1 kind@1)
+      (of@,1
+       (ranges Symbol@3)
+       (stmts@2,1
+        (let@4 res . . .
+         (call@G tryLoadSym~A
+          (dot@2 t~1 symId@1)))
+        (cmd@,1 assert
+         (infix@I ==
+          (dot~8 res~3 status@1)LacksNothing@3))
+        (if@,2
+         (elif@3
+          (infix@H ==
+           (dot~9
+            (dot~5 res~3 decl@1)symKind@1)TypeY@3)
+          (stmts~1,2
+           (ret
+            (dot@8 t~1 symId@1))))
+         (else@,3
+          (stmts@2,2
+           (break .))))))
+      (of@,A
+       (ranges ParLe@3)
+       (stmts@2,1
+        (case
+         (dot@6 t~1 typeKind@1)
+         (of@,1
+          (ranges MutT@3 OutT@9 LentT@F SinkT@M StaticT@T TypedescT@c)
+          (stmts@2,1
+           (cmd inc t@4)))
+         (of@,3
+          (ranges InvokeT@3)
+          (stmts@2,1
+           (cmd inc t@4)))
+         (of@,5
+          (ranges RefT@3 PtrT@9)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@5 > ptrs~5 0@2)
+             (stmts~1,1
+              (cmd inc t@4)
+              (cmd@,1 dec ptrs@4)))
+            (else@,3
+             (stmts@2,1
+              (break .))))))
+         (else@,B
+          (stmts@2,1
+           (break .))))))
+      (else@,O
+       (stmts@2,1
+        (break .))))))))
+ (proc@,52 skipTypeInstSym@5 x . .
+  (params@L
+   (param@1 s . . SymId@3 .))SymId@C . .
+  (stmts@2,2
+   (let@4 res . . .
+    (call@G tryLoadSym~A s@1))
+   (if@,1
+    (elif@3
+     (infix@R and
+      (infix~G ==
+       (dot~8 res~3 status@1)LacksNothing@3)
+      (infix@L ==
+       (dot~9
+        (dot~5 res~3 decl@1)symKind@1)TypeY@3))
+     (stmts~1,1
+      (let@4 decl . . .
+       (call@H asTypeDecl~A
+        (dot@4 res~3 decl@1)))
+      (if@,1
+       (elif@3
+        (infix@N ==
+         (dot~A
+          (dot~9 decl~4 typevars@1)typeKind@1)InvokeT@3)
+        (stmts~1,1
+         (var@4 base . . .
+          (dot@B decl~4 typevars@1))
+         (cmd@,1 inc base@4)
+         (asgn@7,2 result~7
+          (dot@6 base~4 symId@1))))
+       (else@,4
+        (stmts@2,2
+         (asgn@7 result~7 s@2))))))
+    (else@,9
+     (stmts@2,1
+      (asgn@7 result~7 s@2))))))
+ (proc@,5H typeHasPragma@5 x . .
+  (params@J
+   (param@1 n . . Cursor@3 .)
+   (param@C pragma . . NimonyPragma@8 .)
+   (param@Y bodyKindRestriction . . . NoType@M))bool@13 . .
+  (stmts@2,1
+   (var@4 counter . . . 20@A)
+   (var@4,1 n . . . n@4)
+   (while@,2
+    (infix@I and
+     (infix~4 > counter~8 0@2)
+     (infix@B ==
+      (dot~6 n~1 kind@1)Symbol@3))
+    (stmts@2,1
+     (cmd dec counter@4)
+     (let@4,1 res . . .
+      (call@G tryLoadSym~A
+       (dot@2 n~1 symId@1)))
+     (cmd@,2 assert
+      (infix@I ==
+       (dot~8 res~3 status@1)LacksNothing@3))
+     (let@4,3 impl . . .
+      (call@H asTypeDecl~A
+       (dot@4 res~3 decl@1)))
+     (if@,4
+      (elif@3
+       (infix@A ==
+        (dot~6 impl~4 kind@1)TypeY@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@U and
+           (infix~A != bodyKindRestriction~K NoType@3)
+           (infix@N !=
+            (dot~A
+             (dot~5 impl~4 body@1)typeKind@1)bodyKindRestriction@3))
+          (stmts~1,1
+           (ret false@7))))
+        (if@,2
+         (elif@3
+          (call@9 hasPragma~9
+           (dot@5 impl~4 pragmas@1)pragma@F)
+          (stmts~1,1
+           (ret true@7))))
+        (if@,5
+         (elif@3
+          (infix@F ==
+           (dot~6
+            (dot~5 impl~4 body@1)kind@1)Symbol@3)
+          (stmts~1,1
+           (asgn@2 n~2
+            (dot@6 impl~4 body@1))))
+         (else@,2
+          (stmts@2,1
+           (break .)))))))))
+   (ret@,H false@7)))
+ (proc@,5b isViewType@5 x . .
+  (params@G
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (call@D typeHasPragma~D n@1 ViewP@4)))
+ (proc@,5e isVoidType@5 x . .
+  (params@G
+   (param@1 t . . Cursor@3 .))bool@D
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (infix@J or
+    (infix~C ==
+     (dot~6 t~1 kind@1)DotToken@3)
+    (infix@E ==
+     (dot~A t~1 typeKind@1)VoidT@3))))
+ (proc@,5h typeImpl@5 x . .
+  (params@E
+   (param@1 s . . SymId@3 .))Cursor@C . .
+  (stmts@2,1
+   (let@4 res . . .
+    (call@G tryLoadSym~A s@1))
+   (cmd@,1 assert
+    (infix@I ==
+     (dot~8 res~3 status@1)LacksNothing@3))
+   (asgn@7,2 result~7
+    (dot@5 res~3 decl@1))
+   (cmd@,3 assert
+    (infix@N ==
+     (dot~A result~6 stmtKind@1)TypeS@3))
+   (cmd@,4 inc result@4)
+   (for@4,5
+    (infix@6 \2E\2E 1~1 4@2)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (call@4 skip~4 result@1)))))
+ (proc@,5q objtypeImpl@5 x . .
+  (params@H
+   (param@1 s . . SymId@3 .))Cursor@C . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A typeImpl~8 s@1))
+   (let@4,1 k . . .
+    (cmd@D typeKind~9 result))
+   (if@,2
+    (elif@3
+     (infix@2 in k~2
+      (curly@3 RefT@1 PtrT@7))
+     (stmts~1,1
+      (cmd inc result@4))))))
+ (iterator@,5w inheritanceChain@9 x . .
+  (params@Q
+   (param@1 s . . SymId@3 .))SymId@C
+  (pragmas@i sideEffect@2).
+  (stmts@2,1
+   (var@4 objbody . . .
+    (call@L objtypeImpl~B s@1))
+   (while@,1 true@6
+    (stmts@2,1
+     (let@4 od . . .
+      (call@H asObjectDecl~C objbody@1))
+     (if@,1
+      (elif@3
+       (infix@8 ==
+        (dot~6 od~2 kind@1)ObjectT@3)
+       (stmts~1,1
+        (var@4 parent . . .
+         (dot@B od~2 parentType@1))
+        (if@,1
+         (elif@3
+          (infix@G in
+           (dot~A parent~6 typeKind@1)
+           (curly@3 RefT@1 PtrT@7))
+          (stmts~1,1
+           (cmd inc parent@4))))
+        (if@,3
+         (elif@3
+          (infix@G ==
+           (dot~A parent~6 typeKind@1)InvokeT@3)
+          (stmts~1,1
+           (cmd inc parent@4))))
+        (if@,5
+         (elif@3
+          (infix@C ==
+           (dot~6 parent~6 kind@1)Symbol@3)
+          (stmts~1,1
+           (let@4 ps . . .
+            (dot@B parent~6 symId@1))
+           (yld@,1 ps@6)
+           (asgn@8,2 objbody~8
+            (call@D objtypeImpl~B ps@1))))
+         (else@,4
+          (stmts@2,1
+           (break .))))))
+      (else@,C
+       (stmts@2,1
+        (break .))))))))
+ (proc@,6F isInheritable@5 x . .
+  (params@J
+   (param@1 n . . Cursor@3 .)
+   (param@C skipPtrs . . . false@B))bool@V . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (if@,1
+    (elif@3
+     (infix@9 and skipPtrs~9
+      (infix@F in
+       (dot~A n~1 typeKind@1)
+       (curly@3 RefT@1 PtrT@7)))
+     (stmts~1,1
+      (cmd inc n@4))))
+   (if@,3
+    (elif@3
+     (call@D typeHasPragma~D n@1 FinalP@4 ObjectT@C)
+     (stmts@Z
+      (ret false@7))))
+   (if@,4
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@D typeHasPragma~D n@1 InheritableP@4 ObjectT@I)
+        (stmts@f
+         (ret true@7))))
+      (for@4,1
+       (call@Q inheritanceChain~G
+        (dot@2 n~1 symId@1))
+       (unpackflat
+        (let parent . . ..))
+       (stmts~2,2
+        (ret true@7))))))
+   (ret@,9 false@7)))
+ (proc@,6R isPure@5 x . .
+  (params@C
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (call@D typeHasPragma~D n@1 PureP@4)))
+ (proc@,6U isFinal@5 x . .
+  (params@D
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (if@,1
+    (elif@3
+     (infix@B in
+      (dot~A n~1 typeKind@1)
+      (curly@3 RefT@1 PtrT@7))
+     (stmts@S
+      (cmd inc n@4))))
+   (asgn@7,2 result~7
+    (call@F typeHasPragma~D n@1 FinalP@4 ObjectT@C))))
+ (proc@,6Z hasRtti@5 x . .
+  (params@D
+   (param@1 s . . SymId@3 .))bool@C . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@N
+      (dot~B
+       (at~3
+        (dot~5 pool~4 syms@1)s@1)startsWith@1)"`t.0.IAref"@1)
+     (stmts~1,3
+      (ret false@7))))
+   (var@4,4 root . . . s@7)
+   (for@4,5
+    (call@L inheritanceChain~G s@1)
+    (unpackflat
+     (let r . . ..))
+    (stmts~2,1
+     (asgn@5 root~5 r@2)))
+   (let@4,8 res . . .
+    (call@G tryLoadSym~A root@1))
+   (cmd@,9 assert
+    (infix@I ==
+     (dot~8 res~3 status@1)LacksNothing@3))
+   (var@4,A n . . .
+    (dot@7 res~3 decl@1))
+   (cmd@,B assert
+    (infix@I ==
+     (dot~A n~1 stmtKind@1)TypeS@3))
+   (cmd@,C inc n@4)
+   (cmd@,D skip n@5 SkipName@8)
+   (cmd@,E skip n@5 SkipExport@8)
+   (cmd@,F skip n@5 SkipGenParams@8)
+   (asgn@7,G result~7
+    (infix@T and
+     (call~I hasPragma~9 n@1 InheritableP@4)
+     (prefix@4 not
+      (call@D hasPragma~9 n@1 PureP@4))))))
+ (proc@,6s hasRtti@5 x . .
+  (params@D
+   (param@1 pragmas . . Cursor@9 .))bool@J . .
+  (stmts@2,1
+   (infix@X and
+    (call~O hasPragma~9 pragmas@1 InheritableP@A)
+    (prefix@4 not
+     (call@D hasPragma~9 pragmas@1 PureP@A)))))
+ (proc@,6v getTypeSection@5 x . .
+  (params@K
+   (param@1 s . . SymId@3 .))TypeDecl@C . .
+  (stmts@2,1
+   (let@4 res . . .
+    (call@G tryLoadSym~A s@1))
+   (cmd@,1 assert
+    (infix@I ==
+     (dot~8 res~3 status@1)LacksNothing@3))
+   (asgn@7,2 result~7
+    (call@C asTypeDecl~A
+     (dot@4 res~3 decl@1)))))
+ (proc@,70 skipDistinct@5 x . .
+  (params@I
+   (param@1 n . . TypeCursor@3 .)
+   (param@G isDistinct . .
+    (mut@C bool@4).))TypeCursor@d . .
+  (stmts@2,2
+   (var@4 n . . . n@4)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2 10@2)
+    (stmts@2,1
+     (asgn@2 n~2
+      (call@E skipModifier~C n@1))
+     (if@,1
+      (elif@3
+       (infix@7 ==
+        (dot~6 n~1 kind@1)Symbol@3)
+       (stmts~1,1
+        (let@4 section . . .
+         (call@O getTypeSection~E
+          (dot@2 n~1 symId@1)))
+        (if@,1
+         (elif@3
+          (infix@D ==
+           (dot~6 section~7 kind@1)TypeY@3)
+          (stmts~1,1
+           (let@4 s . . . n@4)
+           (asgn@2,1 n~2
+            (dot@9 section~7 body@1))
+           (if@,2
+            (elif@3
+             (infix@B ==
+              (dot~A n~1 typeKind@1)DistinctT@3)
+             (stmts~1,1
+              (asgn@B isDistinct~B true@2)
+              (cmd@,1 inc n@4)))
+            (elif@5,3
+             (infix@B ==
+              (dot~A n~1 typeKind@1)ObjectT@3)
+             (stmts~3,1
+              (asgn@2 n~2 s@2)
+              (break@,1 .)))))))
+        (cmd@,A inc i@4)))
+      (else@,C
+       (stmts@2,1
+        (break .))))))
+   (asgn@7,I result~7 n@2)))
+ (proc@,7M isAtomTypeclass@5 . . .
+  (params@K
+   (param@1 n . . TypeCursor@3 .))bool@H
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (while@,1
+    (infix@H ==
+     (dot~A n~1 typeKind@1)NotT@3)
+    (stmts@2,1
+     (cmd inc n@4)))
+   (asgn@7,3 result~7
+    (infix@D notin
+     (dot~A n~1 typeKind@1)
+     (curly@6 AndT@1 OrT@7)))))
+ (proc@,7S isMinterm@5 . . .
+  (params@E
+   (param@1 n . . TypeCursor@3 .))bool@H . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B ==
+      (dot~A n~1 typeKind@1)AndT@3)
+     (stmts~1,1
+      (asgn@7 result~7 true@2)
+      (var@4,1 n . . . n@4)
+      (cmd@,2 inc n@4)
+      (var@4,3 nested . . . 1@9)
+      (while@,4
+       (infix@D != nested~7 0@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@B ==
+           (dot~A n~1 typeKind@1)AndT@3)
+          (stmts~1,1
+           (cmd inc n@4)
+           (cmd@,1 inc nested@4)))
+         (elif@5,3
+          (infix@7 ==
+           (dot~6 n~1 kind@1)ParRi@3)
+          (stmts~3,1
+           (cmd inc n@4)
+           (cmd@,1 dec nested@4)))
+         (else@,6
+          (stmts@2,1
+           (asgn@7 result~7
+            (call@H isAtomTypeclass~F n@1))
+           (if@,1
+            (elif@3
+             (prefix not result@4)
+             (stmts@C
+              (break .))))
+           (cmd@,2 skip n@5))))))))
+    (else@,G
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@H isAtomTypeclass~F n@1)))))))
+ (proc@,7m isSumOfProducts@5 x . .
+  (params@L
+   (param@1 n . . TypeCursor@3 .))bool@H . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B ==
+      (dot~A n~1 typeKind@1)OrT@3)
+     (stmts~1,1
+      (asgn@7 result~7 true@2)
+      (var@4,1 n . . . n@4)
+      (cmd@,2 inc n@4)
+      (var@4,3 nested . . . 1@9)
+      (while@,4
+       (infix@D != nested~7 0@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@B ==
+           (dot~A n~1 typeKind@1)OrT@3)
+          (stmts~1,1
+           (cmd inc n@4)
+           (cmd@,1 inc nested@4)))
+         (elif@5,3
+          (infix@7 ==
+           (dot~6 n~1 kind@1)ParRi@3)
+          (stmts~3,1
+           (cmd inc n@4)
+           (cmd@,1 dec nested@4)))
+         (else@,6
+          (stmts@2,1
+           (asgn@7 result~7
+            (call@B isMinterm~9 n@1))
+           (if@,1
+            (elif@3
+             (prefix not result@4)
+             (stmts@C
+              (break .))))
+           (cmd@,2 skip n@5))))))))
+    (else@,G
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@B isMinterm~9 n@1)))))))
+ (proc@,86 multiplyMinterms@5 . . .
+  (params@L
+   (param@1 buf . .
+    (mut@5 TokenBuf@4).)
+   (param@K a . .
+    (mut@6 TypeCursor@4).)
+   (param@N b . .
+    (mut@3 TypeCursor@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B ==
+      (dot~A a~1 typeKind@1)AndT@3)
+     (stmts~1,2
+      (cmd@3
+       (dot buf~3 add@1)a@5)
+      (call@1,1
+       (dot a~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 a~1 hasMore@1)
+         (stmts@2,1
+          (cmd takeTree buf@9 a@E)))
+        (if@,2
+         (elif@3
+          (infix@B ==
+           (dot~A b~1 typeKind@1)AndT@3)
+          (stmts~1,1
+           (call@1
+            (dot b~1 into@1)
+            (stmts@1,1
+             (while
+              (dot@7 b~1 hasMore@1)
+              (stmts@2,1
+               (cmd takeTree buf@9 b@E)))))))
+         (else@,4
+          (stmts@2,1
+           (cmd takeTree buf@9 b@E))))))
+      (call@C,A
+       (dot~9 buf~3 addParRi@1))))
+    (else@,D
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@B ==
+         (dot~A b~1 typeKind@1)AndT@3)
+        (stmts~1,1
+         (cmd@3
+          (dot buf~3 add@1)b@5)
+         (call@1,1
+          (dot b~1 into@1)
+          (stmts@1,1
+           (cmd takeTree buf@9 a@E)
+           (while@,1
+            (dot@7 b~1 hasMore@1)
+            (stmts@2,1
+             (cmd takeTree buf@9 b@E)))))
+         (call@C,5
+          (dot~9 buf~3 addParRi@1))))
+       (else@,7
+        (stmts@2,1
+         (call@C
+          (dot~9 buf~3 addParLe@1)AndT@1
+          (dot@8 a~1 info@1))
+         (cmd@,1 takeTree buf@9 a@E)
+         (cmd@,2 takeTree buf@9 b@E)
+         (call@C,3
+          (dot~9 buf~3 addParRi@1))))))))))
+ (proc@,8Y multiplySums@5 . . .
+  (params@H
+   (param@1 buf . .
+    (mut@5 TokenBuf@4).)
+   (param@K a . .
+    (mut@6 TypeCursor@4).)
+   (param@N b . .
+    (mut@3 TypeCursor@4).)). . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (infix@B ==
+      (dot~A a~1 typeKind@1)OrT@3)
+     (stmts~1,1
+      (cmd@3
+       (dot buf~3 add@1)a@5)
+      (cmd@,1 inc a@4)
+      (let@4,2 bOrig . . . b@8)
+      (while@,3
+       (dot@7 a~1 hasMore@1)
+       (stmts@2,1
+        (asgn@2 b~2 bOrig@2)
+        (if@,1
+         (elif@3
+          (infix@B ==
+           (dot~A b~1 typeKind@1)OrT@3)
+          (stmts~1,1
+           (cmd inc b@4)
+           (let@4,1 aOrig . . . a@8)
+           (while@,2
+            (dot@7 b~1 hasMore@1)
+            (stmts@2,1
+             (asgn@2 a~2 aOrig@2)
+             (call@G,1 multiplyMinterms~G buf@1 a@6 b@9)))
+           (cmd@,5 skipParRi b@A)))
+         (else@,7
+          (stmts@2,1
+           (call@G multiplyMinterms~G buf@1 a@6 b@9))))))
+      (cmd@,E takeParRi buf@A a@F)))
+    (else@,G
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@B ==
+         (dot~A b~1 typeKind@1)OrT@3)
+        (stmts~1,1
+         (cmd@3
+          (dot buf~3 add@1)b@5)
+         (cmd@,1 inc b@4)
+         (let@4,2 aOrig . . . a@8)
+         (while@,3
+          (dot@7 b~1 hasMore@1)
+          (stmts@2,1
+           (asgn@2 a~2 aOrig@2)
+           (call@G,1 multiplyMinterms~G buf@1 a@6 b@9)))
+         (cmd@,6 takeParRi buf@A b@F)))
+       (else@,8
+        (stmts@2,1
+         (call@G multiplyMinterms~G buf@1 a@6 b@9)))))))))
+ (proc@,92 countProducts@5 . . .
+  (params@I
+   (param@1 a . . TypeCursor@3 .))int@H . .
+  (stmts@2,1
+   (asgn@7 result~7 0@2)
+   (if@,1
+    (elif@3
+     (infix@B ==
+      (dot~A a~1 typeKind@1)OrT@3)
+     (stmts~1,1
+      (var@4 a . . . a@4)
+      (call@1,1
+       (dot a~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 a~1 hasMore@1)
+         (stmts@2,1
+          (cmd inc result@4)
+          (cmd@,1 skip a@5)))))))
+    (else@,6
+     (stmts@2,1
+      (cmd inc result@4))))))
+ (proc@,9D reorderSumOfProducts@5 x . .
+  (params@Q
+   (param@1 buf . .
+    (mut@5 TokenBuf@4).)
+   (param@K n . .
+    (mut@3 TypeCursor@4).)
+   (param@d negative . . . false@B)). . .
+  (stmts@2,1
+   (var@4 kind . . .
+    (dot@8 n~1 typeKind@1))
+   (if@,1
+    (elif@3 negative
+     (stmts~1,2
+      (case kind@5
+       (of@,1
+        (ranges AndT@3)
+        (stmts@9
+         (asgn@5 kind~5 OrT@2)))
+       (of@,2
+        (ranges OrT@3)
+        (stmts@8
+         (asgn@5 kind~5 AndT@2)))
+       (else@,3
+        (stmts@6
+         (discard .)))))))
+   (case@,7 kind@5
+    (of@,1
+     (ranges NotT@3)
+     (stmts@2,1
+      (call@1
+       (dot n~1 into@1)
+       (stmts@1,1
+        (call@K reorderSumOfProducts~K buf@1 n@6
+         (prefix@9 not negative@4))))))
+    (of@,4
+     (ranges AndT@3)
+     (stmts@2,1
+      (var@4 buf2 . . .
+       (call@L createTokenBuf~E 32@1))
+      (cmd@,1 inc n@4)
+      (let@4,2 sumStart . . .
+       (dot@E buf~3 len@1))
+      (call@K,3 reorderSumOfProducts~K buf@1 n@6 negative@9)
+      (while@,4
+       (dot@7 n~1 hasMore@1)
+       (stmts@2,2
+        (for@4
+         (infix@G \2E\2E< sumStart~9
+          (dot@7 buf~3 len@1))
+         (unpackflat
+          (let tok . . ..))
+         (stmts@T
+          (cmd@4
+           (dot buf2~4 add@1)
+           (at@8 buf~3 tok@1))))
+        (cmd@3,1
+         (dot buf~3 shrink@1)sumStart@8)
+        (let@4,2 bStart . . .
+         (dot@D buf2~4 len@1))
+        (call@K,3 reorderSumOfProducts~K buf2@1 n@7 negative@A)
+        (var@4,4 a . . .
+         (call@D beginRead~9 buf2@1))
+        (var@4,5 b . . .
+         (call@C cursorAt~8 buf2@1 bStart@7))
+        (if@,6
+         (elif@3
+          (infix@a >=
+           (infix~J *
+            (call~4 countProducts~D a@1)
+            (call@F countProducts~D b@1))256@3)
+          (stmts~1,2
+           (call@C
+            (dot~9 buf~3 addParLe@1)AndT@1
+            (dot@8 a~1 info@1))
+           (cmd@3,1
+            (dot buf~3 add@1)buf2@5)
+           (while@,2
+            (dot@7 n~1 hasMore@1)
+            (stmts@2,1
+             (if
+              (elif@3 negative
+               (stmts~1,1
+                (call@C
+                 (dot~9 buf~3 addParLe@1)NotT@1
+                 (dot@8 n~1 info@1)))))
+             (cmd@,2 takeTree buf@9 n@E)
+             (if@,3
+              (elif@3 negative
+               (stmts~1,1
+                (call@C
+                 (dot~9 buf~3 addParRi@1)))))))
+           (break@,8 .)))
+         (else@,B
+          (stmts@2,1
+           (call@C multiplySums~C buf@1 a@6 b@9))))
+        (call@7,J endRead~7 buf2@1)
+        (call@7,K endRead~7 buf2@1)
+        (cmd@4,L
+         (dot buf2~4 shrink@1)0@8)))
+      (cmd@,S skipParRi n@A)))
+    (of@,Y
+     (ranges OrT@3)
+     (stmts@2,2
+      (call@C
+       (dot~9 buf~3 addParLe@1)OrT@1
+       (dot@7 n~1 info@1))
+      (var@4,1 buf2 . . .
+       (call@L createTokenBuf~E 16@1))
+      (call@1,2
+       (dot n~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 n~1 hasMore@1)
+         (stmts@2,1
+          (call@K reorderSumOfProducts~K buf2@1 n@7 negative@A)
+          (var@4,1 n2 . . .
+           (call@E beginRead~9 buf2@1))
+          (if@,2
+           (elif@3
+            (infix@C ==
+             (dot~A n2~2 typeKind@1)OrT@3)
+            (stmts~1,1
+             (call@2
+              (dot n2~2 into@1)
+              (stmts@,1
+               (while
+                (dot@8 n2~2 hasMore@1)
+                (stmts@2,1
+                 (cmd takeTree buf@9 n2@E)))))))
+           (else@,4
+            (stmts@2,1
+             (cmd@3
+              (dot buf~3 addSubtree@1)n2@C))))
+          (call@7,8 endRead~7 buf2@1)
+          (cmd@4,9
+           (dot buf2~4 shrink@1)0@8)))))
+      (call@C,E
+       (dot~9 buf~3 addParRi@1))))
+    (else@,p
+     (stmts@2,1
+      (if
+       (elif@3 negative
+        (stmts~1,1
+         (call@C
+          (dot~9 buf~3 addParLe@1)NotT@1
+          (dot@8 n~1 info@1)))))
+      (cmd@,2 takeTree buf@9 n@E)
+      (if@,3
+       (elif@3 negative
+        (stmts~1,1
+         (call@C
+          (dot~9 buf~3 addParRi@1))))))))))
+ (proc@,AH toTypeImpl@5 x . .
+  (params@G
+   (param@1 n . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (asgn@7 result~7 n@2)
+   (var@4,1 counter . . . 20@A)
+   (while@,2
+    (infix@I and
+     (infix~4 > counter~8 0@2)
+     (infix@G ==
+      (dot~6 result~6 kind@1)Symbol@3))
+    (stmts@2,1
+     (cmd dec counter@4)
+     (let@4,1 sym . . .
+      (call@G tryLoadSym~A
+       (dot@7 result~6 symId@1)))
+     (if@,2
+      (elif@3
+       (infix@B ==
+        (dot~8 sym~3 status@1)LacksNothing@3)
+       (stmts~1,1
+        (var@4 local . . .
+         (call@I asTypeDecl~A
+          (dot@4 sym~3 decl@1)))
+        (if@,1
+         (elif@3
+          (infix@B ==
+           (dot~6 local~5 kind@1)TypeY@3)
+          (stmts~1,1
+           (asgn@7 result~7
+            (dot@7 local~5 body@1)))))))
+      (else@,4
+       (stmts@2,1
+        (cmd bug
+         (infix@N & "could not load\3A "~J
+          (at@B
+           (dot~5 pool~4 syms@1)
+           (dot@7 result~6 symId@1)))))))))))
+ (proc@,AU isConceptSym@5 x . .
+  (params@I
+   (param@1 s . . SymId@3 .))bool@C . .
+  (stmts@2,1
+   (let@4 section . . .
+    (call@O getTypeSection~E s@1))
+   (asgn@7,1 result~7
+    (infix@O and
+     (infix~9 ==
+      (dot~6 section~7 kind@1)TypeY@3)
+     (infix@Q ==
+      (dot~A
+       (dot~5 section~7 body@1)typeKind@1)ConceptT@3)))))
+ (proc@,AY conceptParentsSlot@5 x . .
+  (params@O
+   (param@1 body . . Cursor@6 .))Cursor@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 body@2)
+   (cmd@,2 assert
+    (infix@N ==
+     (dot~A result~6 typeKind@1)ConceptT@3))
+   (cmd@,3 inc result@4)
+   (cmd@,4 skip result@5)
+   (cmd@,5 skip result@5)))
+ (proc@,Ag conceptHasParents@5 x . .
+  (params@N
+   (param@1 parents . . Cursor@9 .))bool@J . .
+  (stmts@2,1
+   (infix@D !=
+    (dot~6 parents~7 kind@1)DotToken@3)))
+ (iterator@,Aj conceptParentSyms@9 x . .
+  (params@R
+   (param@1 parents . . Cursor@9 .))SymId@J
+  (pragmas@q sideEffect@2).
+  (stmts@2,1
+   (var@4 p . . . parents@4)
+   (if@,1
+    (elif@3
+     (infix@7 ==
+      (dot~6 p~1 kind@1)DotToken@3)
+     (stmts~1,1
+      (discard .)))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 p~1 kind@1)Symbol@3)
+     (stmts~3,1
+      (yld
+       (dot@7 p~1 symId@1))))
+    (elif@5,4
+     (infix@J or
+      (infix~8 ==
+       (dot~A p~1 typeKind@1)AndT@3)
+      (infix@E ==
+       (dot~A p~1 exprKind@1)ParX@3))
+     (stmts~3,1
+      (call@1
+       (dot p~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 p~1 hasMore@1)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@7 ==
+             (dot~6 p~1 kind@1)Symbol@3)
+            (stmts~1,1
+             (yld
+              (dot@7 p~1 symId@1)))))
+          (cmd@,2 skip p@5)))))))
+    (else@,A
+     (stmts@2,1
+      (cmd bug "illformed concept parents\3A "@4 p@Z))))))
+ (proc@,Ay conceptSelfSlot@5 x . .
+  (params@L
+   (param@1 body . . Cursor@6 .))Cursor@G . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@K conceptParentsSlot~I body@1))
+   (cmd@,1 skip result@5)))
+ (proc@,B2 conceptStmtsSlot@5 x . .
+  (params@M
+   (param@1 body . . Cursor@6 .))Cursor@G . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@H conceptSelfSlot~F body@1))
+   (cmd@,1 skip result@5)))
+ (proc@,B6 conceptExtends@5 x . .
+  (params@K
+   (param@1 sub . . SymId@A .)
+   (param@6 sup . . SymId@5 .))bool@J
+  (pragmas@i sideEffect@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@G or
+      (infix~C == sub~4
+       (call@8 SymId~5 0@1))
+      (infix@7 == sup~4
+       (call@8 SymId~5 0@1)))
+     (stmts~1,1
+      (ret false@7))))
+   (if@,2
+    (elif@3
+     (infix@4 == sub~4 sup@3)
+     (stmts~1,1
+      (ret true@7))))
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@G isConceptSym~C sub@1))
+     (stmts~1,1
+      (ret false@7))))
+   (let@4,6 body . . .
+    (dot@Q
+     (call~5 getTypeSection~E sub@1)body@1))
+   (for@4,7
+    (call@M conceptParentSyms~H
+     (call@J conceptParentsSlot~I body@1))
+    (unpackflat
+     (let p . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@9 or
+        (infix~7 == p~2 sup@3)
+        (call@H conceptExtends~E p@1 sup@4))
+       (stmts~1,1
+        (ret true@7))))))false@,A))
+ (proc@,BJ collectConceptHierarchyBodiesImpl@5 . . .
+  (params@c
+   (param@1 body . . Cursor@6 .)
+   (param@F result . .
+    (mut@8
+     (at@7 seq~3 Cursor@1)).)
+   (param@,1 visited . .
+    (mut@9
+     (at@B HashSet~7 SymId@1)).)).
+  (pragmas@15,1 sideEffect@2).
+  (stmts@2,2
+   (cmd@6
+    (dot result~6 add@1)body@5)
+   (for@4,1
+    (call@M conceptParentSyms~H
+     (call@J conceptParentsSlot~I body@1))
+    (unpackflat
+     (let p . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 notin p~2 visited@6)
+       (stmts~1,1
+        (cmd@7
+         (dot visited~7 incl@1)p@6)
+        (call@X,1 collectConceptHierarchyBodiesImpl~X
+         (dot@I
+          (call~3 getTypeSection~E p@1)body@1)result@P visited@X))))))))
+ (iterator@,BR conceptHierarchyBodies@9 x . .
+  (params@W
+   (param@1 body . . Cursor@6 .))Cursor@G
+  (pragmas@t sideEffect@2).
+  (stmts@2,1
+   (var@4 bodies . .
+    (at@B seq~3 Cursor@1)
+    (prefix@M \40
+     (bracket@1)))
+   (var@4,1 visited . . .
+    (call@S
+     (at~7 initHashSet~B SymId@1)))
+   (call@X,2 collectConceptHierarchyBodiesImpl~X body@1 bodies@7 visited@F)
+   (for@4,3 bodies@5
+    (unpackflat
+     (let b . . ..))
+    (stmts~2,1
+     (yld b@6)))))
+ (iterator@,BY conceptHierarchyRoutines@9 x . .
+  (params@Y
+   (param@1 body . . Cursor@6 .))
+  (tup@G Cursor@1 Cursor@9)
+  (pragmas@15 sideEffect@2).
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (call@V conceptHierarchyBodies~M body@1)
+    (unpackflat
+     (let cbody . . ..))
+    (stmts~2,1
+     (var@4 ops . . .
+      (call@M conceptStmtsSlot~G cbody@1))
+     (if@,1
+      (elif@3
+       (infix@D ==
+        (dot~A ops~3 stmtKind@1)StmtsS@3)
+       (stmts~1,1
+        (cmd@3
+         (dot ops~3 into@1)StmtsS@6
+         (stmts~1,1
+          (while
+           (dot@9 ops~3 hasMore@1)
+           (stmts@2,1
+            (if
+             (elif@3
+              (infix@C in
+               (dot~9 ops~3 symKind@1)RoutineKinds@3)
+              (stmts~1,1
+               (yld
+                (tup@6 cbody@1 ops@8)))))
+            (cmd@,2 skip ops@5))))))))))))
+ (when@,Bj
+  (elif@5 isMainModule
+   (stmts~3,1
+    (when
+     (elif@5 false
+      (stmts~3,1
+       (proc test@5 . . .
+        (params@9
+         (param@1 s . . string@3 .)). . .
+        (stmts@2,1
+         (var@4 typBuf . . .
+          (call@O parseFromBuffer~F s@1 "<invalid>"@4))
+         (var@4,1 buf . . .
+          (call@K createTokenBuf~E 64@1))
+         (var@4,2 typ . . .
+          (call@F beginRead~9 typBuf@1))
+         (cmd@,3 echo "input\3A "@5 typ@G)
+         (call@K,4 reorderSumOfProducts~K buf@1 typ@6)
+         (cmd@,5 echo "output\3A "@5
+          (call@Q beginRead~9 buf@1))
+         (cmd@,6 assert
+          (call@M isSumOfProducts~F
+           (call@A beginRead~9 buf@1)))))
+       (cmd@,9 test "A"@5)
+       (cmd@,A test "\28and A B\29"@5)
+       (cmd@,B test "\28and \28and A B\29 \28and C D\29\29"@5)
+       (cmd@,C test "\28or A B\29"@5)
+       (cmd@,D test "\28or \28or A B\29 \28or C D\29\29"@5)
+       (cmd@,E test "\28or \28and A B\29 \28and C D\29\29"@5)
+       (cmd@,F test "\28and \28or A B\29 \28or C D\29\29"@5)
+       (cmd@,G test "\28not \28or \28and A B\29 \28and C D\29\29\29"@5)
+       (cmd@,H test "\28not \28not \28or \28and A B\29 \28and C D\29\29\29\29"@5)
+       (cmd@,I test "\28not \28and \28or A B\29 \28or C D\29\29\29"@5)
+       (cmd@,J test "\28not \28not \28and \28or A B\29 \28or C D\29\29\29\29"@5)
+       (cmd@,K test "\28and \28or A B\29 \28or C D\29 \28or E F\29\29"@5))))))))

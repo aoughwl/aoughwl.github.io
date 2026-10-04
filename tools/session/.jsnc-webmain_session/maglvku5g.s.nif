@@ -1,0 +1,958 @@
+(.nif27)
+(.indexat 30321            )
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/magics.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv tagygirdh1 "../../../../../../home/savant/nimony/src/models/tags.nim")
+  (kv nifb6mq6y1 "../../../../../../home/savant/nimony/src/lib/nifcursors.nim")
+  (kv vfsc9jn7 "../../../../../../home/savant/nimony/src/lib/vfs.nim")
+  (kv nifh7u8pu1 "../../../../../../home/savant/nimony/src/lib/nifstreams.nim")
+  (kv nif81dubp1 "../../../../../../home/savant/nimony/src/lib/nifreader.nim")
+  (kv nim30udrv "../../../../../../home/savant/nimony/src/nimony/nimony_model.nim")
+  (kv nimry5ra91 "../../../../../../home/savant/nimony/src/models/nimony_tags.nim")
+  (kv cal1yym9t1 "../../../../../../home/savant/nimony/src/models/callconv_tags.nim"))
+ (stmts@2,7)
+ (template@,9 :res.0.@9 . . .
+  (params@C
+   (param@1 :t.0 . .
+    (or@N NimonyExpr.0.nimry5ra91@E,1v,../../../../../../home/savant/nimony/src/nimony/nimony_model.nim NimonyStmt.0.nimry5ra91@E,1w,../../../../../../home/savant/nimony/src/nimony/nimony_model.nim NimonyType.0.nimry5ra91@E,1z,../../../../../../home/savant/nimony/src/nimony/nimony_model.nim).)
+   (param@a :bits.0 . .
+    (i~E,5 32)0@7))
+  (tuple@l string.0.sysvq0asl@1
+   (i@9 32))
+  (pragmas
+   (untyped)).
+  (stmts@1D
+   (tup
+    (prefix@1
+     (ochoice $.8.sysvq0asl $.3.sysvq0asl $.4.sysvq0asl $.1.sysvq0asl $.6.sysvq0asl $.7.sysvq0asl $.0.sysvq0asl $.2.sysvq0asl $.0.nifb6mq6y1)t.0@1)bits.0@5)))
+ (const@C,C :TypedMagic.0.~A x .
+  (i@M,2 32)
+  (suf@4 -3 "i32"))
+ (proc@,E :magicToTag.0.@5 x . .
+  (params@G
+   (param@1 :m.0 . . string.0.sysvq0asl@3 .)
+   (param@C :bits.1 . .
+    (i@6 32).))
+  (tuple@O string.0.sysvq0asl@1
+   (i@9 32)). .
+  (stmts@2,1
+   (result :result.0 . .
+    (tuple@j,~6 string.0.sysvq0asl@1
+     (i@9 32)).)
+   (asgn result.0
+    (case m.0@5
+     (of@,1
+      (ranges "Defined"@3)
+      (expr@E
+       (expr@x,~7
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DefinedX.0.nimry5ra91~u,7)0~K))))
+     (of@,2
+      (ranges "Declared"@3)
+      (expr@F
+       (expr@w,~8
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DeclaredX.0.nimry5ra91~t,8)0~K))))
+     (of@,3
+      (ranges "AstToStr"@3)
+      (expr@F
+       (expr@w,~9
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AstToStrX.0.nimry5ra91~t,9)0~K))))
+     (of@,4
+      (ranges "IsMainModule"@3)
+      (expr@J
+       (expr@s,~A
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 IsmainmoduleX.0.nimry5ra91~p,A)0~K))))
+     (of@,5
+      (ranges "Compiles"@3)
+      (expr@F
+       (expr@w,~B
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 CompilesX.0.nimry5ra91~t,B)0~K))))
+     (of@,6
+      (ranges "ArrGet"@3)
+      (expr@D
+       (expr@y,~C
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AtX.0.nimry5ra91~v,C)0~K))))
+     (of@,7
+      (ranges "ArrAt"@3)
+      (expr@C
+       (expr@z,~D
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 ArratX.0.nimry5ra91~w,D)0~K))))
+     (of@,8
+      (ranges "Pat"@3)
+      (expr@A
+       (expr@11,~E
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 PatX.0.nimry5ra91~y,E)0~K))))
+     (of@,9
+      (ranges "TupAt"@3)
+      (expr@C
+       (expr@z,~F
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 TupatX.0.nimry5ra91~w,F)0~K))))
+     (of@,A
+      (ranges "Asgn"@3)
+      (expr@B
+       (expr@10,~G
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyStmt.0.nimry5ra91 AsgnS.0.nimry5ra91~x,G)0~K))))
+     (of@,B
+      (ranges "AddI"@3 "AddU"@B "AddF64"@J "Succ"@T)
+      (expr@b
+       (expr@a,~H
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AddX.0.nimry5ra91~X,H)TypedMagic.0.~Q,H))))
+     (of@,C
+      (ranges "SubI"@3 "SubU"@B "SubF64"@J "Pred"@T)
+      (expr@b
+       (expr@a,~I
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 SubX.0.nimry5ra91~X,I)TypedMagic.0.~Q,I))))
+     (of@,D
+      (ranges "MulI"@3 "MulU"@B "MulF64"@J)
+      (expr@T
+       (expr@i,~J
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 MulX.0.nimry5ra91~f,J)TypedMagic.0.~Y,J))))
+     (of@,E
+      (ranges "DivI"@3 "DivU"@B "DivF64"@J)
+      (expr@T
+       (expr@i,~K
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DivX.0.nimry5ra91~f,K)TypedMagic.0.~Y,K))))
+     (of@,F
+      (ranges "ModI"@3 "ModU"@B)
+      (expr@J
+       (expr@s,~L
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 ModX.0.nimry5ra91~p,L)TypedMagic.0.~i,L))))
+     (of@,G
+      (ranges "ShrI"@3)
+      (expr@B
+       (expr@10,~M
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 ShrX.0.nimry5ra91~x,M)TypedMagic.0.~q,M))))
+     (of@,H
+      (ranges "AshrI"@3)
+      (expr@C
+       (expr@z,~N
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AshrX.0.nimry5ra91~w,N)TypedMagic.0.~o,N))))
+     (of@,I
+      (ranges "ShlI"@3)
+      (expr@B
+       (expr@10,~O
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 ShlX.0.nimry5ra91~x,O)TypedMagic.0.~q,O))))
+     (of@,J
+      (ranges "BitandI"@3)
+      (expr@E
+       (expr@x,~P
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BitandX.0.nimry5ra91~u,P)TypedMagic.0.~k,P))))
+     (of@,K
+      (ranges "BitorI"@3)
+      (expr@D
+       (expr@y,~Q
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BitorX.0.nimry5ra91~v,Q)TypedMagic.0.~m,Q))))
+     (of@,L
+      (ranges "BitxorI"@3)
+      (expr@E
+       (expr@x,~R
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BitxorX.0.nimry5ra91~u,R)TypedMagic.0.~k,R))))
+     (of@,M
+      (ranges "BitnotI"@3)
+      (expr@E
+       (expr@x,~S
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BitnotX.0.nimry5ra91~u,S)TypedMagic.0.~k,S))))
+     (of@,N
+      (ranges "UnaryMinusI"@3 "UnaryMinusF64"@I)
+      (expr@Z
+       (expr@c,~T
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 NegX.0.nimry5ra91~Z,T)TypedMagic.0.~S,T))))
+     (of@,O
+      (ranges "Delay"@3)
+      (expr@C
+       (expr@z,~U
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DelayX.0.nimry5ra91~w,U)0~K))))
+     (of@,P
+      (ranges "Suspend"@3)
+      (expr@E
+       (expr@x,~V
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 SuspendX.0.nimry5ra91~u,V)0~K))))
+     (of@,Q
+      (ranges "And"@3)
+      (expr@A
+       (expr@11,~W
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AndX.0.nimry5ra91~y,W)0~K))))
+     (of@,R
+      (ranges "Or"@3)
+      (expr@9
+       (expr@12,~X
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 OrX.0.nimry5ra91~z,X)0~K))))
+     (of@,S
+      (ranges "Not"@3)
+      (expr@A
+       (expr@11,~Y
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 NotX.0.nimry5ra91~y,Y)0~K))))
+     (of@,T
+      (ranges "Xor"@3)
+      (expr@A
+       (expr@11,~Z
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 XorX.0.nimry5ra91~y,Z)0~K))))
+     (of@,U
+      (ranges "SizeOf"@3)
+      (expr@D
+       (expr@y,~a
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 SizeofX.0.nimry5ra91~v,a)0~K))))
+     (of@,V
+      (ranges "Type"@3 "TypeOf"@B)
+      (expr@L
+       (expr@q,~b
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 TypeofX.0.nimry5ra91~n,b)0~K))))
+     (of@,W
+      (ranges "Addr"@3)
+      (expr@B
+       (expr@10,~c
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 AddrX.0.nimry5ra91~x,c)0~K))))
+     (of@,X
+      (ranges "Deref"@3)
+      (expr@C
+       (expr@z,~d
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DerefX.0.nimry5ra91~w,d)0~K))))
+     (of@,Y
+      (ranges "EqI"@3 "EqB"@A "EqCh"@H "EqF64"@P "EqRef"@Y "EqEnum"@h)
+      (expr@r
+       (expr@K,~e
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 EqX.0.nimry5ra91~H,e)TypedMagic.0.~B,e))))
+     (of@,Z
+      (ranges "LeI"@3 "LeU"@A "LeB"@H "LeCh"@O "LeF64"@W "LePtr"@f "LeEnum"@o)
+      (expr@y
+       (expr@D,~f
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 LeX.0.nimry5ra91~A,f)TypedMagic.0.~4,f))))
+     (of@,a
+      (ranges "LtI"@3 "LtU"@A "LtB"@H "LtCh"@O "LtF64"@W "LtPtr"@f "LtEnum"@o)
+      (expr@y
+       (expr@D,~g
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 LtX.0.nimry5ra91~A,g)TypedMagic.0.~4,g))))
+     (of@,b
+      (ranges "Low"@3)
+      (expr@A
+       (expr@11,~h
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 LowX.0.nimry5ra91~y,h)0~K))))
+     (of@,c
+      (ranges "High"@3)
+      (expr@B
+       (expr@10,~i
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 HighX.0.nimry5ra91~x,i)0~K))))
+     (of@,d
+      (ranges "EnumToStr"@3)
+      (expr@G
+       (expr@v,~j
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 EnumtostrX.0.nimry5ra91~s,j)0~K))))
+     (of@,e
+      (ranges "Array"@3)
+      (expr@C
+       (expr@z,~k
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 ArrayT.0.nimry5ra91~w,k)0~K))))
+     (of@,f
+      (ranges "Range"@3)
+      (expr@C
+       (expr@z,~l
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 RangetypeT.0.nimry5ra91~w,l)0~K))))
+     (of@,g
+      (ranges "Set"@3)
+      (expr@A
+       (expr@11,~m
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 SetT.0.nimry5ra91~y,m)0~K))))
+     (of@,h
+      (ranges "Varargs"@3)
+      (expr@E
+       (expr@x,~n
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 VarargsT.0.nimry5ra91~u,n)0~K))))
+     (of@,i
+      (ranges "Ref"@3)
+      (expr@A
+       (expr@11,~o
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 RefT.0.nimry5ra91~y,o)0~K))))
+     (of@,j
+      (ranges "Ptr"@3)
+      (expr@A
+       (expr@11,~p
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 PtrT.0.nimry5ra91~y,p)0~K))))
+     (of@,k
+      (ranges "Var"@3)
+      (expr@A
+       (expr@11,~q
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 MutT.0.nimry5ra91~y,q)0~K))))
+     (of@,l
+      (ranges "Distinct"@3)
+      (expr@F
+       (expr@w,~r
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 DistinctT.0.nimry5ra91~t,r)0~K))))
+     (of@,m
+      (ranges "Void"@3)
+      (expr@B
+       (expr@10,~s
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 VoidT.0.nimry5ra91~x,s)0~K))))
+     (of@,n
+      (ranges "Tuple"@3)
+      (expr@C
+       (expr@z,~t
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 TupleT.0.nimry5ra91~w,t)0~K))))
+     (of@,o
+      (ranges "Ordinal"@3)
+      (expr@E
+       (expr@x,~u
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 OrdinalT.0.nimry5ra91~u,u)0~K))))
+     (of@,p
+      (ranges "IterableType"@3)
+      (expr@J
+       (expr@s,~v
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IteratorT.0.nimry5ra91~p,v)0~K))))
+     (of@,q
+      (ranges "Int"@3)
+      (expr@A
+       (expr@11,~w
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IntT.0.nim30udrv~y,w)bits.1~r,w))))
+     (of@,r
+      (ranges "Int8"@3)
+      (expr@B
+       (expr@10,~x
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IntT.0.nim30udrv~x,x)8~q,x))))
+     (of@,s
+      (ranges "Int16"@3)
+      (expr@C
+       (expr@z,~y
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IntT.0.nim30udrv~w,y)16~p,y))))
+     (of@,t
+      (ranges "Int32"@3)
+      (expr@C
+       (expr@z,~z
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IntT.0.nim30udrv~w,z)32~p,z))))
+     (of@,u
+      (ranges "Int64"@3)
+      (expr@C
+       (expr@z,~10
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 IntT.0.nim30udrv~w,10)64~p,10))))
+     (of@,v
+      (ranges "UInt"@3)
+      (expr@B
+       (expr@10,~11
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UIntT.0.nim30udrv~x,11)bits.1~p,11))))
+     (of@,w
+      (ranges "UInt8"@3)
+      (expr@C
+       (expr@z,~12
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UIntT.0.nim30udrv~w,12)8~o,12))))
+     (of@,x
+      (ranges "UInt16"@3)
+      (expr@D
+       (expr@y,~13
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UIntT.0.nim30udrv~v,13)16~n,13))))
+     (of@,y
+      (ranges "UInt32"@3)
+      (expr@D
+       (expr@y,~14
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UIntT.0.nim30udrv~v,14)32~n,14))))
+     (of@,z
+      (ranges "UInt64"@3)
+      (expr@D
+       (expr@y,~15
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UIntT.0.nim30udrv~v,15)64~n,15))))
+     (of@,10
+      (ranges "Float"@3)
+      (expr@C
+       (expr@z,~16
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 FloatT.0.nim30udrv~w,16)64~n,16))))
+     (of@,11
+      (ranges "Float32"@3)
+      (expr@E
+       (expr@x,~17
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 FloatT.0.nim30udrv~u,17)32~l,17))))
+     (of@,12
+      (ranges "Float64"@3)
+      (expr@E
+       (expr@x,~18
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 FloatT.0.nim30udrv~u,18)64~l,18))))
+     (of@,13
+      (ranges "Float128"@3)
+      (expr@F
+       (expr@w,~19
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 FloatT.0.nim30udrv~t,19)128~k,19))))
+     (of@,14
+      (ranges "Bool"@3)
+      (expr@B
+       (expr@10,~1A
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 BoolT.0.nimry5ra91~x,1A)0~K))))
+     (of@,15
+      (ranges "Char"@3)
+      (expr@B
+       (expr@10,~1B
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 CharT.0.nim30udrv~x,1B)8~p,1B))))
+     (of@,16
+      (ranges "TypeDesc"@3)
+      (expr@F
+       (expr@w,~1C
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 TypedescT.0.nimry5ra91~t,1C)0~K))))
+     (of@,17
+      (ranges "VoidType"@3)
+      (expr@F
+       (expr@w,~1D
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 VoidT.0.nimry5ra91~t,1D)0~K))))
+     (of@,18
+      (ranges "Unpack"@3)
+      (expr@D
+       (expr@y,~1E
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 UnpackX.0.nimry5ra91~v,1E)0~K))))
+     (of@,19
+      (ranges "Expr"@3)
+      (expr@B
+       (expr@10,~1F
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UntypedT.0.nimry5ra91~x,1F)0~K))))
+     (of@,1A
+      (ranges "Stmt"@3)
+      (expr@B
+       (expr@10,~1G
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 TypedT.0.nimry5ra91~x,1G)0~K))))
+     (of@,1B
+      (ranges "Cstring"@3)
+      (expr@E
+       (expr@x,~1H
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 CstringT.0.nimry5ra91~u,1H)0~K))))
+     (of@,1C
+      (ranges "Pointer"@3)
+      (expr@E
+       (expr@x,~1I
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 PointerT.0.nimry5ra91~u,1I)0~K))))
+     (of@,1D
+      (ranges "DefaultObj"@3)
+      (expr@H
+       (expr@u,~1J
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DefaultobjX.0.nimry5ra91~r,1J)0~K))))
+     (of@,1E
+      (ranges "DefaultTup"@3)
+      (expr@H
+       (expr@u,~1K
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DefaulttupX.0.nimry5ra91~r,1K)0~K))))
+     (of@,1F
+      (ranges "DefaultDistinct"@3)
+      (expr@M
+       (expr@p,~1L
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DefaultdistinctX.0.nimry5ra91~m,1L)0~K))))
+     (of@,1G
+      (ranges "PlusSet"@3)
+      (expr@E
+       (expr@x,~1M
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 PlussetX.0.nimry5ra91~u,1M)TypedMagic.0.~j,1M))))
+     (of@,1H
+      (ranges "MinusSet"@3)
+      (expr@F
+       (expr@w,~1N
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 MinussetX.0.nimry5ra91~t,1N)TypedMagic.0.~h,1N))))
+     (of@,1I
+      (ranges "MulSet"@3)
+      (expr@D
+       (expr@y,~1O
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 MulsetX.0.nimry5ra91~v,1O)TypedMagic.0.~l,1O))))
+     (of@,1J
+      (ranges "XorSet"@3)
+      (expr@D
+       (expr@y,~1P
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 XorsetX.0.nimry5ra91~v,1P)TypedMagic.0.~l,1P))))
+     (of@,1K
+      (ranges "EqSet"@3)
+      (expr@C
+       (expr@z,~1Q
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 EqsetX.0.nimry5ra91~w,1Q)TypedMagic.0.~n,1Q))))
+     (of@,1L
+      (ranges "LeSet"@3)
+      (expr@C
+       (expr@z,~1R
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 LesetX.0.nimry5ra91~w,1R)TypedMagic.0.~n,1R))))
+     (of@,1M
+      (ranges "LtSet"@3)
+      (expr@C
+       (expr@z,~1S
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 LtsetX.0.nimry5ra91~w,1S)TypedMagic.0.~n,1S))))
+     (of@,1N
+      (ranges "InSet"@3)
+      (expr@C
+       (expr@z,~1T
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 InsetX.0.nimry5ra91~w,1T)TypedMagic.0.~n,1T))))
+     (of@,1O
+      (ranges "Card"@3)
+      (expr@B
+       (expr@10,~1U
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 CardX.0.nimry5ra91~x,1U)TypedMagic.0.~p,1U))))
+     (of@,1P
+      (ranges "Incl"@3)
+      (expr@B
+       (expr@10,~1V
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyStmt.0.nimry5ra91 InclS.0.nimry5ra91~x,1V)TypedMagic.0.~p,1V))))
+     (of@,1Q
+      (ranges "Excl"@3)
+      (expr@B
+       (expr@10,~1W
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyStmt.0.nimry5ra91 ExclS.0.nimry5ra91~x,1W)TypedMagic.0.~p,1W))))
+     (of@,1R
+      (ranges "EnsureMove"@3)
+      (expr@H
+       (expr@u,~1X
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 EmoveX.0.nimry5ra91~r,1X)0~K))))
+     (of@,1S
+      (ranges "UncheckedArray"@3)
+      (expr@L
+       (expr@q,~1Y
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 UarrayT.0.nimry5ra91~n,1Y)0~K))))
+     (of@,1T
+      (ranges "Sink"@3)
+      (expr@B
+       (expr@10,~1Z
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 SinkT.0.nimry5ra91~x,1Z)0~K))))
+     (of@,1U
+      (ranges "Lent"@3)
+      (expr@B
+       (expr@10,~1a
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 LentT.0.nimry5ra91~x,1a)0~K))))
+     (of@,1V
+      (ranges "Destroy"@3)
+      (expr@E
+       (expr@x,~1b
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DestroyX.0.nimry5ra91~u,1b)0~K))))
+     (of@,1W
+      (ranges "SinkHook"@3)
+      (expr@F
+       (expr@w,~1c
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 SinkhX.0.nimry5ra91~t,1c)0~K))))
+     (of@,1X
+      (ranges "Dup"@3)
+      (expr@A
+       (expr@11,~1d
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 DupX.0.nimry5ra91~y,1d)0~K))))
+     (of@,1Y
+      (ranges "Copy"@3)
+      (expr@B
+       (expr@10,~1e
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 CopyX.0.nimry5ra91~x,1e)0~K))))
+     (of@,1Z
+      (ranges "WasMoved"@3)
+      (expr@F
+       (expr@w,~1f
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 WasmovedX.0.nimry5ra91~t,1f)0~K))))
+     (of@,1a
+      (ranges "Trace"@3)
+      (expr@C
+       (expr@z,~1g
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 TraceX.0.nimry5ra91~w,1g)0~K))))
+     (of@,1b
+      (ranges "NewRef"@3)
+      (expr@D
+       (expr@y,~1h
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 NewrefX.0.nimry5ra91~v,1h)TypedMagic.0.~l,1h))))
+     (of@,1c
+      (ranges "OverflowFlag"@3)
+      (expr@J
+       (expr@s,~1i
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 OvfX.0.nimry5ra91~p,1i)0~K))))
+     (of@,1d
+      (ranges "Fields"@3)
+      (expr@D
+       (expr@y,~1j
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 FieldsX.0.nimry5ra91~v,1j)TypedMagic.0.~l,1j))))
+     (of@,1e
+      (ranges "FieldPairs"@3)
+      (expr@H
+       (expr@u,~1k
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 FieldpairsX.0.nimry5ra91~r,1k)TypedMagic.0.~d,1k))))
+     (of@,1f
+      (ranges "Of"@3)
+      (expr@9
+       (expr@12,~1l
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 InstanceofX.0.nimry5ra91~z,1l)0~K))))
+     (of@,1g
+      (ranges "ProcCall"@3)
+      (expr@F
+       (expr@w,~1m
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 ProccallX.0.nimry5ra91~t,1m)0~K))))
+     (of@,1h
+      (ranges "InternalTypeName"@3)
+      (expr@N
+       (expr@o,~1n
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 InternalTypeNameX.0.nimry5ra91~l,1n)0~K))))
+     (of@,1i
+      (ranges "InternalFieldPairs"@3)
+      (expr@P
+       (expr@m,~1o
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 InternalFieldPairsX.0.nimry5ra91~j,1o)TypedMagic.0.~N,1o))))
+     (of@,1j
+      (ranges "OrdinalEnum"@3)
+      (expr@I
+       (expr@t,~1p
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 EnumT.0.nimry5ra91~q,1p)0~K))))
+     (of@,1k
+      (ranges "HoleyEnum"@3)
+      (expr@G
+       (expr@v,~1q
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyType.0.nimry5ra91 HoleyEnumT.0.nim30udrv~s,1q)0~K))))
+     (of@,1l
+      (ranges "NaN"@3)
+      (expr@A
+       (expr@11,~1r
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 NanX.0.nimry5ra91~y,1r)0~K))))
+     (of@,1m
+      (ranges "Inf"@3)
+      (expr@A
+       (expr@11,~1s
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 InfX.0.nimry5ra91~y,1s)0~K))))
+     (of@,1n
+      (ranges "Is"@3)
+      (expr@9
+       (expr@12,~1t
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 IsX.0.nimry5ra91~z,1t)0~K))))
+     (of@,1o
+      (ranges "BindSym"@3)
+      (expr@E
+       (expr@x,~1u
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BindSymX.0.nimry5ra91~u,1u)0~K))))
+     (of@,1p
+      (ranges "BindSymName"@3)
+      (expr@I
+       (expr@t,~1v
+        (tupconstr
+         (tuple~S string.0.sysvq0asl@1
+          (i@9 32))
+         (call@1 dollar`.NimonyExpr.0.nimry5ra91 BindSymNameX.0.nimry5ra91~q,1v)0~K))))
+     (else@,1q
+      (expr@6
+       (tupconstr
+        (tuple@d,~1w string.0.sysvq0asl@1
+         (i@9 32))""@1 0@5)))))
+   (ret~2,~1 result.0)))
+ (comment@u,9 int.0.sysvq0asl int.0.sysvq0asl~M,5 int.0.sysvq0asl~N,5 res.0.~e,7 res.0.~d,8 res.0.~d,9 res.0.~Z,A res.0.~d,B res.0.~f,C res.0.~g,D res.0.~i,E res.0.~g,F res.0.~h,G res.0.~H,H res.0.~H,I res.0.~P,J res.0.~P,K res.0.~Z,L res.0.~h,M res.0.~g,N res.0.~h,O res.0.~e,P res.0.~f,Q res.0.~e,R res.0.~e,S res.0.~J,T res.0.~g,U res.0.~e,V res.0.~i,W res.0.~j,X res.0.~i,Y res.0.~i,Z res.0.~f,a res.0.~X,b res.0.~h,c res.0.~g,d res.0.~1,e res.0.@6,f res.0.@6,g res.0.~i,h res.0.~h,i res.0.~c,j res.0.~g,k res.0.~g,l res.0.~i,m res.0.~e,n res.0.~i,o res.0.~i,p res.0.~i,q res.0.~d,r res.0.~h,s res.0.~g,t res.0.~e,u res.0.~Z,v res.0.~i,w res.0.~h,x res.0.~g,y res.0.~g,z res.0.~g,10 res.0.~h,11 res.0.~g,12 res.0.~f,13 res.0.~f,14 res.0.~f,15 res.0.~g,16 res.0.~e,17 res.0.~e,18 res.0.~d,19 res.0.~h,1A res.0.~h,1B res.0.~d,1C res.0.~d,1D res.0.~f,1E res.0.~h,1F res.0.~h,1G res.0.~e,1H res.0.~e,1I res.0.~b,1J res.0.~b,1K res.0.~W,1L res.0.~e,1M res.0.~d,1N res.0.~f,1O res.0.~f,1P res.0.~g,1Q res.0.~g,1R res.0.~g,1S res.0.~g,1T res.0.~h,1U res.0.~h,1V res.0.~h,1W res.0.~b,1X res.0.~X,1Y res.0.~h,1Z res.0.~h,1a res.0.~e,1b res.0.~d,1c res.0.~i,1d res.0.~h,1e res.0.~d,1f res.0.~g,1g res.0.~f,1h res.0.~Z,1i res.0.~f,1j res.0.~b,1k res.0.~j,1l res.0.~d,1m res.0.~V,1n res.0.~T,1o res.0.~a,1p res.0.~c,1q res.0.~i,1r res.0.~i,1s res.0.~j,1t res.0.~e,1u res.0.~a,1v))(.index@,7,../../../../../../home/savant/nimony/src/nimony/magics.nim
+ (h res.0. 845)
+ (x TypedMagic.0. 666)
+ (x magicToTag.0. 66))

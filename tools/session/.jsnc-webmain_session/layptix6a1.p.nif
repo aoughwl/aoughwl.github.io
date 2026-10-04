@@ -1,0 +1,1223 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlabi/src/aowlabi/layout.nim
+ (comment)
+ (type@B,B AbiKind~9 x . .
+  (enum@2 .
+   (efld~9,2 akInt . . . .)
+   (efld~9,3 akUInt . . . .)
+   (efld~9,4 akFloat . . . .)
+   (efld~9,5 akChar . . . .)
+   (efld~9,6 akBool . . . .)
+   (efld~9,7 akPtr . . . .)
+   (efld~9,A akRef . . . .)
+   (efld~9,B akClosure . . . .)
+   (efld~9,C akEnum . . . .)
+   (efld~9,D akArray . . . .)
+   (efld~9,E akObject . . . .)
+   (efld~9,F akTuple . . . .)
+   (efld~9,G akVariant . . . .)
+   (efld~9,I akDistinct . . . .)
+   (efld~9,J akString . . . .)
+   (efld~9,K akSeq . . . .)
+   (efld~9,L akSet . . . .)
+   (efld~9,M akRange . . . .)
+   (efld~9,O akUnchecked . . . .)))
+ (type@C,f TypeDesc~A x . .
+  (ref@2
+   (object@4 .
+    (fld~A,3 kind~4 x . AbiKind@3 .)
+    (fld~A,4 bits~4 x . int@3 .)
+    (fld~9,5 count~5 x . int@3 .)
+    (fld~8,6 enumLo~6 x . int@C .)
+    (fld@1,6 enumHi~6 x . int@3 .)
+    (fld~A,7 elem~4 x . TypeDesc@3 .)
+    (fld~A,8 base~4 x . TypeDesc@3 .)
+    (fld~A,9 rtti~4 x . bool@3 .)
+    (fld~8,A packed~6 x . bool@3 .)
+    (fld~9,B union~5 x . bool@3 .)
+    (fld~4,C incomplete~A x . bool@3 .)
+    (fld~8,J fields~6 x .
+     (at@6 seq~3 TypeDesc@1).)
+    (fld~6,M branches~8 x .
+     (at@6 seq~3
+      (at@4 seq~3 TypeDesc@1)).))))
+ (type@D,13 SizeAlign~B x . .
+  (tuple@2
+   (kv@8 size int@D)
+   (kv@E align int@7)))
+ (proc@,15 align@5 x . .
+  (params@B
+   (param@1 address . . int@K .)
+   (param@A alignment . . int@B .))int@R
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (infix@U and
+     (par~S
+      (infix@9 \2B address~8
+       (par@2
+        (infix@B \2D alignment~A 1@2))))
+     (prefix@4 not
+      (par@4
+       (infix@B \2D alignment~A 1@2)))))))
+ (proc@,1C scalar@5 x . .
+  (params@C
+   (param@1 kind . . AbiKind@6 .)
+   (param@G bits . . . 0@7))TypeDesc@R . .
+  (stmts@2,1
+   (oconstr@8 TypeDesc~8
+    (kv@5 kind~4 kind@2)
+    (kv@H bits~4 bits@2))))
+ (proc@,1F enumDesc@5 x . .
+  (params@E
+   (param@1 lo . . int@8 .)
+   (param@5 hi . . int@4 .)
+   (param@E bits . . . 0@7))TypeDesc@P . .
+  (stmts@2,1
+   (oconstr@8 TypeDesc~8
+    (kv@5 kind~4 akEnum@2)
+    (kv@L enumLo~6 lo@2)
+    (kv@X enumHi~6 hi@2)
+    (kv@h bits~4 bits@2))))
+ (proc@,1I arrayDesc@5 x . .
+  (params@F
+   (param@1 elem . . TypeDesc@6 .)
+   (param@H count . . int@7 .))TypeDesc@U . .
+  (stmts@2,1
+   (oconstr@8 TypeDesc~8
+    (kv@5 kind~4 akArray@2)
+    (kv@K elem~4 elem@2)
+    (kv@X count~5 count@2))))
+ (proc@,1L objectDesc@5 x . .
+  (params@G
+   (param@1 fields . .
+    (at@B seq~3 TypeDesc@1).)
+   (param@O base . . TypeDesc@6
+    (call@O default~7 TypeDesc@1))
+   (param@1,1 rtti . . . false@7)
+   (param@F,1 packed . . . false@9)
+   (param@V,1 union . . . false@8)
+   (param@1,2 incomplete . . . false@D))TypeDesc@M,2 . .
+  (stmts@2,3
+   (oconstr@8 TypeDesc~8
+    (kv@5 kind~4 akObject@2)
+    (kv@N fields~6 fields@2)
+    (kv@b base~4 base@2)
+    (kv@n rtti~4 rtti@2)
+    (kv@7,1 packed~6 packed@2)
+    (kv@M,1 union~5 union@2)
+    (kv@f,1 incomplete~A incomplete@2))))
+ (proc@,1R seqDesc@5 x . .
+  (params@D
+   (param@1 elem . . TypeDesc@6 .))TypeDesc@I . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,4 TypeDesc~8
+    (kv@5 kind~4 akSeq@2)
+    (kv@I elem~4 elem@2))))
+ (proc@,1Y setDesc@5 x . .
+  (params@D
+   (param@1 base . . TypeDesc@6 .))TypeDesc@I . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,1 TypeDesc~8
+    (kv@5 kind~4 akSet@2)
+    (kv@I elem~4 base@2))))
+ (proc@,1c uncheckedDesc@5 x . .
+  (params@J
+   (param@1 elem . . TypeDesc@6 .))TypeDesc@I . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,1 TypeDesc~8
+    (kv@5 kind~4 akUnchecked@2)
+    (kv@O elem~4 elem@2))))
+ (proc@,1g rangeDesc@5 x . .
+  (params@F
+   (param@1 base . . TypeDesc@6 .)
+   (param@H lo . . int@8 .)
+   (param@L hi . . int@4 .))TypeDesc@V . .
+  (stmts@2,1
+   (comment)
+   (oconstr@8,1 TypeDesc~8
+    (kv@5 kind~4 akRange@2)
+    (kv@K elem~4 base@2)
+    (kv@Y enumLo~6 lo@2)
+    (kv@k enumHi~6 hi@2))))
+ (proc@,1k variantDesc@5 x . .
+  (params@H
+   (param@1 fields . .
+    (at@B seq~3 TypeDesc@1).)
+   (param@O branches . .
+    (at@D seq~3
+     (at@4 seq~3 TypeDesc@1)).)
+   (param@1,1 base . . TypeDesc@6
+    (call@O default~7 TypeDesc@1))
+   (param@b,1 rtti . . . false@7))TypeDesc@q,1 . .
+  (stmts@2,2
+   (comment)
+   (oconstr@8,2 TypeDesc~8
+    (kv@5 kind~4 akVariant@2)
+    (kv@O fields~6 fields@2)
+    (kv@g branches~8 branches@2)
+    (kv@5,1 base~4 base@2)
+    (kv@H,1 rtti~4 rtti@2))))
+ (proc@,1r tupleDesc@5 x . .
+  (params@F
+   (param@1 fields . .
+    (at@B seq~3 TypeDesc@1).))TypeDesc@P . .
+  (stmts@2,1
+   (oconstr@8 TypeDesc~8
+    (kv@5 kind~4 akTuple@2)
+    (kv@M fields~6 fields@2))))
+ (proc@,1w enumSizeAlign@5 . . .
+  (params@I
+   (param@1 t . . TypeDesc@3 .))SizeAlign@F . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@7 >
+      (dot~6 t~1 bits@1)0@2)
+     (stmts~1,1
+      (let@4 b . . .
+       (infix@B div
+        (dot~6 t~1 bits@1)8@4))
+      (ret@,1
+       (tup@7 b@1 b@4)))))
+   (if@,4
+    (elif@3
+     (infix@9 <
+      (dot~8 t~1 enumLo@1)0@2)
+     (stmts~1,1
+      (ret
+       (tup@7 4@1 4@4)))))
+   (if@,6
+    (elif@3
+     (infix@9 <
+      (dot~8 t~1 enumHi@1)
+      (par@2
+       (infix@3 shl 1~2 8@4)))
+     (stmts@M
+      (ret
+       (tup@7 1@1 1@4))))
+    (elif@5,1
+     (infix@9 <
+      (dot~8 t~1 enumHi@1)
+      (par@2
+       (infix@3 shl 1~2 16@4)))
+     (stmts@N
+      (ret
+       (tup@7 2@1 2@4))))
+    (elif@5,2
+     (infix@9 <
+      (dot~8 t~1 enumHi@1)
+      (par@2
+       (infix@7 shl
+        (suf~6 1 "i64")32@4)))
+     (stmts@R
+      (ret
+       (tup@7 4@1 4@4))))
+    (else@,3
+     (stmts@6
+      (ret
+       (tup@7 8@1 8@4)))))))
+ (proc@,28 div8Roundup@5 . . .
+  (params@G
+   (param@1 a . . int@3 .))int@A . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@A ==
+      (par~A
+       (infix@3 and a~2 7@4))0@3)
+     (stmts@G
+      (infix@2 shr a~2 3@4)))
+    (else@R
+     (stmts@6
+      (infix@A \2B
+       (par~A
+        (infix@3 shr a~2 3@4))1@2))))))
+ (proc@,2C setSizeInBytes@5 x . .
+  (params@K
+   (param@1 base . . TypeDesc@6 .))int@I . .
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (infix@5 == base~5
+      (nil@3))
+     (stmts@D
+      (ret 0@7))))
+   (case@,7
+    (dot@9 base~4 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A)
+     (stmts@2,4
+      (let@4 bits . . .
+       (if@7
+        (elif@3
+         (infix@A <=
+          (dot~6 base~4 bits@1)0@3)
+         (stmts@G 0))
+        (else@L
+         (stmts@6
+          (dot@4 base~4 bits@1)))))
+      (if@,1
+       (elif@3
+        (infix@A or
+         (infix~5 <= bits~5 0@3)
+         (infix@8 > bits~5 24@2))
+        (stmts@O 0))
+       (else@T
+        (stmts@6
+         (infix@2 shl 1~2
+          (par@4
+           (infix@6 \2D bits~5 3@2))))))))
+    (of@,7
+     (ranges akChar@3)
+     (stmts@2,1
+      (infix@4 div 256~4 8@4)))
+    (of@,9
+     (ranges akBool@3)
+     (stmts@2,1 1))
+    (of@,B
+     (ranges akEnum@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@C <
+         (dot~8 base~4 enumHi@1)0@2)
+        (stmts@H 0))
+       (elif@5,1
+        (infix@a and
+         (infix~L and
+          (infix~5 <=
+           (dot~6 base~4 bits@1)0@3)
+          (infix@G ==
+           (dot~8 base~4 enumHi@1)0@3))
+         (infix@G ==
+          (dot~8 base~4 enumLo@1)0@3))
+        (stmts@w 0))
+       (else@,2
+        (stmts@2,1
+         (var@4 n . . .
+          (call@F div8Roundup~B
+           (infix@D \2B
+            (dot~8 base~4 enumHi@1)1@2)))
+         (let@4,5 baseBytes . . .
+          (infix@M div
+           (dot~6 base~4 bits@1)8@4))
+         (if@,6
+          (elif@3
+           (infix@E and
+            (infix~4 > baseBytes~A n@2)
+            (infix@G >=
+             (dot~8 base~4 enumLo@1)0@3))
+           (stmts@a
+            (asgn@2 n~2 baseBytes@2))))n@,7)))))
+    (of@,N
+     (ranges akRange@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@C <
+         (dot~8 base~4 enumHi@1)0@2)
+        (stmts@H 0))
+       (else@M
+        (stmts@6
+         (call@B div8Roundup~B
+          (infix@D \2B
+           (dot~8 base~4 enumHi@1)1@2)))))))
+    (of@,P
+     (ranges akDistinct@3)
+     (stmts@2,1
+      (call@E setSizeInBytes~E
+       (dot@5 base~4 elem@1))))
+    (else@,R
+     (stmts@2,1 0)))))
+ (proc@,2o sizeAlign@5 x . .
+  (params@F
+   (param@1 t . . TypeDesc@3 .)
+   (param@E ptrSize . . . 8@A))SizeAlign@S . . .)
+ (proc@,2q objectPrefix@5 x . .
+  (params@I
+   (param@1 t . . TypeDesc@3 .)
+   (param@E ptrSize . . . 8@A))SizeAlign@S . .
+  (stmts@2,1
+   (comment)
+   (if@,C
+    (elif@3
+     (infix@7 !=
+      (dot~6 t~1 base@1)
+      (nil@3))
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@B sizeAlign~9
+        (dot@2 t~1 base@1)ptrSize@9))
+      (asgn@D,1
+       (dot~7 result~6 align@1)
+       (call@5 max~3
+        (dot@7 result~6 align@1)1@F))))
+    (elif@5,3
+     (dot@1 t~1 rtti@1)
+     (stmts~3,1
+      (asgn@7 result~7
+       (tup@2 ptrSize@1 ptrSize@A))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7
+       (tup@2 0@1 1@4)))))))
+ (proc@,3B sizeAlign@5 x . .
+  (params@F
+   (param@1 t . . TypeDesc@3 .)
+   (param@E ptrSize . . . 8@A))SizeAlign@S . .
+  (stmts@2,1
+   (comment)
+   (case@,3
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A)
+     (stmts@2,1
+      (let@4 b . . .
+       (if@4
+        (elif@3
+         (infix@7 <=
+          (dot~6 t~1 bits@1)0@3)
+         (stmts@D ptrSize))
+        (else@O
+         (stmts@6
+          (infix@7 div
+           (dot~6 t~1 bits@1)8@4)))))
+      (asgn@7,1 result~7
+       (tup@2 b@1 b@4))))
+    (of@,4
+     (ranges akFloat@3)
+     (stmts@2,1
+      (let@4 b . . .
+       (if@4
+        (elif@3
+         (infix@7 <=
+          (dot~6 t~1 bits@1)0@3)
+         (stmts@D 8))
+        (else@I
+         (stmts@6
+          (infix@7 div
+           (dot~6 t~1 bits@1)8@4)))))
+      (asgn@7,1 result~7
+       (tup@2 b@1 b@4))))
+    (of@,7
+     (ranges akChar@3 akBool@B)
+     (stmts@2,1
+      (asgn@7 result~7
+       (tup@2 1@1 1@4))))
+    (of@,9
+     (ranges akPtr@3 akRef@A)
+     (stmts@2,1
+      (asgn@7 result~7
+       (tup@2 ptrSize@1 ptrSize@A))))
+    (of@,B
+     (ranges akClosure@3)
+     (stmts@2,2
+      (asgn@7 result~7
+       (tup@2
+        (infix@3 * 2~2 ptrSize@2)ptrSize@E))))
+    (of@,E
+     (ranges akEnum@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@F enumSizeAlign~D t@1))))
+    (of@,G
+     (ranges akDistinct@3 akRange@F)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@B sizeAlign~9
+        (dot@2 t~1 elem@1)ptrSize@9))))
+    (of@,I
+     (ranges akSet@3)
+     (stmts@2,2
+      (asgn@7 result~7
+       (tup@2
+        (call@F setSizeInBytes~E
+         (dot@2 t~1 elem@1))1@P))))
+    (of@,L
+     (ranges akUnchecked@3)
+     (stmts@2,5
+      (let@4 a . . .
+       (if@4
+        (elif@3
+         (infix@7 !=
+          (dot~6 t~1 elem@1)
+          (nil@3))
+         (stmts@F
+          (dot@Q
+           (call~H sizeAlign~9
+            (dot@2 t~1 elem@1)ptrSize@9)align@1)))
+        (else@p
+         (stmts@6 1))))
+      (asgn@7,1 result~7
+       (tup@2 0@1
+        (if@4
+         (elif@3
+          (infix@2 > a~2 0@2)
+          (stmts@7 a))
+         (else@C
+          (stmts@6 1)))))))
+    (of@,S
+     (ranges akString@3 akSeq@D)
+     (stmts@2,2
+      (asgn@7 result~7
+       (tup@2
+        (infix@3 * 2~2 ptrSize@2)ptrSize@E))))
+    (of@,V
+     (ranges akArray@3)
+     (stmts@2,1
+      (let@4 sa . . .
+       (call@E sizeAlign~9
+        (dot@2 t~1 elem@1)ptrSize@9))
+      (let@4,1 stride . . .
+       (call@E align~5
+        (dot@3 sa~2 size@1)
+        (if@A
+         (elif@3
+          (infix@9 >
+           (dot~7 sa~2 align@1)0@2)
+          (stmts@E
+           (dot@2 sa~2 align@1)))
+         (else@Q
+          (stmts@6 1)))))
+      (if@,2
+       (elif@3
+        (infix@8 <=
+         (dot~7 t~1 count@1)0@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (tup@2 0@1
+           (dot@6 sa~2 align@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (tup@2
+           (infix@8 * stride~7
+            (dot@3 t~1 count@1))
+           (dot@L sa~2 align@1))))))))
+    (of@,c
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (var@4 offset . . . 0@9)
+      (var@4,1 maxAlign . . . 1@B)
+      (if@,2
+       (elif@3
+        (infix@7 ==
+         (dot~6 t~1 kind@1)akObject@3)
+        (stmts~1,1
+         (let@4 pre . . .
+          (call@I objectPrefix~C t@1 ptrSize@4))
+         (asgn@7,1 offset~7
+          (dot@5 pre~3 size@1))
+         (if@,2
+          (elif@3
+           (infix@A >
+            (dot~7 pre~3 align@1)maxAlign@2)
+           (stmts@M
+            (asgn@9 maxAlign~9
+             (dot@5 pre~3 align@1))))))))
+      (if@,6
+       (elif@3
+        (dot@1 t~1 union@1)
+        (stmts~1,4
+         (var@4 usize . . . 0@8)
+         (for@4,1
+          (dot@6 t~1 fields@1)
+          (unpackflat
+           (let f . . ..))
+          (stmts~2,1
+           (let@4 fsa . . .
+            (call@F sizeAlign~9 f@1 ptrSize@4))
+           (let@4,1 a . . .
+            (if@4
+             (elif@3
+              (infix@A >
+               (dot~7 fsa~3 align@1)0@2)
+              (stmts@F
+               (dot@3 fsa~3 align@1)))
+             (else@S
+              (stmts@6 1))))
+           (if@,2
+            (elif@3
+             (infix@9 >
+              (dot~6 fsa~3 size@1)usize@2)
+             (stmts@I
+              (asgn@6 usize~6
+               (dot@5 fsa~3 size@1)))))
+           (if@,3
+            (elif@3
+             (infix@2 > a~2 maxAlign@2)
+             (stmts@E
+              (asgn@9 maxAlign~9 a@2))))))
+         (asgn@7,6 result~7
+          (tup@2
+           (call@6 align~5
+            (infix@8 \2B offset~7 usize@2)maxAlign@H)maxAlign@Y))))
+       (elif@5,B
+        (dot@1 t~1 packed@1)
+        (stmts~3,5
+         (for@4
+          (dot@6 t~1 fields@1)
+          (unpackflat
+           (let f . . ..))
+          (stmts~2,1
+           (asgn@7 offset~7
+            (infix@9 \2B offset~7
+             (dot@N
+              (call~C sizeAlign~9 f@1 ptrSize@4)size@1)))))
+         (asgn@7,2 result~7
+          (tup@2 offset@1 1@9))))
+       (else@,J
+        (stmts@2,1
+         (for@4
+          (dot@6 t~1 fields@1)
+          (unpackflat
+           (let f . . ..))
+          (stmts~2,1
+           (let@4 fsa . . .
+            (call@F sizeAlign~9 f@1 ptrSize@4))
+           (let@4,1 a . . .
+            (if@4
+             (elif@3
+              (infix@A >
+               (dot~7 fsa~3 align@1)0@2)
+              (stmts@F
+               (dot@3 fsa~3 align@1)))
+             (else@S
+              (stmts@6 1))))
+           (asgn@7,2 offset~7
+            (infix@J \2B
+             (call~C align~5 offset@1 a@9)
+             (dot@5 fsa~3 size@1)))
+           (if@,3
+            (elif@3
+             (infix@2 > a~2 maxAlign@2)
+             (stmts@E
+              (asgn@9 maxAlign~9 a@2))))))
+         (asgn@7,5 result~7
+          (tup@2
+           (call@6 align~5 offset@1 maxAlign@9)maxAlign@Q)))))))
+    (of@,19
+     (ranges akVariant@3)
+     (stmts@2,4
+      (let@4 pre . . .
+       (call@I objectPrefix~C t@1 ptrSize@4))
+      (var@4,1 offset . . .
+       (dot@C pre~3 size@1))
+      (var@4,2 maxAlign . . .
+       (call@E max~3 1@1
+        (dot@7 pre~3 align@1)))
+      (for@4,3
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (let@4 ssa . . .
+         (call@F sizeAlign~9 f@1 ptrSize@4))
+        (let@4,1 a . . .
+         (if@4
+          (elif@3
+           (infix@A >
+            (dot~7 ssa~3 align@1)0@2)
+           (stmts@F
+            (dot@3 ssa~3 align@1)))
+          (else@S
+           (stmts@6 1))))
+        (asgn@7,2 offset~7
+         (infix@J \2B
+          (call~C align~5 offset@1 a@9)
+          (dot@5 ssa~3 size@1)))
+        (if@,3
+         (elif@3
+          (infix@2 > a~2 maxAlign@2)
+          (stmts@E
+           (asgn@9 maxAlign~9 a@2))))))
+      (var@4,8 branchSize . . . 0@D)
+      (var@4,9 branchAlign . . . 1@E)
+      (for@4,A
+       (dot@7 t~1 branches@1)
+       (unpackflat
+        (let br . . ..))
+       (stmts~2,1
+        (var@4 bo . . . 0@5)
+        (var@4,1 ba . . . 1@5)
+        (for@4,2 br@5
+         (unpackflat
+          (let f . . ..))
+         (stmts~2,1
+          (let@4 fsa . . .
+           (call@F sizeAlign~9 f@1 ptrSize@4))
+          (let@4,1 a . . .
+           (if@4
+            (elif@3
+             (infix@A >
+              (dot~7 fsa~3 align@1)0@2)
+             (stmts@F
+              (dot@3 fsa~3 align@1)))
+            (else@S
+             (stmts@6 1))))
+          (asgn@3,2 bo~3
+           (infix@F \2B
+            (call~8 align~5 bo@1 a@5)
+            (dot@5 fsa~3 size@1)))
+          (if@,3
+           (elif@3
+            (infix@2 > a~2 maxAlign@2)
+            (stmts@E
+             (asgn@9 maxAlign~9 a@2))))
+          (if@,4
+           (elif@3
+            (infix@2 > a~2 ba@2)
+            (stmts@8
+             (asgn@3 ba~3 a@2))))))
+        (asgn@3,8 bo~3
+         (call@7 align~5 bo@1 ba@5))
+        (if@,9
+         (elif@3
+          (infix@3 > bo~3 branchSize@2)
+          (stmts@H
+           (asgn@B branchSize~B bo@2))))
+        (if@,A
+         (elif@3
+          (infix@3 > ba~3 branchAlign@2)
+          (stmts@I
+           (asgn@C branchAlign~C ba@2))))))
+      (if@,M
+       (elif@3
+        (infix@C > branchAlign~C maxAlign@2)
+        (stmts@O
+         (asgn@9 maxAlign~9 branchAlign@2))))
+      (asgn@7,P offset~7
+       (infix@T \2B
+        (call~M align~5 offset@1 branchAlign@9)branchSize@2))
+      (asgn@7,Q result~7
+       (tup@2
+        (call@6 align~5 offset@1 maxAlign@9)maxAlign@Q)))))))
+ (proc@,4u fieldOffsets@5 x . .
+  (params@I
+   (param@1 t . . TypeDesc@3 .)
+   (param@E ptrSize . . . 8@A))
+  (at@V seq~3 int@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,5 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (if@,6
+    (elif@3
+     (infix@7 notin
+      (dot~6 t~1 kind@1)
+      (curly@6 akObject@1 akTuple@B akVariant@K))
+     (stmts~1,1
+      (ret .))))
+   (var@4,8 offset . . . 0@9)
+   (if@,9
+    (elif@3
+     (infix@7 !=
+      (dot~6 t~1 kind@1)akTuple@3)
+     (stmts~1,1
+      (asgn@7 offset~7
+       (dot@Q
+        (call~C objectPrefix~C t@1 ptrSize@4)size@1)))))
+   (for@4,B
+    (dot@6 t~1 fields@1)
+    (unpackflat
+     (let f . . ..))
+    (stmts~2,1
+     (let@4 fsa . . .
+      (call@F sizeAlign~9 f@1 ptrSize@4))
+     (let@4,1 a . . .
+      (if@4
+       (elif@3
+        (infix@A >
+         (dot~7 fsa~3 align@1)0@2)
+        (stmts@F
+         (dot@3 fsa~3 align@1)))
+       (else@S
+        (stmts@6 1))))
+     (if@,2
+      (elif@3
+       (dot@1 t~1 union@1)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)offset@5)))
+      (elif@5,2
+       (dot@1 t~1 packed@1)
+       (stmts~3,1
+        (cmd@6
+         (dot result~6 add@1)offset@5)
+        (asgn@7,1 offset~7
+         (infix@9 \2B offset~7
+          (dot@5 fsa~3 size@1)))))
+      (else@,5
+       (stmts@2,1
+        (asgn@7 offset~7
+         (call@7 align~5 offset@1 a@9))
+        (cmd@6,1
+         (dot result~6 add@1)offset@5)
+        (asgn@7,2 offset~7
+         (infix@9 \2B offset~7
+          (dot@5 fsa~3 size@1))))))))))
+ (proc@,5J unionOffset@5 x . .
+  (params@H
+   (param@1 t . . TypeDesc@3 .)
+   (param@E ptrSize . . . 8@A))int@S . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@7 !=
+      (dot~6 t~1 kind@1)akVariant@3)
+     (stmts@L
+      (ret 0@7))))
+   (var@4,3 offset . . .
+    (dot@X
+     (call~C objectPrefix~C t@1 ptrSize@4)size@1))
+   (for@4,4
+    (dot@6 t~1 fields@1)
+    (unpackflat
+     (let f . . ..))
+    (stmts~2,1
+     (let@4 fsa . . .
+      (call@F sizeAlign~9 f@1 ptrSize@4))
+     (let@4,1 a . . .
+      (if@4
+       (elif@3
+        (infix@A >
+         (dot~7 fsa~3 align@1)0@2)
+        (stmts@F
+         (dot@3 fsa~3 align@1)))
+       (else@S
+        (stmts@6 1))))
+     (asgn@7,2 offset~7
+      (infix@J \2B
+       (call~C align~5 offset@1 a@9)
+       (dot@5 fsa~3 size@1)))))
+   (var@4,8 branchAlign . . . 1@E)
+   (for@4,9
+    (dot@7 t~1 branches@1)
+    (unpackflat
+     (let br . . ..))
+    (stmts~2,1
+     (for@4 br@5
+      (unpackflat
+       (let f . . ..))
+      (stmts~2,1
+       (let@4 a . . .
+        (dot@P
+         (call~C sizeAlign~9 f@1 ptrSize@4)align@1))
+       (if@,1
+        (elif@3
+         (infix@2 > a~2 branchAlign@2)
+         (stmts@H
+          (asgn@C branchAlign~C a@2))))))))
+   (asgn@7,D result~7
+    (call@7 align~5 offset@1 branchAlign@9))))
+ (proc@,5Z branchFieldOffsets@5 x . .
+  (params@O
+   (param@1 t . . TypeDesc@3 .)
+   (param@E branch . . int@8 .)
+   (param@R ptrSize . . . 8@A))
+  (at@i seq~3 int@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (if@,4
+    (elif@3
+     (infix@Y or
+      (infix~E or
+       (infix~D !=
+        (dot~6 t~1 kind@1)akVariant@3)
+       (infix@A < branch~7 0@2))
+      (infix@A >= branch~7
+       (dot@D
+        (dot~9 t~1 branches@1)len@1)))
+     (stmts~1,1
+      (ret .))))
+   (var@4,6 offset . . .
+    (call@K unionOffset~B t@1 ptrSize@4))
+   (for@4,7
+    (at@F
+     (dot~9 t~1 branches@1)branch@1)
+    (unpackflat
+     (let f . . ..))
+    (stmts~2,1
+     (let@4 fsa . . .
+      (call@F sizeAlign~9 f@1 ptrSize@4))
+     (let@4,1 a . . .
+      (if@4
+       (elif@3
+        (infix@A >
+         (dot~7 fsa~3 align@1)0@2)
+        (stmts@F
+         (dot@3 fsa~3 align@1)))
+       (else@S
+        (stmts@6 1))))
+     (asgn@7,2 offset~7
+      (call@7 align~5 offset@1 a@9))
+     (cmd@6,3
+      (dot result~6 add@1)offset@5)
+     (asgn@7,4 offset~7
+      (infix@9 \2B offset~7
+       (dot@5 fsa~3 size@1)))))))
+ (proc@,61 validateInto@5 . . .
+  (params@H
+   (param@1 t . . TypeDesc@3 .)
+   (param@E path . . string@6 .)
+   (param@S depth . . int@7 .)
+   (param@e acc . .
+    (mut@5
+     (at@7 seq~3 string@1)).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 > depth~6 64@2)
+     (stmts~1,1
+      (cmd@3
+       (dot acc~3 add@1)
+       (infix@A & path~5 "\3A descriptor nests deeper than 64 levels \28cycle?\29"@2))
+      (ret@,1 .))))
+   (if@,3
+    (elif@3
+     (infix@2 == t~2
+      (nil@3))
+     (stmts~1,1
+      (cmd@3
+       (dot acc~3 add@1)
+       (infix@A & path~5 "\3A nil descriptor"@2))
+      (ret@,1 .))))
+   (case@,6
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akEnum@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@U and
+         (infix~I and
+          (infix~5 <=
+           (dot~6 t~1 bits@1)0@3)
+          (infix@D ==
+           (dot~8 t~1 enumLo@1)0@3))
+         (infix@D ==
+          (dot~8 t~1 enumHi@1)0@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@16,1 &
+           (infix@,~1 &
+            (infix~w & path~5 "\3A akEnum has neither `bits` nor an `enumLo`/`enumHi` "@2)"range — it will be sized as 1 byte, which is correct only for a "~17,1)"single-valued enum"~17,1))))
+       (elif@5,4
+        (infix@9 <
+         (dot~8 t~1 enumHi@1)
+         (dot@3 t~1 enumLo@1))
+        (stmts~3,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@9,1 &
+           (infix@u,~1 &
+            (infix~H &
+             (infix~C &
+              (infix~Q & path~5 "\3A akEnum has enumHi \28"@2)
+              (prefix@2 $
+               (dot@2 t~1 enumHi@1)))"\29 < enumLo \28"@2)
+            (prefix~14,1 $
+             (dot@2 t~1 enumLo@1)))"\29"@2)))))))
+    (of@,9
+     (ranges akArray@3)
+     (stmts@2,8
+      (if
+       (elif@3
+        (infix@8 <
+         (dot~7 t~1 count@1)0@2)
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@1D &
+           (infix~T &
+            (infix~B &
+             (infix~P & path~5 "\3A akArray has count "@2)
+             (prefix@2 $
+              (dot@2 t~1 count@1)))" — a negative element "@2)"count is not a type; it will size as 0"~1E,1)))))
+      (call@C,3 validateInto~C
+       (dot@2 t~1 elem@1)
+       (infix@E & path~5 ".elem"@2)
+       (infix@V \2B depth~6 1@2)acc@a)))
+    (of@,L
+     (ranges akDistinct@3 akRange@F)
+     (stmts@2,1
+      (call@C validateInto~C
+       (dot@2 t~1 elem@1)
+       (infix@E & path~5 ".elem"@2)
+       (infix@V \2B depth~6 1@2)acc@a)))
+    (of@,N
+     (ranges akSet@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@A & path~5 "\3A akSet has no base type"@2))))
+       (elif@5,2
+        (infix@N <=
+         (call~9 setSizeInBytes~E
+          (dot@2 t~1 elem@1))0@3)
+        (stmts~3,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@16 &
+           (infix~R &
+            (infix~F &
+             (infix~G & path~5 "\3A set over "@2)
+             (prefix@2 $
+              (dot@7
+               (dot~5 t~1 elem@1)kind@1)))" has no representable "@2)"size — the base carries no range, or a set cannot be formed over it"~17,1))))
+       (else@,5
+        (stmts@2,1
+         (call@C validateInto~C
+          (dot@2 t~1 elem@1)
+          (infix@E & path~5 ".elem"@2)
+          (infix@V \2B depth~6 1@2)acc@a))))))
+    (of@,V
+     (ranges akSeq@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@17,1 &
+           (infix@2,~1 &
+            (infix~z & path~5 "\3A akSeq has no element type — its 2-word header sizes "@2)"fine without one, but nothing can synthesize the element buffer on "~1A,1)"the far side"~18,1))))
+       (else@,4
+        (stmts@2,1
+         (call@C validateInto~C
+          (dot@2 t~1 elem@1)
+          (infix@E & path~5 ".elem"@2)
+          (infix@V \2B depth~6 1@2)acc@a))))))
+    (of@,c
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 t~1 incomplete@1)
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@19,1 &
+           (infix@2,~1 &
+            (infix~11 & path~5 "\3A `\7B.incompleteStruct.\7D` — the real size belongs to the "@2)"C compiler, so the computed one is a guess \28nimony refuses to answer "~1C,1)"here rather than guessing\29"~1A,1)))))
+      (if@,4
+       (elif@3
+        (infix@7 !=
+         (dot~6 t~1 base@1)
+         (nil@3))
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@7 ==
+            (dot~6 t~1 kind@1)akTuple@3)
+           (stmts~1,1
+            (cmd@3
+             (dot acc~3 add@1)
+             (infix@A & path~5 "\3A akTuple has a `base`, which is ignored"@2)))))
+         (call@C,2 validateInto~C
+          (dot@2 t~1 base@1)
+          (infix@E & path~5 ".base"@2)
+          (infix@V \2B depth~6 1@2)acc@a))))
+      (if@,8
+       (elif@3
+        (infix@9 and
+         (dot~8 t~1 packed@1)
+         (dot@5 t~1 union@1))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@17 &
+           (infix~x & path~5 "\3A both `packed` and `union` are set — nimony treats "@2)"these as different layout algorithms, not composable ones"~18,1)))))
+      (if@,B
+       (elif@3
+        (infix@8 and
+         (dot~7 t~1 union@1)
+         (infix@B ==
+          (dot~6 t~1 kind@1)akTuple@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@17 &
+           (infix~x & path~5 "\3A `union` on a tuple, which nimony only honours on an "@2)"object"~18,1)))))
+      (if@,E
+       (elif@3
+        (infix@8 and
+         (dot~7 t~1 union@1)
+         (par@4
+          (infix@8 or
+           (dot~6 t~1 rtti@1)
+           (infix@A !=
+            (dot~6 t~1 base@1)
+            (nil@3)))))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@A & path~5 "\3A a union cannot also carry an inheritance prefix"@2)))))
+      (if@,G
+       (elif@3
+        (infix@7 and
+         (dot~6 t~1 rtti@1)
+         (infix@B !=
+          (dot~6 t~1 base@1)
+          (nil@3)))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@18,1 &
+           (infix@3,~1 &
+            (infix~11 & path~5 "\3A `rtti` is set on a type that also has a `base` — only "@2)"the ROOT of a hierarchy carries the rtti word, and the base already "~1C,1)"contains it"~19,1)))))
+      (for@4,K
+       (infix@7 \2E\2E< 0~2
+        (dot@C
+         (dot~7 t~1 fields@1)len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,5
+        (if
+         (elif@3
+          (infix@t and
+           (infix~a and
+            (infix~7 !=
+             (at~4
+              (dot~7 t~1 fields@1)i@1)
+             (nil@3))
+            (infix@L ==
+             (dot~6
+              (at~3
+               (dot~7 t~1 fields@1)i@1)kind@1)akUnchecked@3))
+           (infix~r,1 != i~2
+            (infix@G \2D
+             (dot~5
+              (dot~7 t~1 fields@1)len@1)1@2)))
+          (stmts~1,2
+           (cmd@3
+            (dot acc~3 add@1)
+            (infix@18 &
+             (infix~g &
+              (infix~5 &
+               (infix~D & path~5 ".fields\5B"@2)
+               (prefix@2 $ i@1))"\5D\3A an akUnchecked field is not last, "@2)"so the field after it starts inside the array\27s elements"~19,1)))))
+        (call@C,4 validateInto~C
+         (at@9
+          (dot~7 t~1 fields@1)i@1)
+         (infix@b &
+          (infix~5 &
+           (infix~D & path~5 ".fields\5B"@2)
+           (prefix@2 $ i@1))"\5D"@2)
+         (infix@o \2B depth~6 1@2)acc@t)))))
+    (of@,17
+     (ranges akUnchecked@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@15 &
+           (infix~v & path~5 "\3A akUnchecked has no element type, so it imposes no "@2)"alignment — a heap block\27s tail would land at the wrong offset"~16,1))))
+       (else@,3
+        (stmts@2,1
+         (call@C validateInto~C
+          (dot@2 t~1 elem@1)
+          (infix@E & path~5 ".elem"@2)
+          (infix@V \2B depth~6 1@2)acc@a))))))
+    (of@,1D
+     (ranges akVariant@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@H and
+         (infix~4 >
+          (dot~5
+           (dot~7 t~1 fields@1)len@1)0@2)
+         (infix@J ==
+          (dot~5
+           (dot~9 t~1 branches@1)len@1)0@3))
+        (stmts~1,1
+         (cmd@3
+          (dot acc~3 add@1)
+          (infix@A & path~5 "\3A akVariant has pre-case fields but no branches"@2)))))
+      (for@4,2
+       (infix@7 \2E\2E< 0~2
+        (dot@C
+         (dot~7 t~1 fields@1)len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (call@C validateInto~C
+         (at@9
+          (dot~7 t~1 fields@1)i@1)
+         (infix@b &
+          (infix~5 &
+           (infix~D & path~5 ".fields\5B"@2)
+           (prefix@2 $ i@1))"\5D"@2)
+         (infix@o \2B depth~6 1@2)acc@t)))
+      (for@4,4
+       (infix@7 \2E\2E< 0~2
+        (dot@E
+         (dot~9 t~1 branches@1)len@1))
+       (unpackflat
+        (let b . . ..))
+       (stmts~2,1
+        (for@4
+         (infix@7 \2E\2E< 0~2
+          (dot@H
+           (at~3
+            (dot~9 t~1 branches@1)b@1)len@1))
+         (unpackflat
+          (let i . . ..))
+         (stmts~2,1
+          (call@C validateInto~C
+           (at@E
+            (at~3
+             (dot~9 t~1 branches@1)b@1)i@1)
+           (infix@c,1 &
+            (infix~5 &
+             (infix~7 &
+              (infix~5 &
+               (infix~F & path~5 ".branches\5B"@2)
+               (prefix@2 $ b@1))"\5D\5B"@2)
+             (prefix@2 $ i@1))"\5D"@2)
+           (infix@p,1 \2B depth~6 1@2)acc@u,1)))))))
+    (else@,1M
+     (stmts@2,1
+      (discard .))))))
+ (proc@,7X validate@5 x . .
+  (params@E
+   (param@1 t . . TypeDesc@3 .)
+   (param@E path . . . "type"@7))
+  (at@X seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (call@C,3 validateInto~C t@1 path@4 0@A result@D))))

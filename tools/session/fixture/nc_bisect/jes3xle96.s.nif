@@ -1,0 +1,607 @@
+(.nif27)
+(.indexat 19128            )
+(stmts@,1,.jester/source/jester_mod_44e76989d8834db3.nim
+ (import
+  (kv sysvq0asl "../../../../../../nimony/lib/std/system.nim")
+  (kv jesaqohvh1 "../../../../Packages/com.aoughwl.jester/ModSdk/jester.nim")
+  (kv vecqnfc1h "../../../../Packages/com.aoughwl.jester/ModSdk/vec.nim")
+  (kv colpmj4ay "../../../../Packages/com.aoughwl.jester/ModSdk/color.nim")
+  (kv drasfcs4c "../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim")
+  (kv inpl8nz921 "../../../../Packages/com.aoughwl.jester/ModSdk/input.nim")
+  (kv tex6mi8qh "../../../../Packages/com.aoughwl.jester/ModSdk/text.nim")
+  (kv boa9qlla "board.nim"))
+ (gvar@2,O :game.0. . . Board.0.boa9qlla@6 .)
+ (gvar@2,P :best.0. . .
+  (i 64)0@7)
+ (gvar@2,Q :seed.0. . .
+  (i@2,A 64)1@C)
+ (gvar@2,R :over.0. . .
+  (bool@C,h,../../../../../../nimony/lib/std/system/basic_types.nim)
+  (false@7))
+ (gvar@2,S :hint.0. . . string.0.sysvq0asl ""@7)
+ (proc@,a :nextRandom.0.@5 . . .
+  (params@F)
+  (i@4 64). .
+  (stmts@2,1
+   (result@5 :result.0 . .
+    (i~3,~1 64).)
+   (asgn@5 seed.0.~5
+    (bitand@U
+     (i 64)
+     (add~9
+      (i 64)
+      (mul~D
+       (i 64)seed.0.~5 1103515245@2)12345@2)1073741823@4))
+   (asgn@7,1 result.0~7 seed.0.@2)
+   (ret~2,~1 result.0)))
+ (proc@,e :addTile.0.@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (discard
+    (call@I spawn.0.boa9qlla~5
+     (haddr~A game.0.)
+     (call@B nextRandom.0.~A)
+     (call@P nextRandom.0.~A)))))
+ (proc@,h :reset.0.@5 . . .
+  (params@A). . .
+  (stmts@2,1
+   (asgn@5 game.0.~5
+    (call@A newBoard.0.boa9qlla~8))
+   (asgn@5,1 over.0.~5
+    (false@2))
+   (asgn@5,2 hint.0.~5 ""@2)
+   (call@7,3 addTile.0.~7)
+   (call@7,4 addTile.0.~7)))
+ (proc@,o :start.0.@5 . . .
+  (params@A). . .
+  (stmts@2,1
+   (asgn@5 seed.0.~5
+    (add@R
+     (i 64)
+     (conv~M
+      (i~3 64)
+      (mul@C
+       (f 64)
+       (call~3 gameTime.0.jesaqohvh1~8)1000.0@2))7@2))
+   (asgn@5,1 best.0.~5
+    (conv@5
+     (i~3,~1 64)
+     (call@9 remember.1.jesaqohvh1~8 "2048.best"@1
+      (suf@E 0 "i64"))))
+   (call@5,2 reset.0.~5)
+   (call@3,3 log.0.jesaqohvh1~3 "2048\3A arrows or WASD to slide, R for a new game"@1)))
+ (proc@,x :tileColour.0.@5 . . .
+  (params@F
+   (param@1 :v.0 . .
+    (i@3 64).))Color.0.colpmj4ay@A . .
+  (stmts@2,1
+   (result :result.1 . . Color.0.colpmj4ay@8,~1 .)
+   (asgn result.1
+    (case v.0@5
+     (of@,1
+      (ranges 0@3)
+      (expr@6
+       (call@3 rgb.0.colpmj4ay~3 0.16@1 0.17@7 0.21@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,2
+      (ranges 2@3)
+      (expr@6
+       (call@3 rgb.0.colpmj4ay~3 0.28@1 0.3@7 0.36@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,3
+      (ranges 4@3)
+      (expr@6
+       (call@3 rgb.0.colpmj4ay~3 0.3@1 0.36@7 0.46@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,4
+      (ranges 8@3)
+      (expr@6
+       (call@3 rgb.0.colpmj4ay~3 0.33@1 0.45@7 0.58@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,5
+      (ranges 16@3)
+      (expr@7
+       (call@3 rgb.0.colpmj4ay~3 0.36@1 0.54@7 0.66@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,6
+      (ranges 32@3)
+      (expr@7
+       (call@3 rgb.0.colpmj4ay~3 0.38@1 0.62@7 0.68@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,7
+      (ranges 64@3)
+      (expr@7
+       (call@3 rgb.0.colpmj4ay~3 0.42@1 0.7@7 0.62@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,8
+      (ranges 128@3)
+      (expr@8
+       (call@3 rgb.0.colpmj4ay~3 0.55@1 0.74@7 0.5@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,9
+      (ranges 256@3)
+      (expr@8
+       (call@3 rgb.0.colpmj4ay~3 0.71@1 0.76@7 0.42@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,A
+      (ranges 512@3)
+      (expr@8
+       (call@3 rgb.0.colpmj4ay~3 0.85@1 0.73@7 0.38@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (of@,B
+      (ranges 1024@3)
+      (expr@9
+       (call@3 rgb.0.colpmj4ay~3 0.92@1 0.63@7 0.34@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+     (else@,C
+      (expr@6
+       (call@3 rgb.0.colpmj4ay~3 0.95@1 0.5@7 0.32@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))))
+   (ret~2,~1 result.1)))
+ (proc@,1F :tileTextSize.0.@5 . . .
+  (params@H
+   (param@1 :v.1 . .
+    (i@3 64).)
+   (param@9 :span.0 . .
+    (f@6 64).))
+  (f@P 64). .
+  (stmts@2,1
+   (result@4 :result.2 . .
+    (f@Q,~1 64).)
+   (let@4 :digits.0 . .
+    (i~2,~g 64)
+    (call@D len.4.sysvq0asl@1
+     (prefix~3 $.1.sysvq0asl v.1@1)))
+   (asgn@,1 result.2
+    (if
+     (elif@3
+      (le@7
+       (i 64)digits.0~7 2@3)
+      (expr@D
+       (mul@5
+        (f 64)span.0~5 0.42@2)))
+     (elif@5,1
+      (eq@7
+       (i 64)digits.0~7 3@3)
+      (expr@D
+       (mul@5
+        (f 64)span.0~5 0.34@2)))
+     (else@,2
+      (expr@6
+       (mul@5
+        (f 64)span.0~5 0.26@2)))))
+   (ret~2,~1 result.2)))
+ (proc@,1L :move.0.@5 . . .
+  (params@9
+   (param@1 :dir.0 . .
+    (i@5 64).)). . .
+  (stmts@2,1
+   (if
+    (elif@3 over.0.
+     (stmts@6
+      (ret .))))
+   (if@,1
+    (elif@3
+     (call@A slide.0.boa9qlla~5
+      (haddr~A game.0.)dir.0@1)
+     (stmts~1,1
+      (call@7 addTile.0.~7)
+      (if@,1
+       (elif@3
+        (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+         (lt@2,1
+          (i 64)best.0.@K,1Q,.jester/source/jester_mod_44e76989d8834db3.nim
+          (dot@B,1Q,.jester/source/jester_mod_44e76989d8834db3.nim game.0.~4 score.0 0)))
+        (stmts~1,1
+         (asgn@5 best.0.~5
+          (dot@6 game.0.~4 score.0 0))
+         (call@4,1 save.1.jesaqohvh1~4 "2048.best"@1
+          (conv@J
+           (i~K,~c 64)best.0.@1)))))
+      (if@,4
+       (elif@3
+        (not
+         (call@G canMove.0.boa9qlla~7 game.0.~C))
+        (stmts~1,1
+         (asgn@5 over.0.~5
+          (true@2))
+         (asgn@5,1 hint.0.~5 "No moves left — press R"@2))))))
+    (else@,8
+     (stmts@2,2
+      (asgn@5 hint.0.~5 "That way is blocked"@2))))))
+ (proc@,1Z :update.0.@5 . . .
+  (params@B). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@7 pressed.0.inpl8nz921~7 R.0.inpl8nz921@1)
+     (stmts@C
+      (call@5 reset.0.~5))))
+   (if@,1
+    (elif@3
+     (or@J
+      (call~C pressed.0.inpl8nz921~7 LeftArrow.0.inpl8nz921@1)
+      (call@A pressed.0.inpl8nz921~7 A.0.inpl8nz921@1))
+     (stmts@Y
+      (call@4 move.0.~4 0@1))))
+   (if@,2
+    (elif@3
+     (or@K
+      (call~D pressed.0.inpl8nz921~7 RightArrow.0.inpl8nz921@1)
+      (call@A pressed.0.inpl8nz921~7 D.0.inpl8nz921@1))
+     (stmts@Z
+      (call@4 move.0.~4 1@1))))
+   (if@,3
+    (elif@3
+     (or@H
+      (call~A pressed.0.inpl8nz921~7 UpArrow.0.inpl8nz921@1)
+      (call@A pressed.0.inpl8nz921~7 W.0.inpl8nz921@1))
+     (stmts@W
+      (call@4 move.0.~4 2@1))))
+   (if@,4
+    (elif@3
+     (or@J
+      (call~C pressed.0.inpl8nz921~7 DownArrow.0.inpl8nz921@1)
+      (call@A pressed.0.inpl8nz921~7 S.0.inpl8nz921@1))
+     (stmts@Y
+      (call@4 move.0.~4 3@1))))))
+ (type@B,1o :Probe.0.~6 . . .
+  (enum@2
+   (u 8)
+   (efld@5 :PA.0. . . Probe.0.
+    (tup 0 "PA"))
+   (efld@9 :PB.0. . . Probe.0.
+    (tup 1 "PB"))
+   (efld@D :PC.0. . . Probe.0.
+    (tup 2 "PC"))
+   (efld@H :PD.0. . . Probe.0.
+    (tup 3 "PD"))))
+ (proc@5,1o :dollar`.Probe.0. x . .
+  (params
+   (param :e.0 . . Probe.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@8 :result.3 . . string.0.sysvq0asl .)
+   (case@8 e.0
+    (of@5
+     (ranges PA.0.)
+     (stmts
+      (ret "PA")))
+    (of@9
+     (ranges PB.0.)
+     (stmts
+      (ret "PB")))
+    (of@D
+     (ranges PC.0.)
+     (stmts
+      (ret "PC")))
+    (of@H
+     (ranges PD.0.)
+     (stmts
+      (ret "PD"))))
+   (ret result.3)))
+ (proc@,1q :enumOrds.0.@5 . . .
+  (params@D)
+  (i@4 64). .
+  (stmts@2,1
+   (result@7 :result.4 . .
+    (i~5,~1H 64).)
+   (asgn@7 result.4~7
+    (add@f
+     (i 64)
+     (add~G
+      (i 64)
+      (add~F
+       (i 64)
+       (expr@2,3S,../../../../../../nimony/lib/std/system.nim
+        (conv@3,2
+         (i@U,E,../../../../../../nimony/lib/std/system/defaults.nim 64)PA.0.@F,1s,.jester/source/jester_mod_44e76989d8834db3.nim))
+       (mul@A
+        (i 64)
+        (expr@2,3S,../../../../../../nimony/lib/std/system.nim
+         (conv@3,2
+          (i@U,E,../../../../../../nimony/lib/std/system/defaults.nim 64)PB.0.@P,1s,.jester/source/jester_mod_44e76989d8834db3.nim))10@2))
+      (mul@A
+       (i 64)
+       (expr@2,3S,../../../../../../nimony/lib/std/system.nim
+        (conv@3,2
+         (i@U,E,../../../../../../nimony/lib/std/system/defaults.nim 64)PC.0.@e,1s,.jester/source/jester_mod_44e76989d8834db3.nim))100@2))
+     (mul@A
+      (i 64)
+      (expr@2,3S,../../../../../../nimony/lib/std/system.nim
+       (conv@3,2
+        (i@U,E,../../../../../../nimony/lib/std/system/defaults.nim 64)PD.0.@u,1s,.jester/source/jester_mod_44e76989d8834db3.nim))1000@2)))
+   (ret~2,~1 result.4)))
+ (proc@,1t :enumMask.0.@5 . . .
+  (params@D)
+  (i@4 64). .
+  (stmts@2,1
+   (result@4 :result.5 . .
+    (i~2,~1K 64).)
+   (let@4 :a.0 . . Probe.0.@C,~6 PA.0.@4)
+   (asgn@7,1 result.5~7 0@2)
+   (if@,2
+    (elif@3
+     (eq@2 Probe.0. a.0~2 PA.0.@3)
+     (stmts@9
+      (asgn@7 result.5~7
+       (add@9
+        (i 64)result.5~7 1@2)))))
+   (if@,3
+    (elif@3
+     (eq@2 Probe.0. a.0~2 PB.0.@3)
+     (stmts@9
+      (asgn@7 result.5~7
+       (add@9
+        (i 64)result.5~7 2@2)))))
+   (if@,4
+    (elif@3
+     (eq@2 Probe.0. a.0~2 PC.0.@3)
+     (stmts@9
+      (asgn@7 result.5~7
+       (add@9
+        (i 64)result.5~7 4@2)))))
+   (if@,5
+    (elif@3
+     (eq@2 Probe.0. a.0~2 PD.0.@3)
+     (stmts@9
+      (asgn@7 result.5~7
+       (add@9
+        (i 64)result.5~7 8@2)))))
+   (ret~2,~1 result.5)))
+ (proc@,21 :score.0.@5 . . .
+  (params@A)
+  (i@4 64). .
+  (stmts@K
+   (result@4 :result.6 . .
+    (i~K,~1R 64).)
+   (asgn@4 result.6
+    (dot game.0.~4 score.0 0))
+   (ret~K result.6)))
+ (proc@,22 :moves.0.@5 . . .
+  (params@A)
+  (i@4 64). .
+  (stmts@K
+   (result@4 :result.7 . .
+    (i~K,~1S 64).)
+   (asgn@4 result.7
+    (dot game.0.~4 moves.0 0))
+   (ret~K result.7)))
+ (proc@,23 :highestTile.0.@5 . . .
+  (params@G)
+  (i@4 64). .
+  (stmts@Q
+   (result@C :result.8 . .
+    (i~Y,~1T 64).)
+   (asgn@C result.8
+    (call highest.0.boa9qlla~7 game.0.~C))
+   (ret~Q result.8)))
+ (proc@,25 :drawGui.0.@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (let@4 :w.0 . .
+    (f@Q,~r 64)
+    (call@F screenWidth.0.jesaqohvh1~B))
+   (let@4,1 :h.0 . .
+    (f@Q,~s 64)
+    (call@G screenHeight.0.jesaqohvh1~C))
+   (call@4,3 fill.0.drasfcs4c~4
+    (call@5 rect.0.vecqnfc1h~4 0.0@1 0.0@6 w.0@B h.0@E)
+    (call@Q rgb.0.colpmj4ay~3 0.05@1 0.06@7 0.08@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim))
+   (let@4,8 :margin.0 . .
+    (f 64)16.0@9)
+   (let@4,9 :headline.0 . .
+    (f 64)64.0@B)
+   (let@4,D :across.0 . .
+    (f@Q,~14 64)
+    (sub@B
+     (f 64)w.0~2
+     (mul@9
+      (f 64)margin.0~7 2.0@2)))
+   (let@4,E :down.0 . .
+    (f@Q,~15 64)
+    (sub@O
+     (f 64)
+     (sub~F
+      (f 64)h.0~2
+      (mul@9
+       (f 64)margin.0~7 2.0@2))headline.0@2))
+   (let@4,F :side.0 . .
+    (f@Q,~16 64)
+    (if@7
+     (elif@3
+      (lt@7
+       (f 64)across.0~7 down.0@2)
+      (expr@F across.0))
+     (else@P
+      (expr@6 down.0))))
+   (let@4,G :left.0 . .
+    (f@Q,~17 64)
+    (mul@I
+     (f 64)
+     (sub~8
+      (f 64)w.0~2 side.0@2)0.5@2))
+   (let@4,H :top.0 . .
+    (f@Q,~18 64)
+    (add@F
+     (f 64)headline.0~9
+     (mul@O
+      (f 64)
+      (sub~8
+       (f 64)
+       (sub~B
+        (f 64)h.0~2 headline.0@2)side.0@2)0.5@2)))
+   (call@7,J writeAt.0.drasfcs4c~7 "2048"@1
+    (call@D vec2.0.vecqnfc1h~4 left.0@1
+     (mul@E
+      (f 64)margin.0~7 0.75@2))30.0@a
+    (call@j rgb.0.colpmj4ay~3 0.93@1 0.95@7 0.98@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@17,z,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (call@7,K writeIn.0.drasfcs4c~7
+    (infix@A &.0.sysvq0asl "score "~9
+     (prefix@2 $.1.sysvq0asl
+      (dot@5 game.0.~4 score.0 0)))
+    (call@T rect.0.vecqnfc1h~4 left.0@1
+     (mul@E
+      (f 64)margin.0~7 0.75@2)side.0@M 30.0@S)16.0@1,1 AlignRight.0.drasfcs4c@7,1
+    (call@M,1 rgb.0.colpmj4ay~3 0.72@1 0.78@7 0.88@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (call@7,M writeIn.0.drasfcs4c~7
+    (infix@9 &.0.sysvq0asl "best "~8
+     (prefix@2 $.1.sysvq0asl best.0.@1))
+    (call@M rect.0.vecqnfc1h~4 left.0@1
+     (add@L
+      (f 64)
+      (mul~7
+       (f 64)margin.0~7 0.75@2)20.0@2)side.0@T 20.0@Z)13.0@1,1 AlignRight.0.drasfcs4c@7,1
+    (call@M,1 rgb.0.colpmj4ay~3 0.5@1 0.56@7 0.66@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (let@4,P :gap.0 . .
+    (f@Q,~1G 64)
+    (mul@B
+     (f 64)side.0~5 0.022@2))
+   (let@4,Q :cell.0 . .
+    (f@Q,~1H 64)
+    (div@e
+     (f 64)
+     (sub~R
+      (f 64)side.0~5
+      (mul@6
+       (f 64)gap.0~4
+       (conv@9
+        (f~7 64)
+        (add@6
+         (i 64)Size.0.boa9qlla~5 1@2))))
+     (conv@9
+      (f~S 64)Size.0.boa9qlla@1)))
+   (call@4,S fill.0.drasfcs4c~4
+    (call@5 rect.0.vecqnfc1h~4 left.0@1 top.0@7 side.0@C side.0@I)
+    (call@X rgb.0.colpmj4ay~3 0.11@1 0.12@7 0.15@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim))
+   (var@4,U :r.0 . .
+    (i 64)0@4)
+   (while@,V
+    (lt@8
+     (i 64)r.0~2 Size.0.boa9qlla@2)
+    (stmts@2,1
+     (var@4 :c.0 . .
+      (i 64)0@4)
+     (while@,1
+      (lt@8
+       (i 64)c.0~2 Size.0.boa9qlla@2)
+      (stmts@2,1
+       (let@4 :x.0 . .
+        (f@M,~1P 64)
+        (add@F
+         (f 64)
+         (add~6
+          (f 64)left.0~5 gap.0@2)
+         (mul@D
+          (f 64)
+          (conv~4
+           (f~7,~8 64)c.0@1)
+          (add@8
+           (f 64)cell.0~5 gap.0@2))))
+       (let@4,1 :y.0 . .
+        (f@M,~1Q 64)
+        (add@E
+         (f 64)
+         (add~6
+          (f 64)top.0~4 gap.0@2)
+         (mul@D
+          (f 64)
+          (conv~4
+           (f~6,~9 64)r.0@1)
+          (add@8
+           (f 64)cell.0~5 gap.0@2))))
+       (let@4,2 :box.0 . . Rect.0.vecqnfc1h@W,2e,../../../../Packages/com.aoughwl.jester/ModSdk/vec.nim
+        (call@A rect.0.vecqnfc1h~4 x.0@1 y.0@4 cell.0@7 cell.0@D))
+       (let@4,3 :v.2 . .
+        (i~6,~27 64)
+        (call@B at.0.boa9qlla~2 game.0.~7 r.0@1 c.0@4))
+       (call@4,4 fill.0.drasfcs4c~4 box.0@1
+        (call@G tileColour.0.~A v.2@1))
+       (if@,5
+        (elif@3
+         (expr@2,1l,../../../../../../nimony/lib/std/system/comparisons.nim
+          (not@,1
+           (eq@7
+            (i 64)v.2@9,2k,.jester/source/jester_mod_44e76989d8834db3.nim 0@E,2k,.jester/source/jester_mod_44e76989d8834db3.nim)))
+         (stmts~1,4
+          (let@4 :ink.0 . . Color.0.colpmj4ay~2,~1q
+           (if@6
+            (elif@3
+             (expr@2,1p,../../../../../../nimony/lib/std/system/comparisons.nim
+              (le@2,1
+               (i 64)128@Q,2o,.jester/source/jester_mod_44e76989d8834db3.nim v.2@L,2o,.jester/source/jester_mod_44e76989d8834db3.nim))
+             (expr@A
+              (call@3 rgb.0.colpmj4ay~3 0.1@1 0.11@7 0.13@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))
+            (else@Z
+             (expr@6
+              (call@3 rgb.0.colpmj4ay~3 0.95@1 0.97@7 1.0@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)))))
+          (call@7,1 writeIn.0.drasfcs4c~7
+           (prefix@1 $.1.sysvq0asl v.2@1)box.0@5
+           (call@M tileTextSize.0.~C v.2@1 cell.0@4)AlignCentre.0.drasfcs4c@X ink.0@k FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim))))
+       (cmd@,B inc.1.Irn1g7r1.
+        (haddr@4 c.0))))
+     (cmd@,E inc.1.Irn1g7r1.
+      (haddr@4 r.0))))
+   (let@4,m :footer.0 . .
+    (f@Q,~1d 64)
+    (add@K
+     (f 64)
+     (add~7
+      (f 64)top.0~4 side.0@2)10.0@2))
+   (if@,n
+    (elif@3 over.0.
+     (stmts~1,1
+      (call@7 writeIn.0.drasfcs4c~7 hint.0.@1
+       (call@B rect.0.vecqnfc1h~4 left.0@1 footer.0@7 side.0@F 24.0@L)17.0@d AlignCentre.0.drasfcs4c@j
+       (call@4,1 rgb.0.colpmj4ay~3 0.95@1 0.55@7 0.5@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)))
+    (elif@5,3
+     (dot@4 game.0.~4 won.0 0)
+     (stmts~3,1
+      (call@7 writeIn.0.drasfcs4c~7 "2048 reached — keep going"@1
+       (call@a rect.0.vecqnfc1h~4 left.0@1 footer.0@7 side.0@F 24.0@L)15.0@12 AlignCentre.0.drasfcs4c@1,1
+       (call@H,1 rgb.0.colpmj4ay~3 0.6@1 0.85@7 0.62@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)))
+    (elif@5,6
+     (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 64)0@I,30,.jester/source/jester_mod_44e76989d8834db3.nim
+       (call@B,30,.jester/source/jester_mod_44e76989d8834db3.nim len.4.sysvq0asl@1 hint.0.~4)))
+     (stmts~3,1
+      (call@7 writeIn.0.drasfcs4c~7 hint.0.@1
+       (call@B rect.0.vecqnfc1h~4 left.0@1 footer.0@7 side.0@F 24.0@L)14.0@d AlignCentre.0.drasfcs4c@j
+       (call@4,1 rgb.0.colpmj4ay~3 0.72@1 0.66@7 0.45@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)))
+    (else@,9
+     (stmts@2,1
+      (call@7 writeIn.0.drasfcs4c~7 "arrows or WASD  ·  R for a new game"@1
+       (call@5,1 rect.0.vecqnfc1h~4 left.0@1 footer.0@7 side.0@F 24.0@L)13.0@X,1 AlignCentre.0.drasfcs4c@d,1
+       (call@4,2 rgb.0.colpmj4ay~3 0.42@1 0.47@7 0.56@D 1.0@W,M,../../../../Packages/com.aoughwl.jester/ModSdk/color.nim)FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim))))))
+ (comment@4,a int.0.sysvq0asl int.0.sysvq0asl@F,N int.0.sysvq0asl@H,f float64.0.sysvq0asl@S,f float64.0.sysvq0asl@L,f int.0.sysvq0asl@B,l int.0.sysvq0asl@,1G int.0.sysvq0asl@,1J int.0.sysvq0asl@,1R int.0.sysvq0asl@,1S int.0.sysvq0asl@,1T int.0.sysvq0asl@4,~A false.0.sysvq0asl@5,~9 false.0.sysvq0asl@5,9 int.0.sysvq0asl@5,F int.0.sysvq0asl@5,G >.0.sysvq0asl@E,p int64.0.sysvq0asl@K,r true.0.sysvq0asl@9,t ord.0.sysvq0asl@A,1H ord.0.sysvq0asl@K,1H ord.0.sysvq0asl@Z,1H ord.0.sysvq0asl@p,1H float64.0.sysvq0asl@N,1w float64.0.sysvq0asl@i,1w float64.0.sysvq0asl@N,24 float64.0.sysvq0asl@M,25 !=.0.sysvq0asl@7,29 >=.0.sysvq0asl@J,2D >.0.sysvq0asl@C,2P)
+ (func@6,2p :inc.1.Irn1g7r1. . .@,E,../../../../../../nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i 64))
+  (params@L,E,../../../../../../nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.2 . .
+    (mut@3
+     (i 64)).)).@,E,../../../../../../nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.2)
+    (add@6
+     (i 64)
+     (hderef@1 x.2)
+     (conv@U,~F
+      (i 64)1@1))))))(.index@,1,.jester/source/jester_mod_44e76989d8834db3.nim
+ (h game.0. 650)
+ (h best.0. 46)
+ (h seed.0. 37)
+ (h over.0. 41)
+ (h hint.0. 106)
+ (h nextRandom.0. 49)
+ (h addTile.0. 322)
+ (h reset.0. 191)
+ (h start.0. 239)
+ (h tileColour.0. 455)
+ (h tileTextSize.0. 2224)
+ (h move.0. 667)
+ (h update.0. 1069)
+ (h Probe.0. 970)
+ (h@D,1o PA.0. 49)
+ (h@D,1o PB.0. 49)
+ (h@D,1o PC.0. 49)
+ (h@D,1o PD.0. 49)
+ (x dollar`.Probe.0. 51)
+ (h enumOrds.0. 438)
+ (h enumMask.0. 1191)
+ (h score.0. 790)
+ (h moves.0. 186)
+ (h highestTile.0. 186)
+ (h drawGui.0. 204)
+ (h inc.1.Irn1g7r1. 8189))

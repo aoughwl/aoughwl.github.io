@@ -1,0 +1,3580 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/flatmem.nim
+ (comment)
+ (pragmas@,G
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,I nifstreams@7)
+ (import@,J values@7 fieldoffsets@F)
+ (const@F,P MemMagics~9 x . .
+  (bracket@4 "copyMem"~H,1 "moveMem"~6,1 "zeroMem"@5,1 "equalMem"@G,1 "alloc"~H,2 "alloc0"~8,2 "dealloc"@2,2 "realloc"@D,2))
+ (proc@,U isMemMagic@5 x . .
+  (params@G
+   (param@1 base . . string@6 .))bool@G . .
+  (stmts@2,1
+   (for@4 MemMagics@5
+    (unpackflat
+     (let m . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == m~2 base@3)
+       (stmts@B
+        (ret true@7))))))
+   (asgn@7,2 result~7 false@2)))
+ (proc@,e reinterpToInt@5 x . .
+  (params@J
+   (param@1 raw . . uint64@5 .)
+   (param@E tbits . . int@7 .)
+   (param@Q tsigned . . bool@9 .))Value@g . .
+  (stmts@2,1
+   (let@4 mval . . .
+    (if@7
+     (elif@3
+      (infix@6 >= tbits~6 64@3)
+      (stmts@D raw))
+     (else@K
+      (stmts@6
+       (infix@4 and raw~4
+        (par@4
+         (infix@P \2D
+          (par~O
+           (infix@7 shl
+            (suf~6 1u "u64")
+            (call@8 uint~4 tbits@1)))
+          (suf@2 1u "u64"))))))))
+   (if@,1
+    (elif@3 tsigned
+     (stmts~1,1
+      (var@4 sv . . .
+       (cast@5 int64@5 mval@C))
+      (if@,1
+       (elif@3
+        (infix@B and
+         (infix~5 < tbits~6 64@2)
+         (infix@h !=
+          (par~d
+           (infix@6 and mval~5
+            (par@4
+             (infix@7 shl
+              (suf~6 1u "u64")
+              (call@8 uint~4
+               (infix@7 \2D tbits~6 1@2))))))
+          (suf@3 0u "u64")))
+        (stmts~1,1
+         (asgn@3 sv~3
+          (cast@2 int64@5
+           (infix@H or mval~5
+            (prefix@3 not
+             (par@4
+              (infix@P \2D
+               (par~O
+                (infix@7 shl
+                 (suf~6 1u "u64")
+                 (call@8 uint~4 tbits@1)))
+               (suf@2 1u "u64"))))))))))
+      (asgn@7,3 result~7
+       (call@6 vInt~4 sv@1 tbits@5))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vUInt~5 mval@1 tbits@7)))))))
+ (proc@,r bitsOf@5 . . .
+  (params@B
+   (param@1 v . . Value@3 .))int@C . .
+  (stmts@2,1
+   (case
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkInt@3 vkUInt@A)
+     (stmts@I
+      (expr
+       (stmts)
+       (if@1
+        (elif@3
+         (infix@7 >
+          (dot~6 v~1 bits@1)0@2)
+         (dot@D v~1 bits@1))
+        (else@M 64@6)))))
+    (of@,2
+     (ranges vkFloat@3)
+     (stmts@C
+      (expr
+       (stmts)
+       (if@1
+        (elif@3
+         (infix@8 >
+          (dot~7 v~1 fbits@1)0@2)
+         (dot@E v~1 fbits@1))
+        (else@O 64@6)))))
+    (of@,3
+     (ranges vkChar@3)
+     (stmts@B 8))
+    (of@,4
+     (ranges vkBool@3)
+     (stmts@B 8))
+    (else@,5
+     (stmts@6 64)))))
+ (proc@,z scalarToU64@5 . . .
+  (params@G
+   (param@1 v . . Value@3 .))uint64@C . .
+  (stmts@2,1
+   (comment)
+   (case@,1
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkUInt@3 vkInt@B)
+     (stmts@2,1
+      (let@4 w . . .
+       (call@A bitsOf~6 v@1))
+      (asgn@7,1 result~7
+       (cast@2 uint64@5
+        (call@I asInt~5 v@1)))
+      (if@,2
+       (elif@3
+        (infix@2 < w~2 64@2)
+        (stmts@8
+         (asgn@7 result~7
+          (infix@9 and result~7
+           (par@4
+            (infix@L \2D
+             (par~K
+              (infix@7 shl
+               (suf~6 1u "u64")
+               (call@8 uint~4 w@1)))
+             (suf@2 1u "u64"))))))))))
+    (of@,5
+     (ranges vkChar@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@8 uint64~6
+        (call@6 uint8~5
+         (dot@2 v~1 cval@1))))))
+    (of@,6
+     (ranges vkBool@3)
+     (stmts@B
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (dot@1 v~1 bval@1)
+          (suf@8 1u "u64"))
+         (else@H
+          (suf@6 0u "u64")))))))
+    (of@,7
+     (ranges vkEnum@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@8 uint64~6
+        (call@7 uint64~6
+         (dot@2 v~1 eord@1))))))
+    (of@,8
+     (ranges vkFloat@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@8 ==
+         (dot~7 v~1 fbits@1)32@3)
+        (stmts@F
+         (asgn@7 result~7
+          (call@8 uint64~6
+           (cast@1 uint32@5
+            (call@K float32~7
+             (dot@2 v~1 fval@1)))))))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7
+          (cast@2 uint64@5
+           (dot@E v~1 fval@1))))))))
+    (else@,B
+     (stmts@6
+      (asgn@7 result~7
+       (suf@2 0u "u64")))))))
+ (proc@,1E rebuildScalar@5 . . .
+  (params@I
+   (param@1 old . . Value@5 .)
+   (param@D u . . uint64@3 .))Value@P . .
+  (stmts@2,1
+   (comment)
+   (case@,1
+    (dot@8 old~3 kind@1)
+    (of@,1
+     (ranges vkUInt@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@7 vUInt~5 u@1
+        (call@A bitsOf~6 old@1)))))
+    (of@,2
+     (ranges vkInt@3)
+     (stmts@A
+      (asgn@7 result~7
+       (call@F reinterpToInt~D u@1
+        (call@A bitsOf~6 old@1)true@H))))
+    (of@,3
+     (ranges vkChar@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@7 vChar~5
+        (call@5 char~4
+         (call@6 uint8~5
+          (infix@3 and u~2
+           (suf@4 255u "u64"))))))))
+    (of@,4
+     (ranges vkBool@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@F !=
+         (par~E
+          (infix@3 and u~2
+           (suf@4 1u "u64")))
+         (suf@3 0u "u64"))))))
+    (of@,5
+     (ranges vkEnum@3)
+     (stmts@2,1
+      (let@4 ord . . .
+       (call@9 int~3 u@1))
+      (asgn@7,1 result~7
+       (call@7 vEnum~5 ord@1
+        (dot@9 old~3 ekind@1)))))
+    (of@,8
+     (ranges vkFloat@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@A ==
+         (dot~7 old~3 fbits@1)32@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@8 vFloat~6
+           (call@8 float64~7
+            (cast@1 float32@5
+             (call@K uint32~6
+              (infix@3 and u~2
+               (suf@4 4294967295u "u64")))))32@t))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@8 vFloat~6
+           (cast@1 float64@5 u@E)64@J)))))))
+    (else@,D
+     (stmts@6
+      (asgn@7 result~7 old@2))))))
+ (proc@,1V elemBytes@5 . . .
+  (params@E
+   (param@1 bits . . int@6 .))int@D . .
+  (stmts@X
+   (expr
+    (stmts)
+    (if@1
+     (elif@3
+      (infix@5 <= bits~5 0@3)1@B)
+     (else@G
+      (infix@B div bits~5 8@4))))))
+ (proc@,1X cellByte@5 . . .
+  (params@D
+   (param@1 c . . Cell@3 .)
+   (param@A bi . . int@4 .))byte@K . .
+  (stmts@2,3
+   (if
+    (elif@3
+     (infix@J or
+      (infix~A or
+       (infix~7 == c~2
+        (nil@3))
+       (infix@6 < bi~3 0@2))
+      (infix@6 >= bi~3 8@3))
+     (stmts@V
+      (ret 0@7))))
+   (let@4,1 u . . .
+    (call@F scalarToU64~B
+     (dot@2 c~1 v@1)))
+   (asgn@7,2 result~7
+    (call@6 byte~4
+     (infix@Q and
+      (par~P
+       (infix@3 shr u~2
+        (par@4
+         (infix@A *
+          (call~5 uint~4 bi@1)8u@2))))
+      (suf@4 255u "u64"))))))
+ (proc@,1e setCellByte@5 . . .
+  (params@G
+   (param@1 c . . Cell@3 .)
+   (param@A bi . . int@4 .)
+   (param@J b . . byte@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@J or
+      (infix~A or
+       (infix~7 == c~2
+        (nil@3))
+       (infix@6 < bi~3 0@2))
+      (infix@6 >= bi~3 8@3))
+     (stmts@V
+      (ret .))))
+   (var@4,1 u . . .
+    (call@F scalarToU64~B
+     (dot@2 c~1 v@1)))
+   (asgn@2,2 u~2
+    (infix@4 and u~2
+     (prefix@4 not
+      (par@4
+       (infix@A shl
+        (suf~9 255u "u64")
+        (par@4
+         (infix@A *
+          (call~5 uint~4 bi@1)8u@2)))))))
+   (asgn@2,3 u~2
+    (infix@4 or u~2
+     (par@3
+      (infix@B shl
+       (call~4 uint64~6 b@1)
+       (par@4
+        (infix@A *
+         (call~5 uint~4 bi@1)8u@2))))))
+   (asgn@4,4
+    (dot~3 c~1 v@1)
+    (call@F rebuildScalar~D
+     (dot@2 c~1 v@1)u@6))))
+ (proc@,1l cellIsByteFaithful@5 x . .
+  (params@O
+   (param@1 c . . Cell@3 .))bool@B . .
+  (stmts@2,1
+   (comment)
+   (if@,H
+    (elif@3
+     (infix@2 == c~2
+      (nil@3))
+     (stmts@A
+      (ret false@7))))
+   (case@,I
+    (dot@8
+     (dot~2 c~1 v@1)kind@1)
+    (of@,1
+     (ranges vkInt@3 vkUInt@A vkChar@I vkBool@Q vkEnum@Y vkFloat@g)
+     (stmts@p
+      (asgn@7 result~7 true@2)))
+    (else@,2
+     (stmts@6
+      (asgn@7 result~7 false@2))))))
+ (proc@,28 regionIsByteFaithful@5 x . .
+  (params@Q
+   (param@1 r . . FlatRegion@3 .))bool@H . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret false@7))))
+   (case@,6
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkCell@3)
+     (stmts@B
+      (asgn@7 result~7
+       (call@K cellIsByteFaithful~I
+        (dot@2 r~1 ccell@1)))))
+    (else@,2
+     (stmts@6
+      (asgn@7 result~7 true@2))))))
+ (proc@,2N foreignByte@5 x . .
+  (params@H
+   (param@1 haddr . . uint64@7 .)
+   (param@G off . . int@5 .))byte@R . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@6 == haddr~6
+      (suf@3 0u "u64"))
+     (stmts@G
+      (ret 0@7))))
+   (asgn@7,5 result~7
+    (at@l
+     (cast~j
+      (ptr@5 byte@4)
+      (infix@X \2B
+       (cast~I uint@5 haddr@B)
+       (call@6 uint~4 off@1)))))))
+ (proc@,2V byteAt@5 x . .
+  (params@C
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .))byte@R . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 or
+      (infix~7 == r~2
+       (nil@3))
+      (infix@7 < off~4 0@2))
+     (stmts@L
+      (ret 0@7))))
+   (case@,1
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkBytes@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@4 < off~4
+         (dot@9
+          (dot~6 r~1 bytes@1)len@1))
+        (stmts@J
+         (asgn@7 result~7
+          (at@9
+           (dot~6 r~1 bytes@1)off@1))))
+       (else@i
+        (stmts@6
+         (asgn@7 result~7 0@2))))))
+    (of@,3
+     (ranges rkForeign@3)
+     (stmts@2,6
+      (if
+       (elif@3
+        (infix@C and
+         (infix~5 >=
+          (dot~6 r~1 hlen@1)0@3)
+         (infix@8 >= off~4
+          (dot@4 r~1 hlen@1)))
+        (stmts@V
+         (asgn@7 result~7 0@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7
+          (call@D foreignByte~B
+           (dot@2 r~1 haddr@1)off@A)))))))
+    (of@,B
+     (ranges rkArr@3)
+     (stmts@2,1
+      (let@4 eb . . .
+       (call@E elemBytes~9
+        (dot@2 r~1 aEbits@1)))
+      (let@4,1 ei . . .
+       (infix@9 div off~4 eb@4))
+      (let@4,2 bi . . .
+       (infix@9 mod off~4 eb@4))
+      (if@,3
+       (elif@3
+        (infix@Q and
+         (infix~C and
+          (infix~7 !=
+           (dot~6 r~1 abox@1)
+           (nil@3))
+          (infix@7 >= ei~3 0@3))
+         (infix@7 < ei~3
+          (dot@E
+           (dot~6
+            (dot~5 r~1 abox@1)elems@1)len@1)))
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@A cellByte~8
+           (at@D
+            (dot~6
+             (dot~5 r~1 abox@1)elems@1)ei@1)bi@J))))
+       (else@,2
+        (stmts@6
+         (asgn@7 result~7 0@2))))))
+    (of@,I
+     (ranges rkSeq@3)
+     (stmts@2,1
+      (let@4 eb . . .
+       (call@E elemBytes~9
+        (dot@2 r~1 sEbits@1)))
+      (let@4,1 ei . . .
+       (infix@9 div off~4 eb@4))
+      (let@4,2 bi . . .
+       (infix@9 mod off~4 eb@4))
+      (if@,3
+       (elif@3
+        (infix@Q and
+         (infix~C and
+          (infix~7 !=
+           (dot~6 r~1 sbox@1)
+           (nil@3))
+          (infix@7 >= ei~3 0@3))
+         (infix@7 < ei~3
+          (dot@E
+           (dot~6
+            (dot~5 r~1 sbox@1)elems@1)len@1)))
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@A cellByte~8
+           (at@D
+            (dot~6
+             (dot~5 r~1 sbox@1)elems@1)ei@1)bi@J))))
+       (else@,2
+        (stmts@6
+         (asgn@7 result~7 0@2))))))
+    (of@,P
+     (ranges rkStr@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@k and
+         (infix~V and
+          (infix~7 !=
+           (dot~7 r~1 scell@1)
+           (nil@3))
+          (infix@J ==
+           (dot~6
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)kind@1)vkString@3))
+         (infix@8 < off~4
+          (dot@G
+           (dot~5
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)sval@1)len@1)))
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@6 byte~4
+           (call@6 uint8~5
+            (at@F
+             (dot~5
+              (dot~2
+               (dot~6 r~1 scell@1)v@1)sval@1)off@1))))))
+       (else@,2
+        (stmts@6
+         (asgn@7 result~7 0@2))))))
+    (of@,T
+     (ranges rkCell@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@A cellByte~8
+        (dot@2 r~1 ccell@1)off@A))))
+    (of@,V
+     (ranges rkObj@3)
+     (stmts@2,4
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 r~1 obox@1)
+         (nil@3))
+        (stmts@F
+         (ret 0@7))))
+      (var@4,1 best . . . -1@7)
+      (var@4,2 bestOff . . . -1@A)
+      (var@4,3 i . . . 0@4)
+      (while@,4
+       (infix@L and
+        (infix~D < i~2
+         (dot@8
+          (dot~5 r~1 offs@1)len@1))
+        (infix@6 < i~2
+         (dot@E
+          (dot~6
+           (dot~5 r~1 obox@1)cells@1)len@1)))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@H and
+           (infix~7 <=
+            (at~4
+             (dot~5 r~1 offs@1)i@1)off@3)
+           (infix@E >
+            (at~4
+             (dot~5 r~1 offs@1)i@1)bestOff@2))
+          (stmts~1,1
+           (asgn@8 bestOff~8
+            (at@8
+             (dot~5 r~1 offs@1)i@1))
+           (asgn@Q best~5 i@2))))
+        (cmd@,2 inc i@4)))
+      (if@,8
+       (elif@3
+        (infix@5 >= best~5 0@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@A cellByte~8
+           (at@D
+            (dot~6
+             (dot~5 r~1 obox@1)cells@1)best@1)
+           (infix@P \2D off~4 bestOff@2)))))
+       (else@,2
+        (stmts@6
+         (asgn@7 result~7 0@2)))))))))
+ (proc@,3I regionLen@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .))int@H . .
+  (stmts@2,1
+   (comment)
+   (if@,9
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret 0@7))))
+   (case@,A
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkBytes@3)
+     (stmts@C
+      (asgn@7 result~7
+       (dot@9
+        (dot~6 r~1 bytes@1)len@1))))
+    (of@,2
+     (ranges rkForeign@3)
+     (stmts@E
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@7 >=
+           (dot~6 r~1 hlen@1)0@3)
+          (dot@E r~1 hlen@1))
+         (else@N -1@6))))))
+    (of@,3
+     (ranges rkArr@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@7 !=
+           (dot~6 r~1 abox@1)
+           (nil@3))
+          (infix@W *
+           (dot~5
+            (dot~6
+             (dot~5 r~1 abox@1)elems@1)len@1)
+           (call@B elemBytes~9
+            (dot@2 r~1 aEbits@1))))
+         (else@v 0@6))))))
+    (of@,5
+     (ranges rkSeq@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@7 !=
+           (dot~6 r~1 sbox@1)
+           (nil@3))
+          (infix@W *
+           (dot~5
+            (dot~6
+             (dot~5 r~1 sbox@1)elems@1)len@1)
+           (call@B elemBytes~9
+            (dot@2 r~1 sEbits@1))))
+         (else@v 0@6))))))
+    (of@,7
+     (ranges rkStr@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@F and
+           (infix~7 !=
+            (dot~7 r~1 scell@1)
+            (nil@3))
+           (infix@J ==
+            (dot~6
+             (dot~2
+              (dot~6 r~1 scell@1)v@1)kind@1)vkString@3))
+          (dot@z
+           (dot~5
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)sval@1)len@1))
+         (else@17 0@6))))))
+    (of@,9
+     (ranges rkCell@3)
+     (stmts@B
+      (asgn@7 result~7 8@2)))
+    (of@,A
+     (ranges rkObj@3)
+     (stmts@2,1
+      (var@4 hi . . . 0@5)
+      (var@4,1 i . . . 0@4)
+      (while@,2
+       (infix@8 < i~2
+        (dot@8
+         (dot~5 r~1 offs@1)len@1))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@E >
+           (infix~4 \2B
+            (at~4
+             (dot~5 r~1 offs@1)i@1)8@2)hi@2)
+          (stmts@K
+           (asgn@3 hi~3
+            (infix@C \2B
+             (at~4
+              (dot~5 r~1 offs@1)i@1)8@2)))))
+        (cmd@,1 inc i@4)))
+      (asgn@7,5 result~7 hi@2))))))
+ (proc@,3l foreignLen@5 x . .
+  (params@G
+   (param@1 r . . FlatRegion@3 .))int@H . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@W or
+      (infix~N or
+       (infix~7 == r~2
+        (nil@3))
+       (infix@A !=
+        (dot~6 r~1 kind@1)rkForeign@3))
+      (infix@B ==
+       (dot~7 r~1 haddr@1)
+       (suf@3 0u "u64")))
+     (stmts@r
+      (ret 0@7))))
+   (if@,5
+    (elif@3
+     (infix@7 >=
+      (dot~6 r~1 hlen@1)0@3)
+     (stmts@D
+      (ret
+       (dot@8 r~1 hlen@1)))))
+   (const@6,6 ForeignScanMax . . .
+    (infix@J shl 1~2 20@4))
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@8 < i~2 ForeignScanMax@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@O ==
+        (call~D foreignByte~B
+         (dot@2 r~1 haddr@1)i@A)
+        (suf@3 0u "u8"))
+       (stmts@X
+        (ret i@7))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,B result~7 ForeignScanMax@2)))
+ (proc@,3z setByteAt@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q b . . byte@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 or
+      (infix~7 == r~2
+       (nil@3))
+      (infix@7 < off~4 0@2))
+     (stmts@L
+      (ret .))))
+   (case@,1
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkBytes@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@4 < off~4
+         (dot@9
+          (dot~6 r~1 bytes@1)len@1))
+        (stmts@J
+         (asgn@D
+          (at~6
+           (dot~6 r~1 bytes@1)off@1)b@2))))))
+    (of@,3
+     (ranges rkForeign@3)
+     (stmts@2,6
+      (discard .)))
+    (of@,A
+     (ranges rkArr@3)
+     (stmts@2,1
+      (let@4 eb . . .
+       (call@E elemBytes~9
+        (dot@2 r~1 aEbits@1)))
+      (let@4,1 ei . . .
+       (infix@9 div off~4 eb@4))
+      (let@4,2 bi . . .
+       (infix@9 mod off~4 eb@4))
+      (if@,3
+       (elif@3
+        (infix@Q and
+         (infix~C and
+          (infix~7 !=
+           (dot~6 r~1 abox@1)
+           (nil@3))
+          (infix@7 >= ei~3 0@3))
+         (infix@7 < ei~3
+          (dot@E
+           (dot~6
+            (dot~5 r~1 abox@1)elems@1)len@1)))
+        (stmts~1,1
+         (call@B setCellByte~B
+          (at@D
+           (dot~6
+            (dot~5 r~1 abox@1)elems@1)ei@1)bi@J b@N))))))
+    (of@,G
+     (ranges rkSeq@3)
+     (stmts@2,1
+      (let@4 eb . . .
+       (call@E elemBytes~9
+        (dot@2 r~1 sEbits@1)))
+      (let@4,1 ei . . .
+       (infix@9 div off~4 eb@4))
+      (let@4,2 bi . . .
+       (infix@9 mod off~4 eb@4))
+      (if@,3
+       (elif@3
+        (infix@Q and
+         (infix~C and
+          (infix~7 !=
+           (dot~6 r~1 sbox@1)
+           (nil@3))
+          (infix@7 >= ei~3 0@3))
+         (infix@7 < ei~3
+          (dot@E
+           (dot~6
+            (dot~5 r~1 sbox@1)elems@1)len@1)))
+        (stmts~1,1
+         (call@B setCellByte~B
+          (at@D
+           (dot~6
+            (dot~5 r~1 sbox@1)elems@1)ei@1)bi@J b@N))))))
+    (of@,M
+     (ranges rkStr@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@k and
+         (infix~V and
+          (infix~7 !=
+           (dot~7 r~1 scell@1)
+           (nil@3))
+          (infix@J ==
+           (dot~6
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)kind@1)vkString@3))
+         (infix@8 < off~4
+          (dot@G
+           (dot~5
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)sval@1)len@1)))
+        (stmts~1,1
+         (var@4 s . . .
+          (dot@D
+           (dot~2
+            (dot~6 r~1 scell@1)v@1)sval@1))
+         (asgn@7,1
+          (at~6 s~1 off@1)
+          (call@6 char~4 b@1))
+         (asgn@A,2
+          (dot~3
+           (dot~6 r~1 scell@1)v@1)
+          (call@6 vStr~4 s@1)))))))
+    (of@,R
+     (ranges rkCell@3)
+     (stmts@2,1
+      (call@B setCellByte~B
+       (dot@2 r~1 ccell@1)off@A b@F)))
+    (of@,T
+     (ranges rkObj@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 r~1 obox@1)
+         (nil@3))
+        (stmts@F
+         (ret .))))
+      (var@4,1 best . . . -1@7)
+      (var@4,2 bestOff . . . -1@A)
+      (var@4,3 i . . . 0@4)
+      (while@,4
+       (infix@L and
+        (infix~D < i~2
+         (dot@8
+          (dot~5 r~1 offs@1)len@1))
+        (infix@6 < i~2
+         (dot@E
+          (dot~6
+           (dot~5 r~1 obox@1)cells@1)len@1)))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@H and
+           (infix~7 <=
+            (at~4
+             (dot~5 r~1 offs@1)i@1)off@3)
+           (infix@E >
+            (at~4
+             (dot~5 r~1 offs@1)i@1)bestOff@2))
+          (stmts~1,1
+           (asgn@8 bestOff~8
+            (at@8
+             (dot~5 r~1 offs@1)i@1))
+           (asgn@Q best~5 i@2))))
+        (cmd@,2 inc i@4)))
+      (if@,8
+       (elif@3
+        (infix@5 >= best~5 0@3)
+        (stmts~1,1
+         (call@B setCellByte~B
+          (at@D
+           (dot~6
+            (dot~5 r~1 obox@1)cells@1)best@1)
+          (infix@P \2D off~4 bestOff@2)b@a)))))))))
+ (proc@,4j flLoadRaw@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@B .)
+   (param@L bits . . int@6 .))uint64@X . .
+  (stmts@2,1
+   (let@4 nb . . .
+    (call@E elemBytes~9 bits@1))
+   (var@4,1 u . . .
+    (suf@4 0u "u64"))
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2 nb@2)
+    (stmts@2,1
+     (asgn@2 u~2
+      (infix@4 or u~2
+       (par@3
+        (infix@S shl
+         (call~L uint64~6
+          (call@7 byteAt~6 r@1
+           (infix@8 \2B off~4 i@2)))
+         (par@4
+          (infix@9 *
+           (call~4 uint~4 i@1)8u@2))))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,6 result~7 u@2)))
+ (proc@,4s flValueFromRaw@5 x . .
+  (params@K
+   (param@1 u . . uint64@3 .)
+   (param@C bits . . int@6 .)
+   (param@N code . . TCode@6 .))Value@b . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@6 vNil~4))
+   (case@,2 code@5
+    (of@,1
+     (ranges tcF@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@5 == bits~5 32@3)
+        (stmts@C
+         (asgn@7 result~7
+          (call@8 vFloat~6
+           (call@8 float64~7
+            (cast@1 float32@5
+             (call@K uint32~6
+              (infix@3 and u~2
+               (suf@4 4294967295u "u64")))))32@t))))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7
+          (call@8 vFloat~6
+           (cast@1 float64@5 u@E)64@J)))))))
+    (of@,4
+     (ranges tcI@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@F reinterpToInt~D u@1 bits@4 true@A))))
+    (of@,6
+     (ranges tcBool@3)
+     (stmts@2,3
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@I !=
+         (par~H
+          (infix@3 and u~2
+           (suf@4 255u "u64")))
+         (suf@3 0u "u64"))))))
+    (of@,A
+     (ranges tcChar@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vChar~5
+        (call@5 char~4
+         (call@6 uint8~5
+          (infix@3 and u~2
+           (suf@4 255u "u64"))))))))
+    (else@,C
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@F reinterpToInt~D u@1 bits@4 false@A)))))))
+ (proc@,5A flStoreRaw@5 x . .
+  (params@G
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@B .)
+   (param@L bits . . int@6 .)
+   (param@W u . . uint64@3 .)). . .
+  (stmts@2,1
+   (let@4 nb . . .
+    (call@E elemBytes~9 bits@1))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2 nb@2)
+    (stmts@2,1
+     (call@9 setByteAt~9 r@1
+      (infix@8 \2B off~4 i@2)
+      (call@H byte~4
+       (infix@P and
+        (par~O
+         (infix@3 shr u~2
+          (par@4
+           (infix@9 *
+            (call~4 uint~4 i@1)8u@2))))
+        (suf@4 255u "u64"))))
+     (cmd@,1 inc i@4)))))
+ (proc@,5Q flLoadObj@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q tsym . . SymId@6 .)
+   (param@d depth . . int@7 0@D))Value@u . . .)
+ (proc@,5R flScatterObj@5 x . .
+  (params@I
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q v . . Value@3 .)
+   (param@a depth . . int@7 0@D)). . . .)
+ (proc@,5T regionOverlayCell@5 x . .
+  (params@N
+   (param@1 r . . FlatRegion@3 .)
+   (param@G fsym . . SymId@6 .)
+   (param@T create . . bool@8 .))Cell@i . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,C result~7
+    (nil@2))
+   (if@,D
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret .))))
+   (var@4,E box . . ObjBox@5
+    (nil@E))
+   (case@,F
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkObj@3)
+     (stmts@A
+      (asgn@4 box~4
+       (dot@3 r~1 obox@1))))
+    (of@,2
+     (ranges rkBytes@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@D ==
+         (dot~C r~1 objOverlay@1)
+         (nil@3))
+        (stmts~1,1
+         (if
+          (elif@3
+           (prefix not create@4)
+           (stmts@C
+            (ret .))))
+         (asgn@D,1
+          (dot~C r~1 objOverlay@1)
+          (oconstr@8 ObjBox~6
+           (kv@6 names~5
+            (prefix@2 \40
+             (bracket@1)))
+           (kv@I cells~5
+            (prefix@2 \40
+             (bracket@1))))))))
+      (asgn@4,3 box~4
+       (dot@3 r~1 objOverlay@1))))
+    (else@,7
+     (stmts@6
+      (ret .))))
+   (if@,N
+    (elif@3
+     (infix@4 == box~4
+      (nil@3))
+     (stmts@C
+      (ret .))))
+   (var@4,O i . . . 0@4)
+   (while@,P
+    (infix@O and
+     (infix~G < i~2
+      (dot@B
+       (dot~6 box~3 names@1)len@1))
+     (infix@6 < i~2
+      (dot@B
+       (dot~6 box~3 cells@1)len@1)))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@D ==
+        (at~4
+         (dot~6 box~3 names@1)i@1)fsym@3)
+       (stmts@M
+        (ret
+         (at@G
+          (dot~6 box~3 cells@1)i@1)))))
+     (cmd@,1 inc i@4)))
+   (if@,S
+    (elif@3
+     (prefix not create@4)
+     (stmts@C
+      (ret .))))
+   (asgn@7,T result~7
+    (call@9 newCell~7
+     (call@5 vNil~4)))
+   (cmd@9,U
+    (dot
+     (dot~6 box~3 names@1)add@1)fsym@5)
+   (cmd@9,V
+    (dot
+     (dot~6 box~3 cells@1)add@1)result@5)))
+ (proc@,61 flLoadFieldAt@5 . . .
+  (params@I
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q fo . . FieldOff@4 .)
+   (param@e depth . . int@7 .))Value@r . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 ==
+      (dot~6 fo~2 code@1)tcNone@3)
+     (stmts~1,8
+      (let@4 c . . .
+       (call@L regionOverlayCell~H r@1
+        (dot@6 fo~2 sym@1)false@C))
+      (asgn@7,1 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@2 != c~2
+           (nil@3))
+          (dot@B c~1 v@1))
+         (else@H
+          (call@A vNil~4)))))))
+    (elif@5,A
+     (infix@8 ==
+      (dot~6 fo~2 code@1)tcObj@3)
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@B flLoadObj~9 r@1 off@4
+        (dot@B fo~2 tsym@1)
+        (infix@O \2B depth~6 1@2)))))
+    (elif@5,C
+     (infix@8 ==
+      (dot~6 fo~2 code@1)tcBool@3)
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@M !=
+         (call~C flLoadRaw~9 r@1 off@4 8@9)
+         (suf@3 0u "u64"))))))
+    (elif@5,E
+     (infix@8 ==
+      (dot~6 fo~2 code@1)tcChar@3)
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@7 vChar~5
+        (call@5 char~4
+         (call@6 uint8~5
+          (infix@M and
+           (call~C flLoadRaw~9 r@1 off@4 8@9)
+           (suf@4 255u "u64"))))))))
+    (else@,G
+     (stmts@2,1
+      (let@4 bits . . .
+       (expr
+        (stmts@7)
+        (if@1
+         (elif@3
+          (infix@8 >
+           (dot~6 fo~2 size@1)0@2)
+          (infix@L *
+           (dot~6 fo~2 size@1)8@2))
+         (else@S 8@6))))
+      (asgn@7,1 result~7
+       (call@G flValueFromRaw~E
+        (call@A flLoadRaw~9 r@1 off@4 bits@9)bits@Q
+        (dot@Y fo~2 code@1))))))))
+ (proc@,6M flLoadObj@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q tsym . . SymId@6 .)
+   (param@d depth . . int@7 0@D))Value@u . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7
+    (call@6 vNil~4))
+   (if@,5
+    (elif@3
+     (infix@9 or
+      (infix~7 == r~2
+       (nil@3))
+      (infix@9 > depth~6 8@2))
+     (stmts@N
+      (ret .))))
+   (let@4,6 fos . . .
+    (call@O fieldOffsetsOfType~I tsym@1))
+   (if@,7
+    (elif@3
+     (infix@8 ==
+      (dot~5 fos~3 len@1)0@3)
+     (stmts@E
+      (ret .))))
+   (var@4,8 box . . .
+    (oconstr@C ObjBox~6
+     (kv@8 typeSym~7 tsym@2)
+     (kv@L names~5
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@X cells~5
+      (prefix@2 \40
+       (bracket@1)))))
+   (for@4,9 fos@6
+    (unpackflat
+     (let fo . . ..))
+    (stmts~2,1
+     (cmd@9
+      (dot
+       (dot~6 box~3 names@1)add@1)
+      (dot@7 fo~2 sym@1))
+     (cmd@9,1
+      (dot
+       (dot~6 box~3 cells@1)add@1)
+      (call@C newCell~7
+       (call@E flLoadFieldAt~D r@1
+        (infix@8 \2B off~4
+         (dot@4 fo~2 off@1))fo@I depth@M)))))
+   (asgn@7,C result~7
+    (oconstr@7 Value~5
+     (kv@5 kind~4 vkObject@2)
+     (kv@K obj~3 box@2)))))
+ (proc@,6b flScatterObj@5 x . .
+  (params@I
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@5 .)
+   (param@Q v . . Value@3 .)
+   (param@a depth . . int@7 0@D)). . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@9 or
+      (infix~7 == r~2
+       (nil@3))
+      (infix@9 > depth~6 8@2))
+     (stmts@N
+      (ret .))))
+   (if@,4
+    (elif@3
+     (infix@J and
+      (infix~C !=
+       (dot~6 v~1 kind@1)vkObject@3)
+      (infix@B !=
+       (dot~6 v~1 kind@1)vkTuple@3))
+     (stmts@g
+      (ret .))))
+   (if@,5
+    (elif@3
+     (infix@6 ==
+      (dot~5 v~1 obj@1)
+      (nil@3))
+     (stmts@E
+      (ret .))))
+   (let@4,6 fos . . .
+    (call@O fieldOffsetsOfType~I
+     (dot@6
+      (dot~4 v~1 obj@1)typeSym@1)))
+   (if@,7
+    (elif@3
+     (infix@8 ==
+      (dot~5 fos~3 len@1)0@3)
+     (stmts@E
+      (ret .))))
+   (var@4,8 i . . . 0@4)
+   (while@,9
+    (infix@Q and
+     (infix~I < i~2
+      (dot@D
+       (dot~6
+        (dot~4 v~1 obj@1)names@1)len@1))
+     (infix@6 < i~2
+      (dot@D
+       (dot~6
+        (dot~4 v~1 obj@1)cells@1)len@1)))
+    (stmts@2,1
+     (for@4 fos@6
+      (unpackflat
+       (let fo . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@7 ==
+          (dot~5 fo~2 sym@1)
+          (at@E
+           (dot~6
+            (dot~4 v~1 obj@1)names@1)i@1))
+         (stmts~1,1
+          (let@4 c . . .
+           (at@F
+            (dot~6
+             (dot~4 v~1 obj@1)cells@1)i@1))
+          (if@,1
+           (elif@3
+            (infix@2 != c~2
+             (nil@3))
+            (stmts~1,1
+             (if
+              (elif@3
+               (infix@8 ==
+                (dot~6 fo~2 code@1)tcNone@3)
+               (stmts~1,4
+                (let@4 oc . . .
+                 (call@M regionOverlayCell~H r@1
+                  (dot@6 fo~2 sym@1)true@C))
+                (if@,1
+                 (elif@3
+                  (infix@3 != oc~3
+                   (nil@3))
+                  (stmts@B
+                   (asgn@5
+                    (dot~3 oc~2 v@1)
+                    (dot@3 c~1 v@1)))))))
+              (elif@5,6
+               (infix@8 ==
+                (dot~6 fo~2 code@1)tcObj@3)
+               (stmts@I
+                (call@C flScatterObj~C r@1
+                 (infix@8 \2B off~4
+                  (dot@4 fo~2 off@1))
+                 (dot@J c~1 v@1)
+                 (infix@T \2B depth~6 1@2))))
+              (else@,7
+               (stmts@6
+                (call@A flStoreRaw~A r@1
+                 (infix@8 \2B off~4
+                  (dot@4 fo~2 off@1))
+                 (expr
+                  (stmts@I)
+                  (if@1
+                   (elif@3
+                    (infix@8 >
+                     (dot~6 fo~2 size@1)0@2)
+                    (infix@L *
+                     (dot~6 fo~2 size@1)8@2))
+                   (else@S 8@6)))
+                 (call@C,1 scalarToU64~B
+                  (dot@2 c~1 v@1)))))))))
+          (break@,B .))))))
+     (cmd@,E inc i@4)))))
+ (proc@,72 flStoreOverlayObj@5 x . .
+  (params@N
+   (param@1 r . . FlatRegion@3 .)
+   (param@G v . . Value@3 .))bool@R . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,G result~7 false@2)
+   (if@,H
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret .))))
+   (if@,I
+    (elif@3
+     (infix@J and
+      (infix~C !=
+       (dot~6 v~1 kind@1)vkObject@3)
+      (infix@B !=
+       (dot~6 v~1 kind@1)vkTuple@3))
+     (stmts@g
+      (ret .))))
+   (if@,J
+    (elif@3
+     (infix@6 ==
+      (dot~5 v~1 obj@1)
+      (nil@3))
+     (stmts@E
+      (ret .))))
+   (if@,K
+    (elif@3
+     (infix@I and
+      (infix~B !=
+       (dot~6 r~1 kind@1)rkBytes@3)
+      (infix@B !=
+       (dot~6 r~1 kind@1)rkObj@3))
+     (stmts@d
+      (ret .))))
+   (var@4,L i . . . 0@4)
+   (while@,M
+    (infix@Q and
+     (infix~I < i~2
+      (dot@D
+       (dot~6
+        (dot~4 v~1 obj@1)names@1)len@1))
+     (infix@6 < i~2
+      (dot@D
+       (dot~6
+        (dot~4 v~1 obj@1)cells@1)len@1)))
+    (stmts@2,1
+     (let@4 c . . .
+      (at@F
+       (dot~6
+        (dot~4 v~1 obj@1)cells@1)i@1))
+     (if@,1
+      (elif@3
+       (infix@2 != c~2
+        (nil@3))
+       (stmts~1,1
+        (let@4 oc . . .
+         (call@M regionOverlayCell~H r@1
+          (at@F
+           (dot~6
+            (dot~4 v~1 obj@1)names@1)i@1)true@K))
+        (if@,1
+         (elif@3
+          (infix@3 != oc~3
+           (nil@3))
+          (stmts@B
+           (asgn@5
+            (dot~3 oc~2 v@1)
+            (dot@3 c~1 v@1))))))))
+     (cmd@,4 inc i@4)))
+   (if@,S
+    (elif@3
+     (infix@g and
+      (infix~O and
+       (infix~B ==
+        (dot~6 r~1 kind@1)rkBytes@3)
+       (infix@H !=
+        (dot~C r~1 objOverlay@1)
+        (nil@3)))
+      (infix@I !=
+       (dot~9
+        (dot~4 v~1 obj@1)typeSym@1)
+       (call@A default~7 SymId@1)))
+     (stmts~1,1
+      (asgn@L
+       (dot~9
+        (dot~B r~1 objOverlay@1)typeSym@1)
+       (dot@7
+        (dot~4 v~1 obj@1)typeSym@1)))))
+   (asgn@7,U result~7 true@2)))
+ (proc@,7Z flOverlayValue@5 x . .
+  (params@K
+   (param@1 r . . FlatRegion@3 .))Value@H . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,A result~7
+    (call@6 vNil~4))
+   (if@,B
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret .))))
+   (var@4,C box . . ObjBox@5
+    (nil@E))
+   (case@,D
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkObj@3)
+     (stmts@A
+      (asgn@4 box~4
+       (dot@3 r~1 obox@1))))
+    (of@,2
+     (ranges rkBytes@3)
+     (stmts@C
+      (asgn@4 box~4
+       (dot@3 r~1 objOverlay@1))))
+    (else@,3
+     (stmts@6
+      (ret .))))
+   (if@,H
+    (elif@3
+     (infix@B or
+      (infix~7 == box~4
+       (nil@3))
+      (infix@H ==
+       (dot~5
+        (dot~6 box~3 cells@1)len@1)0@3))
+     (stmts@Y
+      (ret .))))
+   (asgn@7,I result~7
+    (oconstr@7 Value~5
+     (kv@5 kind~4 vkObject@2)
+     (kv@K obj~3 box@2)))))
+ (proc@,7u flFieldSlot@5 x . .
+  (params@H
+   (param@1 v . . Value@3 .)
+   (param@B fsym . . SymId@6 .))
+  (tup@P bool@1 int@7 int@C TCode@H SymId@O). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7
+    (tup@2 false@1 0@8 0@B tcU@E
+     (call@Q default~7 SymId@1)))
+   (if@,5
+    (elif@3
+     (infix@Z or
+      (infix~J or
+       (infix~9 !=
+        (dot~6 v~1 kind@1)vkPtr@3)
+       (infix@C ==
+        (dot~8 v~1 region@1)
+        (nil@3)))
+      (infix@B !=
+       (dot~7 v~1 ecode@1)tcObj@3))
+     (stmts@u
+      (ret .))))
+   (for@4,6
+    (call@O fieldOffsetsOfType~I
+     (dot@2 v~1 etype@1))
+    (unpackflat
+     (let fo . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~5 fo~2 sym@1)fsym@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (dot~6 fo~2 code@1)tcNone@3)
+          (stmts@J
+           (ret .))))
+        (ret@,1
+         (tup@7 true@1
+          (infix@I \2B
+           (dot~5
+            (dot~5 v~1 foff@1)int@1)
+           (dot@4 fo~2 off@1))
+          (expr
+           (stmts@S)
+           (if@1
+            (elif@3
+             (infix@8 >
+              (dot~6 fo~2 size@1)0@2)
+             (infix@L *
+              (dot~6 fo~2 size@1)8@2))
+            (else@S 8@6)))
+          (dot@3,1 fo~2 code@1)
+          (dot@C,1 fo~2 tsym@1))))))))))
+ (proc@,87 flFieldPtr@5 x . .
+  (params@G
+   (param@1 v . . Value@3 .)
+   (param@B fsym . . SymId@6 .))
+  (tup@P bool@1 Value@7). .
+  (stmts@2,1
+   (comment)
+   (unpackdecl@4,4
+    (call@f flFieldSlot~B v@1 fsym@4)
+    (unpacktup
+     (let ok@1 . . ..)
+     (let off@5 . . ..)
+     (let bits@A . . ..)
+     (let code@G . . ..)
+     (let tsym@M . . ..)))
+   (if@,5
+    (elif@3
+     (prefix not ok@4)
+     (stmts@8
+      (ret
+       (tup@7 false@1
+        (call@C vNil~4))))))
+   (asgn@7,6 result~7
+    (tup@2 true@1
+     (call@F vPtrRegT~8
+      (dot@2 v~1 region@1)
+      (call@G int32~5 off@1)
+      (call@S int16~5 bits@1)code@a tsym@g)))))
+ (proc@,8G flFieldSlotIn@5 x . .
+  (params@J
+   (param@1 tsym . . SymId@6 .)
+   (param@E base . . int@6 .)
+   (param@P fsym . . SymId@6 .))
+  (tup@d bool@1 int@7 int@C TCode@H SymId@O). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (tup@2 false@1 0@8 0@B tcU@E
+     (call@Q default~7 SymId@1)))
+   (for@4,3
+    (call@O fieldOffsetsOfType~I tsym@1)
+    (unpackflat
+     (let fo . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~5 fo~2 sym@1)fsym@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (dot~6 fo~2 code@1)tcNone@3)
+          (stmts@J
+           (ret .))))
+        (ret@,1
+         (tup@7 true@1
+          (infix@C \2B base~5
+           (dot@4 fo~2 off@1))
+          (expr
+           (stmts@M)
+           (if@1
+            (elif@3
+             (infix@8 >
+              (dot~6 fo~2 size@1)0@2)
+             (infix@L *
+              (dot~6 fo~2 size@1)8@2))
+            (else@S 8@6)))
+          (dot@3,1 fo~2 code@1)
+          (dot@C,1 fo~2 tsym@1))))))))))
+ (proc@,8Q flScatter@5 x . .
+  (params@F
+   (param@1 r . . FlatRegion@3 .)
+   (param@G off . . int@B .)
+   (param@L bits . . int@6 .)
+   (param@W v . . Value@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@J or
+      (infix~C ==
+       (dot~6 v~1 kind@1)vkObject@3)
+      (infix@A ==
+       (dot~6 v~1 kind@1)vkTuple@3))
+     (stmts~1,1
+      (call@C flScatterObj~C r@1 off@4 v@9 0@C)))
+    (else@,2
+     (stmts@2,1
+      (call@A flStoreRaw~A r@1 off@4 bits@9
+       (call@Q scalarToU64~B v@1)))))))
+ (proc@,8e flLoadAt@5 x . .
+  (params@E
+   (param@1 v . . Value@3 .)
+   (param@B i . . int@3 .))Value@K . .
+  (stmts@2,1
+   (comment)
+   (let@4,1 eb . . .
+    (call@E elemBytes~9
+     (dot@B
+      (dot~9 v~1 elemBits@1)int@1)))
+   (if@,2
+    (elif@3
+     (infix@8 ==
+      (dot~7 v~1 ecode@1)tcObj@3)
+     (stmts~1,3
+      (ret
+       (call@G flLoadObj~9
+        (dot@2 v~1 region@1)
+        (infix@M \2B
+         (dot~5
+          (dot~5 v~1 foff@1)int@1)
+         (infix@4 * i~2 eb@2))
+        (dot@X v~1 etype@1)0@f)))))
+   (if@,6
+    (elif@3
+     (infix@2 == i~2 0@3)
+     (stmts~1,4
+      (let@4 ov . . .
+       (call@J flOverlayValue~E
+        (dot@2 v~1 region@1)))
+      (if@,1
+       (elif@3
+        (infix@8 ==
+         (dot~6 ov~2 kind@1)vkObject@3)
+        (stmts@L
+         (ret ov@7)))))))
+   (let@4,C raw . . .
+    (call@F flLoadRaw~9
+     (dot@2 v~1 region@1)
+     (infix@M \2B
+      (dot~5
+       (dot~5 v~1 foff@1)int@1)
+      (infix@4 * i~2 eb@2))
+     (dot@g
+      (dot~9 v~1 elemBits@1)int@1)))
+   (asgn@7,D result~7
+    (call@G flValueFromRaw~E raw@1
+     (dot@G
+      (dot~9 v~1 elemBits@1)int@1)
+     (dot@N v~1 ecode@1)))))
+ (proc@,8u flDeref@5 x . .
+  (params@D
+   (param@1 v . . Value@3 .))Value@C . .
+  (stmts@X
+   (call@8 flLoadAt~8 v@1 0@4)))
+ (proc@,8v flIndexGet@5 x . .
+  (params@G
+   (param@1 v . . Value@3 .)
+   (param@B i . . int@3 .))Value@K . .
+  (stmts@i
+   (call@8 flLoadAt~8 v@1 i@4)))
+ (proc@,8x flStoreAt@5 x . .
+  (params@F
+   (param@1 v . . Value@3 .)
+   (param@B i . . int@3 .)
+   (param@J val . . Value@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,1 eb . . .
+    (call@E elemBytes~9
+     (dot@B
+      (dot~9 v~1 elemBits@1)int@1)))
+   (if@,7
+    (elif@3
+     (infix@S and
+      (infix~L and
+       (infix~5 == i~2 0@3)
+       (infix@C !=
+        (dot~7 v~1 ecode@1)tcObj@3))
+      (par@4
+       (infix@M or
+        (infix~C ==
+         (dot~6 val~3 kind@1)vkObject@3)
+        (infix@C ==
+         (dot~6 val~3 kind@1)vkTuple@3))))
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@H flStoreOverlayObj~H
+         (dot@2 v~1 region@1)val@B)
+        (stmts@Y
+         (ret .)))))))
+   (call@9,9 flScatter~9
+    (dot@2 v~1 region@1)
+    (infix@M \2B
+     (dot~5
+      (dot~5 v~1 foff@1)int@1)
+     (infix@4 * i~2 eb@2))
+    (dot@g
+     (dot~9 v~1 elemBits@1)int@1)val@m)))
+ (proc@,99 flStoreDeref@5 x . .
+  (params@I
+   (param@1 v . . Value@3 .)
+   (param@B val . . Value@5 .)). . .
+  (stmts@h
+   (call@9 flStoreAt~9 v@1 0@4 val@7)))
+ (proc@,9E codeMatch@5 . . .
+  (params@E
+   (param@1 boxCode . . TCode@G .)
+   (param@A tcode . . TCode@7 .))bool@P . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 == boxCode~8 tcode@3)
+     (stmts@I
+      (ret true@7))))
+   (if@,2
+    (elif@3
+     (infix@H and
+      (infix~9 == boxCode~8 tcRaw@3)
+      (par@4
+       (infix@E or
+        (infix~7 == tcode~6 tcU@3)
+        (infix@9 == tcode~6 tcRaw@3))))
+     (stmts@t
+      (ret true@7))))
+   (asgn@7,3 result~7 false@2)))
+ (proc@,9K needsView@5 . . .
+  (params@E
+   (param@1 boxBits . . int@G .)
+   (param@A tbits . . int@7 .)
+   (param@M boxCode . . TCode@G .)
+   (param@V tcode . . TCode@7 .))bool@k . .
+  (stmts@2,9
+   (if
+    (elif@3
+     (infix@F or
+      (infix~9 == tcode~6 tcObj@3)
+      (infix@B == boxCode~8 tcObj@3))
+     (stmts@a
+      (ret true@7))))
+   (if@,1
+    (elif@3
+     (infix@8 != boxBits~8 tbits@3)
+     (stmts@I
+      (ret true@7))))
+   (if@,2
+    (elif@3
+     (infix@D or
+      (infix~7 == tcode~6 tcF@3)
+      (infix@B == boxCode~8 tcF@3))
+     (stmts@W
+      (ret
+       (infix@D != tcode~6 boxCode@3)))))
+   (if@,3
+    (elif@3
+     (infix@D and
+      (infix~7 == tcode~6 tcI@3)
+      (infix@C != boxCode~8 tcI@3))
+     (stmts@X
+      (ret true@7))))
+   (asgn@7,4 result~7 false@2)))
+ (proc@,9Z arrElemInfo@5 . . .
+  (params@G
+   (param@1 box . . ArrBox@5 .))
+  (tup@F int@1 TCode@6). .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B and
+      (infix~7 != box~4
+       (nil@3))
+      (infix@I >
+       (dot~5
+        (dot~6 box~3 elems@1)len@1)0@2))
+     (stmts~1,1
+      (let@4 v . . .
+       (dot@G
+        (at~3
+         (dot~6 box~3 elems@1)0@1)v@1))
+      (case@,1
+       (dot@6 v~1 kind@1)
+       (of@,1
+        (ranges vkUInt@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcU@C))))
+       (of@,2
+        (ranges vkInt@3)
+        (stmts@A
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcI@C))))
+       (of@,3
+        (ranges vkFloat@3)
+        (stmts@C
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcF@C))))
+       (of@,4
+        (ranges vkChar@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (of@,5
+        (ranges vkBool@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (else@,6
+        (stmts@6
+         (asgn@7 result~7
+          (tup@2 0@1 tcRaw@4)))))))
+    (else@,9
+     (stmts@6
+      (asgn@7 result~7
+       (tup@2 0@1 tcRaw@4)))))))
+ (proc@,9l seqElemInfo@5 . . .
+  (params@G
+   (param@1 box . . SeqBox@5 .))
+  (tup@F int@1 TCode@6). .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B and
+      (infix~7 != box~4
+       (nil@3))
+      (infix@I >
+       (dot~5
+        (dot~6 box~3 elems@1)len@1)0@2))
+     (stmts~1,1
+      (let@4 v . . .
+       (dot@G
+        (at~3
+         (dot~6 box~3 elems@1)0@1)v@1))
+      (case@,1
+       (dot@6 v~1 kind@1)
+       (of@,1
+        (ranges vkUInt@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcU@C))))
+       (of@,2
+        (ranges vkInt@3)
+        (stmts@A
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcI@C))))
+       (of@,3
+        (ranges vkFloat@3)
+        (stmts@C
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcF@C))))
+       (of@,4
+        (ranges vkChar@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (of@,5
+        (ranges vkBool@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (else@,6
+        (stmts@6
+         (asgn@7 result~7
+          (tup@2 0@1 tcRaw@4)))))))
+    (else@,9
+     (stmts@6
+      (asgn@7 result~7
+       (tup@2 0@1 tcRaw@4)))))))
+ (proc@,9x cellElemInfo@5 . . .
+  (params@H
+   (param@1 c . . Cell@3 .))
+  (tup@B int@1 TCode@6). .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@2 != c~2
+      (nil@3))
+     (stmts~1,1
+      (let@4 v . . .
+       (dot@5 c~1 v@1))
+      (case@,1
+       (dot@6 v~1 kind@1)
+       (of@,1
+        (ranges vkUInt@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcU@C))))
+       (of@,2
+        (ranges vkInt@3)
+        (stmts@A
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcI@C))))
+       (of@,3
+        (ranges vkFloat@3)
+        (stmts@C
+         (asgn@7 result~7
+          (tup@2
+           (call@7 bitsOf~6 v@1)tcF@C))))
+       (of@,4
+        (ranges vkChar@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (of@,5
+        (ranges vkBool@3)
+        (stmts@B
+         (asgn@7 result~7
+          (tup@2 8@1 tcRaw@4))))
+       (else@,6
+        (stmts@6
+         (asgn@7 result~7
+          (tup@2 0@1 tcRaw@4)))))))
+    (else@,9
+     (stmts@6
+      (asgn@7 result~7
+       (tup@2 0@1 tcRaw@4)))))))
+ (proc@,A9 flCastPtr@5 x . .
+  (params@F
+   (param@1 v . . Value@3 .)
+   (param@B tbits . . int@7 .)
+   (param@N tcode . . TCode@7 .)
+   (param@b etype . . SymId@7
+    (call@M default~7 SymId@1)))Value@17 . .
+  (stmts@2,1
+   (comment)
+   (if@,M
+    (elif@3
+     (infix@7 !=
+      (dot~6 v~1 kind@1)vkPtr@3)
+     (stmts@H
+      (ret v@7))))
+   (asgn@7,N result~7 v@2)
+   (if@,P
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 region@1)
+      (nil@3))
+     (stmts~1,1
+      (let@4 ov . . .
+       (call@A ovMut~5 result@1))
+      (asgn@C,1
+       (dot~A ov~2 elemBits@1)
+       (call@7 int16~5 tbits@1))
+      (asgn@9,2
+       (dot~7 ov~2 ecode@1)tcode@2)
+      (asgn@9,3
+       (dot~7 ov~2 etype@1)
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@6 == tcode~6 tcObj@3)etype@G)
+         (else@P
+          (call@D default~7 SymId@1)))))
+      (ret@,4 .))))
+   (if@,V
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 arrOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@W arrElemInfo~B
+        (dot@2 v~1 arrOwn@1))
+       (unpacktup
+        (let boxBits@1 . . ..)
+        (let boxCode@A . . ..)))
+      (if@,1
+       (elif@3
+        (infix@D or
+         (infix~5 == boxBits~8 0@3)
+         (prefix@3 not
+          (call@D needsView~9 boxBits@1 tbits@A boxCode@H tcode@Q)))
+        (stmts~1,1
+         (ret .))))
+      (if@,3
+       (elif@3
+        (infix@E ==
+         (dot~6
+          (dot~7 v~1 arrOwn@1)flat@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@E
+          (dot~6
+           (dot~7 v~1 arrOwn@1)flat@1)
+          (oconstr@C FlatRegion~A
+           (kv@5 kind~4 rkArr@2)
+           (kv@I abox~4
+            (dot@3 v~1 arrOwn@1))
+           (kv@7,1 aEbits~6 boxBits@2)
+           (kv@O,1 aEcode~6 boxCode@2))))))
+      (let@4,6 ov . . .
+       (call@A ovMut~5 result@1))
+      (asgn@A,7
+       (dot~8 ov~2 region@1)
+       (dot@A
+        (dot~7 v~1 arrOwn@1)flat@1))
+      (asgn@8,8
+       (dot~6 ov~2 foff@1)
+       (call@7 int32~5
+        (infix@8 *
+         (dot~6 v~1 base@1)
+         (call@B elemBytes~9 boxBits@1))))
+      (asgn@C,9
+       (dot~A ov~2 elemBits@1)
+       (call@7 int16~5 tbits@1))
+      (asgn@9,A
+       (dot~7 ov~2 ecode@1)tcode@2)
+      (asgn@9,B
+       (dot~7 ov~2 etype@1)
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@6 == tcode~6 tcObj@3)etype@G)
+         (else@P
+          (call@D default~7 SymId@1)))))
+      (ret@,C .))))
+   (if@,j
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 seqOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@W seqElemInfo~B
+        (dot@2 v~1 seqOwn@1))
+       (unpacktup
+        (let boxBits@1 . . ..)
+        (let boxCode@A . . ..)))
+      (if@,1
+       (elif@3
+        (infix@D or
+         (infix~5 == boxBits~8 0@3)
+         (prefix@3 not
+          (call@D needsView~9 boxBits@1 tbits@A boxCode@H tcode@Q)))
+        (stmts~1,1
+         (ret .))))
+      (if@,3
+       (elif@3
+        (infix@E ==
+         (dot~6
+          (dot~7 v~1 seqOwn@1)flat@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@E
+          (dot~6
+           (dot~7 v~1 seqOwn@1)flat@1)
+          (oconstr@C FlatRegion~A
+           (kv@5 kind~4 rkSeq@2)
+           (kv@I sbox~4
+            (dot@3 v~1 seqOwn@1))
+           (kv@7,1 sEbits~6 boxBits@2)
+           (kv@O,1 sEcode~6 boxCode@2))))))
+      (let@4,6 ov . . .
+       (call@A ovMut~5 result@1))
+      (asgn@A,7
+       (dot~8 ov~2 region@1)
+       (dot@A
+        (dot~7 v~1 seqOwn@1)flat@1))
+      (asgn@8,8
+       (dot~6 ov~2 foff@1)
+       (call@7 int32~5
+        (infix@8 *
+         (dot~6 v~1 base@1)
+         (call@B elemBytes~9 boxBits@1))))
+      (asgn@C,9
+       (dot~A ov~2 elemBits@1)
+       (call@7 int16~5 tbits@1))
+      (asgn@9,A
+       (dot~7 ov~2 ecode@1)tcode@2)
+      (asgn@9,B
+       (dot~7 ov~2 etype@1)
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@6 == tcode~6 tcObj@3)etype@G)
+         (else@P
+          (call@D default~7 SymId@1)))))
+      (ret@,C .))))
+   (if@,x
+    (elif@3
+     (infix@6 !=
+      (dot~5 v~1 loc@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@X cellElemInfo~C
+        (dot@2 v~1 loc@1))
+       (unpacktup
+        (let boxBits@1 . . ..)
+        (let boxCode@A . . ..)))
+      (if@,1
+       (elif@3
+        (infix@D or
+         (infix~5 == boxBits~8 0@3)
+         (prefix@3 not
+          (call@D needsView~9 boxBits@1 tbits@A boxCode@H tcode@Q)))
+        (stmts~1,1
+         (ret .))))
+      (let@4,3 ov . . .
+       (call@A ovMut~5 result@1))
+      (asgn@A,4
+       (dot~8 ov~2 region@1)
+       (oconstr@C FlatRegion~A
+        (kv@5 kind~4 rkCell@2)
+        (kv@K ccell~5
+         (dot@3 v~1 loc@1))))
+      (asgn@8,5
+       (dot~6 ov~2 foff@1)0@2)
+      (asgn@C,6
+       (dot~A ov~2 elemBits@1)
+       (call@7 int16~5 tbits@1))
+      (asgn@9,7
+       (dot~7 ov~2 ecode@1)tcode@2)
+      (asgn@9,8
+       (dot~7 ov~2 etype@1)
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@6 == tcode~6 tcObj@3)etype@G)
+         (else@P
+          (call@D default~7 SymId@1)))))
+      (ret@,9 .))))))
+ (proc@,BN flAddrOfIndex@5 x . .
+  (params@J
+   (param@1 recv . . Value@6 .)
+   (param@E i . . int@3 .))Value@N . .
+  (stmts@2,1
+   (var@4 arrOwn . . ArrBox@8
+    (nil@H))
+   (var@4,1 seqOwn . . SeqBox@8
+    (nil@H))
+   (var@4,2 base . . . 0@7)
+   (var@4,3 c . . Cell@3
+    (nil@A))
+   (var@4,4 rv . . . recv@5)
+   (if@,5
+    (elif@3
+     (infix@H and
+      (infix~9 ==
+       (dot~6 rv~2 kind@1)vkPtr@3)
+      (infix@B !=
+       (dot~5 rv~2 loc@1)
+       (nil@3)))
+     (stmts@a
+      (asgn@3 rv~3
+       (dot@8
+        (dot~4 rv~2 loc@1)v@1))))
+    (elif@5,1
+     (infix@H and
+      (infix~9 ==
+       (dot~6 rv~2 kind@1)vkRef@3)
+      (infix@A !=
+       (dot~4 rv~2 rf@1)
+       (nil@3)))
+     (stmts@Z
+      (asgn@3 rv~3
+       (dot@7
+        (dot~3 rv~2 rf@1)v@1)))))
+   (case@,7
+    (dot@7 rv~2 kind@1)
+    (of@,1
+     (ranges vkArray@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 !=
+         (dot~5 rv~2 arr@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@7 arrOwn~7
+          (dot@4 rv~2 arr@1))
+         (asgn@5,1 base~5
+          (infix@4 \2D i~2
+           (dot@8
+            (dot~4 rv~2 arr@1)lo@1)))
+         (if@,2
+          (elif@3
+           (infix@A and
+            (infix~5 >= base~5 0@3)
+            (infix@9 < base~5
+             (dot@E
+              (dot~6 arrOwn~6 elems@1)len@1)))
+           (stmts@d
+            (asgn@2 c~2
+             (at@E
+              (dot~6 arrOwn~6 elems@1)base@1))))))))))
+    (of@,6
+     (ranges vkSeq@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@6 !=
+         (dot~4 rv~2 sq@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@7 seqOwn~7
+          (dot@4 rv~2 sq@1))
+         (asgn@5,1 base~5 i@2)
+         (if@,2
+          (elif@3
+           (infix@A and
+            (infix~5 >= base~5 0@3)
+            (infix@9 < base~5
+             (dot@E
+              (dot~6 seqOwn~6 elems@1)len@1)))
+           (stmts@d
+            (asgn@2 c~2
+             (at@E
+              (dot~6 seqOwn~6 elems@1)base@1))))))))))
+    (else@,B
+     (stmts@6
+      (discard .))))
+   (asgn@7,J result~7
+    (call@9 vPtrArr~7 c@1 arrOwn@4 seqOwn@C base@K))))
+ (proc@,Bo flStoreTarget@5 x . .
+  (params@J
+   (param@1 recv . . Value@6 .)
+   (param@E i . . int@3 .))
+  (tup@N bool@1 FlatRegion@7 int@J int@O TCode@T). .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@J and
+      (infix~9 ==
+       (dot~6 recv~4 kind@1)vkPtr@3)
+      (infix@G !=
+       (dot~8 recv~4 region@1)
+       (nil@3)))
+     (stmts~1,1
+      (let@4 eb . . .
+       (call@E elemBytes~9
+        (dot@E
+         (dot~9 recv~4 elemBits@1)int@1)))
+      (asgn@7,1 result~7
+       (tup@2 true@1
+        (dot@B recv~4 region@1)
+        (infix@Y \2B
+         (dot~5
+          (dot~5 recv~4 foff@1)int@1)
+         (infix@4 * i~2 eb@2))
+        (dot@v
+         (dot~9 recv~4 elemBits@1)int@1)
+        (dot@15 recv~4 ecode@1)))))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7
+       (tup@2 false@1
+        (nil@8)0@D 0@G tcU@J)))))))
+ (const@6,C3 RegionSlotBits . . . 34@H)
+ (const@6,C4 RegionSlot . . .
+  (infix@J shl
+   (suf~6 1u "u64")RegionSlotBits@4))
+ (var@4,C5 regionTable . .
+  (at@G seq~3 FlatRegion@1)
+  (prefix@V \40
+   (bracket@1)))
+ (proc@,C7 regionSlotAddr@5 x . .
+  (params@K
+   (param@1 r . . FlatRegion@3 .))uint64@H . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret
+       (suf@7 0u "u64")))))
+   (var@4,3 idx . . . -1@6)
+   (for@4,4
+    (infix@7 \2E\2E< 0~2
+     (dot@F regionTable~B len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@F ==
+        (at~4 regionTable~B i@1)r@3)
+       (stmts@L
+        (asgn@4 idx~4 i@2)
+        (break@9 .))))))
+   (if@,6
+    (elif@3
+     (infix@4 < idx~4 0@2)
+     (stmts~1,1
+      (asgn@4 idx~4
+       (dot@D regionTable~B len@1))
+      (cmd@B,1
+       (dot regionTable~B add@1)r@5))))
+   (asgn@7,9 result~7
+    (infix@O *
+     (par~M
+      (infix@D \2B
+       (call~6 uint64~6 idx@1)
+       (suf@2 1u "u64")))RegionSlot@2))))
+ (proc@,CJ regionAddr@5 x . .
+  (params@G
+   (param@1 v . . Value@3 .))uint64@C . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@G or
+      (infix~9 !=
+       (dot~6 v~1 kind@1)vkPtr@3)
+      (infix@C ==
+       (dot~8 v~1 region@1)
+       (nil@3)))
+     (stmts@a
+      (ret
+       (suf@7 0u "u64")))))
+   (asgn@7,2 result~7
+    (infix@R \2B
+     (call~B regionSlotAddr~E
+      (dot@2 v~1 region@1))
+     (call@8 uint64~6
+      (call@7 uint32~6
+       (dot@2 v~1 foff@1)))))))
+ (proc@,CO addrToRegionPtr@5 x . .
+  (params@L
+   (param@1 a . . uint64@3 .)
+   (param@C bits . . int@6 .)
+   (param@N code . . TCode@6 .)
+   (param@a etype . . SymId@7
+    (call@M default~7 SymId@1)))Value@16 . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 slot . . .
+    (infix@9 div a~2 RegionSlot@4))
+   (if@,3
+    (elif@3
+     (infix@E or
+      (infix~9 == slot~5
+       (suf@3 0u "u64"))
+      (infix@8 > slot~5
+       (call@8 uint64~6
+        (dot@C regionTable~B len@1))))
+     (stmts~1,1
+      (ret
+       (call@E vPtrLoc~7
+        (call@8 default~7 Cell@1))))))
+   (let@4,5 region . . .
+    (at@K regionTable~B
+     (call@4 int~3
+      (infix@6 \2D slot~5
+       (suf@2 1u "u64")))))
+   (let@4,6 off . . .
+    (call@9 int~3
+     (infix@3 mod a~2 RegionSlot@4)))
+   (asgn@7,7 result~7
+    (call@A vPtrRegT~8 region@1
+     (call@E int32~5 off@1)
+     (call@Q int16~5
+      (if@1
+       (elif@3
+        (infix@5 > bits~5 0@2)
+        (stmts@A bits))
+       (else@I
+        (stmts@6 8))))code@t etype@z))))
+ (proc@,CY regionElemBytes@5 x . .
+  (params@L
+   (param@1 v . . Value@3 .))int@C . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@F <=
+      (dot~5
+       (dot~9 v~1 elemBits@1)int@1)0@3)
+     (stmts@L 1))
+    (else@Q
+     (stmts@6
+      (infix@F div
+       (dot~5
+        (dot~9 v~1 elemBits@1)int@1)8@4))))))
+ (const@6,D3 CellSpaceBase . . .
+  (infix@M shl
+   (suf~6 1u "u64")60@4))
+ (const@6,D5 CellSlotStride . . .
+  (infix@N shl
+   (suf~6 1u "u64")20@4))
+ (var@4,D9 cellTable . .
+  (at@E seq~3 Cell@1)
+  (prefix@N \40
+   (bracket@1)))
+ (proc@,DB cellAddr@5 x . .
+  (params@E
+   (param@1 v . . Value@3 .))uint64@C . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@G or
+      (infix~9 !=
+       (dot~6 v~1 kind@1)vkPtr@3)
+      (infix@9 ==
+       (dot~5 v~1 loc@1)
+       (nil@3)))
+     (stmts@X
+      (ret
+       (suf@7 0u "u64")))))
+   (var@4,5 idx . . . -1@6)
+   (for@4,6
+    (infix@7 \2E\2E< 0~2
+     (dot@D cellTable~9 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@D ==
+        (at~4 cellTable~9 i@1)
+        (dot@4 v~1 loc@1))
+       (stmts@N
+        (asgn@4 idx~4 i@2)
+        (break@9 .))))))
+   (if@,8
+    (elif@3
+     (infix@4 < idx~4 0@2)
+     (stmts~1,1
+      (asgn@4 idx~4
+       (dot@B cellTable~9 len@1))
+      (cmd@9,1
+       (dot cellTable~9 add@1)
+       (dot@6 v~1 loc@1)))))
+   (asgn@7,B result~7
+    (infix@G \2B CellSpaceBase~E
+     (infix@O *
+      (par~M
+       (infix@D \2B
+        (call~6 uint64~6 idx@1)
+        (suf@2 1u "u64")))CellSlotStride@2)))))
+ (proc@,DP isCellAddr@5 x . .
+  (params@G
+   (param@1 a . . uint64@3 .))bool@D
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@2,1 >= a~2
+    (infix@H \2B CellSpaceBase~E CellSlotStride@2))))
+ (proc@,DT addrToCellPtr@5 x . .
+  (params@J
+   (param@1 a . . uint64@3 .))
+  (tup@D Value@1 bool@8). .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (prefix not
+      (call@E isCellAddr~A a@1))
+     (stmts@J
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (let@4,4 rel . . .
+    (infix@8 \2D a~2 CellSpaceBase@2))
+   (if@,5
+    (elif@3
+     (infix@N !=
+      (infix~J mod rel~4 CellSlotStride@4)
+      (suf@3 0u "u64"))
+     (stmts@X
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (let@4,6 idx . . .
+    (infix@Y \2D
+     (call~P int~3
+      (infix@5 div rel~4 CellSlotStride@4))1@2))
+   (if@,7
+    (elif@3
+     (infix@8 or
+      (infix~4 < idx~4 0@2)
+      (infix@7 >= idx~4
+       (dot@C cellTable~9 len@1)))
+     (stmts@X
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (asgn@7,8 result~7
+    (tup@2
+     (call@8 vPtrLoc~7
+      (at@A cellTable~9 idx@1))true@Q))))
+ (proc@,Dh flAllocRegion@5 x . .
+  (params@J
+   (param@1 nbytes . . int@8 .)
+   (param@E zeroed . . bool@8 .))Value@T . .
+  (stmts@2,1
+   (var@4 bs . . .
+    (call@H
+     (at~6 newSeq~6 byte@1)
+     (if@1
+      (elif@3
+       (infix@7 > nbytes~7 0@2)
+       (stmts@C nbytes))
+      (else@M
+       (stmts@6 0)))))
+   (let@4,2 r . . .
+    (oconstr@E FlatRegion~A
+     (kv@5 kind~4 rkBytes@2)
+     (kv@L bytes~5 bs@2)
+     (kv@W freed~5 false@2)))
+   (asgn@7,3 result~7
+    (call@9 vPtrReg~7 r@1
+     (suf@4 0 "i32")
+     (suf@B 8 "i16")tcRaw@I))))
+ (proc@,Dn flOverlayBox@5 x . .
+  (params@I
+   (param@1 v . . Value@3 .))ObjBox@C . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@G or
+      (infix~9 !=
+       (dot~6 v~1 kind@1)vkPtr@3)
+      (infix@C ==
+       (dot~8 v~1 region@1)
+       (nil@3)))
+     (stmts@a
+      (ret
+       (nil@7)))))
+   (case@,6
+    (dot@D
+     (dot~7 v~1 region@1)kind@1)
+    (of@,1
+     (ranges rkObj@3)
+     (stmts@A
+      (asgn@7 result~7
+       (dot@A
+        (dot~7 v~1 region@1)obox@1))))
+    (of@,2
+     (ranges rkBytes@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@K ==
+         (dot~C
+          (dot~7 v~1 region@1)objOverlay@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@K
+          (dot~C
+           (dot~7 v~1 region@1)objOverlay@1)
+          (oconstr@8 ObjBox~6
+           (kv@6 names~5
+            (prefix@2 \40
+             (bracket@1)))
+           (kv@I cells~5
+            (prefix@2 \40
+             (bracket@1))))))))
+      (asgn@7,2 result~7
+       (dot@A
+        (dot~7 v~1 region@1)objOverlay@1))))
+    (else@,6
+     (stmts@6
+      (asgn@7 result~7
+       (nil@2)))))))
+ (proc@,E2 flFree@5 x . .
+  (params@C
+   (param@1 v . . Value@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@a and
+      (infix~K and
+       (infix~9 ==
+        (dot~6 v~1 kind@1)vkPtr@3)
+       (infix@D !=
+        (dot~8 v~1 region@1)
+        (nil@3)))
+      (infix@I ==
+       (dot~6
+        (dot~7 v~1 region@1)kind@1)rkBytes@3))
+     (stmts~1,1
+      (asgn@F
+       (dot~7
+        (dot~7 v~1 region@1)freed@1)true@2))))))
+ (proc@,E6 flRealloc@5 x . .
+  (params@F
+   (param@1 v . . Value@3 .)
+   (param@B newBytes . . int@A .))Value@R . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@a and
+      (infix~K and
+       (infix~9 ==
+        (dot~6 v~1 kind@1)vkPtr@3)
+       (infix@D !=
+        (dot~8 v~1 region@1)
+        (nil@3)))
+      (infix@I ==
+       (dot~6
+        (dot~7 v~1 region@1)kind@1)rkBytes@3))
+     (stmts~1,1
+      (let@4 n . . .
+       (if@4
+        (elif@3
+         (infix@9 > newBytes~9 0@2)
+         (stmts@E newBytes))
+        (else@Q
+         (stmts@6 0))))
+      (call@L,1
+       (dot~7
+        (dot~6
+         (dot~7 v~1 region@1)bytes@1)setLen@1)n@1)
+      (asgn@7,2 result~7 v@2)
+      (let@4,3 ov . . .
+       (call@A ovMut~5 result@1))
+      (asgn@C,4
+       (dot~A ov~2 elemBits@1)8@2)
+      (asgn@9,5
+       (dot~7 ov~2 ecode@1)tcRaw@2)
+      (asgn@8,6
+       (dot~6 ov~2 foff@1)0@2)))
+    (else@,8
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@F flAllocRegion~D newBytes@1 true@B)))))))
+ (proc@,EM flObjRegion@5 x . .
+  (params@H
+   (param@1 box . . ObjBox@5 .))FlatRegion@F . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@4 == box~4
+      (nil@3))
+     (stmts@C
+      (ret
+       (nil@7)))))
+   (let@4,6 fos . . .
+    (call@O fieldOffsetsOfType~I
+     (dot@4 box~3 typeSym@1)))
+   (if@,7
+    (elif@3
+     (infix@8 ==
+      (dot~5 fos~3 len@1)0@3)
+     (stmts@E
+      (ret
+       (nil@7)))))
+   (var@4,8 offs . . .
+    (call@I
+     (at~5 newSeq~6 int@1)
+     (dot@A
+      (dot~6 box~3 cells@1)len@1)))
+   (var@4,9 i . . . 0@4)
+   (while@,A
+    (infix@O and
+     (infix~G < i~2
+      (dot@B
+       (dot~6 box~3 names@1)len@1))
+     (infix@6 < i~2
+      (dot@B
+       (dot~6 box~3 cells@1)len@1)))
+    (stmts@2,1
+     (var@4 found . . . false@8)
+     (for@4,1 fos@6
+      (unpackflat
+       (let fo . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@7 ==
+          (dot~5 fo~2 sym@1)
+          (at@C
+           (dot~6 box~3 names@1)i@1))
+         (stmts~1,1
+          (asgn@8
+           (at~4 offs~4 i@1)
+           (dot@4 fo~2 off@1))
+          (asgn@O found~6 true@2)
+          (break@W .))))))
+     (if@,4
+      (elif@3
+       (prefix not found@4)
+       (stmts@B
+        (asgn@8
+         (at~4 offs~4 i@1)-1@2))))
+     (cmd@,5 inc i@4)))
+   (asgn@7,H result~7
+    (oconstr@C FlatRegion~A
+     (kv@5 kind~4 rkObj@2)
+     (kv@I obox~4 box@2)
+     (kv@T offs~4 offs@2)))))
+ (proc@,Ex lensByteSize@5 . . .
+  (params@H
+   (param@1 r . . FlatRegion@3 .))int@H . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret 0@7))))
+   (case@,6
+    (dot@6 r~1 kind@1)
+    (of@,1
+     (ranges rkBytes@3)
+     (stmts@C
+      (asgn@7 result~7
+       (dot@9
+        (dot~6 r~1 bytes@1)len@1))))
+    (of@,2
+     (ranges rkStr@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@F and
+           (infix~7 !=
+            (dot~7 r~1 scell@1)
+            (nil@3))
+           (infix@J ==
+            (dot~6
+             (dot~2
+              (dot~6 r~1 scell@1)v@1)kind@1)vkString@3))
+          (dot@z
+           (dot~5
+            (dot~2
+             (dot~6 r~1 scell@1)v@1)sval@1)len@1))
+         (else@17 0@6))))))
+    (of@,4
+     (ranges rkCell@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@8 !=
+           (dot~7 r~1 ccell@1)
+           (nil@3))
+          (infix@Y div
+           (call~C bitsOf~6
+            (dot@8
+             (dot~6 r~1 ccell@1)v@1))8@4))
+         (else@h 0@6))))))
+    (of@,6
+     (ranges rkObj@3)
+     (stmts@2,4
+      (var@4 m . . . 0@4)
+      (for@4,1
+       (dot@6 r~1 offs@1)
+       (unpackflat
+        (let o . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@7 and
+           (infix~5 >= o~2 0@3)
+           (infix@A >
+            (infix~4 \2B o~2 8@2)m@2))
+          (stmts@M
+           (asgn@2 m~2
+            (infix@4 \2B o~2 8@2)))))))
+      (asgn@7,3 result~7 m@2)))
+    (of@,E
+     (ranges rkArr@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@7 !=
+           (dot~6 r~1 abox@1)
+           (nil@3))
+          (infix@W *
+           (dot~5
+            (dot~6
+             (dot~5 r~1 abox@1)elems@1)len@1)
+           (call@B elemBytes~9
+            (dot@2 r~1 aEbits@1))))
+         (else@v 0@6))))))
+    (of@,G
+     (ranges rkSeq@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3
+          (infix@7 !=
+           (dot~6 r~1 sbox@1)
+           (nil@3))
+          (infix@W *
+           (dot~5
+            (dot~6
+             (dot~5 r~1 sbox@1)elems@1)len@1)
+           (call@B elemBytes~9
+            (dot@2 r~1 sEbits@1))))
+         (else@v 0@6))))))
+    (of@,I
+     (ranges rkForeign@3)
+     (stmts@2,5
+      (asgn@7 result~7
+       (call@C foreignLen~A r@1)))))))
+ (var@4,FT cellLensTable . .
+  (at@I seq~3 FlatRegion@1)
+  (prefix@X \40
+   (bracket@1)))
+ (proc@,FY cellLensFor@5 . . .
+  (params@G
+   (param@1 idx . . int@5 .))FlatRegion@C . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 or
+      (infix~4 < idx~4 0@2)
+      (infix@7 >= idx~4
+       (dot@C cellTable~9 len@1)))
+     (stmts@X
+      (ret
+       (nil@7)))))
+   (while@,1
+    (infix@O <
+     (dot~5 cellLensTable~D len@1)
+     (dot@B cellTable~9 len@1))
+    (stmts@f
+     (cmd@D
+      (dot cellLensTable~D add@1)
+      (nil@5))))
+   (let@4,2 c . . .
+    (at@D cellTable~9 idx@1))
+   (if@,3
+    (elif@3
+     (infix@2 == c~2
+      (nil@3))
+     (stmts@A
+      (ret
+       (nil@7)))))
+   (let@4,4 cached . . .
+    (at@M cellLensTable~D idx@1))
+   (var@4,5 ok . . . false@5)
+   (if@,6
+    (elif@3
+     (infix@7 != cached~7
+      (nil@3))
+     (stmts~1,1
+      (case
+       (dot@B cached~6 kind@1)
+       (of@,1
+        (ranges rkStr@3)
+        (stmts@A
+         (asgn@3 ok~3
+          (infix@N and
+           (infix~C ==
+            (dot~6
+             (dot~2 c~1 v@1)kind@1)vkString@3)
+           (infix@H ==
+            (dot~7 cached~6 scell@1)c@3)))))
+       (of@,2
+        (ranges rkObj@3)
+        (stmts@A
+         (asgn@3 ok~3
+          (infix@m and
+           (par~k
+            (infix@M or
+             (infix~C ==
+              (dot~6
+               (dot~2 c~1 v@1)kind@1)vkObject@3)
+             (infix@C ==
+              (dot~6
+               (dot~2 c~1 v@1)kind@1)vkTuple@3)))
+           (infix@G ==
+            (dot~6 cached~6 obox@1)
+            (dot@6
+             (dot~2 c~1 v@1)obj@1))))))
+       (of@,3
+        (ranges rkCell@3)
+        (stmts@B
+         (asgn@3 ok~3
+          (infix@m and
+           (infix~P and
+            (infix~C !=
+             (dot~6
+              (dot~2 c~1 v@1)kind@1)vkString@3)
+            (infix@D !=
+             (dot~6
+              (dot~2 c~1 v@1)kind@1)vkObject@3))
+           (infix@D !=
+            (dot~6
+             (dot~2 c~1 v@1)kind@1)vkTuple@3)))))
+       (else@,4
+        (stmts@6
+         (asgn@3 ok~3 false@2)))))))
+   (if@,C
+    (elif@3 ok
+     (stmts@4
+      (ret cached@7))))
+   (var@4,D r . . FlatRegion@3
+    (nil@G))
+   (if@,E
+    (elif@3
+     (infix@9 ==
+      (dot~6
+       (dot~2 c~1 v@1)kind@1)vkString@3)
+     (stmts~1,1
+      (asgn@2 r~2
+       (oconstr@C FlatRegion~A
+        (kv@5 kind~4 rkStr@2)
+        (kv@J scell~5 c@2)))))
+    (elif@5,2
+     (infix@k and
+      (par~k
+       (infix@M or
+        (infix~C ==
+         (dot~6
+          (dot~2 c~1 v@1)kind@1)vkObject@3)
+        (infix@C ==
+         (dot~6
+          (dot~2 c~1 v@1)kind@1)vkTuple@3)))
+      (infix@C !=
+       (dot~5
+        (dot~2 c~1 v@1)obj@1)
+       (nil@3)))
+     (stmts~3,1
+      (asgn@2 r~2
+       (call@D flObjRegion~B
+        (dot@4
+         (dot~2 c~1 v@1)obj@1))))))
+   (if@,I
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts~1,1
+      (asgn@2 r~2
+       (oconstr@C FlatRegion~A
+        (kv@5 kind~4 rkCell@2)
+        (kv@K ccell~5 c@2))))))
+   (asgn@J,K
+    (at~6 cellLensTable~D idx@1)r@2)
+   (asgn@7,L result~7 r@2)))
+ (proc@,Fw addrToCellPtrAt@5 x . .
+  (params@L
+   (param@1 a . . uint64@3 .)
+   (param@C bits . . int@6 .)
+   (param@N code . . TCode@6 .)
+   (param@a etype . . SymId@7 .))
+  (tup@p Value@1 bool@8). .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@E isCellAddr~A a@1))
+     (stmts@J
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (let@4,5 rel . . .
+    (infix@8 \2D a~2 CellSpaceBase@2))
+   (let@4,6 idx . . .
+    (infix@Y \2D
+     (call~P int~3
+      (infix@5 div rel~4 CellSlotStride@4))1@2))
+   (let@4,7 off . . .
+    (call@9 int~3
+     (infix@5 mod rel~4 CellSlotStride@4)))
+   (if@,8
+    (elif@3
+     (infix@8 or
+      (infix~4 < idx~4 0@2)
+      (infix@7 >= idx~4
+       (dot@C cellTable~9 len@1)))
+     (stmts@X
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (if@,9
+    (elif@3
+     (infix@9 and
+      (infix~5 == off~4 0@3)
+      (par@4
+       (infix@a or
+        (infix~P or
+         (infix~5 <= bits~5 0@3)
+         (infix@I ==
+          (at~6 cellTable~9 idx@1)
+          (nil@3)))
+        (infix~U,1 == bits~5
+         (call@9 bitsOf~6
+          (dot@F
+           (at~5 cellTable~9 idx@1)v@1))))))
+     (stmts~1,8
+      (ret
+       (tup@7
+        (call@8 vPtrLoc~7
+         (at@A cellTable~9 idx@1))true@Q)))))
+   (let@4,I r . . .
+    (call@F cellLensFor~B idx@1))
+   (if@,J
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (if@,K
+    (elif@3
+     (infix@4 >= off~4
+      (call@F lensByteSize~C r@1))
+     (stmts@O
+      (ret
+       (tup@7
+        (call@8 default~7 Value@1)false@H)))))
+   (asgn@7,L result~7
+    (tup@2
+     (call@9 vPtrRegT~8 r@1
+      (call@9 int32~5 off@1)
+      (call@L int16~5
+       (if@1
+        (elif@3
+         (infix@5 > bits~5 0@2)
+         (stmts@A bits))
+        (else@I
+         (stmts@6 8))))code@o etype@u)true@1B))))
+ (proc@,GK isMintedCellAddr@5 x . .
+  (params@M
+   (param@1 a . . uint64@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (prefix not
+      (call@E isCellAddr~A a@1))
+     (stmts@J
+      (ret false@7))))
+   (let@4,6 idx . . .
+    (infix@o \2D
+     (call~f int~3
+      (infix@L div
+       (par~K
+        (infix@3 \2D a~2 CellSpaceBase@2))CellSlotStride@4))1@2))
+   (asgn@7,7 result~7
+    (infix@B and
+     (infix~5 >= idx~4 0@3)
+     (infix@8 < idx~4
+      (dot@B cellTable~9 len@1))))))
+ (proc@,GU cellAddrProblem@5 x . .
+  (params@L
+   (param@1 a . . uint64@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (prefix not
+      (call@E isCellAddr~A a@1))
+     (stmts@J
+      (ret "not-a-cell-address"@7))))
+   (let@4,3 rel . . .
+    (infix@8 \2D a~2 CellSpaceBase@2))
+   (let@4,4 idx . . .
+    (infix@Y \2D
+     (call~P int~3
+      (infix@5 div rel~4 CellSlotStride@4))1@2))
+   (let@4,5 off . . .
+    (call@9 int~3
+     (infix@5 mod rel~4 CellSlotStride@4)))
+   (if@,6
+    (elif@3
+     (infix@8 or
+      (infix~4 < idx~4 0@2)
+      (infix@7 >= idx~4
+       (dot@C cellTable~9 len@1)))
+     (stmts@X
+      (ret "unminted-cell-slot"@7))))
+   (let@4,7 r . . .
+    (call@F cellLensFor~B idx@1))
+   (if@,8
+    (elif@3
+     (infix@2 == r~2
+      (nil@3))
+     (stmts@A
+      (ret "no-lens-for-cell"@7))))
+   (asgn@7,9 result~7
+    (infix@p &
+     (infix~6 &
+      (infix~J & "cell-offset-past-end\3A"~O
+       (call@6 itoa~4
+        (call@6 int64~5 off@1)))"/"@2)
+     (call@6 itoa~4
+      (call@6 int64~5
+       (call@D lensByteSize~C r@1)))))))
+ (proc@,Gg ptrToAddr@5 x . .
+  (params@F
+   (param@1 v . . Value@3 .))uint64@C . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@7 !=
+      (dot~6 v~1 kind@1)vkPtr@3)
+     (stmts@H
+      (ret
+       (suf@7 0u "u64")))))
+   (if@,5
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 region@1)
+      (nil@3))
+     (stmts@H
+      (ret
+       (call@H regionAddr~A v@1)))))
+   (if@,6
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 arrOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@M arrElemInfo~B
+        (dot@2 v~1 arrOwn@1))
+       (unpacktup
+        (let bb@1 . . ..)
+        (let bc@5 . . ..)))
+      (if@,1
+       (elif@3
+        (infix@3 > bb~3 0@2)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@E ==
+            (dot~6
+             (dot~7 v~1 arrOwn@1)flat@1)
+            (nil@3))
+           (stmts~1,1
+            (asgn@E
+             (dot~6
+              (dot~7 v~1 arrOwn@1)flat@1)
+             (oconstr@C FlatRegion~A
+              (kv@5 kind~4 rkArr@2)
+              (kv@I abox~4
+               (dot@3 v~1 arrOwn@1))
+              (kv@a aEbits~6 bb@2)
+              (kv@m aEcode~6 bc@2))))))
+         (ret@,2
+          (infix@b \2B
+           (call~G regionSlotAddr~E
+            (dot@9
+             (dot~7 v~1 arrOwn@1)flat@1))
+           (call@8 uint64~6
+            (infix@8 *
+             (dot~6 v~1 base@1)
+             (call@B elemBytes~9 bb@1)))))))))))
+   (if@,C
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 seqOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@M seqElemInfo~B
+        (dot@2 v~1 seqOwn@1))
+       (unpacktup
+        (let bb@1 . . ..)
+        (let bc@5 . . ..)))
+      (if@,1
+       (elif@3
+        (infix@3 > bb~3 0@2)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@E ==
+            (dot~6
+             (dot~7 v~1 seqOwn@1)flat@1)
+            (nil@3))
+           (stmts~1,1
+            (asgn@E
+             (dot~6
+              (dot~7 v~1 seqOwn@1)flat@1)
+             (oconstr@C FlatRegion~A
+              (kv@5 kind~4 rkSeq@2)
+              (kv@I sbox~4
+               (dot@3 v~1 seqOwn@1))
+              (kv@a sEbits~6 bb@2)
+              (kv@m sEcode~6 bc@2))))))
+         (ret@,2
+          (infix@b \2B
+           (call~G regionSlotAddr~E
+            (dot@9
+             (dot~7 v~1 seqOwn@1)flat@1))
+           (call@8 uint64~6
+            (infix@8 *
+             (dot~6 v~1 base@1)
+             (call@B elemBytes~9 bb@1)))))))))))
+   (asgn@7,I result~7
+    (call@A cellAddr~8 v@1))))
+ (proc@,H1 lensOf@5 . . .
+  (params@B
+   (param@1 v . . Value@3 .))
+  (tup@C FlatRegion@1 int@D). .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 !=
+      (dot~6 v~1 kind@1)vkPtr@3)
+     (stmts@H
+      (ret
+       (tup@7
+        (nil@1)0@6)))))
+   (if@,1
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 region@1)
+      (nil@3))
+     (stmts@H
+      (ret
+       (tup@7
+        (dot@2 v~1 region@1)
+        (dot@H
+         (dot~5 v~1 foff@1)int@1))))))
+   (if@,A
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 arrOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@M arrElemInfo~B
+        (dot@2 v~1 arrOwn@1))
+       (unpacktup
+        (let bb@1 . . ..)
+        (let bc@5 . . ..)))
+      (if@,1
+       (elif@3
+        (infix@3 > bb~3 0@2)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@E ==
+            (dot~6
+             (dot~7 v~1 arrOwn@1)flat@1)
+            (nil@3))
+           (stmts~1,1
+            (asgn@E
+             (dot~6
+              (dot~7 v~1 arrOwn@1)flat@1)
+             (oconstr@C FlatRegion~A
+              (kv@5 kind~4 rkArr@2)
+              (kv@I abox~4
+               (dot@3 v~1 arrOwn@1))
+              (kv@a aEbits~6 bb@2)
+              (kv@m aEcode~6 bc@2))))))
+         (ret@,2
+          (tup@7
+           (dot@9
+            (dot~7 v~1 arrOwn@1)flat@1)
+           (infix@N *
+            (dot~6 v~1 base@1)
+            (call@B elemBytes~9 bb@1))))))))))
+   (if@,G
+    (elif@3
+     (infix@9 !=
+      (dot~8 v~1 seqOwn@1)
+      (nil@3))
+     (stmts~1,1
+      (unpackdecl@4
+       (call@M seqElemInfo~B
+        (dot@2 v~1 seqOwn@1))
+       (unpacktup
+        (let bb@1 . . ..)
+        (let bc@5 . . ..)))
+      (if@,1
+       (elif@3
+        (infix@3 > bb~3 0@2)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@E ==
+            (dot~6
+             (dot~7 v~1 seqOwn@1)flat@1)
+            (nil@3))
+           (stmts~1,1
+            (asgn@E
+             (dot~6
+              (dot~7 v~1 seqOwn@1)flat@1)
+             (oconstr@C FlatRegion~A
+              (kv@5 kind~4 rkSeq@2)
+              (kv@I sbox~4
+               (dot@3 v~1 seqOwn@1))
+              (kv@a sEbits~6 bb@2)
+              (kv@m sEcode~6 bc@2))))))
+         (ret@,2
+          (tup@7
+           (dot@9
+            (dot~7 v~1 seqOwn@1)flat@1)
+           (infix@N *
+            (dot~6 v~1 base@1)
+            (call@B elemBytes~9 bb@1))))))))))
+   (if@,M
+    (elif@3
+     (infix@6 !=
+      (dot~5 v~1 loc@1)
+      (nil@3))
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@D ==
+         (dot~6
+          (dot~2
+           (dot~4 v~1 loc@1)v@1)kind@1)vkString@3)
+        (stmts~1,1
+         (ret
+          (tup@7
+           (oconstr@B FlatRegion~A
+            (kv@5 kind~4 rkStr@2)
+            (kv@J scell~5
+             (dot@3 v~1 loc@1)))0@e)))))
+      (if@,2
+       (elif@3
+        (infix@s and
+         (par~s
+          (infix@Q or
+           (infix~C ==
+            (dot~6
+             (dot~2
+              (dot~4 v~1 loc@1)v@1)kind@1)vkObject@3)
+           (infix@G ==
+            (dot~6
+             (dot~2
+              (dot~4 v~1 loc@1)v@1)kind@1)vkTuple@3)))
+         (infix@G !=
+          (dot~5
+           (dot~2
+            (dot~4 v~1 loc@1)v@1)obj@1)
+          (nil@3)))
+        (stmts~1,4
+         (let@4 r . . .
+          (call@F flObjRegion~B
+           (dot@8
+            (dot~2
+             (dot~4 v~1 loc@1)v@1)obj@1)))
+         (if@,1
+          (elif@3
+           (infix@2 != r~2
+            (nil@3))
+           (stmts@A
+            (ret
+             (tup@7 r@1 0@4))))))))
+      (ret@,8
+       (tup@7
+        (oconstr@B FlatRegion~A
+         (kv@5 kind~4 rkCell@2)
+         (kv@K ccell~5
+          (dot@3 v~1 loc@1)))0@f)))))
+   (asgn@7,W result~7
+    (tup@2
+     (nil@1)0@6))))
+ (proc@,Ha flCopy@5 x . .
+  (params@C
+   (param@1 dst . . Value@A .)
+   (param@6 src . . Value@5 .)
+   (param@I n . . int@3 .)). . .
+  (stmts@2,1
+   (unpackdecl@4
+    (call@J lensOf~6 dst@1)
+    (unpacktup
+     (let dr@1 . . ..)
+     (let doff@5 . . ..)))
+   (unpackdecl@4,1
+    (call@J lensOf~6 src@1)
+    (unpacktup
+     (let sr@1 . . ..)
+     (let soff@5 . . ..)))
+   (if@,2
+    (elif@3
+     (infix@A or
+      (infix~7 == dr~3
+       (nil@3))
+      (infix@6 == sr~3
+       (nil@3)))
+     (stmts@O
+      (ret .))))
+   (var@4,3 i . . . 0@4)
+   (while@,4
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (call@9 setByteAt~9 dr@1
+      (infix@A \2B doff~5 i@2)
+      (call@L byteAt~6 sr@1
+       (infix@A \2B soff~5 i@2)))
+     (cmd@,1 inc i@4)))))
+ (proc@,Hj flMove@5 x . .
+  (params@C
+   (param@1 dst . . Value@A .)
+   (param@6 src . . Value@5 .)
+   (param@I n . . int@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (unpackdecl@4,1
+    (call@J lensOf~6 dst@1)
+    (unpacktup
+     (let dr@1 . . ..)
+     (let doff@5 . . ..)))
+   (unpackdecl@4,2
+    (call@J lensOf~6 src@1)
+    (unpacktup
+     (let sr@1 . . ..)
+     (let soff@5 . . ..)))
+   (if@,3
+    (elif@3
+     (infix@A or
+      (infix~7 == dr~3
+       (nil@3))
+      (infix@6 == sr~3
+       (nil@3)))
+     (stmts@O
+      (ret .))))
+   (var@4,4 tmp . . .
+    (call@I
+     (at~6 newSeq~6 byte@1)
+     (if@1
+      (elif@3
+       (infix@2 > n~2 0@2)
+       (stmts@7 n))
+      (else@C
+       (stmts@6 0)))))
+   (var@4,5 i . . . 0@4)
+   (while@,6
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (asgn@7
+      (at~4 tmp~3 i@1)
+      (call@8 byteAt~6 sr@1
+       (infix@A \2B soff~5 i@2)))
+     (cmd@,1 inc i@4)))
+   (asgn@2,9 i~2 0@2)
+   (while@,A
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (call@9 setByteAt~9 dr@1
+      (infix@A \2B doff~5 i@2)
+      (at@I tmp~3 i@1))
+     (cmd@,1 inc i@4)))))
+ (proc@,Hy flZero@5 x . .
+  (params@C
+   (param@1 dst . . Value@5 .)
+   (param@D n . . int@3 .)). . .
+  (stmts@2,1
+   (unpackdecl@4
+    (call@J lensOf~6 dst@1)
+    (unpacktup
+     (let dr@1 . . ..)
+     (let doff@5 . . ..)))
+   (if@,1
+    (elif@3
+     (infix@3 == dr~3
+      (nil@3))
+     (stmts@B
+      (ret .))))
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (call@9 setByteAt~9 dr@1
+      (infix@A \2B doff~5 i@2)
+      (suf@F 0u "u8"))
+     (cmd@,1 inc i@4)))))
+ (proc@,I6 flEqual@5 x . .
+  (params@D
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .)
+   (param@E n . . int@3 .))bool@N . .
+  (stmts@2,1
+   (unpackdecl@4
+    (call@J lensOf~6 a@1)
+    (unpacktup
+     (let ar@1 . . ..)
+     (let aoff@5 . . ..)))
+   (unpackdecl@4,1
+    (call@J lensOf~6 b@1)
+    (unpacktup
+     (let br@1 . . ..)
+     (let boff@5 . . ..)))
+   (if@,2
+    (elif@3
+     (infix@A or
+      (infix~7 == ar~3
+       (nil@3))
+      (infix@6 == br~3
+       (nil@3)))
+     (stmts@O
+      (ret false@7))))
+   (var@4,3 i . . . 0@4)
+   (while@,4
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@L !=
+        (call~F byteAt~6 ar@1
+         (infix@A \2B aoff~5 i@2))
+        (call@9 byteAt~6 br@1
+         (infix@A \2B boff~5 i@2)))
+       (stmts@k
+        (ret false@7))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,7 result~7 true@2))))

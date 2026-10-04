@@ -1,0 +1,18 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import syncio)
+ (import
+  (when
+   (call defined windows))
+  (infix / windows winlean))
+ (import
+  (when
+   (call defined windows))
+  (infix / errorcodes errorcodes_windows))
+ (import
+  (when
+   (prefix not
+    (call defined windows)))
+  (infix / errorcodes errorcodes_posix)))

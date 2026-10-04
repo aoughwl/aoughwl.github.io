@@ -1,0 +1,551 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/semdata.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4
+   (bracket@2 tables@1 sets@9 hashes@F os@N syncio@R formatfloat@Z assertions@m)))
+ (include@,3
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (include@,4
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (import@,5
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 symparser@1 nifindexes@C)))
+ (import@,6 nimony_model@7 symtabs@L builtintypes@U decls@i programs@p magics@z reporters@17 nifconfig@1I xints@1T langmodes@2,1 features@D,1)
+ (import@,9
+  (infix@K /
+   (infix~8 / ".."~5 gear2@2)modnames@2))
+ (type@E,C TypeCursor~C x . . Cursor@2)
+ (type@Q,D SemRoutine~O x .
+  (pragmas~C acyclic@2)
+  (ref@2
+   (object@4 .
+    (fld~O,1 kind~4 x . SymKind@3 .)
+    (fld~K,2 hasDefer~8 x . bool@3 .)
+    (fld~J,3 inGeneric~9 x . int@g .)
+    (fld~A,3 inLoop~6 x . int@X .)
+    (fld@,3 inBlock~7 x . int@N .)
+    (fld@9,3 inInst~6 x . int@E .)
+    (fld@K,3 inExcept~8 x . int@3 .)
+    (fld~I,4 returnType~A x . TypeCursor@3 .)
+    (fld~L,5 pragmas~7 x .
+     (at@6 set~3 PragmaKind@1).)
+    (fld~I,6 raisesType~A x . TypeCursor@3 .)
+    (fld~N,7 resId~5 x . SymId@3 .)
+    (fld~M,8 parent~6 x . SemRoutine@3 .))))
+ (proc@,N createSemRoutine@5 x . .
+  (params@M
+   (param@1 kind . . SymKind@6 .)
+   (param@G parent . . SemRoutine@8 .))SemRoutine@b . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@C SemRoutine~A
+     (kv@5 kind~4 kind@2)
+     (kv@J parent~6 parent@2)
+     (kv@Y resId~5
+      (call@7 SymId~5 0@1))))))
+ (const@K,R MaxNestedTemplates~I x . . 100@4)
+ (type@8,U Item~6 x . .
+  (object@2 .
+   (fld~5,4 n~1 x . Cursor@9 .)
+   (fld@1,4 typ~3 x . Cursor@3 .)
+   (fld~2,5 kind~4 x . SymKind@3 .)))
+ (type@B,b SemFlag~9 x . .
+  (enum@2 .
+   (efld~9,1 KeepMagics . . . .)
+   (efld~9,2 AllowOverloads . . . .)
+   (efld~9,3 PreferIterators . . . .)
+   (efld~9,4 AllowUndeclared . . . .)
+   (efld~9,5 AllowModuleSym . . . .)
+   (efld~9,6 AllowEmpty . . . .)
+   (efld~9,7 InTypeContext . . . .)
+   (efld~9,8 BypassFieldVis . . . .)
+   (efld~9,C BypassGuardedCheck . . . .)))
+ (type@J,q TypeDeclContext~H x . .
+  (enum@2 .
+   (efld~H,1 InLocalDecl . . . .)
+   (efld~4,1 InTypeSection . . . .)
+   (efld@B,1 InReturnTypeDecl . . . .)
+   (efld@T,1 AllowValues . . . .)
+   (efld~H,2 InGenericConstraint . . . .)
+   (efld@4,2 InInvokeHead . . . .)))
+ (type@H,u CrucialPragma~F x . .
+  (object@2 .
+   (fld~C,4 sym~3 x . SymId@3 .)
+   (fld~A,5 magic~5 x . string@G .)
+   (fld@3,5 externName~A x . string@3 .)
+   (fld~B,6 bits~4 x . int@3 .)
+   (fld~B,7 size~4 x . int@3 .)
+   (fld~5,8 hasVarargs~A x . PackedLineInfo@3 .)
+   (fld~A,9 flags~5 x .
+    (at@6 set~3 PragmaKind@1).)
+   (fld~5,A raisesType~A x . TypeCursor@3 .)
+   (fld~2,B headerFileTok~D x . PackedToken@3 .)))
+ (type@I,17 ImportedModule~G x . .
+  (object@2 .
+   (fld~C,1 path~4 x . string@3 .)
+   (fld~6,2 fromPlugin~A x . string@3 .)
+   (fld~B,3 iface~5 x . Iface@3 .)
+   (fld~9,4 exports~7 x .
+    (at@8 Table~5 SymId@1 ImportFilter@8).)))
+ (type@F,1D InstRequest~D x . .
+  (object@2 .
+   (fld~7,1 origin~6 x . SymId@3 .)
+   (fld~4,2 targetSym~9 x . SymId@3 .)
+   (fld~5,5 inferred~8 x .
+    (at@8 Table~5 SymId@1 Cursor@8).)
+   (fld~2,6 requestFrom~B x .
+    (at@6 seq~3 PackedLineInfo@1).)))
+ (type@G,1L ProcInstance~E x . .
+  (object@2 .
+   (fld~5,1 targetSym~9 x . SymId@3 .)
+   (fld~6,2 procType~8 x . TypeCursor@3 .)
+   (fld~4,3 returnType~A x . TypeCursor@3 .)))
+ (type@I,1Q ProgramContext~G x . .
+  (ref@2
+   (object@4 .
+    (fld~E,1 config~6 x . NifConfig@3 .))))
+ (type@C,1T ObjField~A x . .
+  (object@2 .
+   (fld~7,1 sym~3 x . SymId@3 .)
+   (fld~5,2 level~5 x . int@3 .)
+   (fld~7,3 typ~3 x . TypeCursor@3 .)
+   (fld~2,4 exported~8 x . bool@3 .)
+   (fld~3,5 guarded~7 x . bool@3 .)
+   (fld~1,6 rootOwner~9 x . SymId@3 .)))
+ (type@C,1d MetaInfo~A x . .
+  (object@2 .
+   (fld@3,1 includedFiles~D x .
+    (at@6 seq~3 string@1).)
+   (fld@3,2 importedFiles~D x .
+    (at@6 seq~3 string@1).)))
+ (type@D,1h PluginObj~B x . .
+  (object@2 .
+   (fld~7,1 path~4 x . StrId@3 .)
+   (fld~7,2 info~4 x . PackedLineInfo@3 .)))
+ (type@P,1l SemExpressionExecutor~N x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K expr . . Cursor@6 .)
+    (param@Y expectedType . . TypeCursor@E .)
+    (param@y result . .
+     (mut@8 TokenBuf@4).)
+    (param@1K info . . PackedLineInfo@6 .))string@1h
+   (pragmas@1o nimcall@2)..))
+ (type@J,1m SemStmtCallback~H x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e n . . Cursor@3 .)).
+   (pragmas@p nimcall@2)..))
+ (type@E,1n SemGetSize~C x . .
+  (proctype@6 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K n . . Cursor@3 .)
+    (param@V strict . . . false@7))xint@k
+   (pragmas@p nimcall@2)..))
+ (type@K,1o ForceInstantiate~I x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)).
+   (pragmas@e nimcall@2)..))
+ (type@M,1p SemInstantiateType~K x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K typ . . Cursor@5 .)
+    (param@X bindings . .
+     (at@F Table~5 SymId@1 Cursor@8).))Cursor@14
+   (pragmas@1B nimcall@2)..))
+ (type@K,1s SemExprCallbackT~I x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e it . .
+     (mut@4 Item@4).)
+    (param@s flags . .
+     (at@A set~3 SemFlag@1).)).
+   (pragmas@1D nimcall@2)..))
+ (type@K,1t SemStmtCallbackT~I x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e n . .
+     (mut@3 Cursor@4).)
+    (param@t isNewScope . . bool@C .)).
+   (pragmas@1B nimcall@2)..))
+ (type@N,1u CommonTypeCallbackT~L x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e it . .
+     (mut@4 Item@4).)
+    (param@s argBegin . . int@A .)
+    (param@17 expected . . TypeCursor@A .)).
+   (pragmas@1T nimcall@2)..))
+ (type@T,1v SemLocalTypeImplCallbackT~R x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e n . .
+     (mut@3 Cursor@4).)
+    (param@t context . . TypeDeclContext@9 .)
+    (param@1J exported . . bool@A .)
+    (param@1Z ownerSym . . SymId@A .)).
+   (pragmas@1q nimcall@2)..))
+ (type@Q,1x DeclareResultCallbackT~O x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e info . . PackedLineInfo@6 .))SymId@11
+   (pragmas@17 nimcall@2)..))
+ (type@K,1y SemEmitCallbackT~I x . .
+  (proctype@7 ....
+   (params
+    (param@1 c . .
+     (mut@3 SemContext@4).)
+    (param@K dest . .
+     (mut@6 TokenBuf@4).)
+    (param@e it . .
+     (mut@4 Item@4).)).
+   (pragmas@s nimcall@2)..))
+ (type@K,20 MethodIndexEntry~I x . .
+  (object@2 .
+   (fld~G,1 fn~2 x . SymId@3 .)
+   (fld~9,2 signature~9 x . StrId@3 .)))
+ (type@E,24 ClassEntry~C x . .
+  (object@2 .
+   (fld~5,1 methods~7 x .
+    (at@6 seq~3 MethodIndexEntry@1).)))
+ (type@B,27 Classes~9 x . .
+  (at@7 Table~5 SymId@1 ClassEntry@8))
+ (type@E,29 SemContext~C x . .
+  (object@2 .
+   (fld~5,2 routine~7 x . SemRoutine@3 .)
+   (fld@,3 currentScope~C x . Scope@3 .)
+   (fld~B,4 g~1 x . ProgramContext@3 .)
+   (fld@,5 procRequests~C x .
+    (at@6 seq~3 InstRequest@1).)
+   (fld@1,6 typeInstDecls~D x .
+    (at@6 seq~3 SymId@1).)
+   (fld@3,8 pendingSumtypes~F x . TokenBuf@3 .)
+   (fld@,A includeStack~C x .
+    (at@6 seq~3 string@1).)
+   (fld@3,B importedModules~F x .
+    (at@F OrderedTable~C SymId@1 ImportedModule@8).)
+   (fld@1,C selfModuleSym~D x . SymId@3 .)
+   (fld@4,D instantiatedFrom~G x .
+    (at@6 seq~3 PackedLineInfo@1).)
+   (fld~3,E importTab~9 x .
+    (at@F OrderedTable~C StrId@1
+     (at@B seq~3 SymId@1)).)
+   (fld~5,F globals~7 x .
+    (at@H Table~5 string@1 int@9).)
+   (fld@4,F locals~6 x .
+    (at@8 Table~5 string@1 int@9).)
+   (fld~1,G fieldCounts~B x .
+    (at@8 Table~5 string@1 int@9).)
+   (fld~7,N types~5 x . BuiltinTypes@3 .)
+   (fld~5,O typeMem~7 x .
+    (at@8 Table~5 string@1 TokenBuf@9).)
+   (fld@5,P instantiatedTypes~H x .
+    (at@8 Table~5 string@1 SymId@9).)
+   (fld@5,Q instantiatedProcs~H x .
+    (at@8 Table~5
+     (tup@1 SymId@1 string@8)SymId@I).)
+   (fld@4,R thisModuleSuffix~G x . string@3 .)
+   (fld~1,S moduleFlags~B x .
+    (at@6 set~3 ModuleFlag@1).)
+   (fld~4,T features~8 x .
+    (at@6 set~3 Feature@1).)
+   (fld@4,U processedModules~G x .
+    (at@8 Table~5 string@1 SymId@9).)
+   (fld@,V usedTypevars~C x . int@3 .)
+   (fld~7,W phase~5 x . SemPhase@3 .)
+   (fld~1,X canSelfExec~B x . bool@3 .)
+   (fld@C,Y checkedForWriteNifModule~O x . bool@3 .)
+   (fld~6,Z inWhen~6 x . int@3 .)
+   (fld@5,a inUncheckedAccess~H x . int@3 .)
+   (fld@1,b warnedSources~D x .
+    (at@A HashSet~7 PackedLineInfo@1).)
+   (fld@4,e inSpeculativeArg~G x . int@3 .)
+   (fld@7,i templateInstCounter~J x . int@3 .)
+   (fld@3,j commandLineArgs~F x . string@3 .)
+   (fld~8,m meta~4 x . MetaInfo@3 .)
+   (fld~3,o typeHooks~9 x .
+    (at@8 Table~5 SymId@1 HooksPerType@8).)
+   (fld~2,p converters~A x .
+    (at@8 Table~5 SymId@1
+     (at@B seq~3 SymId@1)).)
+   (fld@5,q converterIndexMap~H x .
+    (at@6 seq~3
+     (tup@1 SymId@1 SymId@8)).)
+   (fld~5,r classes~7 x . Classes@3 .)
+   (fld~5,s exports~7 x .
+    (at@F OrderedTable~C SymId@1 ImportFilter@8).)
+   (fld~3,t freshSyms~9 x .
+    (at@A HashSet~7 SymId@1).)
+   (fld~5,u toBuild~7 x . TokenBuf@3 .)
+   (fld~4,v toBundle~8 x . TokenBuf@3 .)
+   (fld@8,w unoverloadableMagics~K x .
+    (at@A HashSet~7 StrId@1).)
+   (fld@4,x debugAllowErrors~G x . bool@3 .)
+   (fld~5,y pending~7 x . TokenBuf@3 .)
+   (fld@6,z pendingTypePlugins~I x .
+    (at@8 Table~5 SymId@1 PluginObj@8).)
+   (fld@8,10 pendingModulePlugins~K x .
+    (at@6 seq~3 PluginObj@1).)
+   (fld@3,11 pluginBlacklist~F x .
+    (at@A HashSet~7 StrId@1).)
+   (fld@6,12 cachedTypeboundOps~I x .
+    (at@8 Table~5
+     (tup@1 SymId@1 StrId@8)
+     (at@K seq~3 SymId@1)).)
+   (fld~1,13 userPragmas~B x .
+    (at@8 Table~5 StrId@1 TokenBuf@8).)
+   (fld@9,14 customPragmaTemplates~L x .
+    (at@A HashSet~7 StrId@1).)
+   (fld@,1B usingStmtMap~C x .
+    (at@8 Table~5 StrId@1 TypeCursor@8).)
+   (fld~1,1C pragmaStack~B x .
+    (at@6 seq~3 TokenBuf@1).)
+   (fld~1,1D executeExpr~B x . SemExpressionExecutor@3 .)
+   (fld@3,1E semStmtCallback~F x . SemStmtCallback@3 .)
+   (fld~2,1F semGetSize~A x . SemGetSize@3 .)
+   (fld@4,1G forceInstantiate~G x . ForceInstantiate@3 .)
+   (fld@6,1H semInstantiateType~I x . SemInstantiateType@3 .)
+   (fld~3,1I semExprCB~9 x . SemExprCallbackT@3 .)
+   (fld~3,1J semStmtCB~9 x . SemStmtCallbackT@3 .)
+   (fld@,1K commonTypeCB~C x . CommonTypeCallbackT@3 .)
+   (fld@6,1L semLocalTypeImplCB~I x . SemLocalTypeImplCallbackT@3 .)
+   (fld@3,1M declareResultCB~F x . DeclareResultCallbackT@3 .)
+   (fld~3,1N semEmitCB~9 x . SemEmitCallbackT@3 .)
+   (fld~7,1O passL~5 x .
+    (at@6 seq~3 string@1).)
+   (fld~7,1P passC~5 x .
+    (at@6 seq~3 string@1).)
+   (fld@2,1Q importSnippets~E x . TokenBuf@3 .)
+   (fld@5,1R genericInnerProcs~H x .
+    (at@A HashSet~7 SymId@1).)
+   (fld~4,1S expanded~8 x . TokenBuf@3 .)
+   (fld@,1T forwardDecls~C x .
+    (at@8 Table~5 StrId@1
+     (at@B seq~3 SymId@1)).)
+   (fld@2,1U compiledMacros~E x .
+    (at@8 Table~5 SymId@1 string@8).)
+   (fld@7,1V matchedForwardDecls~J x .
+    (at@A HashSet~7 SymId@1).)
+   (fld@9,1b deferredCyclicImports~L x .
+    (at@6 seq~3
+     (tup@1 string@1 SymId@9)).)
+   (fld~2,1c inTypeInst~A x . int@3 .)
+   (fld@2,1d deferredLocals~E x .
+    (at@8 Table~5 StrId@1 Cursor@8).)
+   (fld@4,1j onDemandResolved~G x .
+    (at@8 Table~5 StrId@1 SymId@8).)))
+ (proc@,40 typeToCanon@5 x . .
+  (params@H
+   (param@1 buf . . TokenBuf@5 .)
+   (param@G start . . int@7 .))string@T . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (for@4,1
+    (infix@A \2E\2E< start~5
+     (dot@6 buf~3 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (case
+      (dot@B
+       (at~3 buf~3 i@1)kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)'\28'@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@K
+          (dot~6
+           (at~3 buf~3 i@1)tagId@1)int@1))))
+      (of@,4
+       (ranges ParRi@3)
+       (stmts@A
+        (cmd@6
+         (dot result~6 add@1)'\29'@5)))
+      (of@,5
+       (ranges Ident@3 StringLit@A)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)' '@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@K
+          (dot~6
+           (at~3 buf~3 i@1)litId@1)int@1))))
+      (of@,8
+       (ranges UnknownToken@3)
+       (stmts@H
+        (cmd@6
+         (dot result~6 add@1)" unknown"@5)))
+      (of@,9
+       (ranges EofToken@3)
+       (stmts@D
+        (cmd@6
+         (dot result~6 add@1)" eof"@5)))
+      (of@,A
+       (ranges DotToken@3)
+       (stmts@D
+        (cmd@6
+         (dot result~6 add@1)'.'@5)))
+      (of@,B
+       (ranges SymbolDef@3)
+       (stmts@2,5
+        (cmd@6
+         (dot result~6 add@1)" !symdef"@5)))
+      (of@,H
+       (ranges Symbol@3)
+       (stmts@2,E
+        (let@4 s . . .
+         (at@D
+          (dot~5 pool~4 syms@1)
+          (dot@7
+           (at~3 buf~3 i@1)symId@1)))
+        (if@,1
+         (elif@3
+          (call@F isInstantiation~F s@1)
+          (stmts~1,1
+           (cmd@6
+            (dot result~6 add@1)" s\22"@5)
+           (cmd@6,1
+            (dot result~6 add@1)
+            (call@H removeModule~C s@1))
+           (cmd@6,2
+            (dot result~6 add@1)'\22'@5)))
+         (else@,4
+          (stmts@2,1
+           (cmd@6
+            (dot result~6 add@1)" s"@5)
+           (cmd@6,1
+            (dot result~6 addInt@1)
+            (dot@K
+             (dot~6
+              (at~3 buf~3 i@1)symId@1)int@1)))))))
+      (of@,d
+       (ranges CharLit@3)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)" c"@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@N
+          (dot~9
+           (at~3 buf~3 i@1)uoperand@1)int@1))))
+      (of@,g
+       (ranges IntLit@3)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)" i"@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@K
+          (dot~6
+           (at~3 buf~3 i@1)intId@1)int@1))))
+      (of@,j
+       (ranges UIntLit@3)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)" u"@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@L
+          (dot~7
+           (at~3 buf~3 i@1)uintId@1)int@1))))
+      (of@,m
+       (ranges FloatLit@3)
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)" f"@5)
+        (cmd@6,1
+         (dot result~6 addInt@1)
+         (dot@M
+          (dot~8
+           (at~3 buf~3 i@1)floatId@1)int@1)))))))))
+ (proc@,4t typeToCursor@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 SemContext@4).)
+   (param@K buf . . TokenBuf@5 .)
+   (param@Z start . . int@7 .))TypeCursor@m . .
+  (stmts@2,1
+   (let@4 key . . .
+    (call@H typeToCanon~B buf@1 start@6))
+   (if@,1
+    (elif@3
+     (call@G
+      (dot~7
+       (dot~8 c~1 typeMem@1)hasKey@1)key@1)
+     (stmts~1,2
+      (asgn@7 result~7
+       (call@A cursorAt~8
+        (call@K
+         (dot~A
+          (dot~8 c~1 typeMem@1)getOrQuit@1)key@1)0@R))))
+    (else@,3
+     (stmts@2,1
+      (var@4 newBuf . . .
+       (call@N createTokenBuf~E
+        (infix@9 \2D
+         (dot~5 buf~3 len@1)start@2)))
+      (for@4,1
+       (infix@A \2E\2E< start~5
+        (dot@6 buf~3 len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (cmd@6
+         (dot newBuf~6 add@1)
+         (at@8 buf~3 i@1))))
+      (asgn@7,5 result~7
+       (call@A cursorAt~8 newBuf@1 0@9))
+      (asgn@F,6
+       (at~6
+        (dot~8 c~1 typeMem@1)key@1)newBuf@2))))))
+ (template@,57 emptyNode@9 x . .
+  (params@J
+   (param@1 c . .
+    (mut@3 SemContext@4).))Cursor@L . .
+  (stmts@2,2
+   (dot@7
+    (dot~6 c~1 types@1)voidType@1))))

@@ -1,0 +1,333 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/src/nimony/staticmatches.nim
+ (comment)
+ (import@,6
+  (infix@A / std~3 assertions@1))
+ (include@,7
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,8 nimony_model@7 decls@L programs@S builtintypes@c)
+ (import@,9
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)symparser@2))
+ (import@,A
+  (infix@L /
+   (infix~9 / ".."~5 models@2)tags@2))
+ (proc@,C isStaticTypevar@5 x . .
+  (params@L
+   (param@1 s . . SymId@3 .))bool@C . .
+  (stmts@2,1
+   (let@4 res . . .
+    (call@G tryLoadSym~A s@1))
+   (cmd@,1 assert
+    (infix@I ==
+     (dot~8 res~3 status@1)LacksNothing@3))
+   (asgn@7,2 result~7
+    (infix@J ==
+     (dot~9
+      (dot~5 res~3 decl@1)symKind@1)StaticTypevarY@3))))
+ (proc@,H sameStaticSymbol@5 x . .
+  (params@M
+   (param@1 a . . SymId@6 .)
+   (param@4 b . . SymId@3 .))bool@F . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@2 == a~2 b@3)
+     (stmts~1,1
+      (ret true@7))))
+   (let@4,2 sa . . .
+    (at@E
+     (dot~5 pool~4 syms@1)a@1))
+   (let@4,3 sb . . .
+    (at@E
+     (dot~5 pool~4 syms@1)b@1))
+   (asgn@7,4 result~7
+    (infix@k and
+     (infix~O and
+      (call~5 isInstantiation~F sa@1)
+      (call@J isInstantiation~F sb@1))
+     (infix~Y,1 ==
+      (call~5 removeModule~C sa@1)
+      (call@F removeModule~C sb@1))))))
+ (proc@,P isStaticValue@5 x . .
+  (params@J
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (case@,3
+    (dot@6 n~1 kind@1)
+    (of@,1
+     (ranges IntLit@3 UIntLit@B FloatLit@K CharLit@U StringLit@d)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (of@,3
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 res . . .
+       (call@G tryLoadSym~A
+        (dot@2 n~1 symId@1)))
+      (asgn@7,1 result~7
+       (infix@T and
+        (infix~G ==
+         (dot~8 res~3 status@1)LacksNothing@3)
+        (infix~H,1 in
+         (dot~9
+          (dot~5 res~3 decl@1)symKind@1)
+         (curly@3 ConstY@1 EfldY@9 StaticTypevarY@G))))))
+    (of@,7
+     (ranges ParLe@3)
+     (stmts@2,1
+      (case
+       (dot@6 n~1 exprKind@1)
+       (of@,1
+        (ranges FalseX@3 TrueX@B)
+        (stmts@2,1
+         (asgn@7 result~7 true@2)))
+       (of@,3
+        (ranges SufX@3)
+        (stmts@2,1
+         (var@4 elem . . . n@7)
+         (cmd@,1 inc elem@4)
+         (asgn@7,2 result~7
+          (call@F isStaticValue~D elem@1))))
+       (of@,7
+        (ranges AconstrX@3 SetconstrX@D TupconstrX@P OconstrX@b)
+        (stmts@2,1
+         (var@4 elem . . . n@7)
+         (cmd@,1 inc elem@4)
+         (cmd@,2 skip elem@5)
+         (asgn@7,3 result~7 true@2)
+         (while@,4
+          (dot@A elem~4 hasMore@1)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@M in
+              (dot~I elem~4 substructureKind@1)
+              (curly@3 KvU@1 RangeU@6))
+             (stmts~1,1
+              (cmd inc elem@4)
+              (cmd@,1 skip elem@5)
+              (if@,2
+               (elif@3
+                (prefix not
+                 (call@H isStaticValue~D elem@1))
+                (stmts~1,1
+                 (asgn@7 result~7 false@2)
+                 (break@,1 .))))
+              (cmd@,5 skip elem@5)
+              (if@,6
+               (elif@3
+                (infix@A ==
+                 (dot~6 elem~4 kind@1)ParRi@3)
+                (stmts~1,1
+                 (break .))))
+              (cmd@,8 inc elem@4)))
+            (else@,A
+             (stmts@2,1
+              (if
+               (elif@3
+                (prefix not
+                 (call@H isStaticValue~D elem@1))
+                (stmts~1,1
+                 (asgn@7 result~7 false@2)
+                 (break@,1 .))))
+              (cmd@,3 skip elem@5))))))))
+       (else@,S
+        (stmts@2,1
+         (asgn@7 result~7 false@2))))))
+    (else@,c
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,18 staticValueType@5 x . .
+  (params@L
+   (param@1 a . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@9 default~7 Cursor@1))
+   (case@,3
+    (dot@6 a~1 kind@1)
+    (of@,1
+     (ranges Symbol@3)
+     (stmts@2,1
+      (let@4 res . . .
+       (call@G tryLoadSym~A
+        (dot@2 a~1 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@R and
+         (infix~G ==
+          (dot~8 res~3 status@1)LacksNothing@3)
+         (call@B isLocal~7
+          (dot@9
+           (dot~5 res~3 decl@1)symKind@1)))
+        (stmts~1,1
+         (asgn@7 result~7
+          (dot@J
+           (call~A asLocal~7
+            (dot@4 res~3 decl@1))typ@1)))))))
+    (of@,5
+     (ranges ParLe@3)
+     (stmts@2,1
+      (case
+       (dot@6 a~1 exprKind@1)
+       (of@,1
+        (ranges AconstrX@3 SetconstrX@D TupconstrX@P OconstrX@b)
+        (stmts@2,1
+         (var@4 typ . . . a@6)
+         (cmd@,1 inc typ@4)
+         (asgn@7,2 result~7 typ@2)))
+       (else@,5
+        (stmts@2,1
+         (discard .))))))
+    (else@,D
+     (stmts@2,1
+      (discard .))))))
+ (proc@,1S staticOpenArrayElemType@5 x . .
+  (params@T
+   (param@1 t . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@9 default~7 Cursor@1))
+   (var@4,3 t . . . t@4)
+   (var@4,4 depth . . . 0@8)
+   (while@,5
+    (infix@N and
+     (infix~A ==
+      (dot~6 t~1 kind@1)Symbol@3)
+     (infix@A < depth~6 20@2))
+    (stmts@2,1
+     (let@4 res . . .
+      (call@G tryLoadSym~A
+       (dot@2 t~1 symId@1)))
+     (if@,1
+      (elif@3
+       (infix@R or
+        (infix~G !=
+         (dot~8 res~3 status@1)LacksNothing@3)
+        (infix@K !=
+         (dot~9
+          (dot~5 res~3 decl@1)symKind@1)TypeY@3))
+       (stmts~1,1
+        (ret
+         (call@E default~7 Cursor@1)))))
+     (let@4,3 decl . . .
+      (call@H asTypeDecl~A
+       (dot@4 res~3 decl@1)))
+     (if@,4
+      (elif@3
+       (infix@N ==
+        (dot~A
+         (dot~9 decl~4 typevars@1)typeKind@1)InvokeT@3)
+       (stmts~1,1
+        (asgn@2 t~2
+         (dot@6 decl~4 typevars@1))
+        (break@,1 .)))
+      (elif@5,3
+       (infix@F ==
+        (dot~6
+         (dot~5 decl~4 body@1)kind@1)Symbol@3)
+       (stmts~3,1
+        (asgn@2 t~2
+         (dot@6 decl~4 body@1))))
+      (else@,5
+       (stmts@2,1
+        (ret
+         (call@E default~7 Cursor@1)))))
+     (cmd@,B inc depth@4)))
+   (if@,I
+    (elif@3
+     (infix@B ==
+      (dot~A t~1 typeKind@1)InvokeT@3)
+     (stmts~1,1
+      (cmd inc t@4)
+      (if@,1
+       (elif@3
+        (infix@H and
+         (infix~A ==
+          (dot~6 t~1 kind@1)Symbol@3)
+         (infix@N ==
+          (at~A
+           (dot~5 pool~4 syms@1)
+           (dot@2 t~1 symId@1))OpenArrayHeadName@3))
+        (stmts~1,1
+         (cmd inc t@4)
+         (asgn@7,1 result~7 t@2))))))
+    (elif@5,5
+     (infix@B ==
+      (dot~A t~1 typeKind@1)VarargsT@3)
+     (stmts~3,1
+      (cmd inc t@4)
+      (if@,1
+       (elif@3
+        (infix@7 !=
+         (dot~6 t~1 kind@1)ParRi@3)
+        (stmts~1,1
+         (asgn@7 result~7 t@2)))))))))
+ (proc@,1v staticValueTypeMatches@5 x . .
+  (params@S
+   (param@1 elemType . . Cursor@L .)
+   (param@B valueType . . Cursor@B .))bool@V . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (call@B cursorIsNil~B valueType@1)
+     (stmts~1,1
+      (ret false@7))))
+   (if@,5
+    (elif@3
+     (call@9 sameTrees~9 elemType@1 valueType@B)
+     (stmts~1,1
+      (ret true@7))))
+   (if@,7
+    (elif@3
+     (infix@O and
+      (infix~A ==
+       (dot~6 elemType~8 kind@1)Symbol@3)
+      (infix@J ==
+       (dot~6 valueType~9 kind@1)Symbol@3))
+     (stmts~1,1
+      (ret
+       (call@N sameStaticSymbol~G
+        (dot@9 elemType~8 symId@1)
+        (dot@Q valueType~9 symId@1))))))
+   (if@,9
+    (elif@3
+     (infix@U and
+      (infix~C ==
+       (dot~A elemType~8 typeKind@1)VarargsT@3)
+      (infix@N ==
+       (dot~A valueType~9 typeKind@1)ArrayT@3))
+     (stmts~1,1
+      (var@4 elem . . . elemType@7)
+      (cmd@,1 inc elem@4)
+      (if@,2
+       (elif@3
+        (infix@A ==
+         (dot~6 elem~4 kind@1)ParRi@3)
+        (stmts~1,1
+         (ret true@7))))
+      (var@4,4 arrElem . . . valueType@A)
+      (cmd@,5 inc arrElem@4)
+      (ret@,6
+       (call@G sameTrees~9 elem@1 arrElem@7)))))
+   (let@4,H openArrayElem . . .
+    (call@d staticOpenArrayElemType~N elemType@1))
+   (if@,I
+    (elif@3
+     (infix@V and
+      (prefix~V not
+       (call@F cursorIsNil~B openArrayElem@1))
+      (infix@N ==
+       (dot~A valueType~9 typeKind@1)ArrayT@3))
+     (stmts~1,1
+      (var@4 arrElem . . . valueType@A)
+      (cmd@,1 inc arrElem@4)
+      (ret@,2
+       (call@G sameTrees~9 openArrayElem@1 arrElem@G)))))false@,M)))

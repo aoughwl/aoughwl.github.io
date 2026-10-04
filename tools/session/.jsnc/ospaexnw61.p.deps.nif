@@ -1,0 +1,28 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (prefix \2E\2E/ strutils))
+ (import
+  (prefix \2E\2E/ oserrors))
+ (import oscommons)
+ (import
+  (prefix \2E\2E/
+   (bracket syncio assertions widestrs)))
+ (import
+  (prefix \2E\2E/ pathnorm))
+ (import
+  (when
+   (call defined windows))
+  (infix /
+   (prefix \2E\2E/ windows)winlean))
+ (import
+  (when
+   (call defined posix))
+  (infix /
+   (prefix \2E\2E/ posix)posix))
+ (import osseps)
+ (export osseps)
+ (import
+  (when doslikeFileSystem)ntpath))

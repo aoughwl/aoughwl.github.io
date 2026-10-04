@@ -1,0 +1,567 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/treemangler.nim
+ (comment)
+ (import@,3
+  (infix@B / std~4
+   (bracket@2 assertions@1 hashes@D tables@L formatfloat@T strutils@g)))
+ (type@B,6 Mangler~9 x . .
+  (object@2 .
+   (fld~9,1 buf . . string@5 .)
+   (fld~9,2 nesting . . int@9 .)
+   (fld~9,3 seen . .
+    (at@B Table~5 string@1 int@9).)
+   (fld~5,4 bits~4 x . int@3 .)))
+ (proc@,C
+  (quoted@5 =@1 copy@2). . .
+  (params@C
+   (param@1 dest . .
+    (mut@6 Mangler@4).)
+   (param@K src . . Mangler@5 .)).
+  (pragmas@k error@2). .)
+ (proc@,E createMangler@5 x . .
+  (params@J
+   (param@1 sizeHint . . int@A .)
+   (param@G bits . . . -1@7))Mangler@S . .
+  (stmts@2,1
+   (oconstr@7 Mangler~7
+    (kv@4 buf~3
+     (call@G newStringOfCap~E sizeHint@1))
+    (kv@a bits~4 bits@2))))
+ (proc@,H extract@5 x . .
+  (params@D
+   (param@1 b . .
+    (cmd@8 sink~5 Mangler).))string@J . .
+  (stmts@2,1
+   (comment)
+   (cmd@,2 assert
+    (infix@H ==
+     (dot~9 b~1 nesting@1)0@3)"unpaired \27\28\27 or \27\29\27"@N)
+   (var@4,3 i . . .
+    (infix@D \2D
+     (dot~4
+      (dot~4 b~1 buf@1)len@1)1@1))
+   (while@,4
+    (infix@C and
+     (infix~4 > i~2 0@2)
+     (infix@D ==
+      (at~4
+       (dot~4 b~1 buf@1)i@1)'Z'@3))
+    (stmts@X
+     (cmd dec i@4)))
+   (cmd@5,5
+    (dot
+     (dot~4 b~1 buf@1)setLen@1)
+    (infix@9 \2B i~1 1@1))
+   (asgn@7,6 result~7
+    (call@6 move~4
+     (dot@2 b~1 buf@1)))))
+ (proc@,Q put@5 . . .
+  (params@8
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)).
+  (pragmas@a inline@2).
+  (stmts@2,1
+   (cmd@5
+    (dot
+     (dot~4 b~1 buf@1)add@1)s@5)))
+ (proc@,T put@5 . . .
+  (params@8
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . char@3 .)).
+  (pragmas@Y inline@2).
+  (stmts@2,1
+   (cmd@5
+    (dot
+     (dot~4 b~1 buf@1)add@1)s@5)))
+ (proc@,W undoWhitespace@5 . . .
+  (params@J
+   (param@1 b . .
+    (mut@3 Mangler@4).)). . .
+  (stmts@2,1
+   (var@4 i . . .
+    (infix@E \2D
+     (dot~5
+      (dot~4 b~1 buf@1)len@1)1@2))
+   (while@,1
+    (infix@D and
+     (infix~5 >= i~2 0@3)
+     (infix@D ==
+      (at~4
+       (dot~4 b~1 buf@1)i@1)'S'@3))
+    (stmts@Y
+     (cmd dec i@4)))
+   (cmd@5,2
+    (dot
+     (dot~4 b~1 buf@1)setLen@1)
+    (infix@9 \2B i~1 1@1))))
+ (proc@,b escape@5 . . .
+  (params@B
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H c . . char@3 .)). . .
+  (stmts@2,1
+   (const@6 HexChars . . . "0123456789abcdef"@B)
+   (var@4,1 n . . .
+    (call@7 int~3 c@1))
+   (cmd@1,2
+    (dot b~1 put@1)'X'@5)
+   (cmd@1,3
+    (dot b~1 put@1)
+    (at@D HexChars~8
+     (infix@9 and
+      (infix~6 shr n~2 4@4)15@4)))
+   (cmd@1,4
+    (dot b~1 put@1)
+    (at@D HexChars~8
+     (infix@3 and n~2 15@4)))))
+ (const@2,j ControlLetters . . .
+  (curly@H 'A'@1 'Z'@6 'E'@B 'S'@G 'O'@L 'U'@Q 'X'@V 'R'@a))
+ (template@,l needsEscape@9 . . .
+  (params@K
+   (param@1 c . . char@3 .))bool@B . .
+  (stmts@2,1
+   (infix@2 notin c~2
+    (par@6
+     (infix@R \2D
+      (curly~Q
+       (infix@4 \2E\2E 'a'~3 'z'@2)
+       (infix@E \2E\2E '0'~3 '9'@2)'_'@L)ControlLetters@2)))))
+ (proc@,o addRaw@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (cmd put b@4 s@7)))
+ (proc@,r addSep@5 . . .
+  (params@B
+   (param@1 b . .
+    (mut@3 Mangler@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@E and
+      (infix~4 >
+       (dot~5
+        (dot~4 b~1 buf@1)len@1)0@2)
+      (infix@N ==
+       (at~E
+        (dot~4 b~1 buf@1)
+        (infix@A \2D
+         (dot~4
+          (dot~4 b~1 buf@1)len@1)1@1))'Z'@3))
+     (stmts~1,1
+      (discard "space not required"@8))))
+   (cmd@1,2
+    (dot b~1 put@1)'S'@5)))
+ (proc@,w addBegin@5 . . .
+  (params@D
+   (param@1 b . .
+    (mut@3 Mangler@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@E and
+      (infix~4 >
+       (dot~5
+        (dot~4 b~1 buf@1)len@1)0@2)
+      (infix@N ==
+       (at~E
+        (dot~4 b~1 buf@1)
+        (infix@A \2D
+         (dot~4
+          (dot~4 b~1 buf@1)len@1)1@1))'S'@3))
+     (stmts~1,1
+      (asgn@J
+       (at~E
+        (dot~4 b~1 buf@1)
+        (infix@A \2D
+         (dot~4
+          (dot~4 b~1 buf@1)len@1)1@1))'A'@2)))
+    (else@,2
+     (stmts@2,1
+      (cmd@1
+       (dot b~1 put@1)'A'@5))))))
+ (proc@,12 referencePrevious@5 . . .
+  (params@M
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .))bool@T . .
+  (stmts@2,1
+   (asgn@7 result~7 false@2)
+   (if@,1
+    (elif@3
+     (infix@6 >
+      (dot~5 s~1 len@1)2@2)
+     (stmts~1,1
+      (let@4 existing . . .
+       (call@U
+        (dot~D
+         (dot~5 b~1 seen@1)getOrDefault@1)s@1))
+      (let@4,1 oldLen . . .
+       (dot@E
+        (dot~4 b~1 buf@1)len@1))
+      (if@,2
+       (elif@3
+        (infix@9 == existing~9 0@3)
+        (stmts~1,1
+         (asgn@A
+          (at~4
+           (dot~5 b~1 seen@1)s@1)oldLen@2)))
+       (else@,2
+        (stmts@2,1
+         (cmd@5
+          (dot
+           (dot~4 b~1 buf@1)add@1)'R'@5)
+         (call@C,1
+          (dot~7
+           (dot~4 b~1 buf@1)addInt@1)
+          (infix@9 \2D existing~8 1@1))
+         (if@,2
+          (elif@3
+           (infix@J >=
+            (infix~9 \2D
+             (dot~5
+              (dot~4 b~1 buf@1)len@1)oldLen@2)
+            (dot@4 s~1 len@1))
+           (stmts~1,2
+            (cmd@5
+             (dot
+              (dot~4 b~1 buf@1)setLen@1)oldLen@8)))
+          (else@,3
+           (stmts@2,1
+            (asgn@7 result~7 true@2))))))))))))
+ (proc@,1K putTag@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H tag . . string@5 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not
+      (call@L referencePrevious~H b@1 tag@4))
+     (stmts~1,1
+      (for@4 tag@5
+       (unpackflat
+        (let c . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (cmd@C needsEscape~C c)
+          (stmts~1,1
+           (cmd@1
+            (dot b~1 escape@1)c@8)))
+         (else@,2
+          (stmts@2,1
+           (cmd@1
+            (dot b~1 put@1)c@5)))))))))))
+ (proc@,1S addIdent@5 x . .
+  (params@E
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (if@,1
+    (elif@3
+     (prefix not
+      (call@L referencePrevious~H b@1 s@4))
+     (stmts~1,1
+      (for@4 s@5
+       (unpackflat
+        (let c . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@9 or
+           (infix~7 == c~2 '.'@3)
+           (dot@4 c~1 needsEscape@1))
+          (stmts~1,1
+           (cmd@1
+            (dot b~1 escape@1)c@8)))
+         (else@,2
+          (stmts@2,1
+           (cmd@1
+            (dot b~1 put@1)c@5)))))))))))
+ (proc@,1b addSymbolBody@5 . . .
+  (params@I
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (for@4
+    (call@F
+     (dot~6 s~1 split@1)'.'@1)
+    (unpackflat
+     (let part . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (prefix not
+        (call@L referencePrevious~H b@1 part@4))
+       (stmts~1,1
+        (for@4 part@5
+         (unpackflat
+          (let c . . ..))
+         (stmts~2,1
+          (if
+           (elif@3
+            (dot@1 c~1 needsEscape@1)
+            (stmts~1,1
+             (cmd@1
+              (dot b~1 escape@1)c@8)))
+           (else@,2
+            (stmts@2,1
+             (cmd@1
+              (dot b~1 put@1)c@5)))))))))))))
+ (proc@,1k addSymbol@5 x . .
+  (params@F
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (if@,1
+    (elif@3
+     (prefix not
+      (call@L referencePrevious~H b@1 s@4))
+     (stmts~1,1
+      (call@D addSymbolBody~D b@1 s@4))))))
+ (proc@,1p addSymbolDef@5 x . .
+  (params@I
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (cmd@1,1
+    (dot b~1 put@1)'O'@5)
+   (if@,2
+    (elif@3
+     (prefix not
+      (call@L referencePrevious~H b@1 s@4))
+     (stmts~1,1
+      (call@D addSymbolBody~D b@1 s@4))))))
+ (proc@,1v addStrLit@5 x . .
+  (params@F
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H s . . string@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (cmd@1,1
+    (dot b~1 put@1)'U'@5)
+   (for@4,2 s@5
+    (unpackflat
+     (let c . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (cmd@C needsEscape~C c)
+       (stmts~1,1
+        (cmd@1
+         (dot b~1 escape@1)c@8)))
+      (else@,2
+       (stmts@2,1
+        (cmd@1
+         (dot b~1 put@1)c@5))))))
+   (cmd@1,7
+    (dot b~1 put@1)'U'@5)))
+ (proc@,25 addEmpty@5 x . .
+  (params@E
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H count . . . 1@8)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (for@4,1
+    (infix@6 \2E\2E 1~1 count@2)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (cmd@1
+      (dot b~1 put@1)'E'@5)))))
+ (proc@,2A addCharLit@5 x . .
+  (params@G
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H c . . char@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (cmd@1,1
+    (dot b~1 escape@1)'\27'@8)
+   (if@,2
+    (elif@3
+     (dot@1 c~1 needsEscape@1)
+     (stmts~1,1
+      (cmd escape b@7 c@A)))
+    (else@,2
+     (stmts@2,1
+      (cmd@1
+       (dot b~1 put@1)c@5))))
+   (cmd@1,6
+    (dot b~1 escape@1)'\27'@8)))
+ (proc@,2J addIntLit@5 x . .
+  (params@F
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H i . . BiggestInt@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (cmd@1,1
+    (dot b~1 put@1)
+    (prefix@5 $ i@1))))
+ (proc@,2N addUIntLit@5 x . .
+  (params@G
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H u . . BiggestUInt@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (cmd@1,1
+    (dot b~1 put@1)
+    (prefix@5 $ u@1))))
+ (proc@,2R addFloatLit@5 x . .
+  (params@H
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H f . . BiggestFloat@3 .)). . .
+  (stmts@2,1
+   (cmd addSep b@7)
+   (var@4,1 x . . . ""@4)
+   (cmd@1,2
+    (dot x~1 addFloat@1)f@A)
+   (for@4,3 x@5
+    (unpackflat
+     (let c . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == c~2 'e'@3)
+       (stmts~1,1
+        (cmd@1
+         (dot b~1 put@1)'E'@5)))
+      (elif@5,2
+       (cmd@C needsEscape~C c)
+       (stmts~3,1
+        (cmd@1
+         (dot b~1 escape@1)c@8)))
+      (else@,4
+       (stmts@2,1
+        (cmd@1
+         (dot b~1 put@1)c@5))))))))
+ (proc@,2d addKeyw@5 x . .
+  (params@D
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H keyw . . string@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (dot@1,1 b~1 addBegin@1)
+   (cmd@1,2
+    (dot b~1 putTag@1)keyw@8)
+   (cmd@1,3
+    (dot b~1 put@1)'Z'@5)))
+ (proc@,2j addTree@5 x . .
+  (params@D
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H kind . . string@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (dot@1,3 b~1 addBegin@1)
+   (cmd@1,4
+    (dot b~1 putTag@1)kind@8)
+   (cmd@,5 inc
+    (dot@5 b~1 nesting@1))))
+ (proc@,2r endTree@5 x . .
+  (params@D
+   (param@1 b . .
+    (mut@3 Mangler@4).)). . .
+  (stmts@2,1
+   (cmd assert
+    (infix@H >
+     (dot~9 b~1 nesting@1)0@2)"generating \27\29\27 would produce a syntax error"@M)
+   (cmd@,1 dec
+    (dot@5 b~1 nesting@1))
+   (cmd@,2 undoWhitespace b@F)
+   (cmd@1,3
+    (dot b~1 put@1)'Z'@5)))
+ (template@,2x withTree@9 x . .
+  (params@I
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H kind . . string@6 .)
+   (param@V body . . untyped@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,2 addTree b@8 kind@B)body@,3
+   (cmd@,4 endTree b@8)))
+ (when@,34
+  (elif@5 isMainModule
+   (stmts~3,1
+    (import
+     (infix@A / std~3 syncio@1))
+    (proc@,2 test@5 . . .
+     (params@9
+      (param@1 b . .
+       (cmd@8 sink~5 Mangler).)). . .
+     (stmts@2,1
+      (cmd@1
+       (dot b~1 withTree@1)"stmts"@A
+       (stmts@1,1
+        (cmd@1
+         (dot b~1 withTree@1)"call"@A
+         (stmts@1,1
+          (cmd@1
+           (dot b~1 addSymbol@1)"foo.3.mymod"@B)
+          (cmd@1,1
+           (dot b~1 addIntLit@1)3423@B)
+          (cmd@1,2
+           (dot b~1 addFloatLit@1)50.4@D)))))
+      (cmd@,6 echo
+       (call@E
+        (dot~8 b~1 extract@1)))
+      (var@4,9 m . . .
+       (call@H createMangler~D 60@1))
+      (cmd@1,A
+       (dot m~1 withTree@1)"array"@A
+       (stmts@1,1
+        (cmd@1
+         (dot m~1 withTree@1)"range"@A
+         (stmts@1,1
+          (cmd@1
+           (dot m~1 addIntLit@1)0@B)
+          (cmd@1,1
+           (dot m~1 addIntLit@1)9@B)))
+        (cmd@1,3
+         (dot m~1 withTree@1)"array"@A
+         (stmts@1,1
+          (cmd@1
+           (dot m~1 withTree@1)"range"@A
+           (stmts@1,1
+            (cmd@1
+             (dot m~1 addIntLit@1)0@B)
+            (cmd@1,1
+             (dot m~1 addIntLit@1)4@B)))
+          (cmd@1,3
+           (dot m~1 withTree@1)"i"@A
+           (stmts@1,1
+            (cmd@1
+             (dot m~1 addIntLit@1)8@B)))))))
+      (cmd@,L assert
+       (infix@J ==
+        (call~3
+         (dot~8 m~1 extract@1))"AarrayArangeS0S9ZAR0AR6S0S4ZAiS8"@3))))
+    (proc@,Q main@5 . . .
+     (params@9). . .
+     (stmts@2,1
+      (var@4 b . . .
+       (call@H createMangler~D 10@1))
+      (cmd@,1 test b@5)))
+    (call@4,U main~4)))))

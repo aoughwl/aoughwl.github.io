@@ -1,0 +1,52 @@
+(.nif27)
+(.indexat 1840             )
+(stmts@,1,../../aowli/src/aowli/floatfmt.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv str7j0ifg "../../../../../../home/savant/nimony/lib/std/strutils.nim")
+  (kv party5a2l1 "../../../../../../home/savant/nimony/lib/std/parseutils.nim"))
+ (proc@,E :fmtBigFloat.0.@5 x . .
+  (params@H
+   (param@1 :f.0 . .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64).)
+   (param@I :modeSel.0 . .
+    (i@9 32).)
+   (param@W :prec.0 . .
+    (i@6 32).)
+   (param@h :sep.0 . .
+    (c@5 8).))string.0.sysvq0asl@t . .
+  (stmts@2,1
+   (result :result.0 . . string.0.sysvq0asl@r,~1 .)
+   (var@4,2 :mode.0 . . FloatFormatMode.0.str7j0ifg@4,FE,../../../../../../home/savant/nimony/lib/std/strutils.nim ffDefault.0.str7j0ifg@7)
+   (if@,3
+    (elif@3
+     (eq@8
+      (i 32)modeSel.0~8 1@3)
+     (stmts@E
+      (asgn@5 mode.0~5 ffDecimal.0.str7j0ifg@2)))
+    (elif@5,1
+     (eq@8
+      (i 32)modeSel.0~8 2@3)
+     (stmts@E
+      (asgn@5 mode.0~5 ffScientific.0.str7j0ifg@2))))
+   (asgn@7,5 result.0~7
+    (call@K formatBiggestFloat.0.str7j0ifg~I f.0@1 mode.0@4 prec.0@A sep.0@G))
+   (ret~2,~1 result.0)))
+ (proc@,M :parseBigFloat.0.@5 x . .
+  (params@J
+   (param@1 :s.0 . . string.0.sysvq0asl@3 .))
+  (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64). .
+  (stmts@2,1
+   (result :result.1 . .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64).)
+   (var@4,1 :f.1 . .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64)0.0@I)
+   (discard@,2
+    (call@P parseBiggestFloat.0.party5a2l1~H
+     (hcall@1 toOpenArray.2.sysvq0asl s.0)
+     (haddr@4 f.1)))
+   (asgn@7,3 result.1~7 f.1@2)
+   (ret~2,~1 result.1)))
+ (comment@i,E int.0.sysvq0asl int.0.sysvq0asl@B char.0.sysvq0asl@L))(.index@,1,../../aowli/src/aowli/floatfmt.nim
+ (x fmtBigFloat.0. 324)
+ (x parseBigFloat.0. 871))

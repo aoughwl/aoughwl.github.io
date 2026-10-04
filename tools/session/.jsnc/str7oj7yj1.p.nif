@@ -1,0 +1,1287 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/streams.nim
+ (pragmas
+  (kv@9 feature~7 "lenientnils"@2))
+ (comment@,2)
+ (import@,F syncio@7)
+ (import@,G assertions@7)
+ (export@,H FileMode@7)
+ (template@,J isNil@9 . . .
+  (params@E
+   (param@1 s . . typed@3 .))bool@C
+  (pragmas@V untyped@2).
+  (stmts@2,1
+   (infix@2 == s~2
+    (nil@3))))
+ (type@A,N Stream~8 x . .
+  (ref@2 StreamObj@4))
+ (type@D,Q StreamObj~B x . .
+  (object@2 RootObj@A
+   (fld~2,6 closeImpl~9 x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)).
+      (pragmas@C nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 WriteIOEffect@1)))..)).)
+   (fld~2,7 atEndImpl~9 x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .))bool@D
+      (pragmas@I nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2)))..)).)
+   (fld@4,8 setPositionImpl~F x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C pos . . int@5 .)).
+      (pragmas@M nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2)))..)).)
+   (fld@4,9 getPositionImpl~F x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .))int@D
+      (pragmas@H nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2)))..)).)
+   (fld@4,B readDataStrImpl~F x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C buffer . .
+        (mut@8 string@4).)
+       (param@1,1 slice . .
+        (at@C Slice~5 int@1).))int@L,1
+      (pragmas~P,2 nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 ReadIOEffect@1)))..)).)
+   (fld@1,F readLineImpl~C x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C line . .
+        (mut@6 string@4).))bool@V
+      (pragmas~M,1 nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 ReadIOEffect@1)))..)).)
+   (fld@1,I readDataImpl~C x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C buffer . . pointer@8 .)
+       (param@T bufLen . . int@8 .))int@h
+      (pragmas~M,1 nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 ReadIOEffect@1)))..)).)
+   (fld@1,K peekDataImpl~C x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C buffer . . pointer@8 .)
+       (param@T bufLen . . int@8 .))int@h
+      (pragmas~M,1 nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 ReadIOEffect@1)))..)).)
+   (fld@2,M writeDataImpl~D x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)
+       (param@C buffer . . pointer@8 .)
+       (param@T bufLen . . int@8 .)).
+      (pragmas~N,1 nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 WriteIOEffect@1)))..)).)
+   (fld~2,P flushImpl~9 x .
+    (cmd@7
+     (nil~4)
+     (proctype@5 ....
+      (params
+       (param@1 s . . Stream@3 .)).
+      (pragmas@C nimcall@2 raises@B
+       (kv@N tags~4
+        (bracket@2 WriteIOEffect@1)))..)).)))
+ (proc@,r flush@5 x . .
+  (params@B
+   (param@1 s . . Stream@3 .)).
+  (pragmas@N raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (prefix not
+      (call@9 isNil~5
+       (dot@2 s~1 flushImpl@1)))
+     (stmts@O
+      (call@B
+       (dot~A s~1 flushImpl@1)s@1))))))
+ (proc@,v close@5 x . .
+  (params@B
+   (param@1 s . . Stream@3 .)).
+  (pragmas@N raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@D and
+      (prefix~D not
+       (call@9 isNil~5 s@1))
+      (prefix@4 not
+       (call@9 isNil~5
+        (dot@2 s~1 closeImpl@1))))
+     (stmts~1,1
+      (call@B
+       (dot~A s~1 closeImpl@1)s@1))))))
+ (proc@,10 atEnd@5 x . .
+  (params@B
+   (param@1 s . . Stream@3 .))bool@D
+  (pragmas@T raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@D
+     (dot~A s~1 atEndImpl@1)s@1))))
+ (proc@,15 setPosition@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .)
+   (param@C pos . . int@5 .)).
+  (pragmas@d raises@2).
+  (stmts@2,1
+   (comment)
+   (call@H,1
+    (dot~G s~1 setPositionImpl@1)s@1 pos@4)))
+ (proc@,19 getPosition@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .))int@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@J
+     (dot~G s~1 getPositionImpl@1)s@1))))
+ (proc@,1D readData@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@T bufLen . . int@8 .))int@h
+  (pragmas@z raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@G
+     (dot~D s~1 readDataImpl@1)s@1 buffer@4 bufLen@C))))
+ (proc@,1H readDataStr@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . .
+    (mut@8 string@4).)
+   (param@1,1 slice . .
+    (at@C Slice~5 int@1).))int@L,1
+  (pragmas@g,1 raises@2).
+  (stmts@2,2
+   (comment)
+   (if@,1
+    (elif@3
+     (prefix not
+      (call@9 isNil~5
+       (dot@2 s~1 readDataStrImpl@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@J
+        (dot~G s~1 readDataStrImpl@1)s@1 buffer@4 slice@C))))
+    (else@,2
+     (stmts@2,2
+      (let@4 length . . .
+       (infix@L \2D
+        (infix~4 \2B
+         (dot~3 slice~5 b@1)1@2)
+        (dot@7 slice~5 a@1)))
+      (if@,1
+       (elif@3
+        (infix@7 <= length~7 0@3)
+        (stmts~1,1
+         (asgn@7 result~7 0@2)))
+       (else@,2
+        (stmts@2,1
+         (let@4 p . . .
+          (call@E beginStore~A buffer@1
+           (infix@H \2B
+            (dot~3 slice~5 b@1)1@2)
+           (dot@R slice~5 a@1)))
+         (asgn@7,1 result~7
+          (call@G
+           (dot~D s~1 readDataImpl@1)s@1 p@4 length@7))
+         (call@8,2 endStore~8 buffer@1)))))))))
+ (proc@,1W readAll@5 x . .
+  (params@D
+   (param@1 s . . Stream@3 .))string@D
+  (pragmas@X raises@2).
+  (stmts@2,1
+   (comment)
+   (const@6,1 bufferSize . . . 1024@D)
+   (asgn@7,2 result~7 ""@2)
+   (var@B,3 buffer~7 .
+    (pragmas noinit@2)
+    (at@H array~5 bufferSize@1 char@D).)
+   (while@,4 true@6
+    (stmts@2,1
+     (let@4 readBytes . . .
+      (call@K readData~8 s@1
+       (cmd@9 addr~5
+        (at@6 buffer~6 0@1))bufferSize@K))
+     (if@,1
+      (elif@3
+       (infix@A == readBytes~A 0@3)
+       (stmts~1,1
+        (break .))))
+     (let@4,3 prevLen . . .
+      (dot@G result~6 len@1))
+     (let@4,4 dest . . .
+      (call@H beginStore~A result@1
+       (infix@H \2B prevLen~8 readBytes@2)prevLen@U))
+     (call@7,5 copyMem~7 dest@1
+      (cmd@C addr~5
+       (at@6 buffer~6 0@1))readBytes@N)
+     (call@8,6 endStore~8 result@1)
+     (if@,7
+      (elif@3
+       (infix@A < readBytes~A bufferSize@2)
+       (stmts~1,1
+        (break .))))))))
+ (proc@,1m peekData@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@T bufLen . . int@8 .))int@h
+  (pragmas@z raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@G
+     (dot~D s~1 peekDataImpl@1)s@1 buffer@4 bufLen@C))))
+ (proc@,1r writeData@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@T bufLen . . int@8 .)).
+  (pragmas@v raises@2).
+  (stmts@2,1
+   (comment)
+   (call@F,2
+    (dot~E s~1 writeDataImpl@1)s@1 buffer@4 bufLen@C)))
+ (proc@,1w write@5 x .
+  (typevars@B
+   (typevar@1 T . . . .))
+  (params@E
+   (param@1 s . . Stream@3 .)
+   (param@C x . . T@3 .)).
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (var@4,1 y . . . x@4)
+   (call@9,2 writeData~9 s@1
+    (cmd@9 addr~5 y)
+    (call@I sizeof~6 T@1))))
+ (proc@,21 write@5 x . .
+  (params@B
+   (param@1 s . . Stream@3 .)
+   (param@C x . . string@3 .)).
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@6 >
+      (dot~5 x~1 len@1)0@2)
+     (stmts~1,1
+      (var@4 y . . . x@4)
+      (call@9,1 writeData~9 s@1
+       (call@D toCString~9 y@1)
+       (dot@J x~1 len@1)))))))
+ (proc@,28 writeLine@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C x . . string@3 .)).
+  (pragmas@c raises@2).
+  (stmts@2,1
+   (comment)
+   (call@5,1 write~5 s@1 x@4)
+   (call@5,2 write~5 s@1 "\0A"@4)))
+ (proc@,2D read@5 x .
+  (typevars@A
+   (typevar@1 T . . . .))
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C result . .
+    (mut@8 T@4).)).
+  (pragmas@e raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@a !=
+      (call~S readData~8 s@1
+       (cmd@9 addr~5 result)
+       (call@N sizeof~6 T@1))
+      (call@9 sizeof~6 T@1))
+     (stmts~1,1
+      (raise IOError@6))))))
+ (proc@,2I peek@5 x .
+  (typevars@A
+   (typevar@1 T . . . .))
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C result . .
+    (mut@8 T@4).)).
+  (pragmas@e raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@a !=
+      (call~S peekData~8 s@1
+       (cmd@9 addr~5 result)
+       (call@N sizeof~6 T@1))
+      (call@9 sizeof~6 T@1))
+     (stmts~1,1
+      (raise IOError@6))))))
+ (proc@,2N readChar@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))char@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 '\00'@2)
+   (if@,3
+    (elif@3
+     (infix@f !=
+      (call~X readData~8 s@1
+       (cmd@9 addr~5 result)
+       (call@N sizeof~6 result@1))1@3)
+     (stmts~1,1
+      (asgn@7 result~7 '\00'@2))))))
+ (proc@,2U peekChar@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))char@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 '\00'@2)
+   (if@,3
+    (elif@3
+     (infix@f !=
+      (call~X peekData~8 s@1
+       (cmd@9 addr~5 result)
+       (call@N sizeof~6 result@1))1@3)
+     (stmts~1,1
+      (asgn@7 result~7 '\00'@2))))))
+ (proc@,2b readBool@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))bool@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (var@4,1 t . . uint8@3
+    (suf@B 0u "u8"))
+   (call@4,2 read~4 s@1 t@4)
+   (asgn@7,3 result~7
+    (infix@4 != t~2
+     (suf@3 0u "u8")))))
+ (proc@,2h peekBool@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))bool@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (var@4,1 t . . uint8@3
+    (suf@B 0u "u8"))
+   (call@4,2 peek~4 s@1 t@4)
+   (asgn@7,3 result~7
+    (infix@4 != t~2
+     (suf@3 0u "u8")))))
+ (proc@,2n readInt8@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))int8@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i8"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,2s peekInt8@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))int8@D
+  (pragmas@W raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i8"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,2x readInt16@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int16@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i16"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,32 peekInt16@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int16@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i16"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,37 readInt32@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int32@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i32"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,3C peekInt32@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int32@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i32"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,3H readInt64@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int64@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i64"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,3M peekInt64@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))int64@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0 "i64"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,3R readUint8@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))uint8@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u8"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,3W peekUint8@5 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))uint8@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u8"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,3b readUint16@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint16@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u16"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,3g peekUint16@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint16@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u16"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,3l readUint32@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint32@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u32"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,3q peekUint32@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint32@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u32"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,3v readUint64@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint64@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u64"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,40 peekUint64@5 x . .
+  (params@G
+   (param@1 s . . Stream@3 .))uint64@D
+  (pragmas@a raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0u "u64"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,45 readFloat32@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .))float32@D
+  (pragmas@c raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0.0 "f32"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,4A peekFloat32@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .))float32@D
+  (pragmas@c raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0.0 "f32"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,4F readFloat64@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .))float64@D
+  (pragmas@c raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0.0 "f64"))
+   (call@4,2 read~4 s@1 result@4)))
+ (proc@,4K peekFloat64@5 x . .
+  (params@H
+   (param@1 s . . Stream@3 .))float64@D
+  (pragmas@c raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (suf@2 0.0 "f64"))
+   (call@4,2 peek~4 s@1 result@4)))
+ (proc@,4P readStrPrivate@5 . . .
+  (params@J
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .)
+   (param@P str . .
+    (mut@5 string@4).)).
+  (pragmas@z raises@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 > length~7
+      (dot@5 str~3 len@1))
+     (stmts@I
+      (call@6 setLen~6 str@1 length@6))))
+   (let@4,1 L . . .
+    (call@C readData~8 s@1
+     (call@D toCString~9 str@1)length@K))
+   (if@,2
+    (elif@3
+     (infix@2 != L~2
+      (dot@6 str~3 len@1))
+     (stmts@E
+      (call@6 setLen~6 str@1 L@6))))))
+ (proc@,4U readStr@5 x . .
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .)
+   (param@P str . .
+    (mut@5 string@4).)).
+  (pragmas@t raises@2).
+  (stmts@2,1
+   (comment)
+   (call@E,1 readStrPrivate~E s@1 length@4 str@C)))
+ (proc@,4Y readStr@5 x . .
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .))string@Q
+  (pragmas@k raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@B newString~9 length@1))
+   (call@E,2 readStrPrivate~E s@1 length@4 result@C)))
+ (proc@,4d peekStrPrivate@5 . . .
+  (params@J
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .)
+   (param@P str . .
+    (mut@5 string@4).)).
+  (pragmas@z raises@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 > length~7
+      (dot@5 str~3 len@1))
+     (stmts@I
+      (call@6 setLen~6 str@1 length@6))))
+   (let@4,1 L . . .
+    (call@C peekData~8 s@1
+     (call@D toCString~9 str@1)length@K))
+   (if@,2
+    (elif@3
+     (infix@2 != L~2
+      (dot@6 str~3 len@1))
+     (stmts@E
+      (call@6 setLen~6 str@1 L@6))))))
+ (proc@,4i peekStr@5 x . .
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .)
+   (param@P str . .
+    (mut@5 string@4).)).
+  (pragmas@t raises@2).
+  (stmts@2,1
+   (comment)
+   (call@E,1 peekStrPrivate~E s@1 length@4 str@C)))
+ (proc@,4m peekStr@5 x . .
+  (params@D
+   (param@1 s . . Stream@3 .)
+   (param@C length . . int@8 .))string@Q
+  (pragmas@k raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@B newString~9 length@1))
+   (call@E,2 peekStrPrivate~E s@1 length@4 result@C)))
+ (proc@,4r readLine@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .)
+   (param@C line . .
+    (mut@6 string@4).))bool@V
+  (pragmas@o raises@2).
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@9 isNil~5
+       (dot@2 s~1 readLineImpl@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@G
+        (dot~D s~1 readLineImpl@1)s@1 line@4))))
+    (else@,2
+     (stmts@2,2
+      (cmd@4
+       (dot line~4 setLen@1)0@8)
+      (while@,1 true@6
+       (stmts@2,1
+        (var@4 c . . char@3 '\00'@A)
+        (let@4,1 got . . .
+         (call@K
+          (dot~D s~1 readDataImpl@1)s@1
+          (cmd@9 addr~5 c)1@C))
+        (if@,2
+         (elif@3
+          (infix@4 != got~4 1@3)
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@9 >
+              (dot~5 line~4 len@1)0@2)
+             (stmts@E
+              (break .)))
+            (else@,1
+             (stmts@6
+              (ret false@7)))))))
+        (if@,5
+         (elif@3
+          (infix@2 == c~2 '\0D'@3)
+          (stmts~1,1
+           (var@4 nxt . . char@5 '\00'@C)
+           (discard@,1
+            (call@M
+             (dot~D s~1 readDataImpl@1)s@1
+             (cmd@9 addr~5 nxt)1@E))
+           (break@,2 .)))
+         (elif@5,4
+          (infix@2 == c~2 '\0A'@3)
+          (stmts@B
+           (break .)))
+         (elif@5,5
+          (infix@2 == c~2 '\00'@3)
+          (stmts~3,1
+           (if
+            (elif@3
+             (infix@9 >
+              (dot~5 line~4 len@1)0@2)
+             (stmts@E
+              (break .)))
+            (else@,1
+             (stmts@6
+              (ret false@7)))))))
+        (cmd@4,D
+         (dot line~4 add@1)c@5)))
+      (asgn@7,G result~7 true@2))))))
+ (proc@,5I peekLine@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .)
+   (param@C line . .
+    (mut@6 string@4).))bool@V
+  (pragmas@o raises@2).
+  (stmts@2,1
+   (comment)
+   (let@4,1 pos . . .
+    (call@H getPosition~B s@1))
+   (try@,2
+    (stmts@2,1
+     (asgn@7 result~7
+      (call@A readLine~8 s@1 line@4)))
+    (fin@,2
+     (stmts@2,1
+      (call@B setPosition~B s@1 pos@4))))))
+ (proc@,5Q readLine@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))string@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ""@2)
+   (if@,2
+    (elif@3
+     (dot@1 s~1 atEnd@1)
+     (stmts~1,1
+      (raise EndOfStreamError@6))))
+   (while@,4 true@6
+    (stmts@2,1
+     (var@4 c . . .
+      (call@C readChar~8 s@1))
+     (if@,1
+      (elif@3
+       (infix@2 == c~2 '\0D'@3)
+       (stmts~1,1
+        (asgn@2 c~2
+         (call@A readChar~8 s@1))
+        (break@,1 .))))
+     (if@,4
+      (elif@3
+       (infix@A or
+        (infix~8 == c~2 '\0A'@3)
+        (infix@5 == c~2 '\00'@3))
+       (stmts~1,1
+        (break .)))
+      (else@,2
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)c@5))))))))
+ (proc@,5f peekLine@5 x . .
+  (params@E
+   (param@1 s . . Stream@3 .))string@D
+  (pragmas@Y raises@2).
+  (stmts@2,1
+   (comment)
+   (let@4,1 pos . . .
+    (call@H getPosition~B s@1))
+   (try@,2
+    (stmts@2,1
+     (asgn@7 result~7
+      (call@A readLine~8 s@1)))
+    (fin@,2
+     (stmts@2,1
+      (call@B setPosition~B s@1 pos@4))))))
+ (iterator@,5n lines@9 x . .
+  (params@F
+   (param@1 s . . Stream@3 .))string@D
+  (pragmas@Z sideEffect@2 raises@E).
+  (stmts@2,1
+   (comment)
+   (var@4,1 line . . string@6 ""@F)
+   (while@,2
+    (call@G
+     (dot~9 s~1 readLine@1)line@1)
+    (stmts@2,1
+     (yld line@6)))))
+ (type@G,5w StringStream~E x . .
+  (ref@2 StringStreamObj@4))
+ (type@J,5y StringStreamObj~H x . .
+  (object@2 StreamObj@A
+   (fld~D,2 data~4 x . string@3 .)
+   (fld~H,4 pos . . int@5 .)))
+ (proc@,64 ssAtEnd@5 . . .
+  (params@C
+   (param@1 s . . Stream@3 .))bool@D
+  (pragmas@U nimcall@2 raises@B
+   (kv@N tags~4
+    (bracket@2))).
+  (stmts@2,1
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (asgn@7,1 result~7
+    (infix@9 >=
+     (dot~5 ss~2 pos@1)
+     (dot@A
+      (dot~5 ss~2 data@1)len@1)))))
+ (proc@,68 ssSetPosition@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .)
+   (param@C pos . . int@5 .)).
+  (pragmas@e nimcall@2 raises@B
+   (kv@N tags~4
+    (bracket@2))).
+  (stmts@2,1
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (if@,1
+    (elif@3
+     (infix@4 < pos~4 0@2)
+     (stmts~1,1
+      (asgn@7
+       (dot~5 ss~2 pos@1)0@2)))
+    (elif@5,2
+     (infix@4 > pos~4
+      (dot@9
+       (dot~5 ss~2 data@1)len@1))
+     (stmts~3,1
+      (asgn@7
+       (dot~5 ss~2 pos@1)
+       (dot@9
+        (dot~5 ss~2 data@1)len@1))))
+    (else@,4
+     (stmts@2,1
+      (asgn@7
+       (dot~5 ss~2 pos@1)pos@2))))))
+ (proc@,6H ssGetPosition@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .))int@D
+  (pragmas@Z nimcall@2 raises@B
+   (kv@N tags~4
+    (bracket@2))).
+  (stmts@2,1
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (asgn@7,1 result~7
+    (dot@4 ss~2 pos@1))))
+ (proc@,6L ssReadDataStr@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . .
+    (mut@8 string@4).)
+   (param@1,1 slice . .
+    (at@C Slice~5 int@1).))int@L,1
+  (pragmas@h,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (let@4,1 avail . . .
+    (infix@K \2D
+     (dot~5
+      (dot~5 ss~2 data@1)len@1)
+     (dot@4 ss~2 pos@1)))
+   (let@4,2 want . . .
+    (infix@J \2D
+     (infix~4 \2B
+      (dot~3 slice~5 b@1)1@2)
+     (dot@7 slice~5 a@1)))
+   (asgn@7,3 result~7
+    (if@2
+     (elif@3
+      (infix@5 < want~5 avail@2)
+      (stmts@E want))
+     (else@M
+      (stmts@6 avail))))
+   (if@,4
+    (elif@3
+     (infix@7 > result~7 0@2)
+     (stmts~1,5
+      (let@4 dest . . .
+       (call@H beginStore~A buffer@1
+        (infix@H \2B
+         (dot~3 slice~5 b@1)1@2)
+        (dot@R slice~5 a@1)))
+      (call@7,1 copyMem~7 dest@1
+       (call@I readRawData~B
+        (dot@3 ss~2 data@1)
+        (dot@C ss~2 pos@1))result@b)
+      (call@8,2 endStore~8 buffer@1)
+      (cmd@,3 inc
+       (dot@6 ss~2 pos@1)result@C)))
+    (else@,9
+     (stmts@2,1
+      (asgn@7 result~7 0@2))))))
+ (proc@,6e ssReadData@5 . . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .))int@F,1
+  (pragmas@Y,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (let@4,1 avail . . .
+    (infix@K \2D
+     (dot~5
+      (dot~5 ss~2 data@1)len@1)
+     (dot@4 ss~2 pos@1)))
+   (asgn@7,2 result~7
+    (if@2
+     (elif@3
+      (infix@7 < bufLen~7 avail@2)
+      (stmts@G bufLen))
+     (else@Q
+      (stmts@6 avail))))
+   (if@,3
+    (elif@3
+     (infix@7 > result~7 0@2)
+     (stmts~1,1
+      (call@7 copyMem~7 buffer@1
+       (call@K readRawData~B
+        (dot@3 ss~2 data@1)
+        (dot@C ss~2 pos@1))result@d)
+      (cmd@,1 inc
+       (dot@6 ss~2 pos@1)result@C)))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7 0@2))))))
+ (proc@,6q ssPeekData@5 . . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .))int@F,1
+  (pragmas@Y,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (let@4,1 avail . . .
+    (infix@K \2D
+     (dot~5
+      (dot~5 ss~2 data@1)len@1)
+     (dot@4 ss~2 pos@1)))
+   (asgn@7,2 result~7
+    (if@2
+     (elif@3
+      (infix@7 < bufLen~7 avail@2)
+      (stmts@G bufLen))
+     (else@Q
+      (stmts@6 avail))))
+   (if@,3
+    (elif@3
+     (infix@7 > result~7 0@2)
+     (stmts~1,1
+      (call@7 copyMem~7 buffer@1
+       (call@K readRawData~B
+        (dot@3 ss~2 data@1)
+        (dot@C ss~2 pos@1))result@d)))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 0@2))))))
+ (proc@,71 ssWriteData@5 . . .
+  (params@G
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .)).
+  (pragmas@U,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 WriteIOEffect@1))).
+  (stmts@2,3
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (if@,1
+    (elif@3
+     (infix@7 <= bufLen~7 0@3)
+     (stmts~1,1
+      (ret .))))
+   (let@4,3 dest . . .
+    (call@H beginStore~A
+     (dot@3 ss~2 data@1)
+     (infix@H \2B
+      (dot~5 ss~2 pos@1)bufLen@2)
+     (dot@T ss~2 pos@1)))
+   (call@7,4 copyMem~7 dest@1 buffer@7 bufLen@F)
+   (call@8,5 endStore~8
+    (dot@3 ss~2 data@1))
+   (cmd@,6 inc
+    (dot@6 ss~2 pos@1)bufLen@C)))
+ (proc@,7C ssClose@5 . . .
+  (params@C
+   (param@1 s . . Stream@3 .)).
+  (pragmas@O nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 WriteIOEffect@1))).
+  (stmts@2,2
+   (var@4 ss . . .
+    (call@H StringStream~C s@1))
+   (asgn@8,1
+    (dot~6 ss~2 data@1)""@2)))
+ (proc@,7H newStringStream@5 x . .
+  (params@L
+   (param@1 s . .
+    (cmd@8 sink~5 string)""@H))StringStream@N . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (oconstr@E StringStream~C
+     (kv@5 data~4 s@2)
+     (kv@D pos~3 0@2)
+     (kv~A,1 closeImpl~9 ssClose@2)
+     (kv~A,2 atEndImpl~9 ssAtEnd@2)
+     (kv~4,3 setPositionImpl~F ssSetPosition@2)
+     (kv~4,4 getPositionImpl~F ssGetPosition@2)
+     (kv~4,5 readDataStrImpl~F ssReadDataStr@2)
+     (kv~7,6 readDataImpl~C ssReadData@2)
+     (kv~7,7 peekDataImpl~C ssPeekData@2)
+     (kv~6,8 writeDataImpl~D ssWriteData@2)))))
+ (type@E,7W FileStream~C x . .
+  (ref@2 FileStreamObj@4))
+ (type@H,7Y FileStreamObj~F x . .
+  (object@2 StreamObj@A
+   (fld~F,2 f . . File@3 .)))
+ (proc@,7c fsClose@5 . . .
+  (params@C
+   (param@1 s . . Stream@3 .)).
+  (pragmas@O nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 WriteIOEffect@1))).
+  (stmts@2,2
+   (var@4 fs . . .
+    (call@F FileStream~A s@1))
+   (if@,1
+    (elif@3
+     (infix@5 !=
+      (dot~3 fs~2 f@1)
+      (nil@3))
+     (stmts~1,1
+      (call@5 close~5
+       (dot@3 fs~2 f@1))
+      (asgn@5,1
+       (dot~3 fs~2 f@1)
+       (nil@2)))))))
+ (proc@,7j fsFlush@5 . . .
+  (params@C
+   (param@1 s . . Stream@3 .)).
+  (pragmas@O nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 WriteIOEffect@1))).
+  (stmts@2,2
+   (call@9 flushFile~9
+    (dot@E
+     (call~3 FileStream~A s@1)f@1))))
+ (proc@,7n fsAtEnd@5 . . .
+  (params@C
+   (param@1 s . . Stream@3 .))bool@D
+  (pragmas@U nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2))).
+  (stmts@2,2
+   (asgn@7 result~7
+    (call@B endOfFile~9
+     (dot@E
+      (call~3 FileStream~A s@1)f@1)))))
+ (proc@,7r fsSetPosition@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .)
+   (param@C pos . . int@5 .)).
+  (pragmas@e nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2))).
+  (stmts@2,2
+   (call@A setFilePos~A
+    (dot@E
+     (call~3 FileStream~A s@1)f@1)
+    (dot@L pos~3 int64@1))))
+ (proc@,7v fsGetPosition@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .))int@D
+  (pragmas@Z nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2))).
+  (stmts@2,2
+   (asgn@7 result~7
+    (call@5 int~3
+     (call@B getFilePos~A
+      (dot@E
+       (call~3 FileStream~A s@1)f@1))))))
+ (proc@,7z fsReadData@5 . . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .))int@F,1
+  (pragmas@Y,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (asgn@7 result~7
+    (call@C readBuffer~A
+     (dot@E
+      (call~3 FileStream~A s@1)f@1)buffer@I bufLen@Q))))
+ (proc@,84 fsReadDataStr@5 . . .
+  (params@I
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . .
+    (mut@8 string@4).)
+   (param@1,1 slice . .
+    (at@C Slice~5 int@1).))int@L,1
+  (pragmas@h,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (let@4 length . . .
+    (infix@L \2D
+     (infix~4 \2B
+      (dot~3 slice~5 b@1)1@2)
+     (dot@7 slice~5 a@1)))
+   (if@,1
+    (elif@3
+     (infix@7 <= length~7 0@3)
+     (stmts~1,1
+      (asgn@7 result~7 0@2)))
+    (else@,2
+     (stmts@2,1
+      (let@4 p . . .
+       (call@E beginStore~A buffer@1
+        (infix@H \2B
+         (dot~3 slice~5 b@1)1@2)
+        (dot@R slice~5 a@1)))
+      (asgn@7,1 result~7
+       (call@C readBuffer~A
+        (dot@E
+         (call~3 FileStream~A s@1)f@1)p@I length@L))
+      (call@8,2 endStore~8 buffer@1))))))
+ (proc@,8F fsPeekData@5 . . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .))int@F,1
+  (pragmas@Y,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,3
+   (let@4 pos . . .
+    (call@J fsGetPosition~D s@1))
+   (asgn@7,1 result~7
+    (call@C readBuffer~A
+     (dot@E
+      (call~3 FileStream~A s@1)f@1)buffer@I bufLen@Q))
+   (call@D,2 fsSetPosition~D s@1 pos@4)))
+ (proc@,8M fsWriteData@5 . . .
+  (params@G
+   (param@1 s . . Stream@3 .)
+   (param@C buffer . . pointer@8 .)
+   (param@1,1 bufLen . . int@8 .)).
+  (pragmas@U,1 nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 WriteIOEffect@1))).
+  (stmts@2,3
+   (if
+    (elif@3
+     (infix@j !=
+      (call~Y writeBuffer~B
+       (dot@E
+        (call~3 FileStream~A s@1)f@1)buffer@I bufLen@Q)bufLen@3)
+     (stmts~1,1
+      (raise IOError@6))))))
+ (proc@,8S fsReadLine@5 . . .
+  (params@F
+   (param@1 s . . Stream@3 .)
+   (param@C line . .
+    (mut@6 string@4).))bool@V
+  (pragmas@p nimcall@2 raises@B
+   (kv@6,1 tags~4
+    (bracket@2 ReadIOEffect@1))).
+  (stmts@2,2
+   (asgn@7 result~7
+    (call@A readLine~8
+     (dot@E
+      (call~3 FileStream~A s@1)f@1)line@I))))
+ (proc@,8W newFileStream@5 x . .
+  (params@J
+   (param@1 f . . File@3 .))FileStream@B . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (oconstr@C FileStream~A
+     (kv~G,1 f~1 f@2)
+     (kv~8,2 closeImpl~9 fsClose@2)
+     (kv~8,3 atEndImpl~9 fsAtEnd@2)
+     (kv~2,4 setPositionImpl~F fsSetPosition@2)
+     (kv~2,5 getPositionImpl~F fsGetPosition@2)
+     (kv~2,6 readDataStrImpl~F fsReadDataStr@2)
+     (kv~5,7 readDataImpl~C fsReadData@2)
+     (kv~5,8 readLineImpl~C fsReadLine@2)
+     (kv~5,9 peekDataImpl~C fsPeekData@2)
+     (kv~4,A writeDataImpl~D fsWriteData@2)
+     (kv~8,B flushImpl~9 fsFlush@2)))))
+ (proc@,8l newFileStream@5 x . .
+  (params@J
+   (param@1 filename . . string@A .)
+   (param@J mode . . FileMode@6 fmRead@H)
+   (param@1,1 bufSize . . int@9 -1@F))FileStream@L,1 . .
+  (stmts@2,2
+   (comment)
+   (var@4,2 f . . File@3 .)
+   (if@,3
+    (elif@3
+     (call@4 open~4 f@1 filename@4 mode@E bufSize@K)
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@F newFileStream~D f@1))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (nil@2)))))))
+ (proc@,8v openFileStream@5 x . .
+  (params@K
+   (param@1 filename . . string@A .)
+   (param@J mode . . FileMode@6 fmRead@H)
+   (param@1,1 bufSize . . int@9 -1@F))FileStream@L,1
+  (pragmas@q,1 raises@2).
+  (stmts@2,2
+   (comment)
+   (var@4,2 f . . File@3 .)
+   (if@,3
+    (elif@3
+     (call@4 open~4 f@1 filename@4 mode@E bufSize@K)
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@F newFileStream~D f@1))))
+    (else@,2
+     (stmts@2,1
+      (raise IOError@6)))))))

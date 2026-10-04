@@ -1,0 +1,361 @@
+(.nif27)
+(.indexat 11938            )
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv has9tn57v "../../../../../../home/savant/nimony/lib/std/hashes.nim"))
+ (stmts@2,4)
+ (type@9,7 :pchar.0.~7 x . .
+  (ptr@2
+   (uarray@I
+    (c@1 8))
+   (unchecked)))
+ (type@E,8 :StringView.0.~C x .
+  (pragmas)
+  (object@2 .
+   (fld~B,1 :p.0~1 x .
+    (ptr@6,~2
+     (uarray@I
+      (c@1 8))
+     (unchecked)).)
+   (fld~9,2 :len.0~3 x .
+    (i@3 32).)))
+ (template@,C :\5B\5D.0.@9 x . .
+  (params@E
+   (param@1 :s.0 . . StringView.0.@3 .)
+   (param@G :i.0 . .
+    (i@3 32).))
+  (c@P 8). .
+  (stmts@k
+   (pat@1
+    (dot s.0~1 p.0 0)i.0@3)))
+ (template@,H :eqImpl.0.@9 . . .
+  (params@F).
+  (pragmas@I
+   (untyped@2)).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6
+      (ochoice ==.0. ==.1. ==.22.sysvq0asl ==.13.sysvq0asl ==.14.sysvq0asl ==.17.sysvq0asl ==.0.sysvq0asl ==.5.sysvq0asl ==.18.sysvq0asl ==.8.sysvq0asl ==.4.sysvq0asl ==.11.sysvq0asl ==.23.sysvq0asl ==.3.sysvq0asl ==.7.sysvq0asl ==.15.sysvq0asl ==.20.sysvq0asl ==.16.sysvq0asl ==.24.sysvq0asl ==.9.sysvq0asl ==.6.sysvq0asl ==.10.sysvq0asl ==.12.sysvq0asl ==.2.sysvq0asl ==.1.sysvq0asl)
+      (dot~5 a~1
+       (ochoice@1 len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl))
+      (dot@4 b~1
+       (ochoice@1 len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)))
+     (stmts~1,1
+      (for@4
+       (infix@6
+        (ochoice \2E.<.0.sysvq0asl \2E.<.1.sysvq0asl)0~1
+        (dot@4 a~1
+         (ochoice@1 len.0.sysvq0asl len.4.sysvq0asl len.3.sysvq0asl len.2.sysvq0asl len.6.sysvq0asl len.1.sysvq0asl len.5.sysvq0asl)))
+       (unpackflat
+        (let :i.1 . . . .))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@5 !=.0.sysvq0asl
+           (at~4 a~1 i.1@1)
+           (at@4 b~1 i.1@1))
+          (stmts@E
+           (ret false.0.sysvq0asl@7))))))
+      (asgn@7,2 result~7 true.0.sysvq0asl@2)))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7 false.0.sysvq0asl@2))))))
+ (proc@,P :==.0.@5 x . .
+  (params@A
+   (param@1 :a.0 . . StringView.0.@6 .)
+   (param@4 :b.0 . . StringView.0.@3 .))
+  (bool@K). .
+  (stmts@b
+   (result@6 :result.0 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (stmts~Z,~7
+    (if
+     (elif@3
+      (eq@6
+       (i 32)
+       (dot~5 a.0~1 len.0 0)
+       (dot@4 b.0~1 len.0 0))
+      (stmts~1,1
+       (for@4
+        (infix@6 \2E.<.0.Ijxbarg1. 0~1
+         (dot@4 a.0~1 len.0 0))
+        (unpackflat
+         (let :i.2 . .
+          (i@2,~9 32).))
+        (stmts~2,1
+         (if
+          (elif@3
+           (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (not@,1
+             (eq@7
+              (c 8)
+              (expr@k,J,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+               (pat@1
+                (dot a.0~c,8 p.0 0)i.2~a,8))
+              (expr@k,J,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+               (pat@1
+                (dot b.0~U,8 p.0 0)i.2~S,8)))))
+           (stmts@E
+            (ret
+             (false@7)))))))
+       (asgn@7,2 result.0~7
+        (true@2))))
+     (else@,4
+      (stmts@2,1
+       (asgn@7 result.0~7
+        (false@2))))))
+   (ret~b result.0)))
+ (proc@,Q :==.1.@5 x . .
+  (params@A
+   (param@1 :a.1 . . StringView.0.@3 .)
+   (param@G :b.1 . . string.0.sysvq0asl@3 .))
+  (bool@S). .
+  (stmts@j
+   (result@6 :result.1 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (stmts~h,~8
+    (if
+     (elif@3
+      (eq@6
+       (i 32)
+       (dot~5 a.1~1 len.0 0)
+       (call@4 len.4.sysvq0asl@1 b.1~1))
+      (stmts~1,1
+       (for@4
+        (infix@6 \2E.<.0.Ijxbarg1. 0~1
+         (dot@4 a.1~1 len.0 0))
+        (unpackflat
+         (let :i.3 . .
+          (i@2,~9 32).))
+        (stmts~2,1
+         (if
+          (elif@3
+           (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (not@,1
+             (eq@7
+              (c 8)
+              (expr@k,J,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+               (pat@1
+                (dot a.1~c,8 p.0 0)i.3~a,8))
+              (call@H,R,../../../../../../home/savant/nimony/src/lib/stringviews.nim \5B\5D.9.sysvq0asl b.1 i.3@2))))
+           (stmts@E
+            (ret
+             (false@7)))))))
+       (asgn@7,2 result.1~7
+        (true@2))))
+     (else@,4
+      (stmts@2,1
+       (asgn@7 result.1~7
+        (false@2))))))
+   (ret~j result.1)))
+ (proc@,S :startsWith.0.@5 x . .
+  (params@G
+   (param@1 :s.1 . . StringView.0.@3 .)
+   (param@G :prefix.0 . . string.0.sysvq0asl@8 .))
+  (bool@X). .
+  (stmts@2,1
+   (result@4 :result.2 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (let@4 :prefixLen.0 . .
+    (i@4,~J 32)
+    (call@I len.4.sysvq0asl@1 prefix.0~6))
+   (let@4,1 :sLen.0 . .
+    (i@4,~K 32)
+    (dot@8 s.1~1 len.0 0))
+   (var@4,2 :i.4 . .
+    (i 32)0@4)
+   (while@,3
+    (true@6)
+    (stmts@2,1
+     (if
+      (elif@3
+       (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (le@2,1
+         (i 32)prefixLen.0@C,e,../../../../../../home/savant/nimony/src/lib/stringviews.nim i.4@7,e,../../../../../../home/savant/nimony/src/lib/stringviews.nim))
+       (stmts@G
+        (ret
+         (true@7)))))
+     (if@,1
+      (elif@3
+       (or@A
+        (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (le@2,1
+          (i 32)sLen.0@C,f,../../../../../../home/savant/nimony/src/lib/stringviews.nim i.4@7,f,../../../../../../home/savant/nimony/src/lib/stringviews.nim))
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (c 8)
+           (expr@k,J,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+            (pat@1
+             (dot s.1~R,M p.0 0)i.4~P,M))
+           (call@S,f,../../../../../../home/savant/nimony/src/lib/stringviews.nim \5B\5D.9.sysvq0asl prefix.0 i.4@7)))))
+       (stmts@W
+        (ret
+         (false@7)))))
+     (call@3,2 inc.1.I6wjjge.~3
+      (haddr@1 i.4))))
+   (ret@,7
+    (false@7))
+   (ret~2,~1 result.2)))
+ (proc@,c :add.0.@5 x . .
+  (params@9
+   (param@1 :s.2 . .
+    (mut@3 string.0.sysvq0asl@4).)
+   (param@G :b.2 . . StringView.0.@3 .)). . .
+  (stmts@2,1
+   (let@4 :l.0 . .
+    (i@4,~T 32)
+    (call@5 len.4.sysvq0asl@1
+     (hderef~1 s.2)))
+   (cmd@1,1 setLen.1.sysvq0asl@1 s.2~1
+    (add@A
+     (i 32)l.0~2
+     (dot@3 b.2~1 len.0 0)))
+   (for@4,2
+    (infix@6 \2E.<.0.Ijxbarg1. 0~1
+     (dot@4 b.2~1 len.0 0))
+    (unpackflat
+     (let :i.5 . .
+      (i@4,~V 32).))
+    (stmts~2,1
+     (call \5B\5D=.9.sysvq0asl s.2
+      (add@3
+       (i 32)l.0~1 i.5@1)
+      (expr@g,~U
+       (pat@1
+        (dot b.2~Y,U p.0 0)i.5~W,U)))))))
+ (proc@,12 :$.0.@5 x . .
+  (params@9
+   (param@1 :s.3 . . StringView.0.@3 .))string.0.sysvq0asl@H . .
+  (stmts@2,1
+   (result@7 :result.3 . . string.0.sysvq0asl@K,~d .)
+   (asgn@7 result.3~7
+    (call@B newString.0.sysvq0asl~9
+     (dot@2 s.3~1 len.0 0)))
+   (if@,1
+    (elif@3
+     (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 32)0@D,1B,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+       (dot@6,1B,../../../../../../home/savant/nimony/src/lib/stringviews.nim s.3~1 len.0 0)))
+     (stmts~1,1
+      (cmd copyMem.0.sysvq0asl
+       (hconv@I
+        (pointer@P,O,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (call beginStore.0.sysvq0asl~A
+         (haddr@1 result.3)
+         (dot@A s.3~1 len.0 0)0@G))
+       (hconv@d
+        (pointer@P,O,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (dot s.3~1 p.0 0))
+       (dot@i s.3~1 len.0 0))
+      (call@8,1 endStore.0.sysvq0asl~8
+       (haddr@1 result.3)))))
+   (ret~2,~1 result.3)))
+ (proc@,18 :toStringViewUnsafe.0.@5 x . .
+  (params@O
+   (param@1 :s.4 . . string.0.sysvq0asl@3 .))StringView.0.@D . .
+  (stmts@2,1
+   (result :result.4 . . StringView.0.@G,~x .)
+   (if@,1
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (i 32)
+        (call@6,1H,../../../../../../home/savant/nimony/src/lib/stringviews.nim len.4.sysvq0asl@1 s.4~1)0@E,1H,../../../../../../home/savant/nimony/src/lib/stringviews.nim)))
+     (stmts~1,1
+      (asgn@7 result.4~7
+       (oconstr@C StringView.0.~5,~z
+        (kv@2 p.0~1
+         (cast@2
+          (ptr~G,~14
+           (uarray@I
+            (c@1 8))
+           (unchecked))
+          (call@D readRawData.0.sysvq0asl@1 s.4~1 0@l,1U,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim)))
+        (kv@Z len.0~3
+         (call@3 len.4.sysvq0asl@1 s.4~1))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result.4~7
+       (oconstr@C StringView.0.~5,~11
+        (kv@2 p.0~1
+         (nil@2))
+        (kv@C len.0~3 0@2))))))
+   (ret~2,~1 result.4)))
+ (proc@,1F :hash.0.@5 x . .
+  (params@A
+   (param@1 :a.2 . . StringView.0.@3 .))
+  (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32)
+  (pragmas@W
+   (inline@2)).
+  (stmts@2,1
+   (result :result.5 . .
+    (u@A,2,../../../../../../home/savant/nimony/lib/std/hashes.nim 32).)
+   (asgn result.5
+    (expr@2,1
+     (cmd hash.1.has9tn57v
+      (call@O borrowCStringUnsafe.0.sysvq0asl~J
+       (cast@1
+        (cstring@5
+         (unchecked))
+        (dot@F a.2~1 p.0 0))
+       (dot@M a.2~1 len.0 0)))))
+   (ret~2,~1 result.5)))
+ (comment@F,7 UncheckedArray.0.sysvq0asl char.0.sysvq0asl@F int.0.sysvq0asl~5,3 int.0.sysvq0asl@I,5 char.0.sysvq0asl@A,5 bool.0.sysvq0asl@5,I bool.0.sysvq0asl@D,J bool.0.sysvq0asl@I,L eqImpl.0.@S,I \5B\5D.0.~6,D \5B\5D.0.@2,D !=.0.sysvq0asl~1,D \5B\5D.0.~6,D \5B\5D.0.@2,D false.0.sysvq0asl@F,D true.0.sysvq0asl~2,E false.0.sysvq0asl~2,G eqImpl.0.@a,J \5B\5D.0.~6,D !=.0.sysvq0asl~1,D \5B\5D.0.~6,D false.0.sysvq0asl@F,D true.0.sysvq0asl~2,E false.0.sysvq0asl~2,G true.0.sysvq0asl~7,P >=.0.sysvq0asl~6,Q true.0.sysvq0asl@F,Q >=.0.sysvq0asl~6,R \5B\5D.0.@5,R !=.0.sysvq0asl@A,R \5B\5D.0.@5,R false.0.sysvq0asl@V,R false.0.sysvq0asl~6,T \5B\5D.0.~2,Z >.0.sysvq0asl~4,x !=.0.sysvq0asl~4,13 cstring.0.sysvq0asl@J,1A)
+ (iterator@E,J :\2E.<.0.Ijxbarg1. . .@,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (at \2E.<.0.sysvq0asl
+   (i 32))
+  (params@R,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (param@1 :a.4 . .
+    (i 32).)
+   (param@4 :b.4 . .
+    (i 32).))
+  (i 32)
+  (pragmas@e,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (inline@2)).@,1,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (stmts@2,2,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (var@4 :i.6 . .
+    (i@A,H,../../../../../../home/savant/nimony/src/lib/stringviews.nim 32)a.4@4)
+   (while@,1
+    (lt@8
+     (i 32)i.6~2 b.4@2)
+    (stmts@2,1
+     (yld i.6@6)
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.6))))))
+ (func@7,Z :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.1 . .
+    (mut@3
+     (i 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.1)
+    (add@6
+     (i 32)
+     (hderef@1 x.1)
+     (conv@U,~F
+      (i 32)1@1))))))(.index@,7,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+ (x pchar.0. 281)
+ (x StringView.0. 81)
+ (x \5B\5D.0. 187)
+ (h eqImpl.0. 186)
+ (x ==.0. 1435)
+ (x ==.1. 1269)
+ (x startsWith.0. 1248)
+ (x add.0. 1706)
+ (x $.0. 629)
+ (x toStringViewUnsafe.0. 1097)
+ (x hash.0. 1087)
+ (h \2E.<.0.Ijxbarg1. 1253)
+ (h inc.1.I6wjjge. 778))

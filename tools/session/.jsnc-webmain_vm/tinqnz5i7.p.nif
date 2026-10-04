@@ -1,0 +1,61 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,6,../../../../../../home/savant/nimony/src/lib/tinyhashes.nim
+ (type@9,1 UHash~7 x . . uint32@2)
+ (proc@,3
+  (quoted@5 !&@1). . .
+  (params@9
+   (param@1 h . . UHash@3 .)
+   (param@B val . . uint32@5 .))UHash@P
+  (pragmas@e inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (infix@4 \2B h~2 val@2))
+   (asgn@7,2 result~7
+    (infix@9 \2B result~7
+     (par@2
+      (infix@8 shl result~7
+       (suf@4 10u "u32")))))
+   (asgn@7,3 result~7
+    (infix@9 xor result~7
+     (par@4
+      (infix@8 shr result~7
+       (suf@4 6u "u32")))))))
+ (proc@,9
+  (quoted@5 !$@1). . .
+  (params@9
+   (param@1 h . . UHash@3 .))UHash@C
+  (pragmas@R inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (infix@4 \2B h~2
+     (infix@4 shl h~2
+      (suf@4 3u "u32"))))
+   (asgn@7,2 result~7
+    (infix@9 xor result~7
+     (par@4
+      (infix@8 shr result~7
+       (suf@4 11u "u32")))))
+   (asgn@7,3 result~7
+    (infix@9 \2B result~7
+     (infix@9 shl result~7
+      (suf@4 15u "u32"))))))
+ (proc@,F uhash@5 x . .
+  (params@B
+   (param@1 s . . string@3 .))UHash@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (suf@2 0u "u32"))
+   (for@4,1
+    (call@A items~5 s@1)
+    (unpackflat
+     (let c . . ..))
+    (stmts@F
+     (asgn@7 result~7
+      (infix@9 !& result~7
+       (call@9 uint32~6 c@1)))))
+   (asgn@7,2 result~7
+    (prefix@2 !$ result@2)))))

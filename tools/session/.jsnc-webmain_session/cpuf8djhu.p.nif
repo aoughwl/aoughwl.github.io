@@ -1,0 +1,266 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/cpuinfo.nim
+ (comment)
+ (when@,7
+  (elif@5
+   (call@7 defined~7 js@1)
+   (stmts~3,1
+    (import
+     (infix@A / std~3 jsffi@1))
+    (proc@,1 countProcessorsImpl@5 . . .
+     (params@O)int@4 . .
+     (stmts@2,1
+      (when
+       (elif@5
+        (call@7 defined~7 nodejs@1)
+        (stmts~3,1
+         (let@4 jsOs . . .
+          (call@E require~7 "os"@1))
+         (let@4,1 jsObj . . .
+          (dot@J
+           (call~2
+            (dot~5 jsOs~4 cpus@1))length@1))))
+       (else@,3
+        (stmts@2,3
+         (let@D navigator~9 .
+          (pragmas importcpp@2)JsObject@F .)
+         (let@4,1 jsObj . . .
+          (dot@H navigator~9 hardwareConcurrency@1)))))
+      (asgn@7,8 result~7
+       (cmd@B
+        (dot~4 jsObj~5 to@1)int))))))
+  (else@,C
+   (stmts@2,1
+    (when
+     (elif@5
+      (infix@F and
+       (call~8 defined~7 posix@1)
+       (prefix@4 not
+        (par@4
+         (infix@H or
+          (call~9 defined~7 macosx@1)
+          (call@A defined~7 bsd@1)))))
+      (stmts~3,1
+       (import
+        (infix@C / posix~5 posix@1)))))
+    (when@,3
+     (elif@5
+      (call@7 defined~7 windows@1)
+      (stmts~3,1
+       (type@D,1 SystemInfo~B . . .
+        (object@2 .
+         (fld~B,1 u1 . . uint32@4 .)
+         (fld~B,2 dwPageSize . . uint32@C .)
+         (fld~B,3 lpMinimumApplicationAddress . .
+          (cmd@X
+           (nil~4)pointer).)
+         (fld~B,4 lpMaximumApplicationAddress . .
+          (cmd@X
+           (nil~4)pointer).)
+         (fld~B,5 dwActiveProcessorMask . .
+          (infix@R ptr
+           (nil~4)uint32@4).)
+         (fld~B,6 dwNumberOfProcessors . . uint32@M .)
+         (fld~B,7 dwProcessorType . . uint32@H .)
+         (fld~B,8 dwAllocationGranularity . . uint32@P .)
+         (fld~B,9 wProcessorLevel . . uint16@H .)
+         (fld~B,A wProcessorRevision . . uint16@K .)))
+       (proc@,D getSystemInfo@5 . . .
+        (params@I
+         (param@1 lpSystemInfo . .
+          (ptr@E SystemInfo@4).)).
+        (pragmas@n stdcall@2
+         (kv~d,1 dynlib~6 "kernel32"@2)
+         (kv~I,1 importc~7 "GetSystemInfo"@2)). .))))
+    (when@,L
+     (elif@5
+      (infix@H or
+       (call~A defined~7 freebsd@1)
+       (call@A defined~7 macosx@1))
+      (stmts~3,1
+       (pragmas
+        (kv@6 emit~4 "\23include <sys/types.h>"@2)))))
+    (when@,O
+     (elif@5
+      (infix@H or
+       (call~A defined~7 openbsd@1)
+       (call@A defined~7 netbsd@1))
+      (stmts~3,1
+       (pragmas
+        (kv@6 emit~4 "\23include <sys/param.h>"@2)))))
+    (when@,R
+     (elif@5
+      (infix@G or
+       (call~9 defined~7 macosx@1)
+       (call@A defined~7 bsd@1))
+      (stmts~3,3
+       (pragmas
+        (kv@6 emit~4 "\23include <sys/sysctl.h>"@2))
+       (pragmas@,1 push@2 nodecl@7)
+       (when@,2
+        (elif@5
+         (call@7 defined~7 macosx@1)
+         (stmts~3,1
+          (proc sysctlbyname@5 . . .
+           (params@H
+            (param@1 name . . cstring@6 .)
+            (param~F,1 oldp . . pointer@6 .)
+            (param@,1 oldlenp . .
+             (mut@9 csize_t@4).)
+            (param~F,2 newp . .
+             (cmd@A
+              (nil~4)pointer).)
+            (param@4,2 newlen . . csize_t@8 .))cint@M,2
+           (pragmas@i,2 importc@2). .))))
+       (let@8,7 CTL_HW~6 .
+        (pragmas importc@2)cint@D .)
+       (let@9,8 HW_NCPU~7 .
+        (pragmas importc@2)cint@D .)
+       (proc@,9 sysctl@5 . .
+        (typevars@B
+         (typevar@1 I . . . .))
+        (params@E
+         (param@1 name . .
+          (mut@6
+           (at@9 array~5 I@1 cint@4)).)
+         (param@R namelen . . cuint@9 .)
+         (param~C,1 oldp . . pointer@6 .)
+         (param@3,1 oldlenp . .
+          (mut@9 csize_t@4).)
+         (param~C,2 newp . .
+          (cmd@A
+           (nil~4)pointer).)
+         (param@7,2 newlen . . csize_t@8 .))cint@P,2
+        (pragmas@i,2 importc@2). .)
+       (pragmas@,C pop@2))))
+    (when@,i
+     (elif@5
+      (call@7 defined~7 genode@1)
+      (stmts~3,1
+       (import
+        (infix@D / genode~6 env@1))
+       (proc@,2 affinitySpaceTotal@5 . . .
+        (params@N
+         (param@1 env . . GenodeEnvPtr@5 .))cuint@L
+        (pragmas@o
+         (kv~d,1 importcpp~9 "\40->cpu\28\29.affinity_space\28\29.total\28\29"@2)). .))))
+    (when@,o
+     (elif@5
+      (call@7 defined~7 haiku@1)
+      (stmts~3,1
+       (type@w,1 SystemInfo~u . .
+        (pragmas~j
+         (kv@9 importc~7 "system_info"@2)
+         (kv@W header~6 "<OS.h>"@2))
+        (object@2 .
+         (fld~l,1 cpuCount~9 .
+          (pragmas
+           (kv@9 importc~7 "cpu_count"@2))uint32@Q .)))
+       (proc@,4 getSystemInfo@5 . . .
+        (params@I
+         (param@1 info . .
+          (ptr@6 SystemInfo@4).))int32@O
+        (pragmas@m
+         (kv@9 importc~7 "get_system_info"@2)
+         (kv@8,1 header~6 "<OS.h>"@2)). .))))
+    (proc@,w countProcessorsImpl@5 . . .
+     (params@O)int@4
+     (pragmas@W inline@2).
+     (stmts@2,1
+      (when
+       (elif@5
+        (call@7 defined~7 windows@1)
+        (stmts~3,1
+         (var@2,1 si . . SystemInfo@4
+          (call@O default~7 SystemInfo@1))
+         (call@D,2 getSystemInfo~D
+          (cmd@6 addr~5 si))
+         (asgn@7,3 result~7
+          (call@5 int~3
+           (dot@3 si~2 dwNumberOfProcessors@1)))))
+       (elif@5,5
+        (infix@G or
+         (call~9 defined~7 macosx@1)
+         (call@A defined~7 bsd@1))
+        (stmts~3,1
+         (asgn@7 result~7 0@2)
+         (let@4,1 dest . . .
+          (cmd@C addr~5 result))
+         (var@4,2 len . . .
+          (dot@K
+           (call~8 sizeof~6 result@1)csize_t@1))
+         (when@,3
+          (elif@5
+           (call@7 defined~7 macosx@1)
+           (stmts~3,2
+            (if
+             (elif@3
+              (infix@n ==
+               (call~b sysctlbyname~C "hw.logicalcpu"@1 dest@I len@O
+                (nil@T)0@Y)0@3)
+              (stmts~1,1
+               (ret .)))))))
+         (var@4,7 mib . . .
+          (bracket@6 CTL_HW@1 HW_NCPU@9))
+         (if@,8
+          (elif@3
+           (infix@Y ==
+            (call~S sysctl~6 mib@1 2@6 dest@9 len@F
+             (nil@K)0@P)0@3)
+           (stmts~1,1
+            (ret .))))))
+       (elif@5,G
+        (call@7 defined~7 hpux@1)
+        (stmts~3,1
+         (asgn@7 result~7
+          (call@7 mpctl~5 MPC_GETNUMSPUS@1
+           (nil@H)
+           (nil@M)))))
+       (elif@5,I
+        (call@7 defined~7 irix@1)
+        (stmts~3,1
+         (var@I SC_NPROC_ONLN~E .
+          (pragmas
+           (kv@9 importc~7 "_SC_NPROC_ONLN"@2)
+           (kv@Z header~6 "<unistd.h>"@2))cint@r .)
+         (asgn@7,1 result~7
+          (call@9 sysconf~7 SC_NPROC_ONLN@1))))
+       (elif@5,L
+        (call@7 defined~7 genode@1)
+        (stmts~3,1
+         (asgn@7 result~7
+          (dot@X
+           (call~2
+            (dot~J runtimeEnv~A affinitySpaceTotal@1))int@1))))
+       (elif@5,N
+        (call@7 defined~7 haiku@1)
+        (stmts~3,1
+         (var@4 sysinfo . . SystemInfo@9 .)
+         (if@,1
+          (elif@3
+           (infix@S ==
+            (call~F getSystemInfo~D
+             (cmd@6 addr~5 sysinfo))0@3)
+           (stmts~1,1
+            (asgn@7 result~7
+             (dot@I
+              (dot~9 sysinfo~7 cpuCount@1)int@1))))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result~7 0@2))))))
+       (else@,T
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@9 sysconf~7 SC_NPROCESSORS_ONLN@1)))))
+      (if@,V
+       (elif@3
+        (infix@7 < result~7 0@2)
+        (stmts@C
+         (asgn@7 result~7 0@2)))))))))
+ (proc@,1q countProcessors@5 x . .
+  (params@L)int@4 . .
+  (stmts@2,1
+   (comment)
+   (call@J,2 countProcessorsImpl~J))))

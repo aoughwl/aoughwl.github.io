@@ -1,0 +1,574 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/loadcheck.nim
+ (comment)
+ (pragmas@,19
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,1B
+  (infix@A / std~3 syncio@1))
+ (import@,1C modload@7)
+ (import@,1D nifcursors@7 nifstreams@J nimony_model@V decls@j programs@q symparser@10)
+ (import@,1E tags@7)
+ (import@,1F natives@7)
+ (import@,1G runtime@7)
+ (proc@,1I inputRefusal@5 x . .
+  (params@I
+   (param@1 path . . string@6 .))string@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,T result~7 ""@2)
+   (var@4,U f . . File@3 .)
+   (if@,V
+    (elif@3
+     (prefix not
+      (call@8 open~4 f@1 path@4))
+     (stmts@J
+      (ret ""@7))))
+   (var@4,W line . . . ""@7)
+   (let@4,X got . . .
+    (call@E readLine~8 f@1 line@4))
+   (cmd@,Y close f@6)
+   (if@,Z
+    (elif@3
+     (prefix not got@4)
+     (stmts@9
+      (ret ""@7))))
+   (if@,a
+    (elif@3
+     (infix@E and
+      (infix~5 >=
+       (dot~5 line~4 len@1)5@3)
+      (infix@H ==
+       (at~9 line~4
+        (infix@3 \2E\2E 0~2 4@3))"\28.nif"@3))
+     (stmts@h
+      (ret ""@7))))
+   (asgn@7,b result~7
+    (infix@1H,4 &
+     (infix~2,~1 &
+      (infix~c &
+       (infix~7 &
+        (infix@p,~1 &
+         (infix~4,~1 &
+          (infix~X,~1 &
+           (infix~7 &
+            (infix~7 & "aowli\3A not a NIF artifact\3A "~U path@2)"\0A"@2)"  This engine runs COMPILED typed NIF; that file\27s first line is not the\0A"~i,1)"  `\28.nif…\29` header. If it is Nim source, compile it and pass the artifact\3A\0A"~1F,1)"    nimony c --nimcache\3ANC "~1J,1)path@2)"   \23 then run NC/<module>.s.nif\0A"@2)"  Refusing rather than running nothing and exiting 0, which is what this\0A"~1D,1)"  used to do.\0A"~1F,1))))
+ (proc@,21 nodeTag@5 . . .
+  (params@C
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@Y
+   (at@9
+    (dot~5 pool~4 tags@1)
+    (dot@2 n~1 tagId@1))))
+ (proc@,26 baseName@5 . . .
+  (params@D
+   (param@1 s . . SymId@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (let@4,7 name . . .
+    (at@G
+     (dot~5 pool~4 syms@1)s@1))
+   (var@4,8 i . . . 0@4)
+   (while@,9
+    (infix@J and
+     (infix~B < i~2
+      (dot@6 name~4 len@1))
+     (infix@C !=
+      (at~4 name~4 i@1)'.'@3))
+    (stmts@2,1
+     (cmd inc i@4)))
+   (asgn@7,B result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@2 < i~2
+        (dot@6 name~4 len@1))
+       (call@K substr~6 name@1 0@7
+        (infix@C \2D i~2 1@2)))
+      (else@e name@6))))))
+ (proc@,2K paramTypeClass@5 x . .
+  (params@K
+   (param@1 t . . Cursor@3 .))char@D . .
+  (stmts@2,1
+   (comment)
+   (if@,E
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (let@4 tg . . .
+       (call@C nodeTag~7 t@1))
+      (if@,1
+       (elif@3
+        (infix@a or
+         (infix~D or
+          (infix~D or
+           (infix~7 == tg~3 "i"@3)
+           (infix@6 == tg~3 "u"@3))
+          (infix@6 == tg~3 "f"@3))
+         (infix@6 == tg~3 "c"@3))
+        (stmts@o
+         (asgn@7 result~7 'n'@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7 '?'@2))))))
+    (elif@5,4
+     (infix@7 ==
+      (dot~6 t~1 kind@1)Symbol@3)
+     (stmts~3,1
+      (let@4 bn . . .
+       (call@D baseName~8
+        (dot@2 t~1 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@3 == bn~3 "string"@3)
+        (stmts@G
+         (asgn@7 result~7 's'@2)))
+       (elif@5,1
+        (infix@3 == bn~3 "bool"@3)
+        (stmts@E
+         (asgn@7 result~7 'n'@2)))
+       (else@,2
+        (stmts@6
+         (asgn@7 result~7 '?'@2))))))
+    (else@,9
+     (stmts@2,1
+      (asgn@7 result~7 '?'@2))))))
+ (proc@,2l litClass@5 x . .
+  (params@E
+   (param@1 n . . Cursor@3 .))char@D . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@y or
+      (infix~M or
+       (infix~L or
+        (infix~A ==
+         (dot~6 n~1 kind@1)IntLit@3)
+        (infix@A ==
+         (dot~6 n~1 kind@1)UIntLit@3))
+       (infix@A ==
+        (dot~6 n~1 kind@1)FloatLit@3))
+      (infix~r,1 ==
+       (dot~6 n~1 kind@1)CharLit@3))
+     (stmts@J,1
+      (asgn@7 result~7 'n'@2)))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 n~1 kind@1)StringLit@3)
+     (stmts@L
+      (asgn@7 result~7 's'@2)))
+    (else@,3
+     (stmts@6
+      (asgn@7 result~7 '?'@2))))))
+ (proc@,2u litWord@5 x . .
+  (params@D
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)StringLit@3)
+     (stmts@L
+      (asgn@7 result~7 "a string literal"@2)))
+    (elif@5,1
+     (infix@7 ==
+      (dot~6 n~1 kind@1)FloatLit@3)
+     (stmts@K
+      (asgn@7 result~7 "a float literal"@2)))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 n~1 kind@1)CharLit@3)
+     (stmts@J
+      (asgn@7 result~7 "a char literal"@2)))
+    (elif@5,3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)UIntLit@3)
+     (stmts@J
+      (asgn@7 result~7 "an unsigned literal"@2)))
+    (else@,4
+     (stmts@6
+      (asgn@7 result~7 "an integer literal"@2))))))
+ (proc@,31 litParamWant@5 x . .
+  (params@I
+   (param@1 paramType . . Cursor@B .)
+   (param@K arg . . Cursor@5 .))string@Y . .
+  (stmts@2,1
+   (comment)
+   (let@4,I lc . . .
+    (call@D litClass~8 arg@1))
+   (if@,J
+    (elif@3
+     (infix@3 == lc~3 '?'@3)
+     (stmts@B
+      (ret ""@7))))
+   (let@4,K cls . . .
+    (call@K paramTypeClass~E paramType@1))
+   (if@,L
+    (elif@3
+     (infix@B and
+      (infix~7 == cls~4 'n'@3)
+      (infix@7 == lc~3 's'@3))
+     (stmts@Q
+      (ret "a scalar"@7))))
+   (if@,M
+    (elif@3
+     (infix@B and
+      (infix~7 == cls~4 's'@3)
+      (infix@7 == lc~3 'n'@3))
+     (stmts@Q
+      (ret "string"@7))))
+   (ret@,N ""@7)))
+ (type@J,3R ArityVerdict~E x . .
+  (object@2 .
+   (fld~A,6 decidable~9 x . bool@3 .)
+   (fld~B,7 declared~8 x . int@3 .)
+   (fld~D,8 passed~6 x . int@3 .)))
+ (proc@,3b isVarargsParam@5 x . .
+  (params@K
+   (param@1 t . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (if@,B
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 kind@1)ParLe@3)
+     (stmts@H
+      (asgn@7 result~7
+       (infix@D ==
+        (call~4 nodeTag~7 t@1)"varargs"@3))))
+    (elif@5,1
+     (infix@7 ==
+      (dot~6 t~1 kind@1)Symbol@3)
+     (stmts@I
+      (asgn@7 result~7
+       (infix@K ==
+        (call~A baseName~8
+         (dot@2 t~1 symId@1))"varargs"@3))))
+    (else@,2
+     (stmts@6
+      (asgn@7 result~7 false@2))))))
+ (proc@,3r arityCheckable@5 x . .
+  (params@K
+   (param@1 decl . . Cursor@6 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (if@,e
+    (elif@3
+     (infix@A !=
+      (dot~6 decl~4 kind@1)ParLe@3)
+     (stmts@K
+      (ret false@7))))
+   (let@4,f tg . . .
+    (call@C nodeTag~7 decl@1))
+   (if@,g
+    (elif@3
+     (prefix not
+      (par@4
+       (infix@E or
+        (infix~A == tg~3 "proc"@3)
+        (infix@6 == tg~3 "func"@3))))
+     (stmts@a
+      (ret false@7))))
+   (var@4,h pr . . .
+    (dot@Y
+     (call~K asRoutine~9 decl@1 SkipInclBody@7)pragmas@1))
+   (if@,i
+    (elif@3
+     (infix@8 ==
+      (dot~6 pr~2 kind@1)ParLe@3)
+     (stmts~1,1
+      (cmd inc pr@4)
+      (while@,1
+       (infix@E !=
+        (dot~6 pr~2 kind@1)ParRi@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@H and
+           (infix~9 ==
+            (dot~6 pr~2 kind@1)ParLe@3)
+           (infix@G ==
+            (call~5 nodeTag~7 pr@1)"magic"@3))
+          (stmts@j
+           (ret false@7))))
+        (cmd@,1 skip pr@5))))))
+   (asgn@7,n result~7 true@2)))
+ (proc@,4h arityOf@5 x . .
+  (params@D
+   (param@1 decl . . Cursor@6 .)
+   (param@F paramsNode . . Cursor@C .)
+   (param@Z firstArg . . Cursor@A .))ArityVerdict@s . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,P result~7
+    (oconstr@E ArityVerdict~C
+     (kv@A decidable~9 false@2)
+     (kv@R declared~8 0@2)
+     (kv@c passed~6 0@2)))
+   (if@,Q
+    (elif@3
+     (prefix not
+      (call@I arityCheckable~E decl@1))
+     (stmts@Q
+      (ret .))))
+   (if@,R
+    (elif@3
+     (infix@G !=
+      (dot~6 paramsNode~A kind@1)ParLe@3)
+     (stmts@Q
+      (ret .))))
+   (var@4,S p . . . paramsNode@4)
+   (cmd@,T inc p@4)
+   (var@4,U n . . . 0@4)
+   (while@,V
+    (infix@D !=
+     (dot~6 p~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@A ==
+        (dot~9 p~1 tagEnum@1)ParamTagId@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (call@E isVarargsParam~E
+           (dot@B
+            (call~3 asLocal~7 p@1)typ@1))
+          (stmts@W
+           (ret .))))
+        (cmd@,1 inc n@4))))
+     (cmd@,3 skip p@5)))
+   (var@4,a a . . . firstArg@4)
+   (var@4,b m . . . 0@4)
+   (while@,c
+    (infix@D !=
+     (dot~6 a~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (cmd inc m@4)
+     (cmd@,1 skip a@5)))
+   (asgn@7,f result~7
+    (oconstr@E ArityVerdict~C
+     (kv@A decidable~9 true@2)
+     (kv@Q declared~8 n@2)
+     (kv@b passed~6 m@2)))))
+ (proc@,5P reportStaleArity@5 x . .
+  (params@M
+   (param@1 sink . . OutSink@6 .)
+   (param@G name . . string@6 .)
+   (param@U declared . . int@I .)
+   (param@e passed . . int@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,3
+    (dot~4
+     (dot~7 sink~4 errBuf@1)add@1)
+    (infix@10,3 &
+     (infix@2,~1 &
+      (infix~8,~1 &
+       (infix~A &
+        (infix~n &
+         (infix@15,~1 &
+          (infix~J &
+           (infix~7 & "aowli\3A STALE ARTIFACT — routine "~b name@2)" now declares "@2)
+          (prefix~1F,1 $ declared@1))" parameter\28s\29 but a loaded call site passes "@2)
+        (prefix@2 $ passed@1))".\0A        That call site was compiled against a DIFFERENT declaration of "~17,1)"this symbol;\0A        the artifacts in this cache do not agree. Rebuild "~1F,1)"them together.\0A"~1D,1))))
+ (proc@,5Z reportStaleCall@5 x . .
+  (params@L
+   (param@1 sink . . OutSink@6 .)
+   (param@G name . . string@6 .)
+   (param@U pos . . int@5 .)
+   (param@e want . . string@B .)
+   (param@k got . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@F,8
+    (dot~4
+     (dot~7 sink~4 errBuf@1)add@1)
+    (infix@10,3 &
+     (infix@2,~1 &
+      (infix~8,~1 &
+       (infix~6 &
+        (infix~a &
+         (infix~7 &
+          (infix~F &
+           (infix@17,~1 &
+            (infix~G &
+             (infix~7 & "aowli\3A STALE ARTIFACT — routine "~b name@2)" parameter "@2)
+            (prefix~1C,1 $ pos@1))" declares "@2)want@2)" but a loaded call site passes "@2)got@2)".\0A        That call site was compiled against a DIFFERENT declaration of "~17,1)"this symbol;\0A        the artifacts in this cache do not agree. Rebuild "~1F,1)"them together.\0A"~1D,1))))
+ (proc@,5o checkCallLits@5 . . .
+  (params@I
+   (param@1 sink . . OutSink@6 .)
+   (param@G call . . Cursor@6 .)
+   (param@U acc . .
+    (mut@5 int@4).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 c . . . call@4)
+   (cmd@,2 inc c@4)
+   (if@,3
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)Symbol@3)
+     (stmts@I
+      (ret .))))
+   (let@4,4 sym . . .
+    (dot@7 c~1 symId@1))
+   (let@4,5 base . . .
+    (call@F baseName~8 sym@1))
+   (if@,B
+    (elif@3
+     (call@C isNativeBase~C base@1)
+     (stmts@K
+      (ret .))))
+   (if@,O
+    (elif@3
+     (infix@M ==
+      (dot~5
+       (call~5 trueModuleOf~C sym@1)len@1)0@3)
+     (stmts@S
+      (ret .))))
+   (var@4,P first . . . c@8)
+   (cmd@,Q inc first@4)
+   (let@4,m res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,n
+    (elif@3
+     (infix@B !=
+      (dot~8 res~3 status@1)LacksNothing@3)
+     (stmts@S
+      (ret .))))
+   (if@,12
+    (elif@3
+     (prefix not
+      (call@D isRoutine~9
+       (dot@9
+        (dot~5 res~3 decl@1)symKind@1)))
+     (stmts@X
+      (ret .))))
+   (if@,17
+    (elif@3
+     (infix@N and
+      (infix~9 ==
+       (dot~6
+        (dot~5 res~3 decl@1)kind@1)ParLe@3)
+      (infix@M ==
+       (call~B nodeTag~7
+        (dot@4 res~3 decl@1))"method"@3))
+     (stmts@w
+      (ret .))))
+   (let@4,1I paramsNode . . .
+    (dot@k
+     (call~O asRoutine~9
+      (dot@4 res~3 decl@1)SkipInclBody@B)params@1))
+   (let@4,1M av . . .
+    (call@C arityOf~7
+     (dot@4 res~3 decl@1)paramsNode@B first@N))
+   (if@,1N
+    (elif@3
+     (infix@D and
+      (dot~B av~2 decidable@1)
+      (infix@G !=
+       (dot~A av~2 declared@1)
+       (dot@5 av~2 passed@1)))
+     (stmts~1,1
+      (cmd inc acc@4)
+      (call@G,1 reportStaleArity~G sink@1 base@7
+       (dot@F av~2 declared@1)
+       (dot@S av~2 passed@1)))))
+   (var@4,1Q p . . . paramsNode@4)
+   (if@,1R
+    (elif@3
+     (infix@7 !=
+      (dot~6 p~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (cmd@,1S inc p@4)
+   (var@4,1T arg . . . first@6)
+   (var@4,1U idx . . . 0@6)
+   (while@,1V
+    (infix@M and
+     (infix~9 !=
+      (dot~6 p~1 kind@1)ParRi@3)
+     (infix@D !=
+      (dot~6 arg~3 kind@1)ParRi@3))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@A ==
+        (dot~9 p~1 tagEnum@1)ParamTagId@3)
+       (stmts~1,1
+        (cmd inc idx@4)
+        (let@4,1 want . . .
+         (call@J litParamWant~C
+          (dot@B
+           (call~3 asLocal~7 p@1)typ@1)arg@H))
+        (if@,2
+         (elif@3
+          (infix@9 >
+           (dot~5 want~4 len@1)0@2)
+          (stmts~1,1
+           (cmd inc acc@4)
+           (call@F,1 reportStaleCall~F sink@1 base@7 idx@D want@I
+            (call@V litWord~7 arg@1)))))
+        (cmd@,5 skip arg@5))))
+     (cmd@,7 skip p@5)))))
+ (proc@,7U scanCallLits@5 . . .
+  (params@H
+   (param@1 sink . . OutSink@6 .)
+   (param@G c0 . . Cursor@4 .)
+   (param@S acc . .
+    (mut@5 int@4).)). . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@8 !=
+      (dot~6 c0~2 kind@1)ParLe@3)
+     (stmts@I
+      (ret .))))
+   (let@4,4 tg . . .
+    (dot@7 c0~2 tagEnum@1))
+   (if@,5
+    (elif@3
+     (infix@M,1 or
+      (infix@W,~1 or
+       (infix~K or
+        (infix~I or
+         (infix~D == tg~3 CallTagId@3)
+         (infix@6 == tg~3 CmdTagId@3))
+        (infix@6 == tg~3 HcallTagId@3))
+       (infix~p,1 == tg~3 CallstrlitTagId@3))
+      (infix@6 == tg~3 ProccallTagId@3))
+     (stmts~1,2
+      (call@D checkCallLits~D sink@1 c0@7 acc@B))))
+   (var@4,8 ch . . . c0@5)
+   (cmd@,9 inc ch@4)
+   (while@,A
+    (infix@E !=
+     (dot~6 ch~2 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@8 ==
+        (dot~6 ch~2 kind@1)ParLe@3)
+       (stmts@I
+        (call@C scanCallLits~C sink@1 ch@7 acc@B))))
+     (cmd@,1 skip ch@5)))))
+ (proc@,7j checkLoadedCalls@5 x . .
+  (params@M
+   (param@1 sink . . OutSink@6 .)
+   (param@G enabled . . bool@9 .)
+   (param@V root . . Cursor@6 .))int@k . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 0@2)
+   (if@,5
+    (elif@3
+     (prefix not enabled@4)
+     (stmts@D
+      (ret .))))
+   (call@C,6 scanCallLits~C sink@1 root@7 result@D))))

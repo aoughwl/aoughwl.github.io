@@ -1,0 +1,775 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/fieldoffsets.nim
+ (comment)
+ (pragmas@,B
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,D nifcursors@7 nifstreams@J nimony_model@V programs@j symparser@t)
+ (import@,E modload@7)
+ (import@,F sizeofcalc@7 values@J)
+ (proc@,H nodeTag@5 . . .
+  (params@C
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@Y
+   (at@9
+    (dot~5 pool~4 tags@1)
+    (dot@2 n~1 tagId@1))))
+ (type@F,J FieldOff~A x . .
+  (object@2 .
+   (fld~C,2 sym~3 x . SymId@3 .)
+   (fld~C,3 off~3 x . int@3 .)
+   (fld~B,6 size~4 x . int@3 .)
+   (fld~B,7 code~4 x . TCode@3 .)
+   (fld~B,8 tsym~4 x . SymId@3 .)
+   (fld~8,9 variant~7 x . bool@3 .)))
+ (proc@,Y scalarCodeOfType@5 . . .
+  (params@L
+   (param@1 typeCur . . Cursor@9 .)
+   (param@I tsym . .
+    (mut@6 SymId@4).))TCode@a . .
+  (stmts@2,1
+   (comment)
+   (asgn@5,3 tsym~5
+    (call@9 default~7 SymId@1))
+   (var@4,4 c . . . typeCur@4)
+   (var@4,5 guard . . . 0@8)
+   (while@,6
+    (infix@C < guard~6 32@2)
+    (stmts@2,1
+     (cmd inc guard@4)
+     (if@,1
+      (elif@3
+       (infix@7 ==
+        (dot~6 c~1 kind@1)ParLe@3)
+       (stmts~1,1
+        (case
+         (call@C nodeTag~7 c@1)
+         (of@,1
+          (ranges "i"@3)
+          (stmts@8
+           (ret tcI@7)))
+         (of@,2
+          (ranges "u"@3)
+          (stmts@8
+           (ret tcU@7)))
+         (of@,3
+          (ranges "f"@3)
+          (stmts@8
+           (ret tcF@7)))
+         (of@,4
+          (ranges "c"@3)
+          (stmts@8
+           (ret tcChar@7)))
+         (of@,5
+          (ranges "bool"@3)
+          (stmts@B
+           (ret tcBool@7)))
+         (of@,6
+          (ranges "enum"@3 "onum"@B)
+          (stmts@J
+           (ret tcU@7)))
+         (of@,7
+          (ranges "object"@3)
+          (stmts@D
+           (ret tcObj@7)))
+         (else@,8
+          (stmts@6
+           (ret tcNone@7))))))
+      (elif@5,A
+       (infix@7 ==
+        (dot~6 c~1 kind@1)Symbol@3)
+       (stmts~3,1
+        (let@4 s . . .
+         (dot@5 c~1 symId@1))
+        (let@4,1 res . . .
+         (call@K tryLoadSymSafe~E s@1))
+        (if@,2
+         (elif@3
+          (infix@r or
+           (infix~Q or
+            (infix~G !=
+             (dot~8 res~3 status@1)LacksNothing@3)
+            (infix@H !=
+             (dot~6
+              (dot~5 res~3 decl@1)kind@1)ParLe@3))
+           (infix~Z,1 !=
+            (call~B nodeTag~7
+             (dot@4 res~3 decl@1))"type"@3))
+          (stmts@T,1
+           (ret tcNone@7))))
+        (var@4,4 d . . .
+         (dot@7 res~3 decl@1))
+        (cmd@,5 inc d@4)
+        (var@4,6 body . . .
+         (call@E default~7 Cursor@1))
+        (while@,7
+         (infix@D !=
+          (dot~6 d~1 kind@1)ParRi@3)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@G or
+             (infix~9 ==
+              (dot~6 d~1 kind@1)ParLe@3)
+             (infix@A ==
+              (dot~6 d~1 kind@1)Symbol@3))
+            (stmts~1,1
+             (let@4 t . . .
+              (expr
+               (stmts@4)
+               (if@1
+                (elif@3
+                 (infix@7 ==
+                  (dot~6 d~1 kind@1)ParLe@3)
+                 (call@O nodeTag~7 d@1))
+                (else@V ""@6))))
+             (if@,1
+              (elif@3
+               (infix@X and
+                (infix~J and
+                 (infix~C != t~2 "export"@3)
+                 (infix@6 != t~2 "pragmas"@3))
+                (infix@6 != t~2 "typevars"@3))
+               (stmts~1,1
+                (asgn@5 body~5 d@2)))))))
+          (cmd@,4 skip d@5)))
+        (if@,D
+         (elif@3
+          (infix@J and
+           (infix~9 ==
+            (dot~6 body~4 kind@1)ParLe@3)
+           (infix@I ==
+            (call~7 nodeTag~7 body@1)"object"@3))
+          (stmts~1,1
+           (asgn@5 tsym~5 s@2)
+           (ret@,1 tcObj@7))))
+        (if@,G
+         (elif@3
+          (infix@J and
+           (infix~9 ==
+            (dot~6 body~4 kind@1)ParLe@3)
+           (infix@I ==
+            (call~7 nodeTag~7 body@1)"distinct"@3))
+          (stmts~1,1
+           (var@4 b . . . body@4)
+           (cmd@,1 inc b@4)
+           (asgn@2,2 c~2 b@2)
+           (continue@,3 .))))
+        (if@,L
+         (elif@3
+          (infix@J or
+           (infix~9 ==
+            (dot~6 body~4 kind@1)ParLe@3)
+           (infix@D ==
+            (dot~6 body~4 kind@1)Symbol@3))
+          (stmts~1,1
+           (asgn@2 c~2 body@2)
+           (continue@,1 .))))
+        (ret@,O tcNone@7)))
+      (else@,a
+       (stmts@2,1
+        (ret tcNone@7))))))
+   (asgn@7,k result~7 tcNone@2)))
+ (proc@,1L objBodyOfSym@5 . . .
+  (params@H
+   (param@1 typeSym . . SymId@9 .))Cursor@I . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@9 default~7 Cursor@1))
+   (if@,3
+    (elif@3
+     (infix@G ==
+      (call~A uint32~6 typeSym@1)
+      (suf@3 0u "u32"))
+     (stmts@Q
+      (ret .))))
+   (let@4,4 res . . .
+    (call@K tryLoadSymSafe~E typeSym@1))
+   (if@,5
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (infix~Z,1 !=
+       (call~B nodeTag~7
+        (dot@4 res~3 decl@1))"type"@3))
+     (stmts@T,1
+      (ret .))))
+   (var@4,7 d . . .
+    (dot@7 res~3 decl@1))
+   (cmd@,8 inc d@4)
+   (while@,9
+    (infix@D !=
+     (dot~6 d~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 d~1 kind@1)ParLe@3)
+        (infix@F ==
+         (call~4 nodeTag~7 d@1)"object"@3))
+       (stmts~1,1
+        (ret d@7))))
+     (cmd@,2 skip d@5)))))
+ (proc@,1a collectOwnFields@5 . . .
+  (params@L
+   (param@1 objBody . . Cursor@9 .)
+   (param@I startOff . . int@A .)
+   (param@X acc . .
+    (mut@5
+     (at@7 seq~3 FieldOff@1)).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,A lists . .
+    (at@A seq~3 Cursor@1)
+    (prefix@L \40
+     (bracket@1)))
+   (var@4,B starts . .
+    (at@B seq~3 int@1)
+    (prefix@J \40
+     (bracket@1)))
+   (var@4,C inBranch . .
+    (at@D seq~3 bool@1)
+    (prefix@M \40
+     (bracket@1)))
+   (var@4,D c0 . . . objBody@5)
+   (cmd@,E inc c0@4)
+   (cmd@,F skip c0@5)
+   (cmd@5,G
+    (dot lists~5 add@1)c0@5)
+   (cmd@6,H
+    (dot starts~6 add@1)startOff@5)
+   (cmd@8,I
+    (dot inBranch~8 add@1)false@5)
+   (var@4,J li . . . 0@5)
+   (while@,K
+    (infix@L and
+     (infix~C < li~3
+      (dot@7 lists~5 len@1))
+     (infix@7 < li~3 256@2))
+    (stmts@2,1
+     (var@4 c . . .
+      (at@9 lists~5 li@1))
+     (var@4,1 offset . . .
+      (at@F starts~6 li@1))
+     (let@4,2 branchHere . . .
+      (at@L inBranch~8 li@1))
+     (cmd@,3 inc li@4)
+     (while@,4
+      (infix@D !=
+       (dot~6 c~1 kind@1)ParRi@3)
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@7 ==
+          (dot~6 c~1 kind@1)ParLe@3)
+         (stmts~1,1
+          (let@4 tg . . .
+           (call@C nodeTag~7 c@1))
+          (if@,1
+           (elif@3
+            (infix@C or
+             (infix~9 == tg~3 "fld"@3)
+             (infix@6 == tg~3 "case"@3))
+            (stmts~1,2
+             (var@4 f . . . c@4)
+             (if@,1
+              (elif@3
+               (infix@3 == tg~3 "case"@3)
+               (stmts~1,1
+                (cmd inc f@4)
+                (if@,1
+                 (elif@3
+                  (infix@G or
+                   (infix~9 !=
+                    (dot~6 f~1 kind@1)ParLe@3)
+                   (infix@E !=
+                    (call~4 nodeTag~7 f@1)"fld"@3))
+                  (stmts@e
+                   (ret .)))))))
+             (cmd@,4 inc f@4)
+             (var@4,5 fsym . . .
+              (call@E default~7 SymId@1))
+             (if@,6
+              (elif@3
+               (infix@H or
+                (infix~A ==
+                 (dot~6 f~1 kind@1)Symbol@3)
+                (infix@A ==
+                 (dot~6 f~1 kind@1)SymbolDef@3))
+               (stmts@f
+                (asgn@5 fsym~5
+                 (dot@3 f~1 symId@1)))))
+             (cmd@,7 skip f@5)
+             (cmd@,8 skip f@5)
+             (cmd@,9 skip f@5)
+             (let@4,A fsa . . .
+              (call@L sizeAlignOfType~F f@1 0@4))
+             (if@,B
+              (elif@3
+               (infix@9 <
+                (dot~6 fsa~3 size@1)0@2)
+               (stmts@E
+                (ret .))))
+             (let@4,C a . . .
+              (expr
+               (stmts@4)
+               (if@1
+                (elif@3
+                 (infix@A >
+                  (dot~7 fsa~3 align@1)0@2)
+                 (dot@I fsa~3 align@1))
+                (else@S 1@6))))
+             (if@,D
+              (elif@3
+               (infix@D !=
+                (infix~6 mod offset~7 a@4)0@3)
+               (stmts@J
+                (asgn@7 offset~7
+                 (infix@D \2D
+                  (infix~4 \2B offset~7 a@2)
+                  (par@2
+                   (infix@8 mod offset~7 a@4)))))))
+             (var@4,E nested . . .
+              (call@G default~7 SymId@1))
+             (let@4,F code . . .
+              (call@N scalarCodeOfType~G f@1 nested@4))
+             (cmd@3,G
+              (dot acc~3 add@1)
+              (oconstr@D FieldOff~8
+               (kv@4 sym~3 fsym@2)
+               (kv@F off~3 offset@2)
+               (kv@T size~4
+                (dot@5 fsa~3 size@1))
+               (kv@j code~4 code@2)
+               (kv@5,1 tsym~4 nested@2)
+               (kv@M,1 variant~7 branchHere@2)))
+             (asgn@7,I offset~7
+              (infix@9 \2B offset~7
+               (dot@5 fsa~3 size@1))))))
+          (if@,M
+           (elif@3
+            (infix@3 == tg~3 "case"@3)
+            (stmts~1,2
+             (var@4 k . . . c@4)
+             (cmd@,1 inc k@4)
+             (cmd@,2 skip k@5)
+             (var@4,3 uSize . . . 0@8)
+             (var@4,4 uAlign . . . 1@9)
+             (var@4,5 kk . . . k@5)
+             (while@,6
+              (infix@E !=
+               (dot~6 kk~2 kind@1)ParRi@3)
+              (stmts@2,1
+               (if
+                (elif@3
+                 (infix@H and
+                  (infix~9 ==
+                   (dot~6 kk~2 kind@1)ParLe@3)
+                  (par@4
+                   (infix@L or
+                    (infix~8 ==
+                     (call~5 nodeTag~7 kk@1)"of"@3)
+                    (infix@F ==
+                     (call~5 nodeTag~7 kk@1)"else"@3))))
+                 (stmts~1,1
+                  (var@4 b . . . kk@4)
+                  (cmd@,1 inc b@4)
+                  (if@,2
+                   (elif@3
+                    (infix@C ==
+                     (call~5 nodeTag~7 kk@1)"of"@3)
+                    (stmts@L
+                     (cmd skip b@5))))
+                  (if@,3
+                   (elif@3
+                    (infix@G and
+                     (infix~9 ==
+                      (dot~6 b~1 kind@1)ParLe@3)
+                     (infix@F ==
+                      (call~4 nodeTag~7 b@1)"stmts"@3))
+                    (stmts~1,1
+                     (let@4 bsa . . .
+                      (call@L sizeAlignOfType~F b@1 0@4))
+                     (if@,1
+                      (elif@3
+                       (infix@9 <
+                        (dot~6 bsa~3 size@1)0@2)
+                       (stmts@E
+                        (ret .))))
+                     (if@,2
+                      (elif@3
+                       (infix@9 >
+                        (dot~6 bsa~3 size@1)uSize@2)
+                       (stmts@I
+                        (asgn@6 uSize~6
+                         (dot@5 bsa~3 size@1)))))
+                     (if@,3
+                      (elif@3
+                       (infix@A >
+                        (dot~7 bsa~3 align@1)uAlign@2)
+                       (stmts@K
+                        (asgn@7 uAlign~7
+                         (dot@5 bsa~3 align@1)))))))))))
+               (cmd@,9 skip kk@5)))
+             (if@,H
+              (elif@3
+               (infix@6 > uSize~6 0@2)
+               (stmts~1,1
+                (if
+                 (elif@3
+                  (infix@I !=
+                   (infix~B mod offset~7 uAlign@4)0@3)
+                  (stmts@O
+                   (asgn@7 offset~7
+                    (infix@I \2D
+                     (infix~9 \2B offset~7 uAlign@2)
+                     (par@2
+                      (infix@8 mod offset~7 uAlign@4)))))))
+                (let@4,1 unionStart . . . offset@D)
+                (var@4,2 kb . . . k@5)
+                (while@,3
+                 (infix@E !=
+                  (dot~6 kb~2 kind@1)ParRi@3)
+                 (stmts@2,1
+                  (if
+                   (elif@3
+                    (infix@H and
+                     (infix~9 ==
+                      (dot~6 kb~2 kind@1)ParLe@3)
+                     (par@4
+                      (infix@L or
+                       (infix~8 ==
+                        (call~5 nodeTag~7 kb@1)"of"@3)
+                       (infix@F ==
+                        (call~5 nodeTag~7 kb@1)"else"@3))))
+                    (stmts~1,1
+                     (var@4 b . . . kb@4)
+                     (cmd@,1 inc b@4)
+                     (if@,2
+                      (elif@3
+                       (infix@C ==
+                        (call~5 nodeTag~7 kb@1)"of"@3)
+                       (stmts@L
+                        (cmd skip b@5))))
+                     (if@,3
+                      (elif@3
+                       (infix@G and
+                        (infix~9 ==
+                         (dot~6 b~1 kind@1)ParLe@3)
+                        (infix@F ==
+                         (call~4 nodeTag~7 b@1)"stmts"@3))
+                       (stmts~1,1
+                        (var@4 bs . . . b@5)
+                        (cmd@,1 inc bs@4)
+                        (cmd@5,2
+                         (dot lists~5 add@1)bs@5)
+                        (cmd@6,3
+                         (dot starts~6 add@1)unionStart@5)
+                        (cmd@8,4
+                         (dot inBranch~8 add@1)true@5)))))))
+                  (cmd@,A skip kb@5)))
+                (asgn@7,F offset~7
+                 (infix@D \2B unionStart~B uSize@2)))))))))))
+       (cmd@,x skip c@5)))))))
+ (proc@,30 fieldOffsetsOfType@5 x . .
+  (params@O
+   (param@1 typeSym . . SymId@9 .))
+  (at@L seq~3 FieldOff@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,4 chain . .
+    (at@A seq~3 SymId@1)
+    (prefix@K \40
+     (bracket@1)))
+   (var@4,5 sym . . . typeSym@6)
+   (var@4,6 guard . . . 0@8)
+   (while@,7
+    (infix@R and
+     (infix~9 !=
+      (call~6 uint32~6 sym@1)
+      (suf@3 0u "u32"))
+     (infix@A < guard~6 64@2))
+    (stmts@2,1
+     (let@4 body . . .
+      (call@J objBodyOfSym~C sym@1))
+     (if@,1
+      (elif@3
+       (infix@A !=
+        (dot~6 body~4 kind@1)ParLe@3)
+       (stmts@K
+        (break .))))
+     (cmd@5,2
+      (dot chain~5 add@1)sym@5)
+     (var@4,3 c . . . body@4)
+     (cmd@,4 inc c@4)
+     (asgn@4,5 sym~4
+      (expr
+       (stmts@2)
+       (if@1
+        (elif@3
+         (infix@7 ==
+          (dot~6 c~1 kind@1)Symbol@3)
+         (dot@J c~1 symId@1))
+        (else@T
+         (call@D default~7 SymId@1)))))
+     (cmd@,6 inc guard@4)))
+   (var@4,J k . . . 0@4)
+   (while@,K
+    (infix@8 < k~2
+     (dot@7 chain~5 len@1))
+    (stmts@2,1
+     (let@4 body . . .
+      (call@J objBodyOfSym~C
+       (at@6 chain~5 k@1)))
+     (if@,1
+      (elif@3
+       (infix@A ==
+        (dot~6 body~4 kind@1)ParLe@3)
+       (stmts~1,1
+        (var@4 c . . . body@4)
+        (cmd@,1 inc c@4)
+        (var@4,2 startOff . . . 0@B)
+        (if@,3
+         (elif@3
+          (infix@7 ==
+           (dot~6 c~1 kind@1)Symbol@3)
+          (stmts~1,1
+           (let@4 bsa . . .
+            (call@L sizeAlignOfType~F c@1 0@4))
+           (if@,1
+            (elif@3
+             (infix@9 >=
+              (dot~6 bsa~3 size@1)0@3)
+             (stmts@F
+              (asgn@9 startOff~9
+               (dot@5 bsa~3 size@1))))))))
+        (call@G,6 collectOwnFields~G body@1 startOff@7 result@H))))
+     (cmd@,9 inc k@4)))))
+ (proc@,3X isFlatPodType@5 x . .
+  (params@J
+   (param@1 typeSym . . SymId@9 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (let@4,O top . . .
+    (call@O fieldOffsetsOfType~I typeSym@1))
+   (if@,P
+    (elif@3
+     (infix@8 ==
+      (dot~5 top~3 len@1)0@3)
+     (stmts@E
+      (ret false@7))))
+   (var@4,Q pending . .
+    (at@C seq~3 SymId@1)
+    (prefix@M \40
+     (bracket@1)))
+   (var@4,R head . . . 0@7)
+   (var@4,S fields . . . top@9)
+   (var@4,T guard . . . 0@8)
+   (while@,U
+    (infix@C < guard~6 64@2)
+    (stmts@2,1
+     (cmd inc guard@4)
+     (for@4,1 fields@6
+      (unpackflat
+       (let fo . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@8 ==
+          (dot~6 fo~2 code@1)tcNone@3)
+         (stmts@J
+          (ret false@7))))
+       (if@,1
+        (elif@3
+         (infix@8 ==
+          (dot~6 fo~2 code@1)tcObj@3)
+         (stmts~1,1
+          (if
+           (elif@3
+            (infix@G ==
+             (call~A uint32~6
+              (dot@3 fo~2 tsym@1))
+             (suf@3 0u "u32"))
+            (stmts@Q
+             (ret false@7))))
+          (cmd@7,1
+           (dot pending~7 add@1)
+           (dot@7 fo~2 tsym@1)))))))
+     (if@,6
+      (elif@3
+       (infix@5 >= head~5
+        (dot@A pending~7 len@1))
+       (stmts@L
+        (ret true@7))))
+     (asgn@7,7 fields~7
+      (call@K fieldOffsetsOfType~I
+       (at@8 pending~7 head@1)))
+     (cmd@,8 inc head@4)
+     (if@,9
+      (elif@3
+       (infix@B ==
+        (dot~5 fields~6 len@1)0@3)
+       (stmts@H
+        (ret false@7))))))
+   (asgn@7,f result~7 false@2)))
+ (proc@,4F sizeOfSym@5 x . .
+  (params@F
+   (param@1 typeSym . . SymId@9 .))int@I . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 -1@2)
+   (let@4,2 body . . .
+    (call@J objBodyOfSym~C typeSym@1))
+   (if@,3
+    (elif@3
+     (infix@A !=
+      (dot~6 body~4 kind@1)ParLe@3)
+     (stmts@K
+      (ret .))))
+   (asgn@7,4 result~7
+    (dot@Q
+     (call~9 sizeAlignOfType~F body@1 0@7)size@1))))
+ (proc@,4M enumNameForOrdinal@5 x . .
+  (params@O
+   (param@1 enumType . . SymId@A .)
+   (param@I ord . . int@5 .))string@T . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 ""@2)
+   (if@,5
+    (elif@3
+     (infix@H ==
+      (call~B uint32~6 enumType@1)
+      (suf@3 0u "u32"))
+     (stmts@R
+      (ret .))))
+   (var@4,A typeSym . . . enumType@A)
+   (let@4,B res0 . . .
+    (call@L tryLoadSymSafe~E enumType@1))
+   (if@,C
+    (elif@3
+     (infix@O and
+      (infix~9 ==
+       (dot~6
+        (dot~5 res0~4 decl@1)kind@1)ParLe@3)
+      (infix@N ==
+       (call~C nodeTag~7
+        (dot@5 res0~4 decl@1))"efld"@3))
+     (stmts~1,1
+      (var@4 d . . .
+       (dot@8 res0~4 decl@1))
+      (cmd@,1 inc d@4)
+      (cmd@,2 skip d@5)
+      (cmd@,3 skip d@5)
+      (cmd@,4 skip d@5)
+      (if@,5
+       (elif@3
+        (infix@7 ==
+         (dot~6 d~1 kind@1)Symbol@3)
+        (stmts@I
+         (asgn@8 typeSym~8
+          (dot@3 d~1 symId@1))))))))
+   (let@4,J res . . .
+    (call@K tryLoadSymSafe~E typeSym@1))
+   (if@,K
+    (elif@3
+     (infix@N or
+      (infix~9 !=
+       (dot~6
+        (dot~5 res~3 decl@1)kind@1)ParLe@3)
+      (infix@L !=
+       (call~B nodeTag~7
+        (dot@4 res~3 decl@1))"type"@3))
+     (stmts@t
+      (ret .))))
+   (var@4,L c . . .
+    (dot@7 res~3 decl@1))
+   (cmd@,M inc c@4)
+   (while@,N
+    (infix@D !=
+     (dot~6 c~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (par@4
+         (infix@M or
+          (infix~A ==
+           (call~4 nodeTag~7 c@1)"enum"@3)
+          (infix@E ==
+           (call~4 nodeTag~7 c@1)"onum"@3))))
+       (stmts~1,1
+        (var@4 e . . . c@4)
+        (cmd@,1 inc e@4)
+        (while@,2
+         (infix@D !=
+          (dot~6 e~1 kind@1)ParRi@3)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@G and
+             (infix~9 ==
+              (dot~6 e~1 kind@1)ParLe@3)
+             (infix@F ==
+              (call~4 nodeTag~7 e@1)"efld"@3))
+            (stmts~1,1
+             (var@4 f . . . e@4)
+             (cmd@,1 inc f@4)
+             (cmd@7,1 skip f@5)
+             (cmd@F,1 skip f@5)
+             (cmd@N,1 skip f@5)
+             (cmd@V,1 skip f@5)
+             (if@,2
+              (elif@3
+               (infix@7 ==
+                (dot~6 f~1 kind@1)ParLe@3)
+               (stmts~1,1
+                (var@4 t . . . f@4)
+                (cmd@,1 inc t@4)
+                (var@4,2 o . . . -1@4)
+                (if@,3
+                 (elif@3
+                  (infix@7 ==
+                   (dot~6 t~1 kind@1)IntLit@3)
+                  (stmts@I
+                   (asgn@2 o~2
+                    (call@5 int~3
+                     (at@E
+                      (dot~9 pool~4 integers@1)
+                      (dot@2 t~1 intId@1)))))))
+                (cmd@,4 skip t@5)
+                (if@,5
+                 (elif@3
+                  (infix@9 and
+                   (infix~7 == o~2 ord@3)
+                   (infix@B ==
+                    (dot~6 t~1 kind@1)StringLit@3))
+                  (stmts~1,1
+                   (ret
+                    (at@J
+                     (dot~8 pool~4 strings@1)
+                     (dot@2 t~1 litId@1))))))))))))
+          (cmd@,B skip e@5)))
+        (ret@,F .))))
+     (cmd@,H skip c@5)))))
+ (proc@,5E enumNamerImpl@5 . . .
+  (params@I
+   (param@1 ekind . . SymId@7 .)
+   (param@F ord . . int@5 .))string@Q
+  (pragmas@p nimcall@2).
+  (stmts@2,1
+   (call@I enumNameForOrdinal~I ekind@1 ord@8)))
+ (asgn@E,5H enumNamerHook~E enumNamerImpl@2))

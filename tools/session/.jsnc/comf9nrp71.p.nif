@@ -1,0 +1,168 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/compat2.nim
+ (comment)
+ (when@,4
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@8 pragma~6 canRaise@2)raises@K)))
+  (else@,2
+   (stmts@2,1
+    (pragmas
+     (kv@8 pragma~6 canRaise@2)))))
+ (when@,9
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (template onRaiseQuit@9 . . .
+     (params@K
+      (param@1 call . . untyped@6 .))untyped@H . .
+     (stmts@2,1
+      (comment)
+      (try@,7
+       (stmts@2,1 call)
+       (except@,2 .
+        (stmts@2,1
+         (cmd quit
+          (infix@H & "FAILURE\3A "~C
+           (call@A astToStr~8 call@1))))))))))
+  (else@,D
+   (stmts@2,1
+    (template onRaiseQuit@9 . . .
+     (params@K
+      (param@1 call . . untyped@6 .))untyped@H . .
+     (stmts@l call)))))
+ (when@,P
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (fromimport
+     (infix@8 / std~3 paths@1)Path@M)
+    (proc@,2 path@5 x . .
+     (params@A
+      (param@1 s . . string@3 .))Path@D
+     (pragmas@S inline@2).
+     (stmts@2,1
+      (comment)
+      (call@4,6 Path~4 s@1))))))
+ (when@,b
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (import
+     (infix@A / std~3 tables@1))
+    (proc@,2 getOrQuit@5 x .
+     (typevars@F
+      (typevar@1 A . . . .)
+      (typevar@4 B . . . .))
+     (params@L
+      (param@1 t . .
+       (mut@3
+        (at@9 Table~5 A@1 B@4)).)
+      (param@L k . . A@3 .))
+     (mut@S B@4). .
+     (stmts@2,1
+      (comment)
+      (if@,3
+       (elif@3
+        (prefix not
+         (call@C
+          (dot~7 t~1 hasKey@1)k@1))
+        (stmts@H
+         (cmd quit "getOrQuit\3A missing key"@5))))
+      (asgn@7,4 result~7
+       (at@3 t~1 k@1))))
+    (proc@,9 getOrQuit@5 x .
+     (typevars@F
+      (typevar@1 A . . . .)
+      (typevar@4 B . . . .))
+     (params@L
+      (param@1 t . .
+       (mut@3
+        (at@G OrderedTable~C A@1 B@4)).)
+      (param@S k . . A@3 .))
+     (mut@Z B@4). .
+     (stmts@2,1
+      (if
+       (elif@3
+        (prefix not
+         (call@C
+          (dot~7 t~1 hasKey@1)k@1))
+        (stmts@H
+         (cmd quit "getOrQuit\3A missing key"@5))))
+      (asgn@7,1 result~7
+       (at@3 t~1 k@1))))
+    (proc@,D getOrQuit@5 x .
+     (typevars@F
+      (typevar@1 A . . . .)
+      (typevar@4 B . . . .))
+     (params@L
+      (param@1 t . .
+       (at@8 Table~5 A@1 B@4).)
+      (param@H k . . A@3 .))B@O . .
+     (stmts@2,1
+      (comment)
+      (if@,3
+       (elif@3
+        (prefix not
+         (call@C
+          (dot~7 t~1 hasKey@1)k@1))
+        (stmts@H
+         (cmd quit "getOrQuit\3A missing key"@5))))
+      (asgn@7,4 result~7
+       (at@3 t~1 k@1))))
+    (proc@,K getOrQuit@5 x .
+     (typevars@F
+      (typevar@1 A . . . .)
+      (typevar@4 B . . . .))
+     (params@L
+      (param@1 t . .
+       (at@F OrderedTable~C A@1 B@4).)
+      (param@O k . . A@3 .))B@V . .
+     (stmts@2,1
+      (if
+       (elif@3
+        (prefix not
+         (call@C
+          (dot~7 t~1 hasKey@1)k@1))
+        (stmts@H
+         (cmd quit "getOrQuit\3A missing key"@5))))
+      (asgn@7,1 result~7
+       (at@3 t~1 k@1)))))))
+ (when@,10
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,9
+    (type@C,1 Equatable~A . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@D,2 Comparable~B . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@P,3 ComparableAndNegatable~N . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@D,4 Arithmetic~B . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@C,5 Orderable~A . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@A,6 Keyable~8 . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@B,7 Hashable~9 . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@D,8 HasDefault~B . . .
+     (concept@2
+      (stmts@8 x). . .))
+    (type@E,9 HasWriteErr~C . . .
+     (concept@2
+      (stmts@8 x). . .))))))

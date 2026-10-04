@@ -1,0 +1,23 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket strutils os strtabs streams cpuinfo syncio oserrors envvars monotimes times assertions)))
+ (export quoteShell quoteShellWindows quoteShellPosix)
+ (import
+  (when
+   (call defined windows))
+  (infix /
+   (infix / std windows)winlean))
+ (import
+  (when
+   (call defined windows))
+  (infix / std widestrs))
+ (import
+  (when
+   (prefix not
+    (call defined windows)))
+  (infix /
+   (infix / std posix)posix)))

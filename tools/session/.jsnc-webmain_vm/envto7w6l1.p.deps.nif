@@ -1,0 +1,21 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (fromimport
+  (when
+   (prefix not
+    (call defined nodejs))
+   (call defined windows))parseutils skipIgnoreCase)
+ (import
+  (when
+   (prefix not
+    (call defined nodejs)))strutils oserrors)
+ (import
+  (when
+   (prefix not
+    (call defined nodejs))
+   (infix and
+    (call defined windows)
+    (prefix not
+     (call defined nimscript))))widestrs))

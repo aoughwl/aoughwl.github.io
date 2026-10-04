@@ -1,0 +1,360 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/reporters.nim
+ (import
+  (infix@B / std~4
+   (bracket@2 syncio@1 strutils@9 os@J assertions@N sets@Z terminal@f)))
+ (import@,1
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 nifcursors@1 nifstreams@D bitabs@P lineinfos@X)))
+ (include@,3
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (type@B,6 MsgKind~9 x . .
+  (enum@2 .
+   (efld~2,1 Info~7 . . . "Info\3A ")
+   (efld@1,2 Warning~A . . . "Warning\3A ")
+   (efld~1,3 Error~8 . . . "Error\3A ")
+   (efld~1,4 Trace~8 . . . "Trace\3A ")
+   (efld~1,5 Debug~8 . . . "Debug\3A ")))
+ (type@C,D Reporter~A x . .
+  (object@2 .
+   (fld~1,1 verbosity~9 x . int@3 .)
+   (fld~2,2 noColors~8 x . bool@3 .)
+   (fld~2,3 warnings~8 x . int@3 .)
+   (fld~4,4 errors~6 x . int@3 .)
+   (fld~A,5 reportedErrSources . .
+    (at@R HashSet~7 PackedLineInfo@1).)))
+ (proc@,L useColors@5 x . .
+  (params@F)bool@4 . .
+  (stmts@Q
+   (call@F
+    (dot~7 terminal~8 isatty@1)stdout@1)))
+ (proc@,N writeMessage@5 . . .
+  (params@H
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I category . . string@A .)
+   (param@a p . . string@8 .)
+   (param@d arg . . string@5 .)). . .
+  (stmts@2,1
+   (var@4 msg . . . p@6)
+   (cmd@3,1
+    (dot msg~3 add@1)' '@5)
+   (cmd@3,2
+    (dot msg~3 add@1)category@5)
+   (cmd@3,3
+    (dot msg~3 add@1)arg@5)
+   (cmd@6,4
+    (dot stdout~6 writeLine@1)msg@B)))
+ (proc@,U writeMessage@5 . . .
+  (params@H
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I k . . MsgKind@3 .)
+   (param@U p . . string@8 .)
+   (param@X arg . . string@5 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B and
+      (infix~9 == k~2 Trace@3)
+      (infix@G <
+       (dot~B c~1 verbosity@1)1@2))
+     (stmts@W
+      (ret .)))
+    (elif@5,1
+     (infix@B and
+      (infix~9 == k~2 Debug@3)
+      (infix@G <
+       (dot~B c~1 verbosity@1)2@2))
+     (stmts@W
+      (ret .))))
+   (if@,3
+    (elif@3
+     (dot@1 c~1 noColors@1)
+     (stmts~1,1
+      (call@C writeMessage~C c@1
+       (prefix@4 $ k@1)p@8 arg@B)))
+    (else@,2
+     (stmts@2,1
+      (var@4 color . . ForegroundColor@7 .)
+      (var@4,1 style . . Style@7 .)
+      (case@,2 k@5
+       (of@,1
+        (ranges Debug@3)
+        (stmts@2,1
+         (asgn@6 color~6 fgWhite@2)
+         (asgn@N style~6 styleDim@2)))
+       (of@,3
+        (ranges Trace@3)
+        (stmts@2,1
+         (asgn@6 color~6 fgBlue@2)
+         (asgn@M style~6 styleBright@2)))
+       (of@,5
+        (ranges Info@3)
+        (stmts@2,1
+         (asgn@6 color~6 fgGreen@2)
+         (asgn@N style~6 styleBright@2)))
+       (of@,7
+        (ranges Warning@3)
+        (stmts@2,1
+         (asgn@6 color~6 fgYellow@2)
+         (asgn@O style~6 styleBright@2)))
+       (of@,9
+        (ranges Error@3)
+        (stmts@2,1
+         (asgn@6 color~6 fgRed@2)
+         (asgn@L style~6 styleBright@2))))
+      (call@M,D
+       (dot~G stdout~6 styledWriteLine@1)fgCyan@1 p@9 " "@C resetStyle@H color@T style@a
+       (prefix@h $ k@1)resetStyle@l arg@x))))))
+ (proc@,q message@5 . . .
+  (params@C
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I k . . MsgKind@3 .)
+   (param@U p . . string@8 .)
+   (param@X arg . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,2 writeMessage c@D k@G p@J arg@M)))
+ (proc@,v warn@5 x . .
+  (params@A
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I p . . string@8 .)
+   (param@L arg . . string@5 .)). . .
+  (stmts@2,1
+   (call@9
+    (dot~8 c~1 message@1)Warning@1 p@A arg@D)
+   (cmd@,2 inc
+    (dot@5 c~1 warnings@1))))
+ (proc@,10 error@5 x . .
+  (params@B
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I p . . string@8 .)
+   (param@L arg . . string@5 .)). . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@F and
+      (call~8 defined~7 debug@1)
+      (prefix@4 not
+       (call@B defined~7 nimony@1)))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (call@9,2
+    (dot~8 c~1 message@1)Error@1 p@8 arg@B)
+   (cmd@,3 inc
+    (dot@5 c~1 errors@1))))
+ (proc@,16 info@5 x . .
+  (params@A
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I p . . string@8 .)
+   (param@L arg . . string@5 .)). . .
+  (stmts@2,1
+   (call@9
+    (dot~8 c~1 message@1)Info@1 p@7 arg@A)))
+ (proc@,19 trace@5 x . .
+  (params@B
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I p . . string@8 .)
+   (param@L arg . . string@5 .)). . .
+  (stmts@2,1
+   (call@9
+    (dot~8 c~1 message@1)Trace@1 p@8 arg@B)))
+ (proc@,1C debug@5 x . .
+  (params@B
+   (param@1 c . .
+    (mut@3 Reporter@4).)
+   (param@I p . . string@8 .)
+   (param@L arg . . string@5 .)). . .
+  (stmts@2,1
+   (call@9
+    (dot~8 c~1 message@1)Debug@1 p@8 arg@B)))
+ (proc@,1F fatal@5 x . .
+  (params@B
+   (param@1 msg . . string@5 .)). . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@F and
+      (call~8 defined~7 debug@1)
+      (prefix@4 not
+       (call@B defined~7 nimony@1)))
+     (stmts~3,1
+      (call@F writeStackTrace~F))))
+   (cmd@,2 quit
+    (infix@G & "\5BError\5D "~B msg@2))))
+ (proc@,1K shortenDir@5 x . .
+  (params@G
+   (param@1 x . . string@3 .))string@D . .
+  (stmts@2,4
+   (var@4 to . . . ""@5)
+   (try@,1
+    (stmts@2,1
+     (asgn@3 to~3
+      (call@F getCurrentDir~D)))
+    (except@,2 .
+     (stmts@2,1
+      (ret x@7))))
+   (when@,5
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,1
+      (let@4 x . . .
+       (call@D
+        (dot~8 x~1 replace@1)'\5C'@1 '/'@7))
+      (asgn@3,1 to~3
+       (call@C
+        (dot~8 to~2 replace@1)'\5C'@1 '/'@7)))))
+   (if@,8
+    (elif@3
+     (prefix not
+      (call@F
+       (dot~9 to~2 endsWith@1)'/'@1))
+     (stmts~1,1
+      (cmd@2
+       (dot to~2 add@1)'/'@5))))
+   (if@,A
+    (elif@3
+     (call@A startsWith~A x@1 to@4)
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@8 substr~6 x@1
+        (dot@6 to~2 len@1)
+        (infix@H \2D
+         (dot~4 x~1 len@1)1@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 x@2))))))
+ (proc@,1d infoToStr@5 x . .
+  (params@F
+   (param@1 info . . PackedLineInfo@6 .))string@O . .
+  (stmts@2,1
+   (let@4 rawInfo . . .
+    (call@G unpack~6
+     (dot@5 pool~4 man@1)info@B))
+   (if@,1
+    (elif@3
+     (infix@H or
+      (prefix~H not
+       (dot@8 info~4 isValid@1))
+      (prefix@3 not
+       (dot@G
+        (dot~5 rawInfo~7 file@1)isValid@1)))
+     (stmts~1,1
+      (asgn@7 result~7 "???"@2)))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@b
+        (dot~B
+         (at~E
+          (dot~6 pool~4 files@1)
+          (dot@8 rawInfo~7 file@1))shortenDir@1)))
+      (cmd@6,1
+       (dot result~6 add@1)
+       (infix@p &
+        (infix~J &
+         (infix~7 &
+          (infix~G & "\28"~4
+           (prefix@2 $
+            (dot@8 rawInfo~7 line@1)))", "@2)
+         (prefix@2 $
+          (par@1
+           (infix@C \2B
+            (dot~4 rawInfo~7 col@1)1@1))))"\29"@2)))))))
+ (proc@,1l reportErrors@5 x . .
+  (params@I
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).))int@M . .
+  (stmts@2,1
+   (let@4 errTag . . .
+    (call@S
+     (dot~A
+      (dot~5 pool~4 tags@1)getOrIncl@1)"err"@1))
+   (var@4,1 i . . . 0@4)
+   (var@4,2 r . . .
+    (oconstr@C Reporter~8
+     (kv@A verbosity~9 2@2)
+     (kv@N noColors~8
+      (prefix@2 not
+       (call@D useColors~9)))))
+   (asgn@7,3 result~7 0@2)
+   (while@,4
+    (infix@8 < i~2
+     (dot@6 dest~4 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@M and
+        (infix~9 ==
+         (dot~6
+          (at~3 dest~4 i@1)kind@1)ParLe@3)
+        (infix@I ==
+         (dot~7
+          (at~3 dest~4 i@1)tagId@1)errTag@3))
+       (stmts~1,1
+        (cmd inc result@4)
+        (let@4,1 info . . .
+         (dot@E
+          (at~3 dest~4 i@1)info@1))
+        (let@4,2 doReport . . .
+         (prefix@B not
+          (call@d
+           (dot~F
+            (dot~J r~1 reportedErrSources@1)containsOrIncl@1)info@1)))
+        (cmd@,3 inc i@4)
+        (if@,5
+         (elif@3
+          (infix@D ==
+           (dot~6
+            (at~3 dest~4 i@1)kind@1)DotToken@3)
+          (stmts~1,1
+           (cmd inc i@4)))
+         (else@,2
+          (stmts@2,1
+           (let@4 x . . .
+            (call@C cursorAt~8 dest@1 i@7))
+           (cmd@,1 inc i@4
+            (call@B span~4 x@1))
+           (call@7,2 endRead~7 dest@1))))
+        (while@,C
+         (infix@J ==
+          (dot~6
+           (at~3 dest~4 i@1)kind@1)DotToken@3)
+         (stmts@2,1
+          (if
+           (elif@3 doReport
+            (stmts~1,1
+             (cmd@1
+              (dot r~1 trace@1)
+              (call@G infoToStr~9
+               (dot@8
+                (at~3 dest~4 i@1)info@1))"instantiation from here"@W))))
+          (cmd@,2 inc i@4)))
+        (cmd@,H assert
+         (infix@K ==
+          (dot~6
+           (at~3 dest~4 i@1)kind@1)StringLit@3))
+        (if@,I
+         (elif@3 doReport
+          (stmts~1,1
+           (cmd@1
+            (dot r~1 error@1)
+            (call@G infoToStr~9 info@1)
+            (at@a
+             (dot~8 pool~4 strings@1)
+             (dot@8
+              (at~3 dest~4 i@1)litId@1))))))
+        (cmd@,K inc i@4)))
+      (else@,M
+       (stmts@2,1
+        (cmd inc i@4)))))))))

@@ -1,0 +1,634 @@
+(.nif27)
+(.indexat 25215            )
+(stmts@,1,.jester/source/jester_mod_1de8814aca60631c.nim
+ (import
+  (kv sysvq0asl "../../../../../../nimony/lib/std/system.nim")
+  (kv jesaqohvh1 "../../../../Packages/com.aoughwl.jester/ModSdk/jester.nim")
+  (kv vecqnfc1h "../../../../Packages/com.aoughwl.jester/ModSdk/vec.nim")
+  (kv colpmj4ay "../../../../Packages/com.aoughwl.jester/ModSdk/color.nim")
+  (kv drasfcs4c "../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim")
+  (kv inpl8nz921 "../../../../Packages/com.aoughwl.jester/ModSdk/input.nim")
+  (kv winm5xm8g1 "../../../../Packages/com.aoughwl.jester/ModSdk/window.nim")
+  (kv renwb2cw3 "../../../../Packages/com.aoughwl.jester/ModSdk/render.nim")
+  (kv des5xsijk "../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim"))
+ (const@2,P :Width.0. . .
+  (f@E,L 64)520.0@8)
+ (const@2,Q :Height.0. . .
+  (f@E,K 64)380.0@9)
+ (const@2,R :Header.0. . .
+  (f@E,J 64)38.0@9)
+ (const@2,S :Panel.0. . . Color.0.colpmj4ay@8
+  (oconstr@D Color.0.colpmj4ay~5
+   (kv@2 r.0~1 0.09@2)
+   (kv@B g.0~1 0.1@2)
+   (kv@K b.0~1 0.13@2)
+   (kv@T a.0~1 0.92@2)))
+ (const@2,T :Bar.0. . . Color.0.colpmj4ay@8,~1
+  (oconstr@B Color.0.colpmj4ay~3,~1
+   (kv@2 r.0~1 0.13@2)
+   (kv@B g.0~1 0.15@2)
+   (kv@K b.0~1 0.19@2)
+   (kv@T a.0~1 0.98@2)))
+ (const@2,U :Rule.0. . . Color.0.colpmj4ay@8,~2
+  (oconstr@C Color.0.colpmj4ay~4,~2
+   (kv@2 r.0~1 0.35@2)
+   (kv@B g.0~1 0.75@2)
+   (kv@K b.0~1 0.95@2)
+   (kv@T a.0~1 0.95@2)))
+ (const@2,V :Ink.0. . . Color.0.colpmj4ay@8,~3
+  (oconstr@B Color.0.colpmj4ay~3,~3
+   (kv@2 r.0~1 0.93@2)
+   (kv@B g.0~1 0.95@2)
+   (kv@K b.0~1 0.97@2)
+   (kv@T a.0~1 1.0@2)))
+ (const@2,W :Dim.0. . . Color.0.colpmj4ay@8,~4
+  (oconstr@B Color.0.colpmj4ay~3,~4
+   (kv@2 r.0~1 0.58@2)
+   (kv@B g.0~1 0.63@2)
+   (kv@K b.0~1 0.7@2)
+   (kv@T a.0~1 1.0@2)))
+ (const@2,X :Hot.0. . . Color.0.colpmj4ay@8,~5
+  (oconstr@B Color.0.colpmj4ay~3,~5
+   (kv@2 r.0~1 0.85@2)
+   (kv@B g.0~1 0.3@2)
+   (kv@K b.0~1 0.32@2)
+   (kv@T a.0~1 1.0@2)))
+ (gvar@2,a :note.0. . . string.0.sysvq0asl ""@7)
+ (gvar@2,b :lastFile.0. . . string.0.sysvq0asl "\28nothing yet\29"@B)
+ (gvar@2,c :lastDrop.0. . . string.0.sysvq0asl "\28nothing yet\29"@B)
+ (gvar@2,d :lastKey.0. . . string.0.sysvq0asl "\28nothing yet\29"@A)
+ (gvar@2,e :trayNote.0. . . string.0.sysvq0asl "\28nothing yet\29"@B)
+ (gvar@2,f :alone.0. . .
+  (bool@M,h,../../../../../../nimony/lib/std/system/basic_types.nim)
+  (true@8))
+ (gvar@2,g :probing.0. . .
+  (bool@C,h,../../../../../../nimony/lib/std/system/basic_types.nim)
+  (false@A))
+ (gvar@2,h :since.0. . .
+  (f 64)0.0@8)
+ (gvar@2,i :age.0. . .
+  (f 64)0.0@6)
+ (proc@,k :rowAt.0.@5 . . .
+  (params@A
+   (param@1 :top.0 . .
+    (f@5 64).)
+   (param@F :all.0 . . Rect.0.vecqnfc1h@5 .))Rect.0.vecqnfc1h@R . .
+  (stmts@2,1
+   (result@4 :result.0 . . Rect.0.vecqnfc1h@O,~1 .)
+   (asgn@4 result.0
+    (call rect.0.vecqnfc1h~4 18.0@1 top.0@7
+     (sub@M
+      (f 64)
+      (dot~7 all.0~3 width.0 0)36.0@2)20.0@U))
+   (ret~2,~1 result.0)))
+ (proc@,n :start.0.@5 . . .
+  (params@A). . .
+  (stmts@2,4
+   (asgn@6 alone.0.~6
+    (call@E onlyInstance.0.des5xsijk~C "example.filer"@1))
+   (if@,1
+    (elif@3
+     (not alone.0.@4)
+     (stmts~1,1
+      (call@3 log.0.jesaqohvh1~3
+       (infix@D,1 &.0.sysvq0asl
+        (infix@r,~1 &.0.sysvq0asl "example.filer\3A another copy is already running; it was handed "~13
+         (prefix~13,1 $.1.sysvq0asl
+          (call@9 argCount.0.des5xsijk~8)))" arguments and this copy is closing."@2))
+      (call@B,2 windowClose.0.winm5xm8g1~B)
+      (ret@,3 .))))
+   (call@9,7 appWindow.0.winm5xm8g1~9
+    (call@5 rect.0.vecqnfc1h~4 0.0@1 0.0@6 Width.0.@B Height.0.@I)"Files and Tray"@W)
+   (call@B,8 windowClear.0.winm5xm8g1~B
+    (oconstr@6 Color.0.colpmj4ay~9,~X
+     (kv@2 r.0~1 0.05@2)
+     (kv@B g.0~1 0.06@2)
+     (kv@K b.0~1 0.08@2)
+     (kv@T a.0~1 1.0@2)))
+   (call@D,9 idleWhenQuiet.0.renwb2cw3~D 5@R,t,../../../../Packages/com.aoughwl.jester/ModSdk/render.nim 60@c,t,../../../../Packages/com.aoughwl.jester/ModSdk/render.nim 0.4@q,t,../../../../Packages/com.aoughwl.jester/ModSdk/render.nim)
+   (asgn@5,B note.0.~5
+    (call@G desktopProblem.0.des5xsijk~E))
+   (call@C,E trayMenuItem.0.des5xsijk~C "open"@1 "Open a file..."@9)
+   (call@C,F trayMenuItem.0.des5xsijk~C "show"@1 "Show the window"@9)
+   (call@H,G trayMenuSeparator.0.des5xsijk~H ""@X,4E,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)
+   (call@C,H trayMenuItem.0.des5xsijk~C "shut"@1 "Quit"@9)
+   (call@8,J menuItem.0.des5xsijk~8 "open"@1 "File/Open...\09Ctrl+O"@9)
+   (call@8,K menuItem.0.des5xsijk~8 "save"@1 "File/Save as..."@9)
+   (call@D,L menuSeparator.0.des5xsijk~D "File"@1)
+   (call@8,M menuItem.0.des5xsijk~8 "shut"@1 "File/Quit"@9)
+   (call@8,N menuItem.0.des5xsijk~8 "about"@1 "Help/About"@A)
+   (let@4,U :trayUp.0 . .
+    (bool~2,2Y)
+    (call@D tray.0.des5xsijk~4 "Jester - Files and Tray"@1))
+   (let@4,V :dropsOn.0 . .
+    (bool~2,2X)
+    (call@S acceptDroppedFiles.0.des5xsijk~I
+     (true@1)))
+   (let@4,W :keyOn.0 . .
+    (bool~2,2W)
+    (call@H globalKey.0.des5xsijk~9 "summon"@1 "Ctrl+Alt+J"@B))
+   (call@3,X log.0.jesaqohvh1~3
+    (infix@E,4 &.0.sysvq0asl
+     (infix@11,~1 &.0.sysvq0asl
+      (infix~S &.0.sysvq0asl
+       (infix~C &.0.sysvq0asl
+        (infix~R &.0.sysvq0asl
+         (infix@h,~1 &.0.sysvq0asl
+          (infix~U &.0.sysvq0asl
+           (infix@L,~1 &.0.sysvq0asl
+            (infix~9 &.0.sysvq0asl
+             (infix~D &.0.sysvq0asl
+              (infix~B &.0.sysvq0asl
+               (infix@s,~1 &.0.sysvq0asl
+                (infix~H &.0.sysvq0asl
+                 (infix~E &.0.sysvq0asl
+                  (infix~A &.0.sysvq0asl "example.filer\3A tray="~N
+                   (prefix@2 $.3.sysvq0asl trayUp.0@1))" showing="@2)
+                 (prefix@2 $.3.sysvq0asl
+                  (call@C trayShowing.0.des5xsijk~B)))" drops="~12,1)
+               (prefix@2 $.3.sysvq0asl dropsOn.0@1))" hotkey="@2)
+             (prefix@2 $.3.sysvq0asl keyOn.0@1))" supports\3A dialogs="~h,1)
+           (prefix@2 $.3.sysvq0asl
+            (call@G desktopSupports.0.des5xsijk~F "dialogs"@1)))" tray="~q,1)
+         (prefix@2 $.3.sysvq0asl
+          (call@G desktopSupports.0.des5xsijk~F "tray"@1)))" paths="@2)
+       (prefix@2 $.3.sysvq0asl
+        (call@G desktopSupports.0.des5xsijk~F "paths"@1)))" nonsense="~1E,1)
+     (prefix@2 $.3.sysvq0asl
+      (call@G desktopSupports.0.des5xsijk~F "nonsense"@1))))
+   (call@3,d log.0.jesaqohvh1~3
+    (infix@12,1 &.0.sysvq0asl
+     (infix~E &.0.sysvq0asl
+      (infix~B &.0.sysvq0asl
+       (infix~I &.0.sysvq0asl
+        (infix@r,~1 &.0.sysvq0asl
+         (infix~7 &.0.sysvq0asl
+          (infix~6 &.0.sysvq0asl
+           (infix~M &.0.sysvq0asl "example.filer\3A desktop available = "~c
+            (prefix@2 $.3.sysvq0asl
+             (call@H desktopAvailable.0.des5xsijk~G)))" "@2)note.0.@2)" | launched from "~1B,1)
+        (call@F workingFolder.0.des5xsijk~D))" with "@2)
+      (prefix@2 $.1.sysvq0asl
+       (call@9 argCount.0.des5xsijk~8)))" arguments"@2))
+   (asgn@8,i probing.0.~8
+    (and@H
+     (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 64)0@P,1a,.jester/source/jester_mod_1de8814aca60631c.nim
+       (call@K,1a,.jester/source/jester_mod_1de8814aca60631c.nim argCount.0.des5xsijk~8)))
+     (infix@B ==.20.sysvq0asl
+      (call~4 arg.0.des5xsijk~3 0@1)"--probe"@3)))
+   (if@,j
+    (elif@3 probing.0.
+     (stmts~1,4
+      (call@G drawContinuously.0.renwb2cw3~G)
+      (call@3,1 log.0.jesaqohvh1~3 "example.filer\3A probing - a file dialog will open in three seconds"@1))))))
+ (proc@,1h :pickUpWhatHappened.0.@5 . . .
+  (params@N). . .
+  (stmts@2,1
+   (while@,2
+    (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+     (lt@2,1
+      (i 64)0@P,1l,.jester/source/jester_mod_1de8814aca60631c.nim
+      (call@K,1l,.jester/source/jester_mod_1de8814aca60631c.nim droppedFiles.0.des5xsijk~C)))
+    (stmts@2,1
+     (let@4 :dropped.0 . . PickedFile.0.des5xsijk@4,5W,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim
+      (call@P nextDroppedFile.0.des5xsijk~F))
+     (asgn@9,1 lastDrop.0.~9
+      (infix@1J &.0.sysvq0asl
+       (infix~L &.0.sysvq0asl
+        (infix~7 &.0.sysvq0asl
+         (infix~P &.0.sysvq0asl
+          (infix~8 &.0.sysvq0asl
+           (call~A fileName.0.des5xsijk~8 dropped.0@1)"  \28"@2)
+          (call@F fileExtension.0.des5xsijk~D dropped.0@1))", "@2)
+        (prefix@2 $.1.sysvq0asl
+         (call@9 fileSize.0.des5xsijk~8 dropped.0@1)))" bytes\29"@2))
+     (call@6,2 redraw.0.renwb2cw3~6)))
+   (let@4,7 :key.0 . . string.0.sysvq0asl@C,1V,../../../../../../nimony/lib/std/system.nim
+    (call@K globalKeyFired.0.des5xsijk~E))
+   (if@,8
+    (elif@3
+     (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 64)0@F,1r,.jester/source/jester_mod_1de8814aca60631c.nim
+       (call@8,1r,.jester/source/jester_mod_1de8814aca60631c.nim len.4.sysvq0asl@1 key.0~3)))
+     (stmts~1,1
+      (asgn@8 lastKey.0.~8 key.0@2)
+      (call@B,1 raiseWindow.0.des5xsijk~B)
+      (discard@,2
+       (call@E notify.0.des5xsijk~6 "Jester"@1 "Summoned by Ctrl+Alt+J"@B InfoNote.0.des5xsijk@b))
+      (call@6,3 redraw.0.renwb2cw3~6))))
+   (var@4,E :event.0 . . TrayEvent.0.des5xsijk@4,4M,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim
+    (call@L nextTrayEvent.0.des5xsijk~D))
+   (while@,F
+    (expr@2,1l,../../../../../../nimony/lib/std/system/comparisons.nim
+     (not@,1
+      (eq@7 TrayEvent.0.des5xsijk event.0@8,1y,.jester/source/jester_mod_1de8814aca60631c.nim NothingHappened.0.des5xsijk@H,1y,.jester/source/jester_mod_1de8814aca60631c.nim)))
+    (stmts@2,1
+     (if
+      (elif@3
+       (eq@6 TrayEvent.0.des5xsijk event.0~6 TrayDoubleClicked.0.des5xsijk@3)
+       (stmts~1,1
+        (call@F restoreFromTray.0.des5xsijk~F))))
+     (if@,2
+      (elif@3
+       (eq@6 TrayEvent.0.des5xsijk event.0~6 TrayMenuChosen.0.des5xsijk@3)
+       (stmts~1,1
+        (asgn@9 trayNote.0.~9
+         (call@C trayChoice.0.des5xsijk~A))
+        (if@,1
+         (elif@3
+          (infix@D ==.20.sysvq0asl
+           (call~3 trayChoice.0.des5xsijk~A)"open"@3)
+          (stmts@O
+           (discard
+            (call@J askOpenFile.0.des5xsijk~B "Open"@1 "All files|*.*"@9 ""@q,2d,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)))))
+        (if@,2
+         (elif@3
+          (infix@D ==.20.sysvq0asl
+           (call~3 trayChoice.0.des5xsijk~A)"show"@3)
+          (stmts@O
+           (call@F restoreFromTray.0.des5xsijk~F))))
+        (if@,3
+         (elif@3
+          (infix@D ==.20.sysvq0asl
+           (call~3 trayChoice.0.des5xsijk~A)"shut"@3)
+          (stmts@O
+           (call@B windowClose.0.winm5xm8g1~B)))))))
+     (asgn@6,7 event.0~6
+      (call@F nextTrayEvent.0.des5xsijk~D))
+     (call@6,8 redraw.0.renwb2cw3~6)))
+   (let@4,Q :picked.0 . . string.0.sysvq0asl@C,1V,../../../../../../nimony/lib/std/system.nim
+    (call@J menuChoice.0.des5xsijk~A))
+   (if@,R
+    (elif@3
+     (infix@7 ==.20.sysvq0asl picked.0~7 "open"@3)
+     (stmts@I
+      (discard
+       (call@J askOpenFile.0.des5xsijk~B "Open"@1 "Text|*.txt;*.md|All files|*.*"@9 ""@q,2d,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)))))
+   (if@,S
+    (elif@3
+     (infix@7 ==.20.sysvq0asl picked.0~7 "save"@3)
+     (stmts@I
+      (discard
+       (call@J askSaveFile.0.des5xsijk~B "Save as"@1 "Text|*.txt"@C "untitled.txt"@Q ""@11,2m,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)))))
+   (if@,T
+    (elif@3
+     (infix@7 ==.20.sysvq0asl picked.0~7 "shut"@3)
+     (stmts@I
+      (call@B windowClose.0.winm5xm8g1~B))))
+   (if@,U
+    (elif@3
+     (infix@7 ==.20.sysvq0asl picked.0~7 "about"@3)
+     (stmts~1,1
+      (discard
+       (call@E notify.0.des5xsijk~6 "Files and Tray"@1 "An Jester mod being an application."@J InfoNote.0.des5xsijk@w)))))
+   (if@,Y
+    (elif@3
+     (and@E
+      (call~3 chosenReady.0.des5xsijk~B)
+      (not@4
+       (call@C choosing.0.des5xsijk~8)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@F chooseCancelled.0.des5xsijk~F)
+        (stmts@J
+         (asgn@9 lastFile.0.~9 "\28cancelled\29"@2)))
+       (elif@5,1
+        (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+         (lt@2,1
+          (i 64)0@P,2J,.jester/source/jester_mod_1de8814aca60631c.nim
+          (call@K,2J,.jester/source/jester_mod_1de8814aca60631c.nim chosenCount.0.des5xsijk~B)))
+        (stmts~3,1
+         (let@4 :picked.1 . . PickedFile.0.des5xsijk@4,5W,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim
+          (call@J chosenFile.1.des5xsijk~A))
+         (asgn@9,1 lastFile.0.~9
+          (infix@l &.0.sysvq0asl
+           (infix~K &.0.sysvq0asl
+            (infix~8 &.0.sysvq0asl
+             (call~9 fileName.0.des5xsijk~8 picked.1@1)"  \28"@2)
+            (prefix@2 $.1.sysvq0asl
+             (call@9 fileSize.0.des5xsijk~8 picked.1@1)))" bytes\29"@2))
+         (if@,2
+          (elif@3
+           (call@F desktopSupports.0.des5xsijk~F "paths"@1)
+           (stmts@Q
+            (call@3 log.0.jesaqohvh1~3
+             (infix@T &.0.sysvq0asl "example.filer\3A chosen at "~S
+              (call@A filePath.0.des5xsijk~8 picked.1@1)))))))))
+      (call@6,5 redraw.0.renwb2cw3~6))))))
+ (proc@,2O :heartbeat.0.@5 . . .
+  (params@E). . .
+  (stmts@2,1
+   (asgn@4,6 age.0.~4
+    (add@6
+     (f 64)age.0.~4
+     (call@B deltaTime.0.jesaqohvh1~9)))
+   (asgn@6,7 since.0.~6
+    (add@8
+     (f 64)since.0.~6
+     (call@B deltaTime.0.jesaqohvh1~9)))
+   (if@,8
+    (elif@3
+     (lt@6
+      (f 64)since.0.~6 1.0@2)
+     (stmts@D
+      (ret .))))
+   (asgn@6,9 since.0.~6 0.0@2)
+   (call@3,A log.0.jesaqohvh1~3
+    (infix@f,1 &.0.sysvq0asl
+     (infix~C &.0.sysvq0asl
+      (infix~E &.0.sysvq0asl
+       (infix@u,~1 &.0.sysvq0asl
+        (infix~H &.0.sysvq0asl
+         (infix~E &.0.sysvq0asl
+          (infix~C &.0.sysvq0asl "example.filer\3A alive at "~R
+           (prefix@2 $.1.sysvq0asl
+            (conv@4
+             (i~3 64)age.0.@1)))"s, frame "@2)
+         (prefix@2 $.1.sysvq0asl
+          (call@C framesDrawn.0.renwb2cw3~B)))", choosing="~18,1)
+       (prefix@2 $.3.sysvq0asl
+        (call@9 choosing.0.des5xsijk~8)))", done="@2)
+     (prefix@2 $.3.sysvq0asl
+      (call@C chosenReady.0.des5xsijk~B))))
+   (if@,C
+    (elif@3
+     (and@g
+      (and~J
+       (and~F probing.0.~8
+        (expr@2,1p,../../../../../../nimony/lib/std/system/comparisons.nim
+         (le@2,1
+          (f 64)3.0@O,2c,.jester/source/jester_mod_1de8814aca60631c.nim age.0.@H,2c,.jester/source/jester_mod_1de8814aca60631c.nim)))
+       (not@4
+        (call@C choosing.0.des5xsijk~8)))
+      (not@4
+       (call@F chosenReady.0.des5xsijk~B)))
+     (stmts~1,1
+      (call@3 log.0.jesaqohvh1~3
+       (infix@l &.0.sysvq0asl "example.filer\3A asking for a file - started="~k
+        (prefix~k,1 $.3.sysvq0asl
+         (call@C askOpenFile.0.des5xsijk~B "Probe\3A pick anything"@1 "All files|*.*"@P ""@q,2d,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)))))))))
+ (proc@,2f :update.0.@5 . . .
+  (params@B). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (not alone.0.@4)
+     (stmts@B
+      (ret .))))
+   (call@9,1 heartbeat.0.~9)
+   (call@I,2 pickUpWhatHappened.0.~I)
+   (let@4,4 :all.1 . . Rect.0.vecqnfc1h@O,~20
+    (call@C screen.0.inpl8nz921~6))
+   (call@C,5 windowDragBy.0.winm5xm8g1~C
+    (call@5 rect.0.vecqnfc1h~4 0.0@1 0.0@6
+     (sub@L
+      (f 64)
+      (dot~7 all.1~3 width.0 0)Header.0.@2)Header.0.@V))
+   (call@4,6 fill.0.drasfcs4c~4 all.1@1 Panel.0.@6)
+   (call@4,7 fill.0.drasfcs4c~4
+    (call@5 rect.0.vecqnfc1h~4 0.0@1 0.0@6
+     (dot@E all.1~3 width.0 0)Header.0.@M)Bar.0.@a)
+   (call@4,8 fill.0.drasfcs4c~4
+    (call@5 rect.0.vecqnfc1h~4 0.0@1
+     (sub@D
+      (f 64)Header.0.~7 1.0@2)
+     (dot@N all.1~3 width.0 0)1.0@V)Rule.0.@g)
+   (call@7,9 writeIn.0.drasfcs4c~7 "Files and Tray"@1
+    (call@N rect.0.vecqnfc1h~4 14.0@1 0.0@7 260.0@C Header.0.@J)14.0@p AlignLeft.0.drasfcs4c@v Ink.0.@16 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (let@4,B :shut.0 . . Rect.0.vecqnfc1h@O,~27
+    (call@B rect.0.vecqnfc1h~4
+     (sub@B
+      (f 64)
+      (dot~7 all.1~3 width.0 0)Header.0.@2)0.0@L Header.0.@Q Header.0.@Y))
+   (if@,C
+    (elif@3
+     (call@8 hovering.0.drasfcs4c~8 shut.0@1)
+     (stmts@G
+      (call@4 fill.0.drasfcs4c~4 shut.0@1 Hot.0.@7))))
+   (call@7,D writeIn.0.drasfcs4c~7 "x"@1 shut.0@6 15.0@C AlignCentre.0.drasfcs4c@I Ink.0.@V FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (if@,E
+    (elif@3
+     (and@F
+      (call~7 hovering.0.drasfcs4c~8 shut.0@1)
+      (call@B clicked.0.inpl8nz921~7 LeftButton.0.inpl8nz921@1))
+     (stmts@e
+      (call@B windowClose.0.winm5xm8g1~B))))
+   (let@4,G :hide.0 . . Rect.0.vecqnfc1h@O,~2C
+    (call@B rect.0.vecqnfc1h~4
+     (sub@B
+      (f 64)
+      (dot~7 all.1~3 width.0 0)
+      (mul@9
+       (f 64)Header.0.~7 2.0@2))0.0@R Header.0.@W Header.0.@e))
+   (if@,H
+    (elif@3
+     (call@8 hovering.0.drasfcs4c~8 hide.0@1)
+     (stmts@G
+      (call@4 fill.0.drasfcs4c~4 hide.0@1 Rule.0.@7))))
+   (call@7,I writeIn.0.drasfcs4c~7 "_"@1 hide.0@6 15.0@C AlignCentre.0.drasfcs4c@I Ink.0.@V FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (if@,J
+    (elif@3
+     (and@F
+      (call~7 hovering.0.drasfcs4c~8 hide.0@1)
+      (call@B clicked.0.inpl8nz921~7 LeftButton.0.inpl8nz921@1))
+     (stmts@e
+      (discard
+       (call@M minimizeToTray.0.des5xsijk~E)))))
+   (let@4,L :menu.0 . . Rect.0.vecqnfc1h@O,~2H
+    (call@B rect.0.vecqnfc1h~4 0.0@1 Header.0.@6 90.0@E 26.0@K))
+   (if@,M
+    (elif@3
+     (call@8 hovering.0.drasfcs4c~8 menu.0@1)
+     (stmts@G
+      (call@4 fill.0.drasfcs4c~4 menu.0@1 Bar.0.@7))))
+   (call@7,N writeIn.0.drasfcs4c~7 "  Menu"@1 menu.0@B 13.0@H AlignLeft.0.drasfcs4c@N Ink.0.@Y FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (if@,R
+    (elif@3
+     (and@F
+      (call~7 hovering.0.drasfcs4c~8 menu.0@1)
+      (call@B clicked.0.inpl8nz921~7 LeftButton.0.inpl8nz921@1))
+     (stmts@e
+      (discard
+       (call@H popupMenu.0.des5xsijk~9
+        (call@5 vec2.0.vecqnfc1h~4 4.0@1
+         (add@D
+          (f 64)Header.0.~7 26.0@2)))))))
+   (let@4,T :open.0 . . Rect.0.vecqnfc1h@O,~2P
+    (call@B rect.0.vecqnfc1h~4 100.0@1 Header.0.@8 150.0@G 26.0@N))
+   (if@,U
+    (elif@3
+     (call@8 hovering.0.drasfcs4c~8 open.0@1)
+     (stmts@G
+      (call@4 fill.0.drasfcs4c~4 open.0@1 Bar.0.@7))))
+   (call@7,V writeIn.0.drasfcs4c~7 "  Open a file..."@1 open.0@L 13.0@R AlignLeft.0.drasfcs4c@X Ink.0.@i FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (if@,W
+    (elif@3
+     (and@F
+      (call~7 hovering.0.drasfcs4c~8 open.0@1)
+      (call@B clicked.0.inpl8nz921~7 LeftButton.0.inpl8nz921@1))
+     (stmts~1,1
+      (discard
+       (call@J askOpenFile.0.des5xsijk~B "Open"@1 "Text|*.txt;*.md|Images|*.png;*.jpg|All files|*.*"@9 ""@q,2d,../../../../Packages/com.aoughwl.jester/ModSdk/desktop.nim)))))
+   (var@4,Z :top.1 . .
+    (f@A,~2V 64)
+    (add@D
+     (f 64)Header.0.~7 44.0@2))
+   (call@7,a writeIn.0.drasfcs4c~7
+    (infix@J &.0.sysvq0asl "chosen file    "~I lastFile.0.@2)
+    (call@a rowAt.0.~5 top.1@1 all.1@6)13.0@m AlignLeft.0.drasfcs4c@s Ink.0.@13 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,b top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,c writeIn.0.drasfcs4c~7
+    (infix@J &.0.sysvq0asl "dropped file   "~I lastDrop.0.@2)
+    (call@a rowAt.0.~5 top.1@1 all.1@6)13.0@m AlignLeft.0.drasfcs4c@s Ink.0.@13 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,d top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,e writeIn.0.drasfcs4c~7
+    (infix@T &.0.sysvq0asl
+     (infix~A &.0.sysvq0asl "global key     "~I lastKey.0.@2)"   \28Ctrl+Alt+J\29"@2)
+    (call@t rowAt.0.~5 top.1@1 all.1@6)13.0@15 AlignLeft.0.drasfcs4c@1B Ink.0.@1M FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,f top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,g writeIn.0.drasfcs4c~7
+    (infix@J &.0.sysvq0asl "tray choice    "~I trayNote.0.@2)
+    (call@a rowAt.0.~5 top.1@1 all.1@6)13.0@m AlignLeft.0.drasfcs4c@s Ink.0.@13 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,h top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,i writeIn.0.drasfcs4c~7
+    (infix@q &.0.sysvq0asl
+     (infix~G &.0.sysvq0asl
+      (infix~H &.0.sysvq0asl "tray icon      "~I
+       (prefix@2 $.3.sysvq0asl
+        (call@C trayShowing.0.des5xsijk~B)))"   in tray "@2)
+     (prefix@2 $.3.sysvq0asl
+      (call@7 inTray.0.des5xsijk~6)))
+    (call@6,1 rowAt.0.~5 top.1@1 all.1@6)13.0@I,1 AlignLeft.0.drasfcs4c@O,1 Dim.0.@Z,1 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,k top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,l writeIn.0.drasfcs4c~7
+    (infix@u &.0.sysvq0asl
+     (infix~G &.0.sysvq0asl
+      (infix~L &.0.sysvq0asl "only copy      "~I
+       (prefix@2 $.3.sysvq0asl
+        (call@G primaryInstance.0.des5xsijk~F)))"   waiting "@2)
+     (prefix@2 $.1.sysvq0asl
+      (call@G launchesWaiting.0.des5xsijk~F)))
+    (call@6,1 rowAt.0.~5 top.1@1 all.1@6)13.0@I,1 AlignLeft.0.drasfcs4c@O,1 Dim.0.@Z,1 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,n top.1~4
+    (add@6
+     (f 64)top.1~4 24.0@2))
+   (call@7,o writeIn.0.drasfcs4c~7
+    (infix@J &.0.sysvq0asl "started in     "~I
+     (call@F workingFolder.0.des5xsijk~D))
+    (call@h rowAt.0.~5 top.1@1 all.1@6)12.0@t AlignLeft.0.drasfcs4c@z Dim.0.@1A FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,p top.1~4
+    (add@6
+     (f 64)top.1~4 22.0@2))
+   (call@7,q writeIn.0.drasfcs4c~7
+    (infix@J &.0.sysvq0asl "program        "~I
+     (call@D programPath.0.des5xsijk~B))
+    (call@f rowAt.0.~5 top.1@1 all.1@6)12.0@r AlignLeft.0.drasfcs4c@x Dim.0.@18 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)
+   (asgn@4,r top.1~4
+    (add@6
+     (f 64)top.1~4 26.0@2))
+   (if@,s
+    (elif@3
+     (call@8 choosing.0.des5xsijk~8)
+     (stmts~1,1
+      (call@7 writeIn.0.drasfcs4c~7 "a file dialog is open - and this window is still drawing"@1
+       (call@6,1 rowAt.0.~5 top.1@1 all.1@6)13.0@I,1 AlignLeft.0.drasfcs4c@O,1 Rule.0.@Z,1 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)))
+    (elif@5,3
+     (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 64)0@I,3c,.jester/source/jester_mod_1de8814aca60631c.nim
+       (call@B,3c,.jester/source/jester_mod_1de8814aca60631c.nim len.4.sysvq0asl@1 note.0.~4)))
+     (stmts~3,1
+      (call@7 writeIn.0.drasfcs4c~7 note.0.@1
+       (call@C rowAt.0.~5 top.1@1 all.1@6)12.0@O AlignLeft.0.drasfcs4c@U Dim.0.@f FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim)))
+    (else@,5
+     (stmts@2,1
+      (call@7 writeIn.0.drasfcs4c~7
+       (infix@m &.0.sysvq0asl
+        (infix~F &.0.sysvq0asl "drop a file on this window - "~W
+         (call@C rescueKeys.0.des5xsijk~A))" takes the window back"@2)
+       (call@6,1 rowAt.0.~5 top.1@1 all.1@6)12.0@I,1 AlignLeft.0.drasfcs4c@O,1 Dim.0.@Z,1 FontBody.0.drasfcs4c@M,14,../../../../Packages/com.aoughwl.jester/ModSdk/draw.nim))))
+   (if@,12
+    (elif@3
+     (expr@2,1t,../../../../../../nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 64)0@P,3j,.jester/source/jester_mod_1de8814aca60631c.nim
+       (call@K,3j,.jester/source/jester_mod_1de8814aca60631c.nim launchesWaiting.0.des5xsijk~F)))
+     (stmts~1,1
+      (call@3 log.0.jesaqohvh1~3
+       (infix@h &.0.sysvq0asl "example.filer\3A another launch arrived\3A "~g
+        (call@C nextLaunch.0.des5xsijk~A)))
+      (call@B,1 raiseWindow.0.des5xsijk~B)
+      (call@6,2 redraw.0.renwb2cw3~6))))
+   (if@,17
+    (elif@3
+     (or@H
+      (call~D held.1.inpl8nz921~4 LeftButton.0.inpl8nz921@1)
+      (call@B choosing.0.des5xsijk~8))
+     (stmts@W
+      (call@6 redraw.0.renwb2cw3~6))))))
+ (proc@,3t :jesterJitRootsNever.0.@5 . . .
+  (params@O)
+  (bool@4). .
+  (stmts@Z
+   (result :result.1 . .
+    (bool~V).)
+   (asgn result.1
+    (false))
+   (ret~Z result.1)))
+ (proc@,3u :jesterJitRoots.0.@5 . . .
+  (params@J).
+  (pragmas@M
+   (exportc@2 "jester_jit_roots_1de8814aca60631c"@9)).
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@J jesterJitRootsNever.0.~J)
+     (stmts~1,1
+      (var@4 :r_start.0 . .
+       (proctype .
+        (params@A,o,.jester/source/jester_mod_1de8814aca60631c.nim).@,o,.jester/source/jester_mod_1de8814aca60631c.nim .)start.0.@A)
+      (discard@,1 r_start.0@8)
+      (var@4,2 :r_update.0 . .
+       (proctype .
+        (params@B,2g,.jester/source/jester_mod_1de8814aca60631c.nim).@,2g,.jester/source/jester_mod_1de8814aca60631c.nim .)update.0.@B)
+      (discard@,3 r_update.0@8))))))
+ (comment@G,k float64.0.sysvq0asl bool.0.sysvq0asl~C,39 true.0.sysvq0asl~6,~5 false.0.sysvq0asl~4,~4 true.0.sysvq0asl@J,c >.0.sysvq0asl@7,p >.0.sysvq0asl@7,10 >.0.sysvq0asl~3,16 !=.0.sysvq0asl~2,1D >.0.sysvq0asl@7,1Y int.0.sysvq0asl@K,1p >=.0.sysvq0asl@5,1r >.0.sysvq0asl@,2r >.0.sysvq0asl@7,2y false.0.sysvq0asl@J,39))(.index@,1,.jester/source/jester_mod_1de8814aca60631c.nim
+ (h Width.0. 780)
+ (h Height.0. 47)
+ (h Header.0. 48)
+ (h Panel.0. 47)
+ (h Bar.0. 172)
+ (h Rule.0. 177)
+ (h Ink.0. 178)
+ (h Dim.0. 176)
+ (h Hot.0. 175)
+ (h note.0. 175)
+ (h lastFile.0. 49)
+ (h lastDrop.0. 70)
+ (h lastKey.0. 70)
+ (h trayNote.0. 69)
+ (h alone.0. 70)
+ (h probing.0. 106)
+ (h since.0. 109)
+ (h age.0. 40)
+ (h rowAt.0. 38)
+ (h start.0. 372)
+ (h pickUpWhatHappened.0. 4589)
+ (h heartbeat.0. 5617)
+ (h update.0. 1758)
+ (h jesterJitRootsNever.0. 9148)
+ (h jesterJitRoots.0. 174))

@@ -1,0 +1,947 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/derefan.nim
+ (comment)
+ (pragmas@,18
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,1A nifcursors@7 nifstreams@J nimony_model@V decls@j programs@q)
+ (import@,1B modload@7)
+ (import@,1C
+  (infix@A / std~3 tables@1))
+ (import@,1D
+  (prefix@7 \2E/ crossing@2))
+ (const@6,1J MaxDepth . . . 8@B)
+ (type@C,1O AnGiveUp~A x . .
+  (enum@2 .
+   (efld~A,8 agNone . . . .)
+   (efld~A,9 agNoBody . . . .)
+   (efld~A,A agMethod . . . .)
+   (efld~A,B agRecursion . . . .)
+   (efld~A,C agDepth . . . .)
+   (efld~A,D agShape . . . .)
+   (efld~A,G agCalleeUnknown . . . .)
+   (efld~A,I agNoParam . . . .)
+   (efld~A,J agNoField . . . .)))
+ (proc@,1j giveUpName@5 x . .
+  (params@G
+   (param@1 g . . AnGiveUp@3 .))string@F . .
+  (stmts@2,1
+   (case g@5
+    (of@,1
+     (ranges agNone@3)
+     (stmts@B "none"))
+    (of@,2
+     (ranges agNoBody@3)
+     (stmts@D "no-body"))
+    (of@,3
+     (ranges agMethod@3)
+     (stmts@D "method"))
+    (of@,4
+     (ranges agRecursion@3)
+     (stmts@G "recursion"))
+    (of@,5
+     (ranges agDepth@3)
+     (stmts@C "depth"))
+    (of@,6
+     (ranges agShape@3)
+     (stmts@C "unmodelled-shape"))
+    (of@,7
+     (ranges agCalleeUnknown@3)
+     (stmts@K "callee-unknown"))
+    (of@,8
+     (ranges agNoParam@3)
+     (stmts@E "no-such-param"))
+    (of@,9
+     (ranges agNoField@3)
+     (stmts@E "no-field-name")))))
+ (type@E,1w ParamFacts~C x . .
+  (object@2 .
+   (fld~5,2 unknown~7 x . bool@3 .)
+   (fld~9,4 why~3 x . AnGiveUp@3 .)
+   (fld~A,5 at~2 x . string@3 .)
+   (fld~5,7 touched~7 x .
+    (at@6 seq~3 SymId@1).)))
+ (type@G,25 RoutineFacts~E x . .
+  (ref@2
+   (object@4 .
+    (fld~G,1 ok~2 x . bool@3 .)
+    (fld~F,4 why~3 x . AnGiveUp@3 .)
+    (fld~C,7 params~6 x .
+     (at@6 seq~3 ParamFacts@1).))))
+ (let@E,2I cAnGranted~A x . .
+  (call@J newRouteCounter~F "derefan.granted"@1))
+ (let@E,2K cAnTouched~A x . .
+  (call@J newRouteCounter~F "derefan.touched"@1))
+ (let@E,2M cAnUnknown~A x . .
+  (call@J newRouteCounter~F "derefan.unknown"@1))
+ (let@D,2P cAnNoBody~9 x . .
+  (call@J newRouteCounter~F "derefan.noBody"@1))
+ (let@D,2Q cAnMethod~9 x . .
+  (call@J newRouteCounter~F "derefan.method"@1))
+ (let@G,2R cAnRecursion~C x . .
+  (call@J newRouteCounter~F "derefan.recursion"@1))
+ (let@C,2S cAnDepth~8 x . .
+  (call@J newRouteCounter~F "derefan.depth"@1))
+ (let@C,2T cAnShape~8 x . .
+  (call@J newRouteCounter~F "derefan.shape"@1))
+ (let@K,2U cAnCalleeUnknown~G x . .
+  (call@J newRouteCounter~F "derefan.calleeUnknown"@1))
+ (let@E,2V cAnNoParam~A x . .
+  (call@J newRouteCounter~F "derefan.noParam"@1))
+ (let@E,2W cAnNoField~A x . .
+  (call@J newRouteCounter~F "derefan.noField"@1))
+ (let@F,2i cAnHonoured~B x . .
+  (call@J newRouteCounter~F "derefan.honoured"@1))
+ (let@E,2k cAnRevoked~A x . .
+  (call@J newRouteCounter~F "derefan.revoked"@1))
+ (proc@,2n bumpGiveUp@5 . . .
+  (params@F
+   (param@1 g . . AnGiveUp@3 .)
+   (param@E at . . string@4 .)). . .
+  (stmts@2,1
+   (cmd bump cAnUnknown@5)
+   (case@,1 g@5
+    (of@,1
+     (ranges agNone@3)
+     (stmts@B
+      (discard .)))
+    (of@,2
+     (ranges agNoBody@3)
+     (stmts@D
+      (cmd bump cAnNoBody@5)))
+    (of@,3
+     (ranges agMethod@3)
+     (stmts@D
+      (cmd bump cAnMethod@5)))
+    (of@,4
+     (ranges agRecursion@3)
+     (stmts@G
+      (cmd bump cAnRecursion@5)))
+    (of@,5
+     (ranges agDepth@3)
+     (stmts@C
+      (cmd bump cAnDepth@5)))
+    (of@,6
+     (ranges agShape@3)
+     (stmts@2,1
+      (cmd bump cAnShape@5)
+      (if@,1
+       (elif@3
+        (infix@7 >
+         (dot~5 at~2 len@1)0@2)
+        (stmts@C
+         (call@8 noteItem~8 cAnShape@1 at@B))))))
+    (of@,9
+     (ranges agCalleeUnknown@3)
+     (stmts@2,1
+      (cmd bump cAnCalleeUnknown@5)
+      (if@,1
+       (elif@3
+        (infix@7 >
+         (dot~5 at~2 len@1)0@2)
+        (stmts@C
+         (call@8 noteItem~8 cAnCalleeUnknown@1 at@J))))))
+    (of@,C
+     (ranges agNoParam@3)
+     (stmts@E
+      (cmd bump cAnNoParam@5)))
+    (of@,D
+     (ranges agNoField@3)
+     (stmts@E
+      (cmd bump cAnNoField@5))))))
+ (proc@,34 derefanReport@5 x . .
+  (params@J)string@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@t,1 and
+      (infix~U and
+       (infix@T,~1 and
+        (infix~T and
+         (infix~5 ==
+          (call~D countOf~7 cAnGranted@1)0@3)
+         (infix@O ==
+          (call~D countOf~7 cAnTouched@1)0@3))
+        (infix~Y,1 ==
+         (call~D countOf~7 cAnUnknown@1)0@3))
+       (infix@P ==
+        (call~E countOf~7 cAnHonoured@1)0@3))
+      (infix~Z,1 ==
+       (call~D countOf~7 cAnRevoked@1)0@3))
+     (stmts~1,3
+      (ret ""@7))))
+   (asgn@7,9 result~7
+    (infix@E,I &
+     (infix@i,~1 &
+      (infix~O &
+       (infix~1,~5 &
+        (infix~7 &
+         (infix~K &
+          (infix@R,~1 &
+           (infix~L &
+            (infix@P,~1 &
+             (infix~N &
+              (infix@N,~1 &
+               (infix~N &
+                (infix@Q,~1 &
+                 (infix~6 &
+                  (infix~S &
+                   (infix@h,~1 &
+                    (infix~T &
+                     (infix@D,~1 &
+                      (infix~L &
+                       (infix@T,~1 &
+                        (infix~P &
+                         (infix@J,~1 &
+                          (infix~M &
+                           (infix@N,~1 &
+                            (infix~M &
+                             (infix@N,~1 &
+                              (infix~N &
+                               (infix@N,~1 &
+                                (infix~N &
+                                 (infix@c,~1 &
+                                  (infix~N & "hybrid\3A derefan granted="~R
+                                   (prefix@2 $
+                                    (call@8 countOf~7 cAnGranted@1)))" touched="~o,1)
+                                 (prefix@2 $
+                                  (call@8 countOf~7 cAnTouched@1)))" unknown="~Z,1)
+                               (prefix@2 $
+                                (call@8 countOf~7 cAnUnknown@1)))" \5BnoBody="~Z,1)
+                             (prefix@2 $
+                              (call@8 countOf~7 cAnNoBody@1)))" method="~Y,1)
+                           (prefix@2 $
+                            (call@8 countOf~7 cAnMethod@1)))" recursion="~X,1)
+                         (prefix@2 $
+                          (call@8 countOf~7 cAnRecursion@1)))" depth="~d,1)
+                       (prefix@2 $
+                        (call@8 countOf~7 cAnDepth@1)))" calleeUnknown="~V,1)
+                     (prefix@2 $
+                      (call@8 countOf~7 cAnCalleeUnknown@1)))"\5B"~l,1)
+                   (call@9 itemsOf~7 cAnCalleeUnknown@1))"\5D"@2)" noParam="~c,1)
+                (prefix@2 $
+                 (call@8 countOf~7 cAnNoParam@1)))" noField="~Z,1)
+              (prefix@2 $
+               (call@8 countOf~7 cAnNoField@1)))" shape="~Z,1)
+            (prefix@2 $
+             (call@8 countOf~7 cAnShape@1)))"\5B"~V,1)
+          (call@9 itemsOf~7 cAnShape@1))"\5D\5D"@2)" | at-use crossings honoured="~V,5)
+       (prefix@2 $
+        (call@8 countOf~7 cAnHonoured@1)))" revoked="~u,1)
+     (prefix@2 $
+      (call@8 countOf~7 cAnRevoked@1))))))
+ (var@4,3Y factsCache . . .
+  (call@h
+   (at~L initTable~9 SymId@1 RoutineFacts@8)))
+ (proc@,3f nodeTag@5 . . .
+  (params@C
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@Y
+   (at@9
+    (dot~5 pool~4 tags@1)
+    (dot@2 n~1 tagId@1))))
+ (proc@,3h isCallTag@5 . . .
+  (params@E
+   (param@1 t . . string@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (infix@D,4 or
+    (infix@o,~1 or
+     (infix~G or
+      (infix~L or
+       (infix~E or
+        (infix~A == t~2 "call"@3)
+        (infix@5 == t~2 "cmd"@3))
+       (infix@5 == t~2 "callstrlit"@3))
+      (infix@5 == t~2 "hcall"@3))
+     (infix~z,1 == t~2 "infix"@3))
+    (infix@5 == t~2 "prefix"@3))))
+ (proc@,3o analyzeRoutine@5 x . .
+  (params@K
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 .))RoutineFacts@Q . . .)
+ (type@A,3q Scan~5 . . .
+  (object@2 .
+   (fld~A,1 params . .
+    (at@B seq~3 SymId@1).)
+   (fld~A,2 facts . . RoutineFacts@7 .)
+   (fld~A,3 depth . . int@7 .)))
+ (proc@,3v paramIndex@5 . . .
+  (params@F
+   (param@1 st . . Scan@4 .)
+   (param@B s . . SymId@3 .))int@M . .
+  (stmts@2,1
+   (asgn@7 result~7 -1@2)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@B
+      (dot~7 st~2 params@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@D ==
+        (at~4
+         (dot~7 st~2 params@1)i@1)s@3)
+       (stmts@J
+        (ret i@7))))
+     (cmd@,1 inc i@4)))))
+ (proc@,42 markUnknown@5 . . .
+  (params@G
+   (param@1 st . .
+    (mut@4 Scan@4).)
+   (param@F i . . int@3 .)
+   (param@N why . . AnGiveUp@5 .)
+   (param@c at . . string@4 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@6 or
+      (infix~4 < i~2 0@2)
+      (infix@5 >= i~2
+       (dot@I
+        (dot~7
+         (dot~6 st~2 facts@1)params@1)len@1)))
+     (stmts@Z
+      (ret .))))
+   (if@,5
+    (elif@3
+     (dot@I
+      (at~3
+       (dot~7
+        (dot~6 st~2 facts@1)params@1)i@1)unknown@1)
+     (stmts@S
+      (ret .))))
+   (asgn@R,6
+    (dot~9
+     (at~3
+      (dot~7
+       (dot~6 st~2 facts@1)params@1)i@1)unknown@1)true@2)
+   (asgn@N,7
+    (dot~5
+     (at~3
+      (dot~7
+       (dot~6 st~2 facts@1)params@1)i@1)why@1)why@2)
+   (asgn@M,8
+    (dot~4
+     (at~3
+      (dot~7
+       (dot~6 st~2 facts@1)params@1)i@1)at@1)at@2)))
+ (proc@,4D addTouched@5 . . .
+  (params@F
+   (param@1 st . .
+    (mut@4 Scan@4).)
+   (param@F i . . int@3 .)
+   (param@N f . . SymId@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 or
+      (infix~4 < i~2 0@2)
+      (infix@5 >= i~2
+       (dot@I
+        (dot~7
+         (dot~6 st~2 facts@1)params@1)len@1)))
+     (stmts@Z
+      (ret .))))
+   (var@4,1 k . . . 0@4)
+   (while@,2
+    (infix@8 < k~2
+     (dot@S
+      (dot~8
+       (at~3
+        (dot~7
+         (dot~6 st~2 facts@1)params@1)i@1)touched@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@U ==
+        (at~4
+         (dot~8
+          (at~3
+           (dot~7
+            (dot~6 st~2 facts@1)params@1)i@1)touched@1)k@1)f@3)
+       (stmts@a
+        (ret .))))
+     (cmd@,1 inc k@4)))
+   (cmd@Q,5
+    (dot
+     (dot~8
+      (at~3
+       (dot~7
+        (dot~6 st~2 facts@1)params@1)i@1)touched@1)add@1)f@5)))
+ (proc@,4L mergeCallee@5 . . .
+  (params@G
+   (param@1 st . .
+    (mut@4 Scan@4).)
+   (param@F fn . . SymId@4 .)
+   (param@Q argIdx . . int@H .)
+   (param@Y myParam . . int@9 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@D >
+      (infix~4 \2B
+       (dot~7 st~2 depth@1)1@2)MaxDepth@2)
+     (stmts~1,1
+      (call@B markUnknown~B st@1 myParam@5 agDepth@E ""@N)
+      (ret@d .))))
+   (let@4,4 sub . . .
+    (call@K analyzeRoutine~E fn@1
+     (infix@E \2B
+      (dot~7 st~2 depth@1)1@2)))
+   (if@,5
+    (elif@3
+     (infix@4 == sub~4
+      (nil@3))
+     (stmts~1,1
+      (call@B markUnknown~B st@1 myParam@5 agNoBody@E ""@O)
+      (ret@e .))))
+   (if@,7
+    (elif@3
+     (prefix not
+      (dot@7 sub~3 ok@1))
+     (stmts~1,4
+      (call@B markUnknown~B st@1 myParam@5
+       (dot@H sub~3 why@1)""@N)
+      (ret@d .))))
+   (if@,C
+    (elif@3
+     (infix@7 >= argIdx~7
+      (dot@D
+       (dot~7 sub~3 params@1)len@1))
+     (stmts~1,1
+      (call@B markUnknown~B st@1 myParam@5 agNoParam@E ""@P)
+      (ret@f .))))
+   (if@,E
+    (elif@3
+     (dot@I
+      (at~8
+       (dot~7 sub~3 params@1)argIdx@1)unknown@1)
+     (stmts~1,1
+      (call@B markUnknown~B st@1 myParam@5 agCalleeUnknown@E
+       (infix@g,1 &
+        (infix~6 &
+         (call~P giveUpName~A
+          (dot@J
+           (at~8
+            (dot~7 sub~3 params@1)argIdx@1)why@1))"\40"@2)
+        (dot@K
+         (at~8
+          (dot~7 sub~3 params@1)argIdx@1)at@1)))
+      (ret@,2 .))))
+   (var@4,I k . . . 0@4)
+   (while@,J
+    (infix@8 < k~2
+     (dot@S
+      (dot~8
+       (at~8
+        (dot~7 sub~3 params@1)argIdx@1)touched@1)len@1))
+    (stmts@2,1
+     (call@A addTouched~A st@1 myParam@5
+      (at@e
+       (dot~8
+        (at~8
+         (dot~7 sub~3 params@1)argIdx@1)touched@1)k@1))
+     (cmd@,1 inc k@4)))))
+ (proc@,4j unwrapParamDeref@5 . . .
+  (params@L
+   (param@1 st . . Scan@4 .)
+   (param@B n . . Cursor@3 .))Cursor@N . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,I result~7 n@2)
+   (if@,J
+    (elif@3
+     (infix@7 !=
+      (dot~6 n~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (let@4,K t . . .
+    (call@B nodeTag~7 n@1))
+   (if@,L
+    (elif@3
+     (infix@E and
+      (infix~C != t~2 "hderef"@3)
+      (infix@6 != t~2 "deref"@3))
+     (stmts@W
+      (ret .))))
+   (var@4,M inner . . . n@8)
+   (cmd@,N inc inner@4)
+   (if@,O
+    (elif@3
+     (infix@B !=
+      (dot~6 inner~5 kind@1)Symbol@3)
+     (stmts@M
+      (ret .))))
+   (if@,P
+    (elif@3
+     (infix@S <
+      (call~I paramIndex~A st@1
+       (dot@A inner~5 symId@1))0@2)
+     (stmts@X
+      (ret .))))
+   (var@4,Q after . . . inner@8)
+   (cmd@,R skip after@5)
+   (if@,S
+    (elif@3
+     (infix@B !=
+      (dot~6 after~5 kind@1)ParRi@3)
+     (stmts@L
+      (ret .))))
+   (asgn@7,T result~7 inner@2)))
+ (proc@,5F walkTree@5 . . .
+  (params@D
+   (param@1 root . . Cursor@6 .)
+   (param@F st . .
+    (mut@4 Scan@4).)
+   (param@T ctx . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,5 c . . . root@4)
+   (if@,6
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Symbol@3)
+     (stmts~1,4
+      (let@4 pi . . .
+       (call@F paramIndex~A st@1
+        (dot@6 c~1 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@3 >= pi~3 0@3)
+        (stmts@9
+         (call@B markUnknown~B st@1 pi@5 agShape@9 ctx@I))))
+      (ret@,2 .))))
+   (if@,D
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (let@4,E tag . . .
+    (call@D nodeTag~7 c@1))
+   (if@,F
+    (elif@3
+     (infix@D or
+      (infix~9 == tag~4 "dot"@3)
+      (infix@7 == tag~4 "ddot"@3))
+     (stmts~1,3
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (let@4,3 objn . . .
+       (call@N unwrapParamDeref~G st@1 f@5))
+      (if@,4
+       (elif@3
+        (infix@A ==
+         (dot~6 objn~4 kind@1)Symbol@3)
+        (stmts~1,1
+         (let@4 pi . . .
+          (call@F paramIndex~A st@1
+           (dot@9 objn~4 symId@1)))
+         (if@,1
+          (elif@3
+           (infix@3 >= pi~3 0@3)
+           (stmts~1,1
+            (var@4 g . . . f@4)
+            (cmd@,1 skip g@5)
+            (if@,2
+             (elif@3
+              (infix@7 ==
+               (dot~6 g~1 kind@1)Symbol@3)
+              (stmts@I
+               (call@A addTouched~A st@1 pi@5
+                (dot@A g~1 symId@1))))
+             (else@,1
+              (stmts@6
+               (call@B markUnknown~B st@1 pi@5 agShape@9
+                (infix@M & tag~4 "-unnamed-field"@2)))))
+            (ret@,4 .)))))))
+      (call@8,C walkTree~8 f@1 st@4
+       (infix@C & tag~4 "-obj"@2))
+      (cmd@,D skip f@5)
+      (cmd@,E skip f@5)
+      (while@,F
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@8 walkTree~8 f@1 st@4
+         (infix@C & tag~4 "-rest"@2))
+        (cmd@,1 skip f@5)))
+      (ret@,I .))))
+   (if@,b
+    (elif@3
+     (call@9 isCallTag~9 tag@1)
+     (stmts~1,1
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (var@4,2 fnSym . . .
+       (call@F default~7 SymId@1))
+      (var@4,3 haveFn . . . false@9)
+      (if@,4
+       (elif@3
+        (infix@7 ==
+         (dot~6 f~1 kind@1)Symbol@3)
+        (stmts~1,1
+         (asgn@6 fnSym~6
+          (dot@3 f~1 symId@1))
+         (asgn@7,1 haveFn~7 true@2)))
+       (else@,3
+        (stmts@2,1
+         (call@8 walkTree~8 f@1 st@4
+          (infix@C & tag~4 "-fn"@2)))))
+      (cmd@,9 skip f@5)
+      (var@4,A argi . . . 0@7)
+      (while@,B
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,3
+        (let@4 an . . .
+         (call@L unwrapParamDeref~G st@1 f@5))
+        (if@,1
+         (elif@3
+          (infix@I and
+           (infix~A ==
+            (dot~6 an~2 kind@1)Symbol@3)
+           (infix@T >=
+            (call~F paramIndex~A st@1
+             (dot@7 an~2 symId@1))0@3))
+          (stmts~1,1
+           (let@4 pi . . .
+            (call@F paramIndex~A st@1
+             (dot@7 an~2 symId@1)))
+           (if@,1
+            (elif@3 haveFn
+             (stmts@8
+              (call@B mergeCallee~B st@1 fnSym@5 argi@C pi@I)))
+            (else@,1
+             (stmts@6
+              (call@B markUnknown~B st@1 pi@5 agShape@9
+               (infix@M & tag~4 "-indirect-callee"@2)))))))
+         (else@,4
+          (stmts@2,1
+           (call@8 walkTree~8 f@1 st@4
+            (infix@C & tag~4 "-arg"@2)))))
+        (cmd@,7 skip f@5)
+        (cmd@,8 inc argi@4)))
+      (ret@,N .))))
+   (var@4,10 f . . . c@4)
+   (cmd@,11 inc f@4)
+   (var@4,12 ai . . . 0@5)
+   (while@,13
+    (infix@D !=
+     (dot~6 f~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (call@8 walkTree~8 f@1 st@4
+      (infix@O &
+       (infix~6 &
+        (infix~6 & tag~4 "\5B"@2)
+        (prefix@2 $ ai@1))"\5D"@2))
+     (cmd@,1 skip f@5)
+     (cmd@,2 inc ai@4)))))
+ (proc@,6O collectParams@5 . . .
+  (params@I
+   (param@1 r . . Routine@3 .))
+  (at@H seq~3 SymId@1). .
+  (stmts@2,1
+   (asgn@7 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,1 pc . . .
+    (dot@6 r~1 params@1))
+   (if@,2
+    (elif@3
+     (infix@H and
+      (infix~9 ==
+       (dot~6 pc~2 kind@1)ParLe@3)
+      (infix@G ==
+       (call~5 nodeTag~7 pc@1)"params"@3))
+     (stmts~1,1
+      (cmd inc pc@4)
+      (while@,1
+       (infix@E !=
+        (dot~6 pc~2 kind@1)ParRi@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (dot~6 pc~2 kind@1)ParLe@3)
+          (stmts~1,1
+           (let@4 loc . . .
+            (call@F takeLocal~9 pc@1 SkipFinalParRi@5))
+           (var@4,1 nm . . .
+            (call@C default~7 SymId@1))
+           (if@,2
+            (elif@3
+             (infix@O or
+              (infix~A ==
+               (dot~6
+                (dot~5 loc~3 name@1)kind@1)Symbol@3)
+              (infix@H ==
+               (dot~6
+                (dot~5 loc~3 name@1)kind@1)SymbolDef@3))
+             (stmts~1,1
+              (asgn@3 nm~3
+               (dot@A
+                (dot~5 loc~3 name@1)symId@1)))))
+           (cmd@6,4
+            (dot result~6 add@1)nm@5)))
+         (else@,6
+          (stmts@2,1
+           (cmd skip pc@5)))))))))))
+ (proc@,6d analyzeRoutine@5 x . .
+  (params@K
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 .))RoutineFacts@Q . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7
+    (call@P
+     (dot~D factsCache~A getOrDefault@1)sym@1
+     (nil@6)))
+   (if@,4
+    (elif@3
+     (infix@7 != result~7
+      (nil@3))
+     (stmts@F
+      (ret .))))
+   (if@,5
+    (elif@3
+     (infix@6 > depth~6 MaxDepth@2)
+     (stmts@I
+      (ret
+       (oconstr@J RoutineFacts~C
+        (kv@3 ok~2 false@2)
+        (kv@F why~3 agDepth@2)
+        (kv@W params~6
+         (prefix@2 \40
+          (bracket@1))))))))
+   (let@4,6 res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,7
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (prefix~r,1 not
+       (call@D isRoutine~9
+        (dot@9
+         (dot~5 res~3 decl@1)symKind@1))))
+     (stmts~1,2
+      (ret
+       (oconstr@J RoutineFacts~C
+        (kv@3 ok~2 false@2)
+        (kv@F why~3 agNoBody@2)
+        (kv@X params~6
+         (prefix@2 \40
+          (bracket@1))))))))
+   (if@,A
+    (elif@3
+     (infix@I ==
+      (call~B nodeTag~7
+       (dot@4 res~3 decl@1))"method"@3)
+     (stmts~1,2
+      (ret
+       (oconstr@J RoutineFacts~C
+        (kv@3 ok~2 false@2)
+        (kv@F why~3 agMethod@2)
+        (kv@X params~6
+         (prefix@2 \40
+          (bracket@1))))))))
+   (let@4,D r . . .
+    (call@D asRoutine~9
+     (dot@4 res~3 decl@1)SkipInclBody@B))
+   (if@,E
+    (elif@3
+     (infix@C !=
+      (dot~6
+       (dot~5 r~1 body@1)kind@1)ParLe@3)
+     (stmts~1,2
+      (ret
+       (oconstr@J RoutineFacts~C
+        (kv@3 ok~2 false@2)
+        (kv@F why~3 agNoBody@2)
+        (kv@X params~6
+         (prefix@2 \40
+          (bracket@1))))))))
+   (var@4,H st . . .
+    (oconstr@9 Scan~4
+     (kv@7 params~6
+      (call@F collectParams~D r@1))
+     (kv@W facts~5
+      (nil@2))
+     (kv@i depth~5 depth@2)))
+   (var@4,I f . . .
+    (oconstr@G RoutineFacts~C
+     (kv@3 ok~2 true@2)
+     (kv@E why~3 agNone@2)
+     (kv@U params~6
+      (prefix@2 \40
+       (bracket@1)))))
+   (var@4,J i . . . 0@4)
+   (while@,K
+    (infix@8 < i~2
+     (dot@B
+      (dot~7 st~2 params@1)len@1))
+    (stmts@2,1
+     (cmd@8
+      (dot
+       (dot~7 f~1 params@1)add@1)
+      (oconstr@F ParamFacts~A
+       (kv@8 unknown~7 false@2)
+       (kv@K why~3 agNone@2)
+       (kv@W at~2 ""@2)
+       (kv@j touched~7
+        (prefix@2 \40
+         (bracket@1)))))
+     (cmd@,1 inc i@4)))
+   (asgn@9,N
+    (dot~7 st~2 facts@1)f@2)
+   (asgn@G,S
+    (at~6 factsCache~A sym@1)
+    (oconstr@E RoutineFacts~C
+     (kv@3 ok~2 false@2)
+     (kv@F why~3 agRecursion@2)
+     (kv@a params~6
+      (prefix@2 \40
+       (bracket@1)))))
+   (call@8,T walkTree~8
+    (dot@2 r~1 body@1)st@9 "body"@D)
+   (asgn@G,U
+    (at~6 factsCache~A sym@1)f@2)
+   (asgn@7,V result~7 f@2)))
+ (type@D,7C AnVerdict~B x . .
+  (enum@2 .
+   (efld~B,4 avNeverTouched . . . .)
+   (efld~B,5 avTouched . . . .)
+   (efld~B,6 avUnknown . . . .)))
+ (proc@,7K fieldVerdict@5 x . .
+  (params@I
+   (param@1 calleeSym . . SymId@B .)
+   (param@J paramIdx . . int@A .)
+   (param@Y fieldSym . . SymId@A .))
+  (tup@q AnVerdict@1 AnGiveUp@C string@M). .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@H ==
+      (call~B uint32~6 fieldSym@1)
+      (suf@3 0u "u32"))
+     (stmts@R
+      (ret
+       (tup@7 avUnknown@1 agNoField@C ""@N)))))
+   (let@4,4 f . . .
+    (call@I analyzeRoutine~E calleeSym@1 0@C))
+   (if@,5
+    (elif@3
+     (infix@2 == f~2
+      (nil@3))
+     (stmts@A
+      (ret
+       (tup@7 avUnknown@1 agNoBody@C ""@M)))))
+   (if@,6
+    (elif@3
+     (prefix not
+      (dot@5 f~1 ok@1))
+     (stmts@A
+      (ret
+       (tup@7 avUnknown@1
+        (dot@D f~1 why@1)""@J)))))
+   (if@,7
+    (elif@3
+     (infix@D or
+      (infix~4 < paramIdx~9 0@2)
+      (infix@C >= paramIdx~9
+       (dot@B
+        (dot~7 f~1 params@1)len@1)))
+     (stmts@g
+      (ret
+       (tup@7 avUnknown@1 agNoParam@C ""@N)))))
+   (if@,8
+    (elif@3
+     (dot@I
+      (at~A
+       (dot~7 f~1 params@1)paramIdx@1)unknown@1)
+     (stmts~1,1
+      (ret
+       (tup@7 avUnknown@1
+        (dot@U
+         (at~A
+          (dot~7 f~1 params@1)paramIdx@1)why@1)
+        (dot@s
+         (at~A
+          (dot~7 f~1 params@1)paramIdx@1)at@1))))))
+   (var@4,A i . . . 0@4)
+   (while@,B
+    (infix@8 < i~2
+     (dot@S
+      (dot~8
+       (at~A
+        (dot~7 f~1 params@1)paramIdx@1)touched@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@U ==
+        (at~4
+         (dot~8
+          (at~A
+           (dot~7 f~1 params@1)paramIdx@1)touched@1)i@1)fieldSym@3)
+       (stmts@h
+        (ret
+         (tup@7 avTouched@1 agNone@C ""@K)))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,E result~7
+    (tup@2 avNeverTouched@1 agNone@H ""@P))))
+ (proc@,7b fieldNeverTouched@5 x . .
+  (params@N
+   (param@1 calleeSym . . SymId@B .)
+   (param@J paramIdx . . int@A .)
+   (param@Y fieldSym . . SymId@A .))bool@q . .
+  (stmts@2,1
+   (comment)
+   (unpackdecl@4,6
+    (call@R fieldVerdict~C calleeSym@1 paramIdx@C fieldSym@M)
+    (unpacktup
+     (let v@1 . . ..)
+     (let why@4 . . ..)
+     (let at@9 . . ..)))
+   (case@,7 v@5
+    (of@,1
+     (ranges avNeverTouched@3)
+     (stmts@2,1
+      (cmd bump cAnGranted@5)
+      (asgn@7,1 result~7 true@2)))
+    (of@,4
+     (ranges avTouched@3)
+     (stmts@2,1
+      (cmd bump cAnTouched@5)
+      (call@B,1 declineNote~B dsAnalysis@1 "callee names the field \28a property of the CALLEE\29"@D)
+      (asgn@7,2 result~7 false@2)))
+    (of@,8
+     (ranges avUnknown@3)
+     (stmts@2,1
+      (call@A bumpGiveUp~A why@1 at@6)
+      (var@4,1 msg . . .
+       (infix@T & "derefan cannot see\3A "~N
+        (call@C giveUpName~A why@1)))
+      (if@,2
+       (elif@3
+        (infix@7 >
+         (dot~5 at~2 len@1)0@2)
+        (stmts@C
+         (cmd@3
+          (dot msg~3 add@1)
+          (infix@C & " at "~7 at@2)))))
+      (cmd@3,3
+       (dot msg~3 add@1)" \28a property of the ANALYSIS, not of the callee\29"@5)
+      (call@B,4 declineNote~B dsAnalysis@1 msg@D)
+      (asgn@7,5 result~7 false@2)))))))

@@ -1,0 +1,672 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/crossing.nim
+ (comment)
+ (pragmas@,i
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,k
+  (infix@A / std~3 envvars@1))
+ (import@,l
+  (prefix@7 \2E/ values@2))
+ (import@,m
+  (prefix@7 \2E/ natives@2))
+ (import@,n
+  (prefix@7 \2E/ runtime@2))
+ (type@E,u CrossRoute~C x . .
+  (enum@2 .
+   (efld~C,3 crNone . . . .)
+   (efld~C,4 crHostNative . . . .)
+   (efld~C,5 crSyscall . . . .)
+   (efld~C,6 crHybridNative . . . .)
+   (efld~C,7 crInterpret . . . .)))
+ (proc@,13 routeName@5 x . .
+  (params@F
+   (param@1 r . . CrossRoute@3 .))string@H . .
+  (stmts@2,1
+   (case r@5
+    (of@,1
+     (ranges crNone@3)
+     (stmts@B "none"))
+    (of@,2
+     (ranges crHostNative@3)
+     (stmts@H "host-native"))
+    (of@,3
+     (ranges crSyscall@3)
+     (stmts@E "syscall"))
+    (of@,4
+     (ranges crHybridNative@3)
+     (stmts@J "hybrid-native"))
+    (of@,5
+     (ranges crInterpret@3)
+     (stmts@G "interpret")))))
+ (type@G,1G CrossOutcome~E x . .
+  (object@2 .
+   (fld~E,5 handled . . bool@9 .)
+   (fld~E,6 v . . Value@3 .)
+   (fld~E,7 route . . CrossRoute@7 .)
+   (fld~E,8 detail . . string@8 .)))
+ (var@K,1Q xUnnamedDeclines~G x . . 0@4)
+ (var@H,1f xUnnamedRoute~D x . . 0@4)
+ (var@H,1i xUnnamedCross~D x . . 0@4)
+ (var@I,1k xUnnamedCensus~E x . . 0@4)
+ (proc@,1o crossOk@5 x . .
+  (params@D
+   (param@1 v . . Value@3 .)
+   (param@B route . . CrossRoute@7 .)
+   (param@U detail . . string@8 .))CrossOutcome@l . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@G or
+      (infix~A == route~6 crNone@3)
+      (infix@E ==
+       (dot~5 detail~6 len@1)0@3))
+     (stmts~1,1
+      (cmd inc xUnnamedDeclines@4)
+      (cmd@,1 inc xUnnamedRoute@4)
+      (ret@,2
+       (oconstr@J CrossOutcome~C
+        (kv@8 handled~7 false@2)
+        (kv@I v~1
+         (call@6 vNil~4))
+        (kv@X route~5 crNone@2)
+        (kv@7,1 detail~6 "provider produced no route"@2))))))
+   (asgn@7,7 result~7
+    (oconstr@E CrossOutcome~C
+     (kv@8 handled~7 true@2)
+     (kv@H v~1 v@2)
+     (kv@R route~5 route@2)
+     (kv@g detail~6 detail@2)))))
+ (proc@,1y crossDecline@5 x . .
+  (params@I
+   (param@1 route . . CrossRoute@7 .)
+   (param@K reason . . string@8 .))CrossOutcome@b . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@B ==
+      (dot~5 reason~6 len@1)0@3)
+     (stmts~1,1
+      (cmd inc xUnnamedDeclines@4)
+      (cmd@,1 inc xUnnamedCross@4)
+      (ret@,2
+       (oconstr@J CrossOutcome~C
+        (kv@8 handled~7 false@2)
+        (kv@I v~1
+         (call@6 vNil~4))
+        (kv@X route~5 route@2)
+        (kv@7,1 detail~6 "<unnamed decline>"@2))))))
+   (asgn@7,7 result~7
+    (oconstr@E CrossOutcome~C
+     (kv@8 handled~7 false@2)
+     (kv@I v~1
+      (call@6 vNil~4))
+     (kv@X route~5 route@2)
+     (kv@m detail~6 reason@2)))))
+ (proc@,28 take@5 x . .
+  (params@A
+   (param@1 o . . CrossOutcome@3 .)
+   (param@I v . .
+    (mut@3 Value@4).))bool@X . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (dot@1 o~1 handled@1)
+     (stmts~1,1
+      (asgn@2 v~2
+       (dot@3 o~1 v@1))
+      (ret@,1 true@7))))
+   (asgn@7,5 result~7 false@2)))
+ (proc@,2G crossed@5 x . .
+  (params@D
+   (param@1 o . . CrossOutcome@3 .))bool@J . .
+  (stmts@d
+   (dot@1 o~1 handled@1)))
+ (proc@,2H routeOf@5 x . .
+  (params@D
+   (param@1 o . . CrossOutcome@3 .))CrossRoute@J . .
+  (stmts@j
+   (dot@1 o~1 route@1)))
+ (proc@,2I detailOf@5 x . .
+  (params@E
+   (param@1 o . . CrossOutcome@3 .))string@J . .
+  (stmts@g
+   (dot@1 o~1 detail@1)))
+ (type@G,2h DeclineStage~E x . .
+  (enum@2 .
+   (efld~E,1 dsCensus . . . .)
+   (efld~E,2 dsMarshal . . . .)
+   (efld~E,3 dsCallee . . . .)
+   (efld~E,4 dsArena . . . .)
+   (efld~E,5 dsAnalysis . . . .)
+   (efld~E,B dsJit . . . .)
+   (efld~E,C dsBuild . . . .)))
+ (proc@,2v stageName@5 x . .
+  (params@F
+   (param@1 s . . DeclineStage@3 .))string@J . .
+  (stmts@2,1
+   (case s@5
+    (of@,1
+     (ranges dsCensus@3)
+     (stmts@D "census"))
+    (of@,2
+     (ranges dsMarshal@3)
+     (stmts@E "marshal"))
+    (of@,3
+     (ranges dsCallee@3)
+     (stmts@D "callee"))
+    (of@,4
+     (ranges dsArena@3)
+     (stmts@C "arena"))
+    (of@,5
+     (ranges dsAnalysis@3)
+     (stmts@F "analysis"))
+    (of@,6
+     (ranges dsJit@3)
+     (stmts@A "jit"))
+    (of@,7
+     (ranges dsBuild@3)
+     (stmts@C "build")))))
+ (var@4,35 gChainCallee . . . ""@F)
+ (var@4,36 gChainStages . .
+  (at@H seq~3 DeclineStage@1)
+  (prefix@Y \40
+   (bracket@1)))
+ (var@4,37 gChainReasons . .
+  (at@I seq~3 string@1)
+  (prefix@T \40
+   (bracket@1)))
+ (proc@,39 declineBegin@5 x . .
+  (params@I
+   (param@1 callee . . string@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@D,1 gChainCallee~D callee@2)
+   (asgn@D,2 gChainStages~D
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@E,3 gChainReasons~E
+    (prefix@2 \40
+     (bracket@1)))))
+ (proc@,3F declineNote@5 x . .
+  (params@H
+   (param@1 stage . . DeclineStage@7 .)
+   (param@M reason . . string@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@B ==
+      (dot~5 reason~6 len@1)0@3)
+     (stmts~1,1
+      (cmd inc xUnnamedDeclines@4)
+      (cmd@,1 inc xUnnamedCensus@4)
+      (cmd@C,2
+       (dot gChainStages~C add@1)stage@5)
+      (cmd@D,3
+       (dot gChainReasons~D add@1)"<unnamed decline>"@5)
+      (ret@,4 .))))
+   (cmd@C,8
+    (dot gChainStages~C add@1)stage@5)
+   (cmd@D,9
+    (dot gChainReasons~D add@1)reason@5)))
+ (proc@,3R declineDepth@5 x . .
+  (params@I)int@4 . .
+  (stmts@S
+   (dot@C gChainStages~C len@1)))
+ (proc@,3T blockerReason@5 x . .
+  (params@J)string@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@I ==
+      (dot~5 gChainReasons~D len@1)0@3)
+     (stmts@O
+      (ret ""@7))))
+   (asgn@7,3 result~7
+    (at@F gChainReasons~D
+     (infix@J \2D
+      (dot~5 gChainReasons~D len@1)1@2)))))
+ (proc@,3Z blockerStage@5 x . .
+  (params@I)DeclineStage@4 . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@H ==
+      (dot~5 gChainStages~C len@1)0@3)
+     (stmts@N
+      (ret dsCensus@7))))
+   (asgn@7,1 result~7
+    (at@E gChainStages~C
+     (infix@I \2D
+      (dot~5 gChainStages~C len@1)1@2)))))
+ (proc@,3d declineChain@5 x . .
+  (params@I)string@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@I ==
+      (dot~5 gChainReasons~D len@1)0@3)
+     (stmts@O
+      (ret ""@7))))
+   (asgn@7,4 result~7
+    (infix@F & gChainCallee~D "\3A "@2))
+   (var@4,5 i . . . 0@4)
+   (while@,6
+    (infix@8 < i~2
+     (dot@F gChainReasons~D len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@6
+         (dot result~6 add@1)" -> "@5))))
+     (cmd@6,1
+      (dot result~6 add@1)
+      (infix@c &
+       (infix~6 &
+        (call~I stageName~9
+         (at@D gChainStages~C i@1))"\3A"@2)
+       (at@F gChainReasons~D i@1)))
+     (cmd@,2 inc i@4)))
+   (cmd@6,A
+    (dot result~6 add@1)
+    (infix@q &
+     (infix~S & "   <== BLOCKER \28"~J
+      (call@B stageName~9
+       (call@D blockerStage~C)))"\29"@2))))
+ (type@G,40 RouteCounter~E x . .
+  (distinct@2 int@9))
+ (var@4,42 gCountNames . .
+  (at@G seq~3 string@1)
+  (prefix@R \40
+   (bracket@1)))
+ (var@4,43 gCounts . .
+  (at@C seq~3 int@1)
+  (prefix@K \40
+   (bracket@1)))
+ (var@4,44 gItems . .
+  (at@B seq~3 string@1)
+  (prefix@M \40
+   (bracket@1)))
+ (proc@,46 newRouteCounter@5 x . .
+  (params@L
+   (param@1 name . . string@6 .))RouteCounter@G . .
+  (stmts@2,1
+   (cmd@B
+    (dot gCountNames~B add@1)name@5)
+   (cmd@7,1
+    (dot gCounts~7 add@1)0@5)
+   (cmd@6,2
+    (dot gItems~6 add@1)""@5)
+   (asgn@7,3 result~7
+    (call@E RouteCounter~C
+     (infix@H \2D
+      (dot~5 gCountNames~B len@1)1@2)))))
+ (proc@,4C bump@5 x . .
+  (params@A
+   (param@1 c . . RouteCounter@3 .)
+   (param@I by . . . 1@5)). . .
+  (stmts@2,1
+   (asgn@G
+    (at~9 gCounts~7
+     (call@4 int~3 c@1))
+    (infix@I \2B
+     (at~9 gCounts~7
+      (call@4 int~3 c@1))by@2))))
+ (proc@,4F countOf@5 x . .
+  (params@D
+   (param@1 c . . RouteCounter@3 .))int@J . .
+  (stmts@c
+   (at@7 gCounts~7
+    (call@4 int~3 c@1))))
+ (proc@,4H noteItem@5 x . .
+  (params@E
+   (param@1 c . . RouteCounter@3 .)
+   (param@I item . . string@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 cur . . .
+    (at@C gItems~6
+     (call@4 int~3 c@1)))
+   (var@4,3 seen . . . false@7)
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@J <=
+     (infix~B \2B i~2
+      (dot@6 item~4 len@1))
+     (dot@6 cur~3 len@1))
+    (stmts@2,1
+     (var@4 k . . . 0@4)
+     (while@,1
+      (infix@J and
+       (infix~B < k~2
+        (dot@6 item~4 len@1))
+       (infix@F ==
+        (at~8 cur~3
+         (infix@3 \2B i~2 k@2))
+        (at@7 item~4 k@1)))
+      (stmts@k
+       (cmd inc k@4)))
+     (if@,2
+      (elif@3
+       (infix@2 == k~2
+        (dot@7 item~4 len@1))
+       (stmts@F
+        (asgn@5 seen~5 true@2)
+        (break@D .))))
+     (cmd@,3 inc i@4)))
+   (if@,A
+    (elif@3
+     (infix@9 and
+      (prefix~9 not seen@4)
+      (infix@C <
+       (dot~5 cur~3 len@1)200@2))
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@8 >
+         (dot~5 cur~3 len@1)0@2)
+        (stmts@D
+         (cmd@3
+          (dot cur~3 add@1)","@5))))
+      (cmd@3,1
+       (dot cur~3 add@1)item@5)
+      (asgn@F,2
+       (at~9 gItems~6
+        (call@4 int~3 c@1))cur@2))))))
+ (proc@,4X itemsOf@5 x . .
+  (params@D
+   (param@1 c . . RouteCounter@3 .))string@J . .
+  (stmts@f
+   (at@6 gItems~6
+    (call@4 int~3 c@1))))
+ (type@G,4e NativeRunner~E x . .
+  (proctype@7 ....
+   (params
+    (param@1 sink . . OutSink@6 .)
+    (param@G name . . string@6 .)
+    (param@U args . .
+     (at@9 seq~3 Value@1).))Value@n
+   (pragmas@t nimcall@2)..))
+ (type@H,4f RouteReporter~F x . .
+  (proctype@7 ....
+   (params
+    (param@1 base . . string@6 .))CrossRoute@G
+   (pragmas@R nimcall@2)..))
+ (type@I,4g ArtifactAttest~G x . .
+  (proctype@7 ....
+   (params
+    (param@1 p . . XProvider@3 .))bool@G
+   (pragmas@L nimcall@2)..))
+ (type@D,4i XProvider~B x . .
+  (ref@2
+   (object@4 .
+    (fld~B,5 name~4 x . string@3 .)
+    (fld~F,6 run . . NativeRunner@5 .)
+    (fld~F,7 route . . RouteReporter@7 .)
+    (fld~F,8 attest . . ArtifactAttest@8 .)
+    (fld~7,9 artifact~8 x . string@3 .)
+    (fld~F,A attested . . bool@A .)
+    (fld~F,B attestRun . . bool@B .))))
+ (proc@,4v xNoArtifact@5 x . .
+  (params@H
+   (param@1 p . . XProvider@3 .))bool@G . .
+  (stmts@e true))
+ (proc@,4z newXProvider@5 x . .
+  (params@I
+   (param@1 name . . string@6 .)
+   (param@F run . . NativeRunner@5 .)
+   (param@Y route . . RouteReporter@7 .)
+   (param@1,1 attest . . ArtifactAttest@8 .)
+   (param@P,1 artifact . . string@A .))XProvider@i,1 . .
+  (stmts@2,2
+   (comment)
+   (oconstr@9,5 XProvider~9
+    (kv@5 name~4 name@2)
+    (kv@G run~3 run@2)
+    (kv@S route~5 route@2)
+    (kv@h attest~6 attest@2)
+    (kv@9,1 artifact~8 artifact@2)
+    (kv@T,1 attested~8 false@2)
+    (kv@l,1 attestRun~9 false@2))))
+ (var@I,59 cGrantsRevoked~E x . .
+  (call@J newRouteCounter~F "attest.revoked"@1))
+ (proc@,5B grantsHonoured@5 x . .
+  (params@K
+   (param@1 p . . XProvider@3 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (if@,D
+    (elif@3
+     (infix@9 or
+      (infix~7 == p~2
+       (nil@3))
+      (infix@C ==
+       (dot~8 p~1 attest@1)
+       (nil@3)))
+     (stmts@T
+      (ret false@7))))
+   (if@,E
+    (elif@3
+     (prefix not
+      (dot@5 p~1 attestRun@1))
+     (stmts~1,1
+      (asgn@C
+       (dot~B p~1 attestRun@1)true@2)
+      (asgn@B,1
+       (dot~A p~1 attested@1)
+       (call@A
+        (dot~7 p~1 attest@1)p@1))
+      (if@,2
+       (elif@3
+        (prefix not
+         (dot@5 p~1 attested@1))
+        (stmts@G
+         (cmd bump cGrantsRevoked@5)))))))
+   (asgn@7,I result~7
+    (dot@3 p~1 attested@1))))
+ (proc@,5a isSyscallBase@5 x . .
+  (params@J
+   (param@1 base . . string@6 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (case@,4 base@5
+    (of@,1
+     (ranges "read"@3 "write"@B "readLine"@K "readChar"@W "readBuffer"@i "writeBuffer"@w "readAll"@3,1 "readFile"@E,1 "writeFile"@Q,1 "open"@d,1 "close"@l,1 "reopen"@u,1 "getFileSize"@3,2 "setFilePos"@I,2 "getFilePos"@W,2 "flushFile"@k,2 "endOfFile"@x,2 "getFileHandle"@3,3 "readBytes"@K,3 "writeBytes"@X,3 "writeLine"@l,3)
+     (stmts@2,4
+      (asgn@7 result~7 true@2)))
+    (else@,6
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,5o nativeRoute@5 . . .
+  (params@G
+   (param@1 base . . string@6 .))CrossRoute@G . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@D isSyscallBase~D base@1)
+     (stmts@L crSyscall))
+    (else@Y
+     (stmts@6 crHostNative)))))
+ (var@4,5r gHostNative . . XProvider@D
+  (nil@P))
+ (var@4,5s gSyscall . . XProvider@A
+  (nil@M))
+ (proc@,5u nativeSpine@5 x . .
+  (params@H)XProvider@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@C == gHostNative~C
+      (nil@3))
+     (stmts~1,1
+      (asgn@C gHostNative~C
+       (call@E newXProvider~C "host-native"@1 nativeCall@G nativeRoute@S xNoArtifact@f ""@s)))))
+   (asgn@7,6 result~7 gHostNative@2)))
+ (proc@,63 syscallSpine@5 x . .
+  (params@I)XProvider@4 . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 == gSyscall~9
+      (nil@3))
+     (stmts~1,1
+      (asgn@9 gSyscall~9
+       (call@E newXProvider~C "syscall"@1 nativeCall@C nativeRoute@O xNoArtifact@b ""@o)))))
+   (asgn@7,2 result~7 gSyscall@2)))
+ (var@E,68 xHostCalls~A x . . 0@4)
+ (var@H,69 xSyscallCalls~D x . . 0@4)
+ (var@H,6A xNoopDeclines~D x . . 0@4)
+ (proc@,6C runNativeSpine@5 . . .
+  (params@J
+   (param@1 sink . . OutSink@6 .)
+   (param@G base . . string@6 .)
+   (param@U args . .
+    (at@9 seq~3 Value@1).)
+   (param@1,1 route . .
+    (mut@7 CrossRoute@4).)
+   (param@O,1 noopDeclined . .
+    (mut@E bool@4).))Value@n,1 . .
+  (stmts@2,2
+   (comment)
+   (asgn@6,I route~6
+    (call@D nativeRoute~B base@1))
+   (asgn@D,J noopDeclined~D false@2)
+   (let@4,K p . . .
+    (if@4
+     (elif@3
+      (infix@6 == route~6 crSyscall@3)
+      (stmts@K
+       (call@C syscallSpine~C)))
+     (else@c
+      (stmts@6
+       (call@B nativeSpine~B)))))
+   (let@4,L before . . . noopHits@9)
+   (asgn@7,M result~7
+    (call@7
+     (dot~4 p~1 run@1)sink@1 base@7 args@D))
+   (if@,N
+    (elif@3
+     (infix@9 > noopHits~9 before@2)
+     (stmts~1,1
+      (cmd inc xNoopDeclines@4)
+      (asgn@D,1 noopDeclined~D true@2)
+      (ret@,2
+       (call@B vNil~4)))))
+   (if@,R
+    (elif@3
+     (infix@6 == route~6 crSyscall@3)
+     (stmts@K
+      (cmd inc xSyscallCalls@4)))
+    (else@f
+     (stmts@6
+      (cmd inc xHostCalls@4))))))
+ (proc@,6h crossNative@5 x . .
+  (params@H
+   (param@1 sink . . OutSink@6 .)
+   (param@G base . . string@6 .)
+   (param@U args . .
+    (at@9 seq~3 Value@1).))CrossOutcome@n . .
+  (stmts@2,1
+   (comment)
+   (var@4,9 r . . . crNone@4)
+   (var@4,A noopDeclined . . . false@F)
+   (let@4,B v . . .
+    (call@I runNativeSpine~E sink@1 base@7 args@D r@J noopDeclined@M))
+   (if@,C
+    (elif@3 noopDeclined
+     (stmts~1,1
+      (ret
+       (call@J crossDecline~C r@1
+        (infix@Z & "allowlisted unported no-op\3A "~V base@2))))))
+   (asgn@7,E result~7
+    (call@9 crossOk~7 v@1 r@4 base@7))))
+ (proc@,6y crossNativeValue@5 x . .
+  (params@M
+   (param@1 sink . . OutSink@6 .)
+   (param@G base . . string@6 .)
+   (param@U args . .
+    (at@9 seq~3 Value@1).))Value@n . .
+  (stmts@2,1
+   (comment)
+   (var@4,H r . . . crNone@4)
+   (var@4,I noopDeclined . . . false@F)
+   (let@4,J v . . .
+    (call@I runNativeSpine~E sink@1 base@7 args@D r@J noopDeclined@M))
+   (if@,K
+    (elif@3 noopDeclined
+     (stmts@E
+      (ret
+       (call@B vNil~4)))))
+   (if@,L
+    (elif@3
+     (infix@9 ==
+      (dot~5 base~4 len@1)0@3)
+     (stmts~1,2
+      (cmd inc xUnnamedDeclines@4)
+      (cmd@,1 inc xUnnamedRoute@4)
+      (ret@,2
+       (call@B vNil~4)))))
+   (asgn@7,Q result~7 v@2)))
+ (let@C,7R routeLog~8 x . .
+  (infix@X or
+   (infix~7 ==
+    (call~G getEnv~6 "AOWLI_ROUTE"@1)"1"@3)
+   (infix@U ==
+    (call~L getEnv~6 "AOWLI_HYBRID_LOG"@1)"1"@3)))
+ (proc@,7T crossReport@5 x . .
+  (params@H)string@4 . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@M,1 and
+      (infix@e,~1 and
+       (infix~N and
+        (infix~N and
+         (infix~5 == xHostCalls~B 0@3)
+         (infix@I == xSyscallCalls~E 0@3))
+        (infix@I == xNoopDeclines~E 0@3))
+       (infix~j,1 == xUnnamedDeclines~H 0@3))
+      (infix@D == noopHits~9 0@3))
+     (stmts~1,2
+      (ret ""@7))))
+   (asgn@7,7 result~7
+    (infix@E,4 &
+     (infix@A,~1 &
+      (infix~6 &
+       (infix~C &
+        (infix@U,~1 &
+         (infix~H &
+          (infix@C,~1 &
+           (infix~H &
+            (infix@O,~1 &
+             (infix~E & "cross\3A native host="~M
+              (prefix@2 $ xHostCalls@1))" syscall="~a,1)
+            (prefix@2 $ xSyscallCalls@1))" noopDeclined="~T,1)
+          (prefix@2 $ xNoopDeclines@1))"\5B"~Y,1)noopNames@2)"\5D"@2)" unnamed="~M,1)
+     (prefix@2 $ xUnnamedDeclines@1)))
+   (if@,G
+    (elif@3
+     (infix@H > xUnnamedDeclines~H 0@2)
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)
+       (infix@Y,2 &
+        (infix~I &
+         (infix@G,~1 &
+          (infix~H &
+           (infix@H,~1 &
+            (infix~H & "\5Broute="~A
+             (prefix@2 $ xUnnamedRoute@1))" cross="~R,1)
+           (prefix@2 $ xUnnamedCross@1))" census="~R,1)
+         (prefix@2 $ xUnnamedCensus@1))"\5D"@2))))))))

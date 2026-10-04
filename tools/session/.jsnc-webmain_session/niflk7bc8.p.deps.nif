@@ -1,0 +1,22 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket os sets strutils)))
+ (import
+  (when
+   (call defined nimony))
+  (infix / std syncio))
+ (import
+  (when
+   (prefix not
+    (call defined nimony)))
+  (infix / std sequtils))
+ (import
+  (infix /
+   (infix / ".." lib)platform))
+ (include
+  (infix /
+   (infix / ".." lib)nifprelude)))

@@ -1,0 +1,146 @@
+(.nif27)
+(.indexat 4511             )
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/monotimes.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv pososrh1q1 "../../../../../../home/savant/nimony/lib/std/posix/posix.nim"))
+ (stmts@2,3N,../../../../../../home/savant/nimony/lib/std/system.nim
+  (discard "ignore runnable examples"@8))
+ (type@C,W :MonoTime.0.~A x .
+  (pragmas)
+  (object@2 .
+   (fld~A,1 :ticks.0 . .
+    (i@7 64).)))
+ (stmts@2,15)
+ (proc@,1H :getMonoTime.0.@5 x . .
+  (params@H)MonoTime.0.@4
+  (pragmas@U
+   (tags@2
+    (bracket@6 TimeEffect@1))).
+  (stmts@2,1
+   (result :result.0 . . MonoTime.0.@2,~1 .)
+   (stmts@2,J
+    (var@4 :ts.0 . . Timespec.0.pososrh1q1@4
+     (oconstr@M Timespec.0.pososrh1q1~I
+      (kv tv_sec.0
+       (dconv Time.0.pososrh1q1@S,k,../../../../../../home/savant/nimony/lib/std/posix/posix_other.nim
+        (expr@l,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+         (suf 0 "i32"))))
+      (kv tv_nsec.0
+       (expr@l,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+        (suf 0 "i32")))))
+    (let@4,1 :monotonic.0 . .
+     (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+      (importc "int"))CLOCK_MONOTONIC.0.pososrh1q1@C)
+    (discard@,2
+     (call@L clock_gettime.0.pososrh1q1~D monotonic.0@1
+      (haddr@C ts.0)))
+    (asgn@7,3 result.0~7
+     (oconstr@A MonoTime.0.~H,~N
+      (kv@6 ticks.0~5
+       (add@Y
+        (i 64)
+        (mul~G
+         (i 64)
+         (conv~7
+          (i@1 64)
+          (dot~7 ts.0~2 tv_sec.0 0))
+         (hconv@2
+          (i@G,x,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1000000000))
+        (conv~j,1
+         (i@N,~1 64)
+         (dot~8 ts.0~2 tv_nsec.0 0)))))))
+   (ret~2,~1 result.0)))
+ (func@,1p :ticks.0.@5 x . .
+  (params@B
+   (param@1 :t.0 . . MonoTime.0.@3 .))
+  (i@F 64). .
+  (stmts@2,1
+   (result :result.1 . .
+    (i@9,~1J 64).)
+   (asgn@1,2 result.1
+    (dot t.0~1 ticks.0 0 "x"))
+   (ret~2,~1 result.1)))
+ (func@,1u :$.0.@5 x . .
+  (params@9
+   (param@1 :t.1 . . MonoTime.0.@3 .))string.0.sysvq0asl@F . .
+  (stmts@2,1
+   (result :result.2 . . string.0.sysvq0asl@D,~1 .)
+   (asgn result.2
+    (prefix $.1.sysvq0asl
+     (dot@2 t.1~1 ticks.0 0 "x")))
+   (ret~2,~1 result.2)))
+ (func@,29 :<.0.@5 x . .
+  (params@9
+   (param@1 :a.0 . . MonoTime.0.@6 .)
+   (param@4 :b.0 . . MonoTime.0.@3 .))
+  (bool@I). .
+  (stmts@2,1
+   (result :result.3 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (asgn@8,1 result.3
+    (lt
+     (i 64)
+     (dot~7 a.0~1 ticks.0 0 "x")
+     (dot@3 b.0~1 ticks.0 0 "x")))
+   (ret~2,~1 result.3)))
+ (func@,2D :<=.0.@5 x . .
+  (params@A
+   (param@1 :a.1 . . MonoTime.0.@6 .)
+   (param@4 :b.1 . . MonoTime.0.@3 .))
+  (bool@I). .
+  (stmts@2,1
+   (result :result.4 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (asgn@8,1 result.4
+    (le
+     (i 64)
+     (dot~7 a.1~1 ticks.0 0 "x")
+     (dot@4 b.1~1 ticks.0 0 "x")))
+   (ret~2,~1 result.4)))
+ (func@,2H :==.0.@5 x . .
+  (params@A
+   (param@1 :a.2 . . MonoTime.0.@6 .)
+   (param@4 :b.2 . . MonoTime.0.@3 .))
+  (bool@I). .
+  (stmts@2,1
+   (result :result.5 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (asgn@8,1 result.5
+    (eq
+     (i 64)
+     (dot~7 a.2~1 ticks.0 0 "x")
+     (dot@4 b.2~1 ticks.0 0 "x")))
+   (ret~2,~1 result.5)))
+ (func@,2L :high.0.@5 x . .
+  (params@A
+   (param@1 :typ.0 . .
+    (typedesc@D MonoTime.0.@1).))MonoTime.0.@R . .
+  (stmts@2,1
+   (result :result.6 . . MonoTime.0.@2,~15 .)
+   (asgn@8,1 result.6
+    (oconstr MonoTime.0.~6,~16
+     (kv@6 ticks.0~5
+      (suf@6 9223372036854775807 "i64"))))
+   (ret~2,~1 result.6)))
+ (func@,2P :low.0.@5 x . .
+  (params@9
+   (param@1 :typ.1 . .
+    (typedesc@D MonoTime.0.@1).))MonoTime.0.@R . .
+  (stmts@2,1
+   (result :result.7 . . MonoTime.0.@2,~19 .)
+   (asgn@8,1 result.7
+    (oconstr MonoTime.0.~6,~1A
+     (kv@6 ticks.0~5
+      (suf@5 -9223372036854775808 "i64"))))
+   (ret~2,~1 result.7)))
+ (comment@B,X int64.0.sysvq0asl int64.0.sysvq0asl@4,1I bool.0.sysvq0asl@7,1c bool.0.sysvq0asl@7,1g bool.0.sysvq0asl@7,1k typedesc.0.sysvq0asl@5,1o typedesc.0.sysvq0asl@4,1s runnableExamples.0.sysvq0asl~B,~Q default.7.sysvq0asl@J,14 default.7.sysvq0asl@J,14 int64.0.sysvq0asl@S,17 int64.0.sysvq0asl@6,18 int64.0.sysvq0asl@C,1q int64.0.sysvq0asl@C,1q int64.0.sysvq0asl@B,1u int64.0.sysvq0asl@B,1u))(.index@,A,../../../../../../home/savant/nimony/lib/std/monotimes.nim
+ (x MonoTime.0. 383)
+ (x getMonoTime.0. 112)
+ (x ticks.0. 1328)
+ (x $.0. 229)
+ (x <.0. 269)
+ (x <=.0. 387)
+ (x ==.0. 388)
+ (x high.0. 388)
+ (x low.0. 315))

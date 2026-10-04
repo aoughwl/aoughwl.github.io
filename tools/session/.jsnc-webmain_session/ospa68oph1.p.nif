@@ -1,0 +1,2394 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/osproc.nim
+ (comment)
+ (pragmas@,C
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,E
+  (infix@A / std~3
+   (bracket@1 strutils@1 os@B strtabs@F streams@O cpuinfo@X syncio@g oserrors@o envvars@1,1 monotimes@A,1 times@L,1 assertions@S,1)))
+ (export@,H quoteShell@7 quoteShellWindows@J quoteShellPosix@c)
+ (when@,J
+  (elif@5
+   (call@7 defined~7 windows@1)
+   (stmts~3,1
+    (import
+     (infix@I /
+      (infix~8 / std~3 windows@1)winlean@1))
+    (import@,1
+     (infix@A / std~3 widestrs@1))
+    (type@H,2 FileHandle~C x . . Handle@2)))
+  (else@,8
+   (stmts@2,1
+    (import
+     (infix@G /
+      (infix~6 / std~3 posix@1)posix@1))
+    (type@H,1 FileHandle~C x . . cint@2))))
+ (type@H,X ProcessOption~F x . .
+  (enum@2 .
+   (efld~F,1 poEchoCmd . . . .)
+   (efld~F,2 poUsePath . . . .)
+   (efld~F,4 poEvalCommand . . . .)
+   (efld~F,7 poStdErrToStdOut . . . .)
+   (efld~F,8 poParentStreams . . . .)
+   (efld~F,9 poInteractive . . . .)
+   (efld~F,D poDaemon . . . .)))
+ (type@D,o ProcessObj~B . . .
+  (object@2 RootObj@A
+   (when~B,1
+    (elif@5
+     (call@7 defined~7 windows@1)
+     (stmts~3,1
+      (fld fProcessHandle . . Handle@G .)
+      (fld@,1 fThreadHandle . . Handle@F .)
+      (fld@,2 inHandle . . FileHandle@W .)
+      (fld@A,2 outHandle . . FileHandle@M .)
+      (fld@L,2 errHandle . . FileHandle@B .)
+      (fld@,3 id . . Handle@4 .)))
+    (else@,5
+     (stmts@2,1
+      (fld inHandle . . FileHandle@W .)
+      (fld@A outHandle . . FileHandle@M .)
+      (fld@L errHandle . . FileHandle@B .)
+      (fld@,1 id . . Pid@4 .))))
+   (fld~B,9 inStream . . Stream@W .)
+   (fld~1,9 outStream . . Stream@M .)
+   (fld@A,9 errStream . . Stream@B .)
+   (fld~B,A exitStatus . . cint@C .)
+   (fld~B,B exitFlag . . bool@A .)
+   (fld~B,C options . .
+    (at@C set~3 ProcessOption@1).)))
+ (type@B,12 Process~9 x . .
+  (ref@2 ProcessObj@4))
+ (proc@,19 processID@5 x . .
+  (params@F
+   (param@1 p . . Process@3 .))int@E
+  (pragmas@X inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@5 int~3
+     (dot@2 p~1 id@1)))))
+ (proc@,1D inputHandle@5 x . .
+  (params@H
+   (param@1 p . . Process@3 .))FileHandle@E
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (dot@3 p~1 inHandle@1))))
+ (proc@,1H outputHandle@5 x . .
+  (params@I
+   (param@1 p . . Process@3 .))FileHandle@E
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (dot@3 p~1 outHandle@1))))
+ (proc@,1L errorHandle@5 x . .
+  (params@H
+   (param@1 p . . Process@3 .))FileHandle@E
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (dot@3 p~1 errHandle@1))))
+ (proc@,1P countProcessorsAvailable@5 . . .
+  (params@T)int@4
+  (pragmas@b inline@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@P
+     (dot~G cpuinfo~7 countProcessors@1)))))
+ (template@,1X streamAccess@9 . . .
+  (params@L
+   (param@1 p . . typed@3 .)).
+  (pragmas@W untyped@2).
+  (stmts@2,1
+   (cmd assert
+    (infix@N notin poParentStreams~G
+     (dot@7 p~1 options@1))"API usage error\3A stream access not allowed when you use poParentStreams"@2,1)))
+ (proc@,1b joinArgs@5 . . .
+  (params@D
+   (param@1 args . .
+    (at@F openArray~9 string@1).)
+   (param@Q sep . . string@5 .))string@e . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (for@4,1
+    (infix@7 \2E\2E< 0~2
+     (dot@8 args~4 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (cmd@6
+         (dot result~6 add@1)sep@5))))
+     (cmd@6,1
+      (dot result~6 add@1)
+      (at@9 args~4 i@1))))))
+ (when@,1l
+  (elif@5
+   (prefix not
+    (call@B defined~7 windows@1))
+   (stmts~3,1
+    (type@F,1 cstringArray~D . . .
+     (infix@6 ptr
+      (nil~4)
+      (at@I UncheckedArray~E cstring@1)))
+    (const@2,4 readIdx . . . 0@A)
+    (const@2,5 writeIdx . . . 1@B)
+    (proc@,7 isExitStatus@5 . . .
+     (params@H
+      (param@1 status . . cint@8 .))bool@G . .
+     (stmts@2,1
+      (infix@I or
+       (call~9 WIFEXITED~9 status@1)
+       (call@E WIFSIGNALED~B status@1))))
+    (proc@,A allocCStringArray@5 . . .
+     (params@M
+      (param@1 s . .
+       (at@C openArray~9 string@1).))cstringArray@O . .
+     (stmts@2,1
+      (let@4 n . . .
+       (dot@5 s~1 len@1))
+      (asgn@7,1 result~7
+       (cast@2 cstringArray@5
+        (call@P alloc0~6
+         (infix@9 *
+          (par~8
+           (infix@3 \2B n~2 1@2))
+          (call@8 sizeof~6 cstring@1)))))
+      (for@4,2
+       (infix@7 \2E\2E< 0~2 n@4)
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (var@4 item . . .
+         (at@8 s~1 i@1))
+        (let@4,1 l . . .
+         (dot@8 item~4 len@1))
+        (let@4,2 buf . . .
+         (cast@6 cstring@5
+          (call@J alloc~5
+           (infix@3 \2B l~2 1@2))))
+        (if@,3
+         (elif@3
+          (infix@2 > l~2 0@2)
+          (stmts~1,1
+           (call@7 copyMem~7 buf@1
+            (dot@A item~4 toCString@1)l@M))))
+        (asgn@i,5
+         (at~3
+          (cast~f
+           (ptr@5 char@4)
+           (infix@V \2B
+            (cast~G uint@5 buf@B)
+            (call@6 uint~4 l@1))))'\00'@2)
+        (asgn@A,6
+         (at~4 result~6 i@1)buf@2)))
+      (asgn@A,A
+       (at~4 result~6 n@1)
+       (dot@5
+        (nil~3)cstring@1))))
+    (proc@,N deallocCStringArray@5 . . .
+     (params@O
+      (param@1 a . . cstringArray@3 .)
+      (param@I n . . int@3 .)). . .
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@2 == a~2
+         (nil@3))
+        (stmts@A
+         (ret .))))
+      (for@4,1
+       (infix@7 \2E\2E< 0~2 n@4)
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@5 !=
+           (at~4 a~1 i@1)
+           (nil@3))
+          (stmts@D
+           (call@7 dealloc~7
+            (cast@1 pointer@5
+             (at@F a~1 i@1))))))))
+      (call@7,3 dealloc~7
+       (cast@1 pointer@5 a@E))))
+    (proc@,T envToCStringArray@5 . . .
+     (params@M
+      (param@1 t . . StringTableRef@3 .))cstringArray@L . .
+     (stmts@2,1
+      (var@4 count . . . 0@8)
+      (for@4,1
+       (call@H pairs~5 t@1)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts@M
+        (cmd inc count@4)))
+      (asgn@7,2 result~7
+       (cast@2 cstringArray@5
+        (call@P alloc0~6
+         (infix@D *
+          (par~C
+           (infix@7 \2B count~6 1@2))
+          (call@8 sizeof~6 cstring@1)))))
+      (var@4,3 i . . . 0@4)
+      (for@4,4
+       (call@H pairs~5 t@1)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts~2,1
+        (var@4 kv . . .
+         (infix@F &
+          (infix~6 & key~4 "="@2)val@2))
+        (let@4,1 l . . .
+         (dot@6 kv~2 len@1))
+        (let@4,2 buf . . .
+         (cast@6 cstring@5
+          (call@J alloc~5
+           (infix@3 \2B l~2 1@2))))
+        (call@7,3 copyMem~7 buf@1
+         (dot@8 kv~2 toCString@1)l@K)
+        (asgn@i,4
+         (at~3
+          (cast~f
+           (ptr@5 char@4)
+           (infix@V \2B
+            (cast~G uint@5 buf@B)
+            (call@6 uint~4 l@1))))'\00'@2)
+        (asgn@A,5
+         (at~4 result~6 i@1)buf@2)
+        (cmd@,6 inc i@4)))
+      (asgn@E,C
+       (at~8 result~6 count@1)
+       (dot@5
+        (nil~3)cstring@1))))
+    (proc@,i envToCStringArray@5 . . .
+     (params@M)cstringArray@4 . .
+     (stmts@2,1
+      (var@4 count . . . 0@8)
+      (for@4,1
+       (call@K envPairs~8)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts@O
+        (cmd inc count@4)))
+      (asgn@7,2 result~7
+       (cast@2 cstringArray@5
+        (call@P alloc0~6
+         (infix@D *
+          (par~C
+           (infix@7 \2B count~6 1@2))
+          (call@8 sizeof~6 cstring@1)))))
+      (var@4,3 i . . . 0@4)
+      (for@4,4
+       (call@K envPairs~8)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts~2,1
+        (var@4 kv . . .
+         (infix@F &
+          (infix~6 & key~4 "="@2)val@2))
+        (let@4,1 l . . .
+         (dot@6 kv~2 len@1))
+        (let@4,2 buf . . .
+         (cast@6 cstring@5
+          (call@J alloc~5
+           (infix@3 \2B l~2 1@2))))
+        (call@7,3 copyMem~7 buf@1
+         (dot@8 kv~2 toCString@1)l@K)
+        (asgn@i,4
+         (at~3
+          (cast~f
+           (ptr@5 char@4)
+           (infix@V \2B
+            (cast~G uint@5 buf@B)
+            (call@6 uint~4 l@1))))'\00'@2)
+        (asgn@A,5
+         (at~4 result~6 i@1)buf@2)
+        (cmd@,6 inc i@4)))
+      (asgn@E,C
+       (at~8 result~6 count@1)
+       (dot@5
+        (nil~3)cstring@1))))
+    (proc@,x countCStringArray@5 . . .
+     (params@M
+      (param@1 a . . cstringArray@3 .))int@J . .
+     (stmts@2,1
+      (asgn@7 result~7 0@2)
+      (if@,1
+       (elif@3
+        (infix@2 == a~2
+         (nil@3))
+        (stmts@A
+         (ret .))))
+      (while@,2
+       (infix@G !=
+        (at~9 a~1 result@1)
+        (nil@3))
+       (stmts@O
+        (cmd inc result@4)))))
+    (proc@,12 startProcess@5 x . .
+     (params@I
+      (param@1 command . . string@9 .)
+      (param@I workingDir . . string@C ""@L)
+      (param@1,1 args . .
+       (at@F openArray~9 string@1)
+       (bracket@Q))
+      (param@1,2 env . .
+       (cmd@9
+        (nil~4)StringTableRef)
+       (nil@Q))
+      (param@1,3 options . .
+       (at@C set~3 ProcessOption@1)
+       (curly@U poStdErrToStdOut@1)))Process~E,4
+     (pragmas@C,4 raises@2
+      (kv@E tags~4
+       (bracket@2 ExecIOEffect@1 ReadEnvEffect@F RootEffect@U))).
+     (stmts@2,5
+      (var@B pStdin~7 .
+       (pragmas noinit@2)
+       (at@H array~5
+        (infix@2 \2E\2E 0~1 1@2)cint@7).)
+      (var@C,1 pStdout~8 .
+       (pragmas noinit@2)
+       (at@H array~5
+        (infix@2 \2E\2E 0~1 1@2)cint@7).)
+      (var@C,2 pStderr~8 .
+       (pragmas noinit@2)
+       (at@H array~5
+        (infix@2 \2E\2E 0~1 1@2)cint@7).)
+      (if@,4
+       (elif@3
+        (infix@G notin poParentStreams~G options@6)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@12 or
+            (infix~Y or
+             (infix~9 !=
+              (call~H pipe~4
+               (cmd@6 addr~5
+                (at@6 pStdin~6 0@1)))
+              (suf@3 0 "i32"))
+             (infix@P !=
+              (call~I pipe~4
+               (cmd@6 addr~5
+                (at@7 pStdout~7 0@1)))
+              (suf@3 0 "i32")))
+            (infix~g,1 !=
+             (call~I pipe~4
+              (cmd@6 addr~5
+               (at@7 pStderr~7 0@1)))
+             (suf@3 0 "i32")))
+           (stmts~1,2
+            (call@C raiseOSError~C
+             (call@C osLastError~B))))))))
+      (var@4,A argsRaw . .
+       (at@C seq~3 string@1).)
+      (var@4,B syscmd . . string@8 .)
+      (if@,C
+       (elif@3
+        (infix@E in poEvalCommand~E options@3)
+        (stmts~1,1
+         (const@6 useShPath . . . "/bin/sh"@C)
+         (asgn@7,1 syscmd~7 useShPath@2)
+         (asgn@8,2 argsRaw~8
+          (prefix@2 \40
+           (bracket@1 useShPath@1 "-c"@C command@I)))
+         (cmd@,3 assert
+          (infix@G ==
+           (dot~5 args~4 len@1)0@3)"`args` has to be empty when using poEvalCommand."@2,1)))
+       (else@,6
+        (stmts@2,1
+         (asgn@7 syscmd~7 command@2)
+         (asgn@8,1 argsRaw~8
+          (prefix@2 \40
+           (bracket@1 command@1)))
+         (for@4,2
+          (dot@9 args~4 items@1)
+          (unpackflat
+           (let a . . ..))
+          (stmts~2,1
+           (cmd@7
+            (dot argsRaw~7 add@1)a@5))))))
+      (let@4,O sysArgs . . .
+       (call@R allocCStringArray~H argsRaw@1))
+      (let@4,P sysEnv . . .
+       (if~2,1
+        (elif@3
+         (infix@4 == env~4
+          (nil@3))
+         (stmts@C
+          (call@H envToCStringArray~H)))
+        (else@,1
+         (stmts@6
+          (call@H envToCStringArray~H env@1)))))
+      (var@4,T pid . . Pid@5
+       (cmd@F Pid~4 0))
+      (when@,U
+       (elif@5
+        (call@7 defined~7 nimNativeIo@1)
+        (stmts~3,2
+         (if
+          (elif@3
+           (infix@A in poEchoCmd~A options@3)
+           (stmts~1,1
+            (cmd echo command@5 " "@E
+             (call@R joinArgs~8 args@1 " "@7)))))
+         (let@4,2 argvC . . .
+          (cast@8 CCharArray@5 sysArgs@H))
+         (let@4,3 envpC . . .
+          (cast@8 CCharArray@5 sysEnv@H))
+         (var@4,4 wd . . . workingDir@5)
+         (asgn@4,5 pid~4
+          (call@6 fork~4))
+         (if@,6
+          (elif@3
+           (infix@4 == pid~4
+            (call@6 Pid~3 0@1))
+           (stmts~1,2
+            (if
+             (elif@3
+              (infix@G notin poParentStreams~G options@6)
+              (stmts~1,1
+               (discard
+                (call@C dup2~4
+                 (at@7 pStdin~6 readIdx@1)
+                 (suf@I 0 "i32")))
+               (discard@,1
+                (call@C dup2~4
+                 (at@8 pStdout~7 writeIdx@1)
+                 (suf@K 1 "i32")))
+               (if@,2
+                (elif@3
+                 (infix@H in poStdErrToStdOut~H options@3)
+                 (stmts~1,1
+                  (discard
+                   (call@C dup2~4
+                    (at@8 pStdout~7 writeIdx@1)
+                    (suf@K 2 "i32")))))
+                (else@,2
+                 (stmts@2,1
+                  (discard
+                   (call@C dup2~4
+                    (at@8 pStderr~7 writeIdx@1)
+                    (suf@K 2 "i32"))))))
+               (discard@,6
+                (call@D close~5
+                 (at@7 pStdin~6 readIdx@1)))
+               (discard@W,6
+                (call@D close~5
+                 (at@7 pStdin~6 writeIdx@1)))
+               (discard@,7
+                (call@D close~5
+                 (at@8 pStdout~7 readIdx@1)))
+               (discard@X,7
+                (call@D close~5
+                 (at@8 pStdout~7 writeIdx@1)))
+               (discard@,8
+                (call@D close~5
+                 (at@8 pStderr~7 readIdx@1)))
+               (discard@X,8
+                (call@D close~5
+                 (at@8 pStderr~7 writeIdx@1))))))
+            (if@,A
+             (elif@3
+              (infix@9 in poDaemon~9 options@3)
+              (stmts~1,1
+               (discard
+                (call@F setpgid~7
+                 (call@4 Pid~3 0@1)
+                 (call@C Pid~3 0@1))))))
+            (if@,C
+             (elif@3
+              (infix@B and
+               (infix~4 >
+                (dot~5 wd~2 len@1)0@2)
+               (infix@O !=
+                (call~F chdir~5
+                 (dot@3 wd~2 toCString@1))
+                (suf@3 0 "i32")))
+              (stmts~1,1
+               (call@7 exitnow~7
+                (suf@1 127 "i32")))))
+            (if@,E
+             (elif@3
+              (infix@A in poUsePath~A options@3)
+              (stmts~1,1
+               (discard
+                (call@E execvp~6
+                 (dot@7 syscmd~6 toCString@1)argvC@J))))
+             (else@,2
+              (stmts@2,1
+               (discard
+                (call@E execve~6
+                 (dot@7 syscmd~6 toCString@1)argvC@J envpC@Q)))))
+            (call@7,I exitnow~7
+             (suf@1 127 "i32")))))
+         (call@J,S deallocCStringArray~J sysArgs@1
+          (dot@H argsRaw~7 len@1))
+         (call@J,T deallocCStringArray~J sysEnv@1
+          (call@Q countCStringArray~H sysEnv@1))
+         (if@,U
+          (elif@3
+           (infix@8 <
+            (dot~5 pid~3 int@1)0@2)
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B)))))))
+       (else@,Y
+        (stmts@2,1
+         (var@4 fops . . Tposix_spawn_file_actions@6
+          (call@f default~7 Tposix_spawn_file_actions@1))
+         (var@4,1 attr . . Tposix_spawnattr@6
+          (call@W default~7 Tposix_spawnattr@1))
+         (proc@,3 cleanup@5 . . .
+          (params@C
+           (param@1 sysArgs . . cstringArray@H .)
+           (param@A sysEnv . . cstringArray@8 .)
+           (param@W argsLen . . int@9 .)
+           (param@1,1 fops . .
+            (mut@6 Tposix_spawn_file_actions@4).)
+           (param@1,2 attr . .
+            (mut@6 Tposix_spawnattr@4).)). . .
+          (stmts@2,3
+           (discard
+            (call@e posix_spawn_file_actions_destroy~W fops@1))
+           (discard@,1
+            (call@V posix_spawnattr_destroy~N attr@1))
+           (call@J,2 deallocCStringArray~J sysArgs@1 argsLen@A)
+           (call@J,3 deallocCStringArray~J sysEnv@1
+            (call@Q countCStringArray~H sysEnv@1))))
+         (var@4,B chckErr . . .
+          (call@d posix_spawn_file_actions_init~T fops@1))
+         (if@,C
+          (elif@3
+           (infix@8 != chckErr~8
+            (suf@3 0 "i32"))
+           (stmts~1,1
+            (call@7 cleanup~7 sysArgs@1 sysEnv@A
+             (dot@P argsRaw~7 len@1)fops@V attr@b)
+            (call@C,1 raiseOSError~C
+             (call@C OSErrorCode~B chckErr@1)))))
+         (asgn@8,F chckErr~8
+          (call@M posix_spawnattr_init~K attr@1))
+         (if@,G
+          (elif@3
+           (infix@8 != chckErr~8
+            (suf@3 0 "i32"))
+           (stmts~1,1
+            (call@7 cleanup~7 sysArgs@1 sysEnv@A
+             (dot@P argsRaw~7 len@1)fops@V attr@b)
+            (call@C,1 raiseOSError~C
+             (call@C OSErrorCode~B chckErr@1)))))
+         (var@4,K mask . . Sigset@6
+          (call@M default~7 Sigset@1))
+         (discard@,L
+          (call@J sigemptyset~B mask@1))
+         (discard@,M
+          (call@Y posix_spawnattr_setsigmask~Q attr@1 mask@7))
+         (if@,O
+          (elif@3
+           (infix@9 in poDaemon~9 options@3)
+           (stmts~1,1
+            (discard
+             (call@X posix_spawnattr_setpgroup~P attr@1
+              (cmd@B Pid~4 0))))))
+         (var@4,R flags . . cshort@7
+          (call@M cshort~6 8@1))
+         (if@,S
+          (elif@3
+           (infix@9 in poDaemon~9 options@3)
+           (stmts~1,1
+            (asgn@6 flags~6
+             (infix@8 or flags~6
+              (call@9 cshort~6 2@1))))))
+         (discard@,U
+          (call@W posix_spawnattr_setflags~O attr@1 flags@7))
+         (if@,W
+          (elif@3
+           (infix@G notin poParentStreams~G options@6)
+           (stmts~1,1
+            (discard
+             (call@f posix_spawn_file_actions_addclose~X fops@1
+              (at@D pStdin~6 writeIdx@1)))
+            (discard@,1
+             (call@e posix_spawn_file_actions_adddup2~W fops@1
+              (at@D pStdin~6 readIdx@1)
+              (call@5,1 cint~4 readIdx@1)))
+            (discard@,3
+             (call@f posix_spawn_file_actions_addclose~X fops@1
+              (at@E pStdout~7 readIdx@1)))
+            (discard@,4
+             (call@e posix_spawn_file_actions_adddup2~W fops@1
+              (at@E pStdout~7 writeIdx@1)
+              (call@5,1 cint~4 writeIdx@1)))
+            (discard@,6
+             (call@f posix_spawn_file_actions_addclose~X fops@1
+              (at@E pStderr~7 readIdx@1)))
+            (if@,7
+             (elif@3
+              (infix@H in poStdErrToStdOut~H options@3)
+              (stmts~1,1
+               (discard
+                (call@e posix_spawn_file_actions_adddup2~W fops@1
+                 (at@E pStdout~7 writeIdx@1)
+                 (suf@1,1 2 "i32")))))
+             (else@,3
+              (stmts@2,1
+               (discard
+                (call@e posix_spawn_file_actions_adddup2~W fops@1
+                 (at@E pStderr~7 writeIdx@1)
+                 (suf@1,1 2 "i32")))))))))
+         (var@4,m savedCwd . . . ""@B)
+         (if@,n
+          (elif@3
+           (infix@F >
+            (dot~5 workingDir~A len@1)0@2)
+           (stmts~1,1
+            (asgn@9 savedCwd~9
+             (call@F getCurrentDir~D))
+            (var@4,1 wd . . . workingDir@5)
+            (if@,2
+             (elif@3
+              (infix@K !=
+               (call~F chdir~5
+                (dot@3 wd~2 toCString@1))
+               (suf@3 0 "i32"))
+              (stmts~1,1
+               (call@7 cleanup~7 sysArgs@1 sysEnv@A
+                (dot@P argsRaw~7 len@1)fops@V attr@b)
+               (call@C,1 raiseOSError~C
+                (call@C osLastError~B))))))))
+         (if@,u
+          (elif@3
+           (infix@A in poEchoCmd~A options@3)
+           (stmts~1,1
+            (cmd echo command@5 " "@E
+             (call@R joinArgs~8 args@1 " "@7)))))
+         (var@4,x res . . cint@5
+          (suf@C 0 "i32"))
+         (let@4,y argvC . . .
+          (cast@8 CCharArray@5 sysArgs@H))
+         (let@4,z envpC . . .
+          (cast@8 CCharArray@5 sysEnv@H))
+         (if@,10
+          (elif@3
+           (infix@A in poUsePath~A options@3)
+           (stmts~1,1
+            (asgn@4 res~4
+             (call@E posix_spawnp~C pid@1
+              (dot@C syscmd~6 toCString@1)fops@O attr@U argvC@a envpC@h))))
+          (else@,2
+           (stmts@2,1
+            (asgn@4 res~4
+             (call@D posix_spawn~B pid@1
+              (dot@C syscmd~6 toCString@1)fops@O attr@U argvC@a envpC@h)))))
+         (discard@,15
+          (call@e posix_spawn_file_actions_destroy~W fops@1))
+         (discard@,16
+          (call@V posix_spawnattr_destroy~N attr@1))
+         (if@,18
+          (elif@3
+           (infix@D >
+            (dot~5 savedCwd~8 len@1)0@2)
+           (stmts~1,1
+            (var@4 cwd . . . savedCwd@6)
+            (discard@,1
+             (call@D chdir~5
+              (dot@4 cwd~3 toCString@1))))))
+         (call@J,1C deallocCStringArray~J sysArgs@1
+          (dot@H argsRaw~7 len@1))
+         (call@J,1D deallocCStringArray~J sysEnv@1
+          (call@Q countCStringArray~H sysEnv@1))
+         (if@,1F
+          (elif@3
+           (infix@4 != res~4
+            (suf@3 0 "i32"))
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C OSErrorCode~B res@1))))))))
+      (asgn@7,2L result~7
+       (oconstr@9 Process~7
+        (kv@8 options~7 options@2)
+        (kv@R exitFlag~8 false@2)
+        (kv@c id~2 pid@2)
+        (kv@9,1 inHandle~8
+         (suf@2 0 "i32"))
+        (kv@R,1 outHandle~9
+         (suf@2 0 "i32"))
+        (kv@j,1 errHandle~9
+         (suf@2 0 "i32"))
+        (kv@9,2 inStream~8
+         (nil@2))
+        (kv@P,2 outStream~9
+         (nil@2))
+        (kv@f,2 errStream~9
+         (nil@2))
+        (kv@B,3 exitStatus~A
+         (suf@2 0 "i32"))))
+      (if@,2Q
+       (elif@3
+        (infix@G in poParentStreams~G options@3)
+        (stmts~1,1
+         (asgn@G
+          (dot~A result~6 inHandle@1)
+          (suf@2 0 "i32"))
+         (asgn@H,1
+          (dot~B result~6 outHandle@1)
+          (suf@2 1 "i32"))
+         (if@,2
+          (elif@3
+           (infix@H in poStdErrToStdOut~H options@3)
+           (stmts~1,1
+            (asgn@H
+             (dot~B result~6 errHandle@1)
+             (dot@8 result~6 outHandle@1))))
+          (else@,2
+           (stmts@2,1
+            (asgn@H
+             (dot~B result~6 errHandle@1)
+             (suf@2 2 "i32")))))))
+       (else@,7
+        (stmts@2,1
+         (asgn@G
+          (dot~A result~6 inHandle@1)
+          (at@8 pStdin~6 writeIdx@1))
+         (asgn@H,1
+          (dot~B result~6 outHandle@1)
+          (at@9 pStdout~7 readIdx@1))
+         (if@,2
+          (elif@3
+           (infix@H in poStdErrToStdOut~H options@3)
+           (stmts~1,1
+            (asgn@H
+             (dot~B result~6 errHandle@1)
+             (dot@8 result~6 outHandle@1))
+            (discard@,1
+             (call@D close~5
+              (at@8 pStderr~7 readIdx@1)))))
+          (else@,3
+           (stmts@2,1
+            (asgn@H
+             (dot~B result~6 errHandle@1)
+             (at@9 pStderr~7 readIdx@1)))))
+         (discard@,7
+          (call@D close~5
+           (at@8 pStderr~7 writeIdx@1)))
+         (discard@,8
+          (call@D close~5
+           (at@7 pStdin~6 readIdx@1)))
+         (discard@,9
+          (call@D close~5
+           (at@8 pStdout~7 writeIdx@1))))))))
+    (proc@,3q close@5 x . .
+     (params@B
+      (param@1 p . . Process@3 .)).
+     (pragmas@O raises@2
+      (kv@E tags~4
+       (bracket@2 WriteIOEffect@1))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@G notin poParentStreams~G
+         (dot@7 p~1 options@1))
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@B !=
+            (dot~A p~1 inStream@1)
+            (nil@3))
+           (stmts~1,1
+            (call@5 close~5
+             (dot@2 p~1 inStream@1))))
+          (else@,2
+           (stmts@2,1
+            (discard
+             (call@D close~5
+              (dot@2 p~1 inHandle@1))))))
+         (if@,4
+          (elif@3
+           (infix@C !=
+            (dot~B p~1 outStream@1)
+            (nil@3))
+           (stmts~1,1
+            (call@5 close~5
+             (dot@2 p~1 outStream@1))))
+          (else@,2
+           (stmts@2,1
+            (discard
+             (call@D close~5
+              (dot@2 p~1 outHandle@1))))))
+         (if@,8
+          (elif@3
+           (infix@C !=
+            (dot~B p~1 errStream@1)
+            (nil@3))
+           (stmts~1,1
+            (call@5 close~5
+             (dot@2 p~1 errStream@1))))
+          (elif@5,2
+           (infix@C !=
+            (dot~B p~1 errHandle@1)
+            (dot@4 p~1 outHandle@1))
+           (stmts~3,1
+            (discard
+             (call@D close~5
+              (dot@2 p~1 errHandle@1)))))))))))
+    (proc@,45 suspend@5 x . .
+     (params@D
+      (param@1 p . . Process@3 .)).
+     (pragmas@Q raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@K !=
+         (call~G kill~4
+          (dot@2 p~1 id@1)SIGSTOP@7)
+         (suf@3 0 "i32"))
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,49 resume@5 x . .
+     (params@C
+      (param@1 p . . Process@3 .)).
+     (pragmas@P raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@K !=
+         (call~G kill~4
+          (dot@2 p~1 id@1)SIGCONT@7)
+         (suf@3 0 "i32"))
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,4D terminate@5 x . .
+     (params@F
+      (param@1 p . . Process@3 .)).
+     (pragmas@S raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@K !=
+         (call~G kill~4
+          (dot@2 p~1 id@1)SIGTERM@7)
+         (suf@3 0 "i32"))
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,4H kill@5 x . .
+     (params@A
+      (param@1 p . . Process@3 .)).
+     (pragmas@N raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@K !=
+         (call~G kill~4
+          (dot@2 p~1 id@1)SIGKILL@7)
+         (suf@3 0 "i32"))
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,4L running@5 x . .
+     (params@D
+      (param@1 p . . Process@3 .))bool@E
+     (pragmas@W raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (ret false@7))))
+      (var@4,2 status . . cint@8
+       (suf@F 1 "i32"))
+      (let@4,3 ret . . .
+       (call@D waitpid~7
+        (dot@2 p~1 id@1)status@7 WNOHANG@F))
+      (if@,4
+       (elif@3
+        (infix@4 == ret~4
+         (dot@4 p~1 id@1))
+        (stmts~1,1
+         (if
+          (elif@3
+           (call@C isExitStatus~C status@1)
+           (stmts~1,1
+            (asgn@B
+             (dot~A p~1 exitFlag@1)true@2)
+            (asgn@D,1
+             (dot~C p~1 exitStatus@1)status@2)
+            (asgn@7,2 result~7 false@2)))
+          (else@,4
+           (stmts@2,1
+            (asgn@7 result~7 true@2))))))
+       (elif@5,7
+        (infix@4 == ret~4
+         (dot@4 0~1 Pid@1))
+        (stmts~3,1
+         (asgn@7 result~7 true@2)))
+       (else@,9
+        (stmts@2,1
+         (asgn@7 result~7 false@2)
+         (call@C,1 raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,4d waitForExit@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .)
+      (param@D timeout . . int@9 -1@F))int@X
+     (pragmas@s raises@2
+      (kv~k,1 tags~4
+       (bracket@2 TimeEffect@1))).
+     (stmts@2,2
+      (if
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (ret
+          (call@Q exitStatusLikeShell~J
+           (dot@2 p~1 exitStatus@1))))))
+      (if@,3
+       (elif@3
+        (infix@8 < timeout~8 0@2)
+        (stmts~1,1
+         (var@4 status . . cint@8
+          (suf@F 0 "i32"))
+         (if@,1
+          (elif@3
+           (infix@X <
+            (dot~5
+             (call~L waitpid~7
+              (dot@2 p~1 id@1)status@7
+              (suf@F 0 "i32"))int@1)0@2)
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B)))))
+         (asgn@B,3
+          (dot~A p~1 exitFlag@1)true@2)
+         (asgn@D,4
+          (dot~C p~1 exitStatus@1)status@2)))
+       (else@,6
+        (stmts@2,1
+         (let@4 deadlineTicks . . .
+          (infix@I,1 \2B
+           (dot~7
+            (call~2 getMonoTime~B)ticks@1)
+           (infix@H *
+            (call~A int64~5 timeout@1)
+            (suf@2 1000000 "i64"))))
+         (var@4,2 delayNs . . int64@9
+          (suf@H 50000 "i64"))
+         (const@6,3 maxDelayNs . . int64@C
+          (suf@K 50000000 "i64"))
+         (while@,4 true@6
+          (stmts@2,1
+           (var@4 status . . cint@8
+            (suf@F 0 "i32"))
+           (let@4,1 pid . . .
+            (call@D waitpid~7
+             (dot@2 p~1 id@1)status@7 WNOHANG@F))
+           (if@,2
+            (elif@3
+             (infix@4 == pid~4
+              (dot@4 p~1 id@1))
+             (stmts~1,1
+              (asgn@B
+               (dot~A p~1 exitFlag@1)true@2)
+              (asgn@D,1
+               (dot~C p~1 exitStatus@1)status@2)
+              (break@,2 .)))
+            (elif@5,4
+             (infix@8 ==
+              (dot~5 pid~3 int@1)-1@3)
+             (stmts~3,1
+              (call@C raiseOSError~C
+               (call@C osLastError~B))))
+            (else@,6
+             (stmts@2,1
+              (if
+               (elif@3
+                (infix@K >=
+                 (dot~7
+                  (call~2 getMonoTime~B)ticks@1)deadlineTicks@3)
+                (stmts~1,1
+                 (if
+                  (elif@3
+                   (infix@K <
+                    (call~G kill~4
+                     (dot@2 p~1 id@1)SIGKILL@7)
+                    (suf@2 0 "i32"))
+                   (stmts~1,1
+                    (call@C raiseOSError~C
+                     (call@C osLastError~B)))))
+                 (var@4,2 waitStatus . . cint@C
+                  (suf@J 0 "i32"))
+                 (if@,3
+                  (elif@3
+                   (infix@b <
+                    (dot~5
+                     (call~P waitpid~7
+                      (dot@2 p~1 id@1)waitStatus@7
+                      (suf@J 0 "i32"))int@1)0@2)
+                   (stmts~1,1
+                    (call@C raiseOSError~C
+                     (call@C osLastError~B)))))
+                 (asgn@B,5
+                  (dot~A p~1 exitFlag@1)true@2)
+                 (asgn@D,6
+                  (dot~C p~1 exitStatus@1)waitStatus@2)
+                 (break@,7 .))))
+              (var@4,9 req . . Timespec@5
+               (call@N default~7 Timespec@1))
+              (var@4,A rem . . Timespec@5
+               (call@N default~7 Timespec@1))
+              (asgn@B,B
+               (dot~8 req~3 tv_sec@1)
+               (call@C
+                (dot~5 posix~5 Time@1)0@1))
+              (asgn@C,C
+               (dot~9 req~3 tv_nsec@1)
+               (call@7 clong~5 delayNs@1))
+              (discard@,D
+               (call@H nanosleep~9 req@1 rem@6))
+              (if@,E
+               (elif@3
+                (infix@8 < delayNs~8 maxDelayNs@2)
+                (stmts~1,1
+                 (asgn@8 delayNs~8
+                  (infix@A * delayNs~8
+                   (suf@2 2 "i64"))))))))))))))
+      (asgn@7,f result~7
+       (call@L exitStatusLikeShell~J
+        (dot@2 p~1 exitStatus@1)))))
+    (proc@,5M peekExitCode@5 x . .
+     (params@I
+      (param@1 p . . Process@3 .))int@E
+     (pragmas@a raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (var@4 status . . cint@8
+       (suf@F 0 "i32"))
+      (asgn@7,1 result~7 -1@2)
+      (if@,2
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (ret
+          (call@Q exitStatusLikeShell~J
+           (dot@2 p~1 exitStatus@1))))))
+      (let@4,4 ret . . .
+       (call@D waitpid~7
+        (dot@2 p~1 id@1)status@7 WNOHANG@F))
+      (if@,5
+       (elif@3
+        (infix@8 >
+         (dot~5 ret~3 int@1)0@2)
+        (stmts~1,1
+         (if
+          (elif@3
+           (call@C isExitStatus~C status@1)
+           (stmts~1,1
+            (asgn@B
+             (dot~A p~1 exitFlag@1)true@2)
+            (asgn@D,1
+             (dot~C p~1 exitStatus@1)status@2)
+            (asgn@7,2 result~7
+             (call@L exitStatusLikeShell~J status@1))))))))))
+    (proc@,5Y createStream@5 . . .
+     (params@H
+      (param@1 handle . .
+       (mut@8 FileHandle@4).)
+      (param@P mode . . FileMode@6 .))FileStream@g
+     (pragmas@4,1 raises@2).
+     (stmts@2,3
+      (var@4 f . . File@3
+       (call@H default~7 File@1))
+      (when@,1
+       (elif@5
+        (call@7 defined~7 nimNativeIo@1)
+        (stmts~3,2
+         (if
+          (elif@3
+           (prefix not
+            (call@8 open~4 f@1 handle@4 mode@C))
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B)))))))
+       (else@,4
+        (stmts@2,1
+         (let@4 modeC . . .
+          (case~2,1 mode@5
+           (of@,1
+            (ranges fmRead@3)
+            (stmts@B
+             (callstrlit@7 cstring~7
+              (suf "rb" "R"))))
+           (of@,2
+            (ranges fmWrite@3)
+            (stmts@C
+             (callstrlit@7 cstring~7
+              (suf "wb" "R"))))
+           (else@,3
+            (stmts@6
+             (callstrlit@7 cstring~7
+              (suf "rb" "R"))))))
+         (proc@,5 c_fdopen@5 . . .
+          (params@D
+           (param@1 fd . . cint@4 .)
+           (param@B mode . . cstring@6 .))File@R
+          (pragmas@j
+           (kv~a,1 importc~7 "fdopen"@2)
+           (kv~I,1 header~6 "<stdio.h>"@2)). .)
+         (asgn@2,7 f~2
+          (call@A c_fdopen~8 handle@1 modeC@9))
+         (if@,8
+          (elif@3
+           (infix@2 == f~2
+            (nil@3))
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B))))))))
+      (asgn@7,G result~7
+       (call@F newFileStream~D f@1))))
+    (proc@,5t inputStream@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@c raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@B ==
+         (dot~A p~1 inStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@B
+          (dot~A p~1 inStream@1)
+          (call@E createStream~C
+           (dot@2 p~1 inHandle@1)fmWrite@D)))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 inStream@1))))
+    (proc@,5z outputStream@5 x . .
+     (params@I
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@d raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@C ==
+         (dot~B p~1 outStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@C
+          (dot~B p~1 outStream@1)
+          (call@E createStream~C
+           (dot@2 p~1 outHandle@1)fmRead@E)))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 outStream@1))))
+    (proc@,65 errorStream@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@c raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@C ==
+         (dot~B p~1 errStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@C
+          (dot~B p~1 errStream@1)
+          (call@E createStream~C
+           (dot@2 p~1 errHandle@1)fmRead@E)))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 errStream@1))))
+    (when@,6B
+     (elif@5
+      (prefix not
+       (call@B defined~7 nimNativeIo@1))
+      (stmts~3,1
+       (proc csystem@5 . . .
+        (params@C
+         (param@1 cmd . . cstring@5 .))cint@G
+        (pragmas@X nodecl@2
+         (kv@H importc~7 "system"@2)
+         (kv@8,1 header~6 "<stdlib.h>"@2)). .))))
+    (proc@,6F execCmd@5 x . .
+     (params@D
+      (param@1 command . . string@9 .))int@J
+     (pragmas@a raises@2
+      (kv~S,1 tags~4
+       (bracket@2 ExecIOEffect@1 ReadIOEffect@F RootEffect@T))).
+     (stmts@2,2
+      (comment)
+      (when@,1
+       (elif@5
+        (call@7 defined~7 nimNativeIo@1)
+        (stmts~3,3
+         (var@4 p . . .
+          (call@G startProcess~C command@1
+           (vv~A,1 options~8
+            (curly@2 poEvalCommand@1 poParentStreams@G poUsePath@X))))
+         (asgn@7,2 result~7
+          (call@D waitForExit~B p@1))
+         (call@5,3 close~5 p@1)))
+       (else@,7
+        (stmts@2,1
+         (var@4 cmd . . . command@6)
+         (let@4,1 tmp . . .
+          (call@D csystem~7
+           (dot@4 cmd~3 toCString@1)))
+         (asgn@7,2 result~7
+          (if@2
+           (elif@3
+            (infix@4 == tmp~4 -1@3)
+            (stmts@B tmp))
+           (else@I
+            (stmts@6
+             (call@J exitStatusLikeShell~J tmp@1)))))))))))))
+ (when@,8K
+  (elif@5
+   (call@7 defined~7 windows@1)
+   (stmts~3,1
+    (type@J,1 FileHandleStream~H . . .
+     (ref@2
+      (object@4 StreamObj@A
+       (fld~L,1 handle . . Handle@8 .)
+       (fld~L,2 atTheEnd . . bool@A .))))
+    (proc@,5 closeHandleCheck@5 . . .
+     (params@L
+      (param@1 handle . . Handle@8 .)).
+     (pragmas@c raises@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@J
+         (call~8 closeHandle~B handle@1)isFail@1)
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,9 fileClose@5 . . .
+     (params@E
+      (param@1 h . .
+       (mut@3 Handle@4).)).
+     (pragmas@U raises@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@6 >
+         (dot~5 h~1 int@1)4@2)
+        (stmts~1,1
+         (call@G closeHandleCheck~G h@1)
+         (asgn@2,1 h~2 INVALID_HANDLE_VALUE@2))))))
+    (proc@,E fhFileClose@5 . . .
+     (params@G
+      (param@1 h . .
+       (mut@3 FileHandle@4).)).
+     (pragmas@a raises@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@6 >
+         (dot~5 h~1 int@1)4@2)
+        (stmts~1,1
+         (call@G closeHandleCheck~G
+          (cmd@8 Handle~7 h))
+         (asgn@2,1 h~2
+          (call@C FileHandle~A INVALID_HANDLE_VALUE@1)))))))
+    (proc@,J hsClose@5 . . .
+     (params@C
+      (param@1 s . . Stream@3 .)).
+     (pragmas@O nimcall@2 raises@B
+      (kv@N tags~4
+       (bracket@2 WriteIOEffect@1))).
+     (stmts@2,1
+      (var@4 fs . . .
+       (call@L FileHandleStream~G s@1))
+      (call@9,1 fileClose~9
+       (dot@3 fs~2 handle@1))))
+    (proc@,N hsAtEnd@5 . . .
+     (params@C
+      (param@1 s . . Stream@3 .))bool@D
+     (pragmas@U nimcall@2 raises@B
+      (kv@N tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (asgn@7 result~7
+       (dot@L
+        (call~3 FileHandleStream~G s@1)atTheEnd@1))))
+    (proc@,Q hsReadData@5 . . .
+     (params@F
+      (param@1 s . . Stream@3 .)
+      (param@C buffer . . pointer@8 .)
+      (param@T bufLen . . int@8 .))int@h
+     (pragmas@4,1 nimcall@2 raises@B
+      (kv@N tags~4
+       (bracket@2 ReadIOEffect@1))).
+     (stmts@2,2
+      (var@4 fs . . .
+       (call@L FileHandleStream~G s@1))
+      (if@,1
+       (elif@3
+        (dot@2 fs~2 atTheEnd@1)
+        (stmts~1,1
+         (ret 0@7))))
+      (var@4,3 br . . int32@4
+       (suf@C 0 "i32"))
+      (let@4,4 ok . . .
+       (call@D readFile~8
+        (dot@3 fs~2 handle@1)buffer@C
+        (dot@Q bufLen~6 int32@1)
+        (cmd@d addr~5 br)
+        (nil@h)))
+      (if@,5
+       (elif@3
+        (infix@A and
+         (dot~8 ok~2 isFail@1)
+         (infix@7 != br~3
+          (suf@3 0 "i32")))
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))
+      (asgn@C,7
+       (dot~A fs~2 atTheEnd@1)
+       (infix@5 == br~3
+        (suf@3 0 "i32")))
+      (asgn@7,8 result~7
+       (dot@4 br~2 int@1))))
+    (proc@,c hsWriteData@5 . . .
+     (params@G
+      (param@1 s . . Stream@3 .)
+      (param@C buffer . . pointer@8 .)
+      (param@T bufLen . . int@8 .)).
+     (pragmas@4,1 nimcall@2 raises@B
+      (kv@N tags~4
+       (bracket@2 WriteIOEffect@1))).
+     (stmts@2,2
+      (var@4 fs . . .
+       (call@L FileHandleStream~G s@1))
+      (var@4,1 bw . . int32@4
+       (suf@C 0 "i32"))
+      (let@4,2 ok . . .
+       (call@E writeFile~9
+        (dot@3 fs~2 handle@1)buffer@C
+        (dot@Q bufLen~6 int32@1)
+        (cmd@d addr~5 bw)
+        (nil@h)))
+      (if@,3
+       (elif@3
+        (dot@2 ok~2 isFail@1)
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,k newFileHandleStream@5 . . .
+     (params@O
+      (param@1 h . . FileHandle@3 .))FileHandleStream@H . .
+     (stmts@2,1
+      (asgn@7 result~7
+       (oconstr@I FileHandleStream~G
+        (kv~H,1 handle~6
+         (call@8 Handle~6 h@1))
+        (kv~F,2 atTheEnd~8 false@2)
+        (kv~E,3 closeImpl~9 hsClose@2)
+        (kv~E,4 atEndImpl~9 hsAtEnd@2)
+        (kv~B,5 readDataImpl~C hsReadData@2)
+        (kv~A,6 writeDataImpl~D hsWriteData@2)))))
+    (proc@,t buildCommandLine@5 . . .
+     (params@L
+      (param@1 a . . string@3 .)
+      (param@C args . .
+       (at@F openArray~9 string@1).))string@c . .
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@C quoteShell~A a@1))
+      (for@4,1
+       (infix@7 \2E\2E< 0~2
+        (dot@8 args~4 len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (cmd@6
+         (dot result~6 add@1)' '@5)
+        (cmd@6,1
+         (dot result~6 add@1)
+         (call@F quoteShell~A
+          (at@5 args~4 i@1)))))))
+    (proc@,z buildEnv@5 . . .
+     (params@D
+      (param@1 env . . StringTableRef@5 .))
+     (tup@N cstring@1 int@A). .
+     (stmts@2,1
+      (var@4 L . . . 0@4)
+      (for@4,1
+       (call@H pairs~5 env@1)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts@O
+        (cmd inc L@4
+         (infix@P \2B
+          (infix~A \2B
+           (dot~5 key~3 len@1)
+           (dot@5 val~3 len@1))2@2))))
+      (var@4,2 str . . .
+       (cast@6 cstring@5
+        (call@K alloc0~6
+         (infix@3 \2B L~2 2@2))))
+      (var@4,3 pos . . . 0@6)
+      (for@4,4
+       (call@H pairs~5 env@1)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts~2,1
+        (var@4 kv . . .
+         (infix@F &
+          (infix~6 & key~4 "="@2)val@2))
+        (call@7,1 copyMem~7
+         (cast@1 pointer@5
+          (infix@U \2B
+           (cast~G uint@5 str@B)
+           (call@6 uint~4 pos@1)))
+         (dot@3,1 kv~2 toCString@1)
+         (infix@M,1 \2B
+          (dot~5 kv~2 len@1)1@2))
+        (cmd@,3 inc pos@4
+         (infix@G \2B
+          (dot~5 kv~2 len@1)1@2))))
+      (asgn@7,9 result~7
+       (tup@2 str@1 L@6))))
+    (proc@,1B myDup@5 . . .
+     (params@A
+      (param@1 h . . Handle@3 .)
+      (param@C inherit . . WINBOOL@9
+       (cmd@R WINBOOL~8 1)))Handle@h
+     (pragmas@y raises@2).
+     (stmts@2,1
+      (asgn@7 result~7 INVALID_HANDLE_VALUE@2)
+      (let@4,1 thisProc . . .
+       (call@S getCurrentProcess~H))
+      (if@,2
+       (elif@3
+        (dot@c,1
+         (call~N,~1 duplicateHandle~F thisProc@1 h@B thisProc@E result@O
+          (suf@W 0u "u32")inherit@d DUPLICATE_SAME_ACCESS@1,1)isFail@1)
+        (stmts~1,2
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,1I createPipeHandles@5 . . .
+     (params@M
+      (param@1 rdHandle . .
+       (mut@K Handle@4).)
+      (param@B wrHandle . .
+       (mut@A Handle@4).)).
+     (pragmas@t raises@2).
+     (stmts@2,1
+      (var@4 sa . . SECURITY_ATTRIBUTES@4
+       (call@X default~7 SECURITY_ATTRIBUTES@1))
+      (asgn@B,1
+       (dot~9 sa~2 nLength@1)
+       (dot@T
+        (call~L sizeof~6 SECURITY_ATTRIBUTES@1)int32@1))
+      (asgn@O,2
+       (dot~M sa~2 lpSecurityDescriptor@1)
+       (nil@2))
+      (asgn@I,3
+       (dot~G sa~2 bInheritHandle@1)
+       (cmd@A WINBOOL~8 1))
+      (if@,4
+       (elif@3
+        (dot@f
+         (call~V createPipe~A rdHandle@1 wrHandle@B sa@L
+          (suf@P 0u "u32"))isFail@1)
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))))
+    (proc@,1Q startProcess@5 x . .
+     (params@I
+      (param@1 command . . string@9 .)
+      (param@I workingDir . . string@C ""@L)
+      (param@,1 args . .
+       (at@F openArray~9 string@1)
+       (bracket@Q))
+      (param@,2 env . .
+       (cmd@9
+        (nil~4)StringTableRef)
+       (nil@Q))
+      (param@,3 options . .
+       (at@C set~3 ProcessOption@1)
+       (curly@U poStdErrToStdOut@1)))Process~E,4
+     (pragmas@C,4 raises@2
+      (kv@E tags~4
+       (bracket@2 ExecIOEffect@1 ReadEnvEffect@F RootEffect@U))).
+     (stmts@2,5
+      (var@4 si . . STARTUPINFO@4
+       (call@P default~7 STARTUPINFO@1))
+      (var@4,1 procInfo . . PROCESS_INFORMATION@A
+       (call@d default~7 PROCESS_INFORMATION@1))
+      (var@4,2 hi . . Handle@C INVALID_HANDLE_VALUE@L)
+      (var@8,2 ho . . Handle@8 INVALID_HANDLE_VALUE@H)
+      (var@C,2 he . . Handle@4 INVALID_HANDLE_VALUE@D)
+      (asgn@7,4 result~7
+       (oconstr@9 Process~7
+        (kv@8 options~7 options@2)
+        (kv@R exitFlag~8 true@2)
+        (kv@F,1 fProcessHandle~E INVALID_HANDLE_VALUE@2)
+        (kv@E,2 fThreadHandle~D INVALID_HANDLE_VALUE@2)
+        (kv@9,3 inHandle~8
+         (call@C FileHandle~A INVALID_HANDLE_VALUE@1))
+        (kv@A,4 outHandle~9
+         (call@C FileHandle~A INVALID_HANDLE_VALUE@1))
+        (kv@A,5 errHandle~9
+         (call@C FileHandle~A INVALID_HANDLE_VALUE@1))
+        (kv@3,6 id~2 INVALID_HANDLE_VALUE@2)
+        (kv@9,7 inStream~8
+         (nil@2))
+        (kv@P,7 outStream~9
+         (nil@2))
+        (kv@f,7 errStream~9
+         (nil@2))
+        (kv@B,8 exitStatus~A
+         (suf@2 0 "i32"))))
+      (asgn@6,E
+       (dot~4 si~2 cb@1)
+       (dot@L
+        (call~D sizeof~6 STARTUPINFO@1)int32@1))
+      (if@,F
+       (elif@3
+        (infix@G notin poParentStreams~G options@6)
+        (stmts~1,1
+         (asgn@B
+          (dot~9 si~2 dwFlags@1)
+          (dot@M STARTF_USESTDHANDLES~K int32@1))
+         (call@H,1 createPipeHandles~H
+          (dot@3 si~2 hStdInput@1)hi@F)
+         (call@H,2 createPipeHandles~H ho@1
+          (dot@7 si~2 hStdOutput@1))
+         (if@,3
+          (elif@3
+           (infix@H in poStdErrToStdOut~H options@3)
+           (stmts~1,1
+            (asgn@D
+             (dot~B si~2 hStdError@1)
+             (dot@4 si~2 hStdOutput@1))
+            (asgn@3,1 he~3 ho@2)))
+          (else@,3
+           (stmts@2,1
+            (call@H createPipeHandles~H he@1
+             (dot@7 si~2 hStdError@1))
+            (if@,1
+             (elif@3
+              (dot@q
+               (call~W setHandleInformation~K he@1 HANDLE_FLAG_INHERIT@5
+                (suf@Q 0u "u32"))isFail@1)
+              (stmts~1,1
+               (call@C raiseOSError~C
+                (call@C osLastError~B))))))))
+         (if@,A
+          (elif@3
+           (dot@q
+            (call~W setHandleInformation~K hi@1 HANDLE_FLAG_INHERIT@5
+             (suf@Q 0u "u32"))isFail@1)
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B)))))
+         (if@,C
+          (elif@3
+           (dot@q
+            (call~W setHandleInformation~K ho@1 HANDLE_FLAG_INHERIT@5
+             (suf@Q 0u "u32"))isFail@1)
+           (stmts~1,1
+            (call@C raiseOSError~C
+             (call@C osLastError~B)))))
+         (asgn@G,E
+          (dot~A result~6 inHandle@1)
+          (call@C FileHandle~A hi@1))
+         (asgn@H,F
+          (dot~B result~6 outHandle@1)
+          (call@C FileHandle~A ho@1))
+         (asgn@H,G
+          (dot~B result~6 errHandle@1)
+          (call@C FileHandle~A he@1))))
+       (else@,I
+        (stmts@2,1
+         (asgn@D
+          (dot~B si~2 hStdError@1)
+          (call@E getStdHandle~C STD_ERROR_HANDLE@1))
+         (asgn@D,1
+          (dot~B si~2 hStdInput@1)
+          (call@E getStdHandle~C STD_INPUT_HANDLE@1))
+         (asgn@E,2
+          (dot~C si~2 hStdOutput@1)
+          (call@E getStdHandle~C STD_OUTPUT_HANDLE@1))
+         (asgn@G,3
+          (dot~A result~6 inHandle@1)
+          (call@C FileHandle~A
+           (dot@3 si~2 hStdInput@1)))
+         (asgn@H,4
+          (dot~B result~6 outHandle@1)
+          (call@C FileHandle~A
+           (dot@3 si~2 hStdOutput@1)))
+         (asgn@H,5
+          (dot~B result~6 errHandle@1)
+          (call@C FileHandle~A
+           (dot@3 si~2 hStdError@1))))))
+      (var@4,f cmdRoot . . . ""@A)
+      (if@,g
+       (elif@3
+        (infix@E in poEvalCommand~E options@3)
+        (stmts~1,1
+         (asgn@8 cmdRoot~8 command@2)
+         (cmd@,1 assert
+          (infix@G ==
+           (dot~5 args~4 len@1)0@3))))
+       (else@,3
+        (stmts@2,1
+         (asgn@8 cmdRoot~8
+          (call@I buildCommandLine~G command@1 args@A)))))
+      (var@4,m ee . .
+       (tup@4 cstring@1 int@A)
+       (tup@L
+        (dot@4
+         (nil~3)cstring@1)0@E))
+      (if@,n
+       (elif@3
+        (infix@4 != env~4
+         (nil@3))
+        (stmts~1,1
+         (asgn@3 ee~3
+          (call@A buildEnv~8 env@1)))))
+      (if@,q
+       (elif@3
+        (infix@A in poEchoCmd~A options@3)
+        (stmts@M
+         (cmd echo cmdRoot@5))))
+      (var@4,s cmdWide . . .
+       (call@O newWideCString~E cmdRoot@1))
+      (var@4,t envWide . . .
+       (if~2,1
+        (elif@3
+         (dot@5
+          (at~3 ee~2 0@1)isNil@1)
+         (stmts@D
+          (call@E newWideCString~E
+           (call@8 cstring~7
+            (nil@1)))))
+        (else@,1
+         (stmts@6
+          (call@E newWideCString~E
+           (at@3 ee~2 0@1)
+           (at@A ee~2 1@1))))))
+      (var@4,w cwdWide . . .
+       (if~2,1
+        (elif@3
+         (infix@F ==
+          (dot~5 workingDir~A len@1)0@3)
+         (stmts@L
+          (call@E newWideCString~E
+           (call@8 cstring~7
+            (nil@1)))))
+        (else@,1
+         (stmts@2,1
+          (var@4 tmp . . . workingDir@6)
+          (call@E,1 newWideCString~E
+           (dot@4 tmp~3 toCString@1))))))
+      (var@4,12 flags . . DWORD@7
+       (infix@b or NORMAL_PRIORITY_CLASS~M CREATE_UNICODE_ENVIRONMENT@3))
+      (if@,13
+       (elif@3
+        (infix@9 in poDaemon~9 options@3)
+        (stmts@L
+         (asgn@6 flags~6
+          (infix@8 or flags~6 CREATE_NO_WINDOW@3)))))
+      (let@4,19 success . . .
+       (call@O createProcessW~E
+        (nil@1)
+        (dot@D cmdWide~7 toWideCString@1)
+        (nil@T)
+        (nil@Y)
+        (cmd@9,1 WINBOOL~8 1)flags@C,1
+        (cast@1,2 pointer@5
+         (dot@L envWide~7 toWideCString@1))
+        (dot@8,3 cwdWide~7 toWideCString@1)si@O,3 procInfo@S,3))
+      (let@4,1D lastError . . .
+       (call@N osLastError~B))
+      (if@,1F
+       (elif@3
+        (infix@G notin poParentStreams~G options@6)
+        (stmts~1,1
+         (call@9 fileClose~9
+          (dot@3 si~2 hStdInput@1))
+         (call@9,1 fileClose~9
+          (dot@3 si~2 hStdOutput@1))
+         (if@,2
+          (elif@3
+           (infix@H notin poStdErrToStdOut~H options@6)
+           (stmts~1,1
+            (call@9 fileClose~9
+             (dot@3 si~2 hStdError@1))))))))
+      (if@,1L
+       (elif@3
+        (infix@6 !=
+         (at~4 ee~2 0@1)
+         (nil@3))
+        (stmts@E
+         (call@7 dealloc~7
+          (cast@1 pointer@5
+           (at@G ee~2 0@1))))))
+      (if@,1N
+       (elif@3
+        (dot@7 success~7 isFail@1)
+        (stmts~1,1
+         (call@C raiseOSError~C lastError@1 command@C))))
+      (asgn@M,1Q
+       (dot~G result~6 fProcessHandle@1)
+       (dot@A procInfo~8 hProcess@1))
+      (asgn@L,1R
+       (dot~F result~6 fThreadHandle@1)
+       (dot@A procInfo~8 hThread@1))
+      (asgn@A,1S
+       (dot~4 result~6 id@1)
+       (cast@2 Handle@5
+        (call@J uint64~6
+         (dot@9 procInfo~8 dwProcessId@1))))
+      (asgn@G,1T
+       (dot~A result~6 exitFlag@1)false@2)))
+    (proc@,30 closeThreadAndProcessHandle@5 . . .
+     (params@W
+      (param@1 p . . Process@3 .)).
+     (pragmas@j raises@2).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@G !=
+         (dot~F p~1 fThreadHandle@1)
+         (cmd@A Handle~7 0))
+        (stmts~1,1
+         (call@G closeHandleCheck~G
+          (dot@2 p~1 fThreadHandle@1))
+         (asgn@G,1
+          (dot~F p~1 fThreadHandle@1)
+          (cmd@9 Handle~7 0)))))
+      (if@,3
+       (elif@3
+        (infix@H !=
+         (dot~G p~1 fProcessHandle@1)
+         (cmd@A Handle~7 0))
+        (stmts~1,1
+         (call@G closeHandleCheck~G
+          (dot@2 p~1 fProcessHandle@1))
+         (asgn@H,1
+          (dot~G p~1 fProcessHandle@1)
+          (cmd@9 Handle~7 0)))))))
+    (proc@,38 close@5 x . .
+     (params@B
+      (param@1 p . . Process@3 .)).
+     (pragmas@O raises@2
+      (kv@E tags~4
+       (bracket@2 WriteIOEffect@1))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@G notin poParentStreams~G
+         (dot@7 p~1 options@1))
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@B ==
+            (dot~A p~1 inStream@1)
+            (nil@3))
+           (stmts~1,1
+            (call@B fhFileClose~B
+             (dot@2 p~1 inHandle@1))))
+          (else@,2
+           (stmts@2,1
+            (call@5 close~5
+             (dot@2 p~1 inStream@1)))))
+         (if@,4
+          (elif@3
+           (infix@C !=
+            (dot~B p~1 outHandle@1)
+            (dot@4 p~1 errHandle@1))
+           (stmts~1,1
+            (call@B fhFileClose~B
+             (dot@2 p~1 errHandle@1)))))
+         (call@B,6 fhFileClose~B
+          (dot@2 p~1 outHandle@1)))))
+      (call@R,8 closeThreadAndProcessHandle~R p@1)))
+    (proc@,3J suspend@5 x . .
+     (params@D
+      (param@1 p . . Process@3 .)).
+     (pragmas@Q raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (discard
+       (call@L suspendThread~D
+        (dot@2 p~1 fThreadHandle@1)))))
+    (proc@,3M resume@5 x . .
+     (params@C
+      (param@1 p . . Process@3 .)).
+     (pragmas@P raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (discard
+       (call@K resumeThread~C
+        (dot@2 p~1 fThreadHandle@1)))))
+    (proc@,3P running@5 x . .
+     (params@D
+      (param@1 p . . Process@3 .))bool@E
+     (pragmas@W raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (asgn@7 result~7 false@2)))
+       (else@,2
+        (stmts@2,1
+         (let@4 x . . .
+          (call@N waitForSingleObject~J
+           (dot@2 p~1 fProcessHandle@1)
+           (suf@J 0u "u32")))
+         (asgn@7,1 result~7
+          (infix@4 == x~2 WAIT_TIMEOUT@3)))))))
+    (proc@,3W terminate@5 x . .
+     (params@F
+      (param@1 p . . Process@3 .)).
+     (pragmas@S raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (call@7 running~7 p@1)
+        (stmts~1,1
+         (discard
+          (call@O terminateProcess~G
+           (dot@2 p~1 fProcessHandle@1)
+           (suf@J 0u "u32"))))))))
+    (proc@,3a kill@5 x . .
+     (params@A
+      (param@1 p . . Process@3 .)).
+     (pragmas@N raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@9 terminate~9 p@1)))
+    (proc@,3d waitForExit@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .)
+      (param@D timeout . . int@9 -1@F))int@X
+     (pragmas@s raises@2
+      (kv~k,1 tags~4
+       (bracket@2 TimeEffect@1))).
+     (stmts@2,2
+      (if
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (ret
+          (dot@J
+           (dot~B p~1 exitStatus@1)int@1)))))
+      (let@4,2 tout . . .
+       (if~2,1
+        (elif@3
+         (infix@8 < timeout~8 0@2)
+         (stmts@D INFINITE))
+        (else@,1
+         (stmts@6
+          (cmd DWORD
+           (dot@D timeout~7 int32@1))))))
+      (let@4,5 res . . .
+       (call@P waitForSingleObject~J
+        (dot@2 p~1 fProcessHandle@1)tout@J))
+      (if@,6
+       (elif@3
+        (infix@4 == res~4 WAIT_TIMEOUT@3)
+        (stmts~1,1
+         (call@9 terminate~9 p@1))))
+      (var@4,8 status . . int32@8
+       (suf@G 0 "i32"))
+      (discard@,9
+       (call@Q getExitCodeProcess~I
+        (dot@2 p~1 fProcessHandle@1)status@J))
+      (if@,A
+       (elif@3
+        (infix@7 != status~7 STILL_ACTIVE@3)
+        (stmts~1,1
+         (asgn@B
+          (dot~A p~1 exitFlag@1)true@2)
+         (asgn@D,1
+          (dot~C p~1 exitStatus@1)status@2)
+         (call@R,2 closeThreadAndProcessHandle~R p@1)
+         (asgn@7,3 result~7
+          (dot@8 status~6 int@1))))
+       (else@,5
+        (stmts@2,1
+         (asgn@7 result~7 -1@2))))))
+    (proc@,3x peekExitCode@5 x . .
+     (params@I
+      (param@1 p . . Process@3 .))int@E
+     (pragmas@a raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 p~1 exitFlag@1)
+        (stmts~1,1
+         (ret
+          (dot@J
+           (dot~B p~1 exitStatus@1)int@1)))))
+      (asgn@7,2 result~7 -1@2)
+      (let@4,3 timedOut . . .
+       (infix@u ==
+        (call~Q waitForSingleObject~J
+         (dot@2 p~1 fProcessHandle@1)
+         (suf@J 0u "u32"))WAIT_TIMEOUT@3))
+      (if@,4
+       (elif@3
+        (prefix not timedOut@4)
+        (stmts~1,1
+         (var@4 status . . int32@8
+          (suf@G 0 "i32"))
+         (discard@,1
+          (call@Q getExitCodeProcess~I
+           (dot@2 p~1 fProcessHandle@1)status@J))
+         (asgn@B,2
+          (dot~A p~1 exitFlag@1)true@2)
+         (asgn@D,3
+          (dot~C p~1 exitStatus@1)status@2)
+         (call@R,4 closeThreadAndProcessHandle~R p@1)
+         (asgn@7,5 result~7
+          (dot@8 status~6 int@1)))))))
+    (proc@,4A inputStream@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@c raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@B ==
+         (dot~A p~1 inStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@B
+          (dot~A p~1 inStream@1)
+          (call@L newFileHandleStream~J
+           (dot@2 p~1 inHandle@1))))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 inStream@1))))
+    (proc@,4G outputStream@5 x . .
+     (params@I
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@d raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@C ==
+         (dot~B p~1 outStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@C
+          (dot~B p~1 outStream@1)
+          (call@L newFileHandleStream~J
+           (dot@2 p~1 outHandle@1))))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 outStream@1))))
+    (proc@,4M errorStream@5 x . .
+     (params@H
+      (param@1 p . . Process@3 .))Stream@E
+     (pragmas@c raises@2
+      (kv@E tags~4
+       (bracket@2))).
+     (stmts@2,1
+      (call@C streamAccess~C p@1)
+      (if@,1
+       (elif@3
+        (infix@C ==
+         (dot~B p~1 errStream@1)
+         (nil@3))
+        (stmts~1,1
+         (asgn@C
+          (dot~B p~1 errStream@1)
+          (call@L newFileHandleStream~J
+           (dot@2 p~1 errHandle@1))))))
+      (asgn@7,3 result~7
+       (dot@3 p~1 errStream@1))))
+    (proc@,4S execCmd@5 x . .
+     (params@D
+      (param@1 command . . string@9 .))int@J
+     (pragmas@a raises@2
+      (kv~S,1 tags~4
+       (bracket@2 ExecIOEffect@1 ReadIOEffect@F RootEffect@T))).
+     (stmts@2,2
+      (var@4 si . . STARTUPINFO@4
+       (call@P default~7 STARTUPINFO@1))
+      (var@4,1 procInfo . . PROCESS_INFORMATION@A
+       (call@d default~7 PROCESS_INFORMATION@1))
+      (asgn@6,2
+       (dot~4 si~2 cb@1)
+       (dot@L
+        (call~D sizeof~6 STARTUPINFO@1)int32@1))
+      (asgn@D,3
+       (dot~B si~2 hStdError@1)
+       (call@E getStdHandle~C STD_ERROR_HANDLE@1))
+      (asgn@D,4
+       (dot~B si~2 hStdInput@1)
+       (call@E getStdHandle~C STD_INPUT_HANDLE@1))
+      (asgn@E,5
+       (dot~C si~2 hStdOutput@1)
+       (call@E getStdHandle~C STD_OUTPUT_HANDLE@1))
+      (var@4,6 cmd . . . command@6)
+      (var@4,7 cmdWide . . .
+       (call@O newWideCString~E
+        (dot@4 cmd~3 toCString@1)))
+      (let@4,8 ok . . .
+       (call@J createProcessW~E
+        (nil@1)
+        (dot@D cmdWide~7 toWideCString@1)
+        (nil@T)
+        (nil@Y)
+        (cmd@9,1 WINBOOL~8 0)NORMAL_PRIORITY_CLASS@C,1
+        (nil@Z,1)
+        (nil@e,1)si@1,2 procInfo@5,2))
+      (if@,B
+       (elif@3
+        (dot@2 ok~2 isFail@1)
+        (stmts~1,1
+         (call@C raiseOSError~C
+          (call@C osLastError~B)))))
+      (let@4,D process . . .
+       (dot@I procInfo~8 hProcess@1))
+      (discard@,E
+       (call@J closeHandle~B
+        (dot@9 procInfo~8 hThread@1)))
+      (var@4,F L . . int32@3
+       (suf@B 0 "i32"))
+      (if@,G
+       (elif@3
+        (infix@d !=
+         (call~K waitForSingleObject~J process@1 INFINITE@A)
+         (suf@3 -1 "i32"))
+        (stmts~1,1
+         (discard
+          (call@Q getExitCodeProcess~I process@1 L@A))
+         (asgn@7,1 result~7
+          (dot@3 L~1 int@1))))
+       (else@,3
+        (stmts@2,1
+         (asgn@7 result~7 -1@2))))
+      (discard@,L
+       (call@J closeHandle~B process@1)))))))
+ (iterator@,DG lines@9 x . .
+  (params@F
+   (param@1 p . . Process@3 .)
+   (param@D keepNewLines . . . false@F))string@a
+  (pragmas@4,1 sideEffect@2 raises@E
+   (kv@Q tags~4
+    (bracket@2 ReadIOEffect@1 TimeEffect@F))).
+  (stmts@2,2
+   (comment)
+   (var@4,2 outp . . .
+    (dot@8 p~1 outputStream@1))
+   (var@4,3 line . . .
+    (call@L newStringOfCap~E 120@1))
+   (while@,4
+    (call@J
+     (dot~9 outp~4 readLine@1)line@1)
+    (stmts@2,1
+     (if
+      (elif@3 keepNewLines
+       (stmts~1,1
+        (cmd@4
+         (dot line~4 add@1)'\0A'@5))))
+     (yld@,2 line@6)))
+   (discard@,8
+    (call@J waitForExit~B p@1))))
+ (proc@,DS readLines@5 x . .
+  (params@F
+   (param@1 p . . Process@3 .))
+  (tup@E
+   (at@4 seq~3 string@1)int@E)
+  (pragmas@m raises@2
+   (kv~e,1 tags~4
+    (bracket@2 ReadIOEffect@1 TimeEffect@F))).
+  (stmts@2,2
+   (comment)
+   (var@4,1 acc . .
+    (at@8 seq~3 string@1)
+    (prefix@J \40
+     (bracket@1)))
+   (for@4,2
+    (dot@9 p~1 lines@1)
+    (unpackflat
+     (let line . . ..))
+    (stmts@H
+     (cmd@3
+      (dot acc~3 add@1)line@5)))
+   (asgn@7,3 result~7
+    (tup@2 acc@1
+     (dot@7 p~1 peekExitCode@1)))))
+ (proc@,DZ execProcess@5 x . .
+  (params@H
+   (param@1 command . . string@9 .)
+   (param@I workingDir . . string@C ""@L)
+   (param@1,1 args . .
+    (at@F openArray~9 string@1)
+    (bracket@Q))
+   (param@1,2 env . .
+    (cmd@9
+     (nil~4)StringTableRef)
+    (nil@Q))
+   (param@1,3 options . .
+    (at@C set~3 ProcessOption@1)
+    (curly@U poStdErrToStdOut@1 poUsePath~Q,1 poEvalCommand~F,1)))string@X,4
+  (pragmas@v,4 raises@2
+   (kv~n,1 tags~4
+    (bracket@2 ExecIOEffect@1 ReadIOEffect@F RootEffect@T))).
+  (stmts@2,6
+   (comment)
+   (var@4,1 p . . .
+    (call@G startProcess~C command@1
+     (vv@L workingDir~B workingDir@2)
+     (vv@e args~5 args@2)
+     (vv@5,1 env~4 env@2)
+     (vv@K,1 options~8 options@2)))
+   (var@4,3 outp . . .
+    (call@J outputStream~C p@1))
+   (asgn@7,4 result~7 ""@2)
+   (var@4,5 line . . .
+    (call@L newStringOfCap~E 120@1))
+   (while@,6 true@6
+    (stmts@2,1
+     (if
+      (elif@3
+       (call@D
+        (dot~9 outp~4 readLine@1)line@1)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)line@5)
+        (cmd@6,1
+         (dot result~6 add@1)'\0A'@5)))
+      (elif@5,3
+       (prefix not
+        (call@B running~7 p@1))
+       (stmts~3,1
+        (break .))))))
+   (call@5,C close~5 p@1)))
+ (proc@,Dt execCmdEx@5 x . .
+  (params@F
+   (param@1 command . . string@9 .)
+   (param@1,1 options . .
+    (at@C set~3 ProcessOption@1)
+    (curly@U poStdErrToStdOut@1 poUsePath@J))
+   (param@1,2 env . .
+    (cmd@9
+     (nil~4)StringTableRef)
+    (nil@Q))
+   (param@1,3 workingDir . . . ""@D)
+   (param@I,3 input . . . ""@8))
+  (tup~B,4 string@1 int@9)
+  (pragmas@I,4 raises@2
+   (kv@E tags~4
+    (bracket@2 ExecIOEffect@1 ReadIOEffect@F RootEffect@T))).
+  (stmts@2,5
+   (comment)
+   (var@4,1 p . . .
+    (call@G startProcess~C command@1
+     (vv@9,1 options~8
+      (infix@A \2B options~8
+       (curly@2 poEvalCommand@1)))
+     (vv@C,2 workingDir~B workingDir@2)
+     (vv@U,2 env~4 env@2)))
+   (var@4,4 outp . . .
+    (call@J outputStream~C p@1))
+   (if@,5
+    (elif@3
+     (infix@A >
+      (dot~5 input~5 len@1)0@2)
+     (stmts~1,1
+      (call@K
+       (dot~6
+        (call~3 inputStream~B p@1)write@1)input@1))))
+   (call@5,7 close~5
+    (call@C inputStream~B p@1))
+   (var@4,8 output . . . ""@9)
+   (var@4,9 exitCode . . . -1@B)
+   (var@4,A line . . .
+    (call@L newStringOfCap~E 120@1))
+   (while@,B true@6
+    (stmts@2,1
+     (if
+      (elif@3
+       (call@D
+        (dot~9 outp~4 readLine@1)line@1)
+       (stmts~1,1
+        (cmd@6
+         (dot output~6 add@1)line@5)
+        (cmd@6,1
+         (dot output~6 add@1)'\0A'@5)))
+      (else@,3
+       (stmts@2,1
+        (asgn@9 exitCode~9
+         (call@E peekExitCode~C p@1))
+        (if@,1
+         (elif@3
+          (infix@9 != exitCode~9 -1@3)
+          (stmts@G
+           (break .)))))))))
+   (call@5,I close~5 p@1)
+   (asgn@7,J result~7
+    (tup@2 output@1 exitCode@9))))
+ (proc@,EJ execProcesses@5 x . .
+  (params@J
+   (param@1 cmds . .
+    (at@F openArray~9 string@1).)
+   (param@1,1 options . .
+    (at@C set~3 ProcessOption@1)
+    (curly@2,1 poStdErrToStdOut@1 poParentStreams@J))
+   (param@1,3 n . . int@3
+    (call@X countProcessorsAvailable~O)))int@d,3
+  (pragmas@10,3 raises@2
+   (kv~s,1 tags~4
+    (bracket@2 ExecIOEffect@1 TimeEffect@F ReadEnvEffect@R RootEffect@g))).
+  (stmts@2,5
+   (comment)
+   (asgn@7,3 result~7 0@2)
+   (cmd@,4 assert
+    (infix@9 > n~2 0@2))
+   (if@,5
+    (elif@3
+     (infix@9 ==
+      (dot~5 cmds~4 len@1)0@3)
+     (stmts@F
+      (ret 0@7))))
+   (var@4,6 i . . . 0@4)
+   (var@4,7 alive . . . 0@8)
+   (var@4,8 q . .
+    (at@6 seq~3 Process@1)
+    (prefix@I \40
+     (bracket@1)))
+   (let@4,9 parallel . . .
+    (if@B
+     (elif@3
+      (infix@2 < n~2
+       (dot@6 cmds~4 len@1))
+      (stmts@E n))
+     (else@J
+      (stmts@6
+       (dot@4 cmds~4 len@1)))))
+   (while@,A
+    (infix@C <
+     (dot~5 q~1 len@1)parallel@2)
+    (stmts@2,1
+     (cmd@1
+      (dot q~1 add@1)
+      (call@H startProcess~C
+       (at@5 cmds~4 i@1)
+       (vv@I options~8
+        (infix@A \2B options~8
+         (curly@2 poEvalCommand@1)))))
+     (cmd@,1 inc i@4)
+     (cmd@,2 inc alive@4)))
+   (while@,E
+    (infix@C > alive~6 0@2)
+    (stmts@2,3
+     (var@4 j . . . 0@4)
+     (while@,1
+      (infix@8 < j~2
+       (dot@3 q~1 len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@C and
+          (infix~7 !=
+           (at~4 q~1 j@1)
+           (nil@3))
+          (prefix@4 not
+           (call@B running~7
+            (at@2 q~1 j@1))))
+         (stmts~1,1
+          (let@4 exit . . .
+           (call@J peekExitCode~C
+            (at@2 q~1 j@1)))
+          (let@4,1 v . . .
+           (if@4
+            (elif@3
+             (infix@5 < exit~5 0@2)
+             (stmts@A
+              (prefix \2D exit@1)))
+            (else@J
+             (stmts@6 exit))))
+          (if@,2
+           (elif@3
+            (infix@2 > v~2 result@2)
+            (stmts@C
+             (asgn@7 result~7 v@2))))
+          (call@5,3 close~5
+           (at@2 q~1 j@1))
+          (cmd@,4 dec alive@4)
+          (if@,5
+           (elif@3
+            (infix@2 < i~2
+             (dot@6 cmds~4 len@1))
+            (stmts~1,1
+             (asgn@5
+              (at~4 q~1 j@1)
+              (call@E startProcess~C
+               (at@5 cmds~4 i@1)
+               (vv@I options~8
+                (infix@A \2B options~8
+                 (curly@2 poEvalCommand@1)))))
+             (cmd@,1 inc i@4)
+             (cmd@,2 inc alive@4)))
+           (else@,4
+            (stmts@2,1
+             (asgn@5
+              (at~4 q~1 j@1)
+              (nil@2))))))))
+       (cmd@,C inc j@4))))))))

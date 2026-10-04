@@ -1,0 +1,925 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/observe.nim
+ (comment)
+ (import@,I
+  (infix@A / std~3 tables@1))
+ (type@B,O FileCov~9 x . .
+  (ref@2
+   (object@4 .
+    (fld~9,6 name~4 x . string@3 .)
+    (fld~9,7 hits~4 x .
+     (at@6 seq~3 int@1).)
+    (fld~8,8 known~5 x .
+     (at@6 seq~3 bool@1).))))
+ (type@E,Y BranchSite~C x . .
+  (ref@2
+   (object@4 .
+    (fld~C,4 file~4 x . string@3 .)
+    (fld~C,5 line~4 x . int@3 .)
+    (fld~C,6 form~4 x . string@3 .)
+    (fld~A,7 labels~6 x .
+     (at@6 seq~3 string@1).)
+    (fld~A,8 counts~6 x .
+     (at@6 seq~3 int@1).))))
+ (type@C,i Coverage~A x . .
+  (ref@2
+   (object@4 .
+    (fld~9,1 files~5 x .
+     (at@6 seq~3 FileCov@1).)
+    (fld~6,2 lastName~8 x . string@3 .)
+    (fld~7,3 lastIdx~7 x . int@3 .)
+    (fld~7,5 siteIdx~7 x .
+     (at@8 Table~5 int@1 int@6).)
+    (fld~9,6 sites~5 x .
+     (at@6 seq~3 BranchSite@1).))))
+ (proc@,q newCoverage@5 x . .
+  (params@H)Coverage@4 . .
+  (stmts@2,1
+   (oconstr@8 Coverage~8
+    (kv@6 files~5
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@L lastName~8 "\00none"@2)
+    (kv@g lastIdx~7 -1@2)
+    (kv@8,1 siteIdx~7
+     (call@L
+      (at~A initTable~9 int@1 int@6)))
+    (kv@c,1 sites~5
+     (prefix@2 \40
+      (bracket@1))))))
+ (proc@,u fileIdx@5 . . .
+  (params@C
+   (param@1 c . . Coverage@3 .)
+   (param@E name . . string@6 .))int@T . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@J and
+      (infix~E == name~5
+       (dot@4 c~1 lastName@1))
+      (infix@E >=
+       (dot~9 c~1 lastIdx@1)0@3))
+     (stmts@d
+      (ret
+       (dot@8 c~1 lastIdx@1)))))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@9
+      (dot~6 c~1 files@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G ==
+        (dot~6
+         (at~3
+          (dot~6 c~1 files@1)i@1)name@1)name@3)
+       (stmts~1,1
+        (asgn@B
+         (dot~A c~1 lastName@1)name@2)
+        (asgn@A,1
+         (dot~9 c~1 lastIdx@1)i@2)
+        (ret@,2 i@7))))
+     (cmd@,4 inc i@4)))
+   (cmd@7,8
+    (dot
+     (dot~6 c~1 files@1)add@1)
+    (oconstr@C FileCov~7
+     (kv@5 name~4 name@2)
+     (kv@H hits~4
+      (prefix@2 \40
+       (bracket@1)))
+     (kv@T known~5
+      (prefix@2 \40
+       (bracket@1)))))
+   (asgn@B,9
+    (dot~A c~1 lastName@1)name@2)
+   (asgn@A,A
+    (dot~9 c~1 lastIdx@1)
+    (infix@E \2D
+     (dot~5
+      (dot~6 c~1 files@1)len@1)1@2))
+   (asgn@7,B result~7
+    (dot@3 c~1 lastIdx@1))))
+ (proc@,18 covHit@5 x . .
+  (params@C
+   (param@1 c . . Coverage@3 .)
+   (param@E file . . string@6 .)
+   (param@S line . . int@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@5 <= line~5 0@3)
+     (stmts@B
+      (ret .))))
+   (let@4,2 f . . .
+    (at@B
+     (dot~6 c~1 files@1)
+     (call@8 fileIdx~7 c@1 file@4)))
+   (while@,3
+    (infix@H <=
+     (dot~5
+      (dot~5 f~1 hits@1)len@1)line@3)
+    (stmts@2,1
+     (cmd@6
+      (dot
+       (dot~5 f~1 hits@1)add@1)0@5)
+     (cmd@7,1
+      (dot
+       (dot~6 f~1 known@1)add@1)false@5)))
+   (asgn@D,6
+    (at~7
+     (dot~5 f~1 hits@1)line@1)
+    (infix@F \2B
+     (at~7
+      (dot~5 f~1 hits@1)line@1)1@2))
+   (asgn@E,9
+    (at~7
+     (dot~6 f~1 known@1)line@1)true@2)))
+ (proc@,1K covKnown@5 x . .
+  (params@E
+   (param@1 c . . Coverage@3 .)
+   (param@E file . . string@6 .)
+   (param@S line . . int@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@5 <= line~5 0@3)
+     (stmts@B
+      (ret .))))
+   (let@4,3 f . . .
+    (at@B
+     (dot~6 c~1 files@1)
+     (call@8 fileIdx~7 c@1 file@4)))
+   (while@,4
+    (infix@H <=
+     (dot~5
+      (dot~5 f~1 hits@1)len@1)line@3)
+    (stmts@2,1
+     (cmd@6
+      (dot
+       (dot~5 f~1 hits@1)add@1)0@5)
+     (cmd@7,1
+      (dot
+       (dot~6 f~1 known@1)add@1)false@5)))
+   (asgn@E,7
+    (at~7
+     (dot~6 f~1 known@1)line@1)true@2)))
+ (proc@,1U covSite@5 x . .
+  (params@D
+   (param@1 c . . Coverage@3 .)
+   (param@E site . . int@6 .)
+   (param@P file . . string@6 .)
+   (param@d line . . int@6 .)
+   (param@o form . . string@6 .)
+   (param@1,1 labels . .
+    (at@B seq~3 string@1).))int@N,1 . .
+  (stmts@2,2
+   (comment)
+   (let@4,1 existing . . .
+    (call@X
+     (dot~D
+      (dot~8 c~1 siteIdx@1)getOrDefault@1)site@1 -1@7))
+   (if@,2
+    (elif@3
+     (infix@9 >= existing~9 0@3)
+     (stmts@F
+      (ret existing@7))))
+   (var@4,3 counts . .
+    (at@B seq~3 int@1)
+    (prefix@J \40
+     (bracket@1)))
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@8 < i~2
+     (dot@8 labels~6 len@1))
+    (stmts@2,1
+     (cmd@6
+      (dot counts~6 add@1)0@5)
+     (cmd@,1 inc i@4)))
+   (cmd@7,8
+    (dot
+     (dot~6 c~1 sites@1)add@1)
+    (oconstr@F BranchSite~A
+     (kv@5 file~4 file@2)
+     (kv@H line~4 line@2)
+     (kv@T form~4 form@2)
+     (kv@h labels~6 labels@2)
+     (kv@7,1 counts~6 counts@2)))
+   (let@4,A idx . . .
+    (infix@I \2D
+     (dot~5
+      (dot~6 c~1 sites@1)len@1)1@2))
+   (asgn@G,B
+    (at~7
+     (dot~8 c~1 siteIdx@1)site@1)idx@2)
+   (asgn@7,C result~7 idx@2)))
+ (proc@,1k covArm@5 x . .
+  (params@C
+   (param@1 c . . Coverage@3 .)
+   (param@E siteIndex . . int@G .)
+   (param@P arm . . int@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@E or
+      (infix~4 < siteIndex~A 0@2)
+      (infix@D >= siteIndex~A
+       (dot@A
+        (dot~6 c~1 sites@1)len@1)))
+     (stmts@h
+      (ret .))))
+   (let@4,2 s . . .
+    (at@B
+     (dot~6 c~1 sites@1)siteIndex@1))
+   (if@,3
+    (elif@3
+     (infix@8 or
+      (infix~4 < arm~4 0@2)
+      (infix@7 >= arm~4
+       (dot@B
+        (dot~7 s~1 counts@1)len@1)))
+     (stmts@W
+      (ret .))))
+   (asgn@E,4
+    (at~6
+     (dot~7 s~1 counts@1)arm@1)
+    (infix@G \2B
+     (at~6
+      (dot~7 s~1 counts@1)arm@1)1@2))))
+ (proc@,1t pct@5 . . .
+  (params@8
+   (param@1 hit . . int@C .)
+   (param@6 total . . int@7 .))string@J . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@6 <= total~6 0@3)
+     (stmts@C
+      (ret "100.0"@7))))
+   (let@4,2 tenths . . .
+    (infix@a div
+     (par~R
+      (infix@C \2B
+       (infix~7 * hit~4 1000@2)
+       (infix@8 div total~6 2@4)))total@4))
+   (asgn@7,3 result~7
+    (infix@P &
+     (infix~6 &
+      (prefix~H $
+       (par@1
+        (infix@8 div tenths~7 10@4)))"."@2)
+     (prefix@2 $
+      (par@1
+       (infix@8 mod tenths~7 10@4)))))))
+ (proc@,1z coverageText@5 x . .
+  (params@I
+   (param@1 c . . Coverage@3 .))string@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 "==== aowli coverage ====\0A"@2)
+   (var@4,3 totHit . . . 0@9)
+   (var@4,4 totKnown . . . 0@B)
+   (for@4,5
+    (dot@6 c~1 files@1)
+    (unpackflat
+     (let f . . ..))
+    (stmts~2,1
+     (var@4 hit . . . 0@6)
+     (var@4,1 known . . . 0@8)
+     (var@4,2 l . . . 0@4)
+     (while@,3
+      (infix@8 < l~2
+       (dot@9
+        (dot~6 f~1 known@1)len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (at@7
+          (dot~6 f~1 known@1)l@1)
+         (stmts~1,1
+          (cmd inc known@4)
+          (if@,1
+           (elif@3
+            (infix@A >
+             (at~4
+              (dot~5 f~1 hits@1)l@1)0@2)
+            (stmts@F
+             (cmd inc hit@4)))))))
+       (cmd@,3 inc l@4)))
+     (asgn@7,8 totHit~7
+      (infix@9 \2B totHit~7 hit@2))
+     (asgn@9,9 totKnown~9
+      (infix@B \2B totKnown~9 known@2))
+     (cmd@6,A
+      (dot result~6 add@1)
+      (infix@L,1 &
+       (infix@e,~1 &
+        (infix~D &
+         (infix~9 &
+          (infix~6 &
+           (infix~7 &
+            (infix~7 &
+             (infix~9 & "  "~5
+              (dot@3 f~1 name@1))"\3A "@2)
+            (prefix@2 $ hit@1))"/"@2)
+          (prefix@2 $ known@1))" lines \28"@2)
+        (call~r,1 pct~3 hit@1 known@6))"%\29\0A"@2))))
+   (cmd@6,I
+    (dot result~6 add@1)
+    (infix@R,1 &
+     (infix@V,~1 &
+      (infix~D &
+       (infix~C &
+        (infix~6 &
+         (infix~A & "  TOTAL\3A "~C
+          (prefix@2 $ totHit@1))"/"@2)
+        (prefix@2 $ totKnown@1))" lines \28"@2)
+      (call~o,1 pct~3 totHit@1 totKnown@9))"%\29\0A"@2))
+   (var@4,L brTotal . . . 0@A)
+   (var@4,M brHit . . . 0@8)
+   (var@4,N never . .
+    (at@A seq~3 string@1)
+    (prefix@L \40
+     (bracket@1)))
+   (for@4,O
+    (dot@6 c~1 sites@1)
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (var@4 i . . . 0@4)
+     (while@,1
+      (infix@8 < i~2
+       (dot@A
+        (dot~7 s~1 counts@1)len@1))
+      (stmts@2,1
+       (cmd inc brTotal@4)
+       (if@,1
+        (elif@3
+         (infix@C >
+          (at~4
+           (dot~7 s~1 counts@1)i@1)0@2)
+         (stmts@H
+          (cmd inc brHit@4)))
+        (else@,1
+         (stmts@2,1
+          (cmd@5
+           (dot never~5 add@1)
+           (infix@H,1 &
+            (infix@i,~1 &
+             (infix~B &
+              (infix~9 &
+               (infix~6 &
+                (infix~A &
+                 (infix~6 &
+                  (infix~9 & "  "~5
+                   (dot@3 s~1 file@1))"\3A"@2)
+                 (prefix@2 $
+                  (dot@2 s~1 line@1)))" "@2)
+               (dot@3 s~1 form@1))" arm \27"@2)
+             (at~m,1
+              (dot~7 s~1 labels@1)i@1))"\27 NEVER taken"@2)))))
+       (cmd@,5 inc i@4)))))
+   (cmd@6,X
+    (dot result~6 add@1)
+    (infix@P,1 &
+     (infix@d,~1 &
+      (infix~I &
+       (infix~B &
+        (infix~6 &
+         (infix~9 & "  branches\3A "~F
+          (prefix@2 $ brHit@1))"/"@2)
+        (prefix@2 $ brTotal@1))" arms taken \28"@2)
+      (call~u,1 pct~3 brHit@1 brTotal@8))"%\29\0A"@2))
+   (if@,Z
+    (elif@3
+     (infix@A ==
+      (dot~5 never~5 len@1)0@3)
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)"  \28every recorded branch arm was taken\29\0A"@5)))
+    (else@,2
+     (stmts@2,1
+      (cmd@6
+       (dot result~6 add@1)"  never-taken branches\3A\0A"@5)
+      (for@4,1 never@5
+       (unpackflat
+        (let n . . ..))
+       (stmts~2,1
+        (cmd@6
+         (dot result~6 add@1)
+         (infix@7 & n~2 "\0A"@2)))))))
+   (for@4,g
+    (dot@6 c~1 files@1)
+    (unpackflat
+     (let f . . ..))
+    (stmts~2,1
+     (var@4 miss . .
+      (at@9 seq~3 int@1)
+      (prefix@H \40
+       (bracket@1)))
+     (var@4,1 l . . . 0@4)
+     (while@,2
+      (infix@8 < l~2
+       (dot@9
+        (dot~6 f~1 known@1)len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@B and
+          (at~4
+           (dot~6 f~1 known@1)l@1)
+          (infix@E ==
+           (at~4
+            (dot~5 f~1 hits@1)l@1)0@3))
+         (stmts@V
+          (cmd@4
+           (dot miss~4 add@1)l@5))))
+       (cmd@,1 inc l@4)))
+     (if@,5
+      (elif@3
+       (infix@9 >
+        (dot~5 miss~4 len@1)0@2)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)
+         (infix@c &
+          (infix~9 & "  uncovered lines in "~O
+           (dot@3 f~1 name@1))"\3A"@2))
+        (for@4,1 miss@5
+         (unpackflat
+          (let m . . ..))
+         (stmts~2,1
+          (cmd@6
+           (dot result~6 add@1)
+           (infix@9 & " "~4
+            (prefix@2 $ m@1)))))
+        (cmd@6,3
+         (dot result~6 add@1)"\0A"@5))))))))
+ (proc@,2s coverageLcov@5 x . .
+  (params@I
+   (param@1 c . . Coverage@3 .))string@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 ""@2)
+   (var@4,3 fi . . . 0@5)
+   (while@,4
+    (infix@9 < fi~3
+     (dot@9
+      (dot~6 c~1 files@1)len@1))
+    (stmts@2,1
+     (let@4 f . . .
+      (at@B
+       (dot~6 c~1 files@1)fi@1))
+     (cmd@6,1
+      (dot result~6 add@1)"TN\3A\0A"@5)
+     (cmd@6,2
+      (dot result~6 add@1)
+      (infix@K &
+       (infix~9 & "SF\3A"~6
+        (dot@3 f~1 name@1))"\0A"@2))
+     (var@4,4 block0 . . . 0@9)
+     (var@4,5 brf . . . 0@6)
+     (var@4,6 brh . . . 0@6)
+     (var@4,7 si . . . 0@5)
+     (while@,8
+      (infix@9 < si~3
+       (dot@9
+        (dot~6 c~1 sites@1)len@1))
+      (stmts@2,1
+       (let@4 s . . .
+        (at@B
+         (dot~6 c~1 sites@1)si@1))
+       (if@,1
+        (elif@3
+         (infix@7 ==
+          (dot~6 s~1 file@1)
+          (dot@4 f~1 name@1))
+         (stmts~1,1
+          (var@4 a . . . 0@4)
+          (while@,1
+           (infix@8 < a~2
+            (dot@A
+             (dot~7 s~1 counts@1)len@1))
+           (stmts@2,1
+            (cmd@6
+             (dot result~6 add@1)
+             (infix@I,1 &
+              (infix@c,~1 &
+               (infix~6 &
+                (infix~5 &
+                 (infix~6 &
+                  (infix~A &
+                   (infix~6 &
+                    (infix~A & "BRDA\3A"~8
+                     (prefix@2 $
+                      (dot@2 s~1 line@1)))","@2)
+                   (prefix@2 $ block0@1))","@2)
+                 (prefix@2 $ a@1))","@2)
+               (prefix~p,1 $
+                (at@9
+                 (dot~7 s~1 counts@1)a@1)))"\0A"@2))
+            (cmd@,2 inc brf@4)
+            (if@,3
+             (elif@3
+              (infix@C >
+               (at~4
+                (dot~7 s~1 counts@1)a@1)0@2)
+              (stmts@H
+               (cmd inc brh@4))))
+            (cmd@,4 inc a@4)))
+          (cmd@,7 inc block0@4))))
+       (cmd@,A inc si@4)))
+     (if@,K
+      (elif@3
+       (infix@4 > brf~4 0@2)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)
+         (infix@J &
+          (infix~7 & "BRF\3A"~7
+           (prefix@2 $ brf@1))"\0A"@2))
+        (cmd@6,1
+         (dot result~6 add@1)
+         (infix@J &
+          (infix~7 & "BRH\3A"~7
+           (prefix@2 $ brh@1))"\0A"@2)))))
+     (var@4,N lf . . . 0@5)
+     (var@4,O lh . . . 0@5)
+     (var@4,P l . . . 0@4)
+     (while@,Q
+      (infix@8 < l~2
+       (dot@9
+        (dot~6 f~1 known@1)len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (at@7
+          (dot~6 f~1 known@1)l@1)
+         (stmts~1,1
+          (cmd@6
+           (dot result~6 add@1)
+           (infix@Z &
+            (infix~D &
+             (infix~6 &
+              (infix~5 & "DA\3A"~6
+               (prefix@2 $ l@1))","@2)
+             (prefix@2 $
+              (at@7
+               (dot~5 f~1 hits@1)l@1)))"\0A"@2))
+          (cmd@,1 inc lf@4)
+          (if@,2
+           (elif@3
+            (infix@A >
+             (at~4
+              (dot~5 f~1 hits@1)l@1)0@2)
+            (stmts@F
+             (cmd inc lh@4)))))))
+       (cmd@,4 inc l@4)))
+     (cmd@6,W
+      (dot result~6 add@1)
+      (infix@H &
+       (infix~6 & "LF\3A"~6
+        (prefix@2 $ lf@1))"\0A"@2))
+     (cmd@6,X
+      (dot result~6 add@1)
+      (infix@H &
+       (infix~6 & "LH\3A"~6
+        (prefix@2 $ lh@1))"\0A"@2))
+     (cmd@6,Y
+      (dot result~6 add@1)"end_of_record\0A"@5)
+     (cmd@,Z inc fi@4)))))
+ (type@B,3d Sampler~9 x . .
+  (ref@2
+   (object@4 .
+    (fld~5,5 interval~8 x . int@3 .)
+    (fld~6,6 counter~7 x . int@3 .)
+    (fld~8,7 steps~5 x . int@3 .)
+    (fld~6,8 samples~7 x . int@3 .)
+    (fld~7,9 stacks~6 x .
+     (at@8 Table~5 string@1 int@9).)
+    (fld~8,A selfC~5 x .
+     (at@8 Table~5 string@1 int@9).)
+    (fld~7,B totalC~6 x .
+     (at@8 Table~5 string@1 int@9).))))
+ (const@E,3q TopLevel~8 x . . "\28top level\29"@4)
+ (proc@,3s newSampler@5 x . .
+  (params@G
+   (param@1 interval . . int@A .))Sampler@H . .
+  (stmts@2,1
+   (let@4 iv . . .
+    (if@5
+     (elif@3
+      (infix@9 > interval~9 0@2)
+      (stmts@E interval))
+     (else@Q
+      (stmts@6 10000))))
+   (oconstr@7,1 Sampler~7
+    (kv@9 interval~8 iv@2)
+    (kv@M counter~7 0@2)
+    (kv@W steps~5 0@2)
+    (kv@i samples~7 0@2)
+    (kv@7,1 stacks~6
+     (call@O
+      (at~D initTable~9 string@1 int@9)))
+    (kv@6,2 selfC~5
+     (call@O
+      (at~D initTable~9 string@1 int@9)))
+    (kv@7,3 totalC~6
+     (call@O
+      (at~D initTable~9 string@1 int@9))))))
+ (proc@,3z tick@5 x . .
+  (params@A
+   (param@1 s . . Sampler@3 .))bool@E . .
+  (stmts@2,1
+   (comment)
+   (asgn@8,1
+    (dot~7 s~1 steps@1)
+    (infix@A \2B
+     (dot~7 s~1 steps@1)1@2))
+   (asgn@A,2
+    (dot~9 s~1 counter@1)
+    (infix@C \2B
+     (dot~9 s~1 counter@1)1@2))
+   (if@,3
+    (elif@3
+     (infix@A >=
+      (dot~9 s~1 counter@1)
+      (dot@4 s~1 interval@1))
+     (stmts~1,1
+      (asgn@A
+       (dot~9 s~1 counter@1)0@2)
+      (asgn@7,1 result~7 true@2)))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,49 addSample@5 x . .
+  (params@F
+   (param@1 s . . Sampler@3 .)
+   (param@D stack . .
+    (at@A seq~3 string@1).)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@A,1
+    (dot~9 s~1 samples@1)
+    (infix@C \2B
+     (dot~9 s~1 samples@1)1@2))
+   (var@4,2 key . . . TopLevel@6)
+   (var@4,3 i . . . 0@4)
+   (while@,4
+    (infix@8 < i~2
+     (dot@7 stack~5 len@1))
+    (stmts@2,1
+     (let@4 nm . . .
+      (if@5
+       (elif@3
+        (infix@D >
+         (dot~5
+          (at~3 stack~5 i@1)len@1)0@2)
+        (stmts@I
+         (at@5 stack~5 i@1)))
+       (else@U
+        (stmts@6 "<anon>"))))
+     (cmd@3,1
+      (dot key~3 add@1)";"@5)
+     (cmd@3,2
+      (dot key~3 add@1)nm@5)
+     (cmd@,3 inc i@4)))
+   (asgn@E,9
+    (at~6
+     (dot~7 s~1 stacks@1)key@1)
+    (infix@W \2B
+     (call~9
+      (dot~D
+       (dot~7 s~1 stacks@1)getOrDefault@1)key@1 0@6)1@2))
+   (let@4,A leaf . . .
+    (if@7
+     (elif@3
+      (infix@A >
+       (dot~5 stack~5 len@1)0@2)
+      (stmts~1,1
+       (expr
+        (stmts)
+        (if@1
+         (elif@3
+          (infix@P >
+           (dot~5
+            (at~F stack~5
+             (infix@B \2D
+              (dot~5 stack~5 len@1)1@2))len@1)0@2)
+          (at@Z stack~5
+           (infix@B \2D
+            (dot~5 stack~5 len@1)1@2)))
+         (else@s "<anon>"@6)))))
+     (else@,2
+      (stmts@6 TopLevel))))
+   (asgn@E,D
+    (at~7
+     (dot~6 s~1 selfC@1)leaf@1)
+    (infix@W \2B
+     (call~A
+      (dot~D
+       (dot~6 s~1 selfC@1)getOrDefault@1)leaf@1 0@7)1@2))
+   (var@4,G seen . .
+    (at@9 seq~3 string@1)
+    (prefix@K \40
+     (bracket@1)))
+   (cmd@4,H
+    (dot seen~4 add@1)TopLevel@5)
+   (asgn@2,I i~2 0@2)
+   (while@,J
+    (infix@8 < i~2
+     (dot@7 stack~5 len@1))
+    (stmts@2,1
+     (let@4 nm . . .
+      (if@5
+       (elif@3
+        (infix@D >
+         (dot~5
+          (at~3 stack~5 i@1)len@1)0@2)
+        (stmts@I
+         (at@5 stack~5 i@1)))
+       (else@U
+        (stmts@6 "<anon>"))))
+     (var@4,1 dup . . . false@6)
+     (for@4,2 seen@5
+      (unpackflat
+       (let x . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@2 == x~2 nm@3)
+         (stmts@9
+          (asgn@4 dup~4 true@2))))))
+     (if@,4
+      (elif@3
+       (prefix not dup@4)
+       (stmts@9
+        (cmd@4
+         (dot seen~4 add@1)nm@5))))
+     (cmd@,5 inc i@4)))
+   (for@4,Q seen@6
+    (unpackflat
+     (let nm . . ..))
+    (stmts~2,1
+     (asgn@D
+      (at~5
+       (dot~7 s~1 totalC@1)nm@1)
+      (infix@V \2B
+       (call~8
+        (dot~D
+         (dot~7 s~1 totalC@1)getOrDefault@1)nm@1 0@5)1@2))))))
+ (proc@,4d sortDesc@5 . . .
+  (params@D
+   (param@1 names . .
+    (mut@7
+     (at@7 seq~3 string@1)).)
+   (param@P by . .
+    (at@9 Table~5 string@1 int@9).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 i . . . 1@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@7 names~5 len@1))
+    (stmts@2,1
+     (let@4 cur . . .
+      (at@B names~5 i@1))
+     (let@4,1 curC . . .
+      (call@M
+       (dot~D by~2 getOrDefault@1)cur@1 0@6))
+     (var@4,2 j . . .
+      (infix@6 \2D i~2 1@2))
+     (while@,3
+      (infix@D and
+       (infix~5 >= j~2 0@3)
+       (par@4
+        (infix@b or
+         (infix~7 <
+          (call~E
+           (dot~D by~2 getOrDefault@1)
+           (at@6 names~5 j@1)0@B)curC@2)
+         (par~a,1
+          (infix@c and
+           (infix~8 ==
+            (call~E
+             (dot~D by~2 getOrDefault@1)
+             (at@6 names~5 j@1)0@B)curC@3)
+           (infix@D >
+            (at~4 names~5 j@1)cur@2))))))
+      (stmts@2,2
+       (let@4 moved . . .
+        (at@D names~5 j@1))
+       (asgn@D,1
+        (at~8 names~5
+         (infix@3 \2B j~2 1@2))moved@2)
+       (cmd@,2 dec j@4)))
+     (asgn@D,8
+      (at~8 names~5
+       (infix@3 \2B j~2 1@2))cur@2)
+     (cmd@,9 inc i@4)))))
+ (proc@,4t profileFlat@5 x . .
+  (params@H
+   (param@1 s . . Sampler@3 .))string@E . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 names . .
+    (at@A seq~3 string@1)
+    (prefix@L \40
+     (bracket@1)))
+   (for@4,2
+    (dot@D
+     (dot~7 s~1 totalC@1)keys@1)
+    (unpackflat
+     (let k . . ..))
+    (stmts@K
+     (cmd@5
+      (dot names~5 add@1)k@5)))
+   (call@8,3 sortDesc~8 names@1
+    (dot@9 s~1 selfC@1))
+   (asgn@7,4 result~7 "==== aowli sampling profile ====\0A"@2)
+   (cmd@6,5
+    (dot result~6 add@1)
+    (infix@X,1 &
+     (infix~B &
+      (infix@i,~1 &
+       (infix~D &
+        (infix~D &
+         (infix~E & "  interval\3A every "~L
+          (prefix@2 $
+           (dot@2 s~1 interval@1)))" steps; "@2)
+        (prefix@2 $
+         (dot@2 s~1 samples@1)))" samples over "~z,1)
+      (prefix@2 $
+       (dot@2 s~1 steps@1)))" steps\0A"@2))
+   (cmd@6,7
+    (dot result~6 add@1)"  self%   self  total%  total  routine\0A"@5)
+   (for@4,8 names@6
+    (unpackflat
+     (let nm . . ..))
+    (stmts~2,1
+     (let@4 sv . . .
+      (call@P
+       (dot~D
+        (dot~6 s~1 selfC@1)getOrDefault@1)nm@1 0@5))
+     (let@4,1 tv . . .
+      (call@Q
+       (dot~D
+        (dot~7 s~1 totalC@1)getOrDefault@1)nm@1 0@5))
+     (cmd@6,2
+      (dot result~6 add@1)
+      (infix@n,1 &
+       (infix~5 &
+        (infix~7 &
+         (infix~6 &
+          (infix~7 &
+           (infix@R,~1 &
+            (infix~7 &
+             (infix~6 &
+              (infix~7 &
+               (infix~L & "  "~5
+                (call@5 pct~3 sv@1
+                 (dot@6 s~1 samples@1)))"  "@2)
+              (prefix@2 $ sv@1))"  "@2)
+            (call~h,1 pct~3 tv@1
+             (dot@6 s~1 samples@1)))"  "@2)
+          (prefix@2 $ tv@1))"  "@2)nm@2)"\0A"@2))))))
+ (proc@,58 profileCollapsed@5 x . .
+  (params@M
+   (param@1 s . . Sampler@3 .))string@E . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 keys . .
+    (at@9 seq~3 string@1)
+    (prefix@K \40
+     (bracket@1)))
+   (for@4,3
+    (dot@D
+     (dot~7 s~1 stacks@1)keys@1)
+    (unpackflat
+     (let k . . ..))
+    (stmts@K
+     (cmd@4
+      (dot keys~4 add@1)k@5)))
+   (call@8,4 sortDesc~8 keys@1
+    (dot@8 s~1 stacks@1))
+   (asgn@7,5 result~7 ""@2)
+   (for@4,6 keys@5
+    (unpackflat
+     (let k . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (infix@i &
+       (infix~V &
+        (infix~6 & k~2 " "@2)
+        (prefix@2 $
+         (call@M
+          (dot~D
+           (dot~7 s~1 stacks@1)getOrDefault@1)k@1 0@4)))"\0A"@2)))))))

@@ -1,0 +1,671 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/hostdyn.nim
+ (comment)
+ (when@,l
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,o iopolicy@7)
+ (proc@,s cDlopen@5 . . .
+  (params@C
+   (param@1 path . . cstring@6 .)
+   (param@G mode . . cint@6 .))pointer@T
+  (pragmas@n
+   (kv~e,1 importc~7 "dlopen"@2)
+   (kv~M,1 header~6 "<dlfcn.h>"@2)). .)
+ (proc@,u cDlsym@5 . . .
+  (params@B
+   (param@1 handle . . pointer@8 .)
+   (param@I sym . . cstring@5 .))pointer@X
+  (pragmas@q
+   (kv~h,1 importc~7 "dlsym"@2)
+   (kv~Q,1 header~6 "<dlfcn.h>"@2)). .)
+ (proc@,12 cDlerror@5 . . .
+  (params@D)cstring@4
+  (pragmas@P
+   (kv@9 importc~7 "dlerror"@2)
+   (kv@S header~6 "<dlfcn.h>"@2)). .)
+ (proc@,13 cMalloc@5 . . .
+  (params@C
+   (param@1 n . . csize_t@3 .))pointer@E
+  (pragmas@Y
+   (kv@9 importc~7 "malloc"@2)
+   (kv@R header~6 "<stdlib.h>"@2)). .)
+ (proc@,14 cFree@5 . . .
+  (params@A
+   (param@1 p . . pointer@3 .)).
+  (pragmas@N
+   (kv@9 importc~7 "free"@2)
+   (kv@P header~6 "<stdlib.h>"@2)). .)
+ (const@6,16 RtldNow . . .
+  (dot@B 2~1 cint@1))
+ (const@6,17 RtldGlobal . . .
+  (dot@I 256~5 cint@1))
+ (type@6,1F Fn0~4 . . .
+  (proctype@7 ....
+   (params)uint64@4
+   (pragmas@B cdecl@2)..))
+ (type@6,1G Fn1~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@3 .))uint64@D
+   (pragmas@K cdecl@2)..))
+ (type@6,1H Fn2~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@6 .)
+    (param@4 b . . uint64@3 .))uint64@G
+   (pragmas@N cdecl@2)..))
+ (type@6,1I Fn3~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@9 .)
+    (param@4 b . . uint64@6 .)
+    (param@7 c . . uint64@3 .))uint64@J
+   (pragmas@Q cdecl@2)..))
+ (type@6,1J Fn4~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@C .)
+    (param@4 b . . uint64@9 .)
+    (param@7 c . . uint64@6 .)
+    (param@A d . . uint64@3 .))uint64@M
+   (pragmas@T cdecl@2)..))
+ (type@6,1K Fn5~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@F .)
+    (param@4 b . . uint64@C .)
+    (param@7 c . . uint64@9 .)
+    (param@A d . . uint64@6 .)
+    (param@D e . . uint64@3 .))uint64@P
+   (pragmas@W cdecl@2)..))
+ (type@6,1L Fn6~4 . . .
+  (proctype@7 ....
+   (params
+    (param@1 a . . uint64@I .)
+    (param@4 b . . uint64@F .)
+    (param@7 c . . uint64@C .)
+    (param@A d . . uint64@9 .)
+    (param@D e . . uint64@6 .)
+    (param@G f . . uint64@3 .))uint64@S
+   (pragmas@Z cdecl@2)..))
+ (proc@,1N dlsym0@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn0@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1O dlsym1@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn1@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1P dlsym2@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn2@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1Q dlsym3@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn3@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1R dlsym4@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn4@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1S dlsym5@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn5@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (proc@,1T dlsym6@5 . . .
+  (params@B
+   (param@1 lib . . pointer@5 .)
+   (param@F name . . cstring@6 .))Fn6@V
+  (pragmas@k
+   (kv@9 importc~7 "dlsym"@2)
+   (kv@Q header~6 "<dlfcn.h>"@2)). .)
+ (const@G,1V MaxDynArgs~A x . . 6@4)
+ (var@4,1b gLibNames . .
+  (at@E seq~3 string@1)
+  (prefix@P \40
+   (bracket@1)))
+ (var@4,1c gLibHandles . .
+  (at@G seq~3 pointer@1)
+  (prefix@S \40
+   (bracket@1)))
+ (var@4,1d gSymLib . .
+  (at@C seq~3 string@1)
+  (prefix@N \40
+   (bracket@1)))
+ (var@4,1e gSymName . .
+  (at@D seq~3 string@1)
+  (prefix@O \40
+   (bracket@1)))
+ (var@4,1f gSymAddr . .
+  (at@D seq~3 pointer@1)
+  (prefix@P \40
+   (bracket@1)))
+ (var@4,1h gLastError . . . ""@D)
+ (proc@,1j dynLastError@5 x . .
+  (params@I)string@4 . .
+  (stmts@V gLastError))
+ (proc@,1l cstrToStr@5 . . .
+  (params@E
+   (param@1 p . . cstring@3 .))string@E . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 ""@2)
+   (if@,5
+    (elif@3
+     (infix@2 == p~2
+      (nil@3))
+     (stmts@A
+      (ret .))))
+   (let@4,6 b . . .
+    (cast@4
+     (ptr@5
+      (at@I UncheckedArray~E uint8@1))p@W))
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@8 < i~2 4096@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 b~1 i@1)
+        (suf@3 0u "u8"))
+       (stmts@E
+        (break .))))
+     (cmd@6,1
+      (dot result~6 add@1)
+      (call@9 char~4
+       (at@2 b~1 i@1)))
+     (cmd@,2 inc i@4)))))
+ (proc@,1z dlopenOne@5 . . .
+  (params@E
+   (param@1 name . . string@6 .))pointer@G . .
+  (stmts@2,1
+   (var@4 v . . . name@4)
+   (asgn@7,1 result~7
+    (call@9 cDlopen~7
+     (call@A toCString~9 v@1)
+     (infix@N or RtldNow~8 RtldGlobal@3)))))
+ (proc@,23 libAlternatives@5 . . .
+  (params@K
+   (param@1 spec . . string@6 .))
+  (at@J seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,6 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (if@,7
+    (elif@3
+     (infix@X and
+      (infix~J and
+       (infix~5 >=
+        (dot~5 spec~4 len@1)2@3)
+       (infix@C ==
+        (at~4 spec~4 0@1)'\28'@3))
+      (infix@L ==
+       (at~D spec~4
+        (infix@9 \2D
+         (dot~4 spec~4 len@1)1@1))'\29'@3))
+     (stmts~1,1
+      (var@4 cur . . . ""@6)
+      (var@4,1 i . . . 1@4)
+      (while@,2
+       (infix@8 < i~2
+        (infix@B \2D
+         (dot~5 spec~4 len@1)1@2))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 ==
+           (at~4 spec~4 i@1)'|'@3)
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@8 >
+              (dot~5 cur~3 len@1)0@2)
+             (stmts@D
+              (cmd@6
+               (dot result~6 add@1)cur@5))))
+           (asgn@4,1 cur~4 ""@2)))
+         (else@,3
+          (stmts@2,1
+           (asgn@4 cur~4
+            (infix@6 & cur~4
+             (at@6 spec~4 i@1))))))
+        (cmd@,5 inc i@4)))
+      (if@,9
+       (elif@3
+        (infix@8 >
+         (dot~5 cur~3 len@1)0@2)
+        (stmts@D
+         (cmd@6
+          (dot result~6 add@1)cur@5)))))))
+   (if@,I
+    (elif@3
+     (infix@B ==
+      (dot~5 result~6 len@1)0@3)
+     (stmts@H
+      (asgn@7 result~7
+       (prefix@2 \40
+        (bracket@1 spec@1))))))))
+ (proc@,2O openLib@5 . . .
+  (params@C
+   (param@1 lib . . string@5 .))pointer@F . .
+  (stmts@2,1
+   (comment)
+   (var@4,3 i . . . 0@4)
+   (while@,4
+    (infix@8 < i~2
+     (dot@B gLibNames~9 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@D ==
+        (at~4 gLibNames~9 i@1)lib@3)
+       (stmts@L
+        (ret
+         (at@I gLibHandles~B i@1)))))
+     (cmd@,1 inc i@4)))
+   (var@4,7 h . . pointer@3
+    (nil@D))
+   (let@4,8 cands . . .
+    (call@N libAlternatives~F lib@1))
+   (var@4,9 k . . . 0@4)
+   (while@,A
+    (infix@K and
+     (infix~C < k~2
+      (dot@7 cands~5 len@1))
+     (infix@6 == h~2
+      (nil@3)))
+    (stmts@2,1
+     (asgn@2 h~2
+      (call@B dlopenOne~9
+       (at@6 cands~5 k@1)))
+     (cmd@,1 inc k@4)))
+   (if@,D
+    (elif@3
+     (infix@2 == h~2
+      (nil@3))
+     (stmts~1,1
+      (asgn@B gLastError~B
+       (infix@Z &
+        (infix~G &
+         (infix~6 & "dlopen\28\27"~B lib@2)"\27\29 failed\3A "@2)
+        (call@B cstrToStr~9
+         (call@9 cDlerror~8)))))))
+   (cmd@9,F
+    (dot gLibNames~9 add@1)lib@5)
+   (cmd@B,G
+    (dot gLibHandles~B add@1)h@5)
+   (asgn@7,H result~7 h@2)))
+ (proc@,2i dynResolve@5 x . .
+  (params@G
+   (param@1 lib . . string@A .)
+   (param@6 sym . . string@5 .))pointer@K . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@9 gSymLib~7 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@I and
+        (infix~7 ==
+         (at~4 gSymLib~7 i@1)lib@3)
+        (infix@G ==
+         (at~4 gSymName~8 i@1)sym@3))
+       (stmts@g
+        (ret
+         (at@F gSymAddr~8 i@1)))))
+     (cmd@,1 inc i@4)))
+   (asgn@B,6 gLastError~B ""@2)
+   (let@4,7 h . . .
+    (call@B openLib~7 lib@1))
+   (var@4,8 a . . pointer@3
+    (nil@D))
+   (if@,9
+    (elif@3
+     (infix@2 != h~2
+      (nil@3))
+     (stmts~1,1
+      (var@4 symv . . . sym@7)
+      (asgn@2,1 a~2
+       (call@8 cDlsym~6 h@1
+        (call@D toCString~9 symv@1)))
+      (if@,2
+       (elif@3
+        (infix@2 == a~2
+         (nil@3))
+        (stmts~1,1
+         (asgn@B gLastError~B
+          (infix@s &
+           (infix~8 &
+            (infix~6 &
+             (infix~M &
+              (infix~6 & "dlsym\28\27"~A sym@2)"\27\29 not found in \27"@2)lib@2)"\27\3A "@2)
+           (call~h,1 cstrToStr~9
+            (call@9 cDlerror~8))))))))))
+   (cmd@7,F
+    (dot gSymLib~7 add@1)lib@5)
+   (cmd@8,G
+    (dot gSymName~8 add@1)sym@5)
+   (cmd@8,H
+    (dot gSymAddr~8 add@1)a@5)
+   (asgn@7,I result~7 a@2)))
+ (proc@,33 dynDenied@5 x . .
+  (params@F
+   (param@1 sym . . string@A .)
+   (param@6 lib . . string@5 .))bool@K . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (call@C capsDeniedOn~C capFfi@1 ""@9)
+     (stmts~1,1
+      (call@F recordViolation~F
+       (infix@X &
+        (infix~A &
+         (infix~6 & "dynlib call \27"~G sym@2)"\27 in "@2)lib@2)capFfi@e)
+      (asgn@7,1 result~7 true@2)))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,3F dynCall@5 x . .
+  (params@D
+   (param@1 lib . . string@A .)
+   (param@6 sym . . string@5 .)
+   (param@J args . .
+    (at@9 seq~3 uint64@1).)
+   (param@c ok . .
+    (mut@4 bool@4).))uint64@r . .
+  (stmts@2,1
+   (comment)
+   (asgn@3,9 ok~3 true@2)
+   (asgn@7,A result~7
+    (suf@2 0u "u64"))
+   (if@,B
+    (elif@3
+     (infix@9 >
+      (dot~5 args~4 len@1)MaxDynArgs@2)
+     (stmts~1,1
+      (asgn@3 ok~3 false@2)
+      (ret@,1 .))))
+   (let@4,E h . . .
+    (call@B openLib~7 lib@1))
+   (if@,F
+    (elif@3
+     (infix@2 == h~2
+      (nil@3))
+     (stmts~1,1
+      (asgn@3 ok~3 false@2)
+      (ret@,1 .))))
+   (var@4,I symv . . . sym@7)
+   (let@4,J nm . . .
+    (call@E toCString~9 symv@1))
+   (case@,K
+    (dot@9 args~4 len@1)
+    (of@,1
+     (ranges 0@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym0~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1)))))))
+    (of@,4
+     (ranges 1@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym1~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1))))))))
+    (of@,7
+     (ranges 2@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym2~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1)
+           (at@E args~4 1@1))))))))
+    (of@,A
+     (ranges 3@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym3~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1)
+           (at@E args~4 1@1)
+           (at@N args~4 2@1))))))))
+    (of@,D
+     (ranges 4@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym4~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1)
+           (at@E args~4 1@1)
+           (at@N args~4 2@1)
+           (at@W args~4 3@1))))))))
+    (of@,G
+     (ranges 5@3)
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym5~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@O
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1)
+           (at@E args~4 1@1)
+           (at@N args~4 2@1)
+           (at@W args~4 3@1)
+           (at@f args~4 4@1))))))))
+    (else@,J
+     (stmts@2,1
+      (let@4 f . . .
+       (call@A dlsym6~6 h@1 nm@4))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (asgn@3 ok~3 false@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7
+          (call@3 f~1
+           (at@5 args~4 0@1)
+           (at@E args~4 1@1)
+           (at@N args~4 2@1)
+           (at@W args~4 3@1)
+           (at@f args~4 4@1)
+           (at@o args~4 5@1)))))))))))
+ (type@D,4C Bounce~8 x . .
+  (object@2 .
+   (fld~A,1 mem~3 x . pointer@3 .)
+   (fld~C,2 n~1 x . int@3 .)))
+ (var@4,4G gBounces . .
+  (at@D seq~3 Bounce@1)
+  (prefix@O \40
+   (bracket@1)))
+ (proc@,4I bounceAlloc@5 x . .
+  (params@H
+   (param@1 n . . int@3 .))pointer@A . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@2 <= n~2 0@3)
+     (stmts@8
+      (ret
+       (nil@7)))))
+   (let@4,4 p . . .
+    (call@B cMalloc~7
+     (call@8 csize_t~7 n@1)))
+   (if@,5
+    (elif@3
+     (infix@2 == p~2
+      (nil@3))
+     (stmts@A
+      (ret
+       (nil@7)))))
+   (var@4,6 i . . . 0@4)
+   (let@4,7 b . . .
+    (cast@4
+     (ptr@5
+      (at@I UncheckedArray~E uint8@1))p@W))
+   (while@,8
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (asgn@5
+      (at~4 b~1 i@1)
+      (suf@2 0u "u8"))
+     (cmd@,1 inc i@4)))
+   (cmd@8,B
+    (dot gBounces~8 add@1)
+    (oconstr@B Bounce~6
+     (kv@4 mem~3 p@2)
+     (kv@A n~1 n@2)))
+   (asgn@7,C result~7 p@2)))
+ (proc@,4X bounceWrite@5 x . .
+  (params@H
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .)
+   (param@N b . . byte@3 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 or
+      (infix~7 == p~2
+       (nil@3))
+      (infix@7 < off~4 0@2))
+     (stmts@L
+      (ret .))))
+   (asgn@e,1
+    (at~6
+     (cast~Y
+      (ptr@5
+       (at@I UncheckedArray~E uint8@1))p@W)off@1)
+    (call@7 uint8~5 b@1))))
+ (proc@,4b bounceRead@5 x . .
+  (params@G
+   (param@1 p . . pointer@3 .)
+   (param@D off . . int@5 .))byte@O . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 or
+      (infix~7 == p~2
+       (nil@3))
+      (infix@7 < off~4 0@2))
+     (stmts@L
+      (ret
+       (suf@7 0u "u8")))))
+   (asgn@7,1 result~7
+    (call@6 byte~4
+     (at@Z
+      (cast~Y
+       (ptr@5
+        (at@I UncheckedArray~E uint8@1))p@W)off@1)))))
+ (proc@,4f bounceFreeAll@5 x . .
+  (params@J). . .
+  (stmts@2,1
+   (comment)
+   (var@4,A i . . . 0@4)
+   (while@,B
+    (infix@8 < i~2
+     (dot@A gBounces~8 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G !=
+        (dot~5
+         (at~3 gBounces~8 i@1)mem@1)
+        (nil@3))
+       (stmts@O
+        (call@5 cFree~5
+         (dot@C
+          (at~3 gBounces~8 i@1)mem@1)))))
+     (cmd@,1 inc i@4)))
+   (asgn@9,E gBounces~9
+    (prefix@2 \40
+     (bracket@1)))))
+ (proc@,4w bounceCount@5 x . .
+  (params@H)int@4 . .
+  (stmts@R
+   (dot@8 gBounces~8 len@1))))

@@ -1,0 +1,1235 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/nimony_model.nim
+ (import
+  (infix@B / std~4 assertions@2))
+ (include@,1
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,2
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 stringviews@1 symparser@E)))
+ (import@,4
+  (infix@L /
+   (infix~9 / ".."~5 models@2)
+   (bracket@2 tags@1 nimony_tags@7 callconv_tags@K)))
+ (export@,5 nimony_tags@7 callconv_tags@K)
+ (template@,7 tagEnum@9 x . .
+  (params@H
+   (param@1 c . . Cursor@3 .))TagEnum@D . .
+  (stmts@e
+   (cast TagEnum@5
+    (call@H tag~3 c@1))))
+ (template@,9 tagEnum@9 x . .
+  (params@H
+   (param@1 c . . PackedToken@3 .))TagEnum@I . .
+  (stmts@j
+   (cast TagEnum@5
+    (call@H tag~3 c@1))))
+ (proc@,B stmtKind@5 x . .
+  (params@E
+   (param@1 c . . PackedToken@3 .))NimonyStmt@I
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 c~1 kind@1)ParLe@3)
+      (call@M rawTagIsNimonyStmt~I
+       (call@8 tagEnum~7 c@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (cast@2 NimonyStmt@5
+        (call@O tagEnum~7 c@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 NoStmt@2))))))
+ (proc@,H stmtKind@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))NimonyStmt@D
+  (pragmas@c inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A stmtKind~8
+     (call@7
+      (dot~5 c~1 load@1))))))
+ (proc@,K pragmaKind@5 x . .
+  (params@G
+   (param@1 c . . Cursor@3 .))NimonyPragma@D
+  (pragmas@g inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (let@4 e . . .
+       (call@B tagEnum~7 c@1))
+      (if@,1
+       (elif@3
+        (call@K rawTagIsNimonyPragma~K e@1)
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 NimonyPragma@5 e@J))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoPragma@2))))))
+    (elif@5,6
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Ident@3)
+     (stmts~3,1
+      (let@4 tagId . . .
+       (call@R
+        (dot~A
+         (dot~5 pool~4 tags@1)getOrIncl@1)
+        (at@D
+         (dot~8 pool~4 strings@1)
+         (dot@2 c~1 litId@1))))
+      (if@,1
+       (elif@3
+        (infix@o and
+         (infix~Z and
+          (infix~5 >=
+           (dot~5 tagId~5 int@1)0@3)
+          (infix@E <=
+           (dot~5 tagId~5 int@1)
+           (dot@G
+            (call~9 high~4 TagEnum@1)int@1)))
+         (call@O rawTagIsNimonyPragma~K
+          (cast@1 TagEnum@5 tagId@E)))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 NimonyPragma@5 tagId@J))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoPragma@2))))))
+    (else@,C
+     (stmts@2,1
+      (asgn@7 result~7 NoPragma@2))))))
+ (proc@,a substructureKind@5 x . .
+  (params@M
+   (param@1 c . . PackedToken@3 .))NimonyOther@I
+  (pragmas@q inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 c~1 kind@1)ParLe@3)
+      (call@N rawTagIsNimonyOther~J
+       (call@8 tagEnum~7 c@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (cast@2 NimonyOther@5
+        (call@L tag~3 c@1)))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 NoSub@2))))))
+ (proc@,g substructureKind@5 x . .
+  (params@M
+   (param@1 c . . Cursor@3 .))NimonyOther@D
+  (pragmas@l inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@I substructureKind~G
+     (call@7
+      (dot~5 c~1 load@1))))))
+ (proc@,j typeKind@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))NimonyType@D
+  (pragmas@c inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@I rawTagIsNimonyType~I
+         (call@8 tagEnum~7 c@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 NimonyType@5
+           (call@O tagEnum~7 c@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoType@2))))))
+    (elif@5,5
+     (infix@7 ==
+      (dot~6 c~1 kind@1)DotToken@3)
+     (stmts~3,1
+      (asgn@7 result~7 VoidT@2)))
+    (else@,7
+     (stmts@2,1
+      (asgn@7 result~7 NoType@2))))))
+ (proc@,u callConvKind@5 x . .
+  (params@I
+   (param@1 c . . Cursor@3 .))CallConv@D
+  (pragmas@e inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@G rawTagIsCallConv~G
+         (call@8 tagEnum~7 c@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 CallConv@5
+           (call@I tag~3 c@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoCallConv@2))))))
+    (elif@5,5
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Ident@3)
+     (stmts~3,1
+      (let@4 tagId . . .
+       (call@R
+        (dot~A
+         (dot~5 pool~4 tags@1)getOrIncl@1)
+        (at@D
+         (dot~8 pool~4 strings@1)
+         (dot@2 c~1 litId@1))))
+      (if@,1
+       (elif@3
+        (call@G rawTagIsCallConv~G
+         (cast@1 TagEnum@5 tagId@E))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 CallConv@5 tagId@F))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoCallConv@2))))))
+    (else@,B
+     (stmts@2,1
+      (asgn@7 result~7 NoCallConv@2))))))
+ (proc@,19 exprKind@5 x . .
+  (params@E
+   (param@1 c . . PackedToken@3 .))NimonyExpr@I
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@I rawTagIsNimonyExpr~I
+         (call@8 tagEnum~7 c@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 NimonyExpr@5
+           (call@O tagEnum~7 c@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoExpr@2))))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7 NoExpr@2))))))
+ (proc@,1I exprKind@5 x . .
+  (params@E
+   (param@1 c . . Cursor@3 .))NimonyExpr@D
+  (pragmas@c inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A exprKind~8
+     (call@7
+      (dot~5 c~1 load@1))))))
+ (proc@,1L symKind@5 x . .
+  (params@D
+   (param@1 c . . Cursor@3 .))NimonySym@D
+  (pragmas@a inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@H rawTagIsNimonySym~H
+         (call@8 tagEnum~7 c@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 NimonySym@5
+           (call@N tagEnum~7 c@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoSym@2))))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7 NoSym@2))))))
+ (proc@,1U cfKind@5 x . .
+  (params@C
+   (param@1 c . . Cursor@3 .))ControlFlowKind@D
+  (pragmas@f inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@N rawTagIsControlFlowKind~N
+         (call@8 tagEnum~7 c@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (cast@2 ControlFlowKind@5
+           (call@T tagEnum~7 c@1)))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7 NoControlFlow@2))))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7 NoControlFlow@2))))))
+ (proc@,1d hookKind@5 x . .
+  (params@E
+   (param@1 x . . TagId@3 .))HookKind@C
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@G rawTagIsHookKind~G
+      (cast@1 TagEnum@5 x@E))
+     (stmts~1,1
+      (asgn@7 result~7
+       (cast@2 HookKind@5 x@F))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 NoHook@2))))))
+ (template@,1j isParamsTag@9 x . .
+  (params@L
+   (param@1 c . . Cursor@3 .))bool@D . .
+  (stmts@f
+   (infix@A ==
+    (dot~9 c~1 tagEnum@1)ParamsTagId@3)))
+ (type@B,1n SymKind~9 x . . NimonySym@2)
+ (type@C,1o ExprKind~A x . . NimonyExpr@2)
+ (type@C,1p StmtKind~A x . . NimonyStmt@2)
+ (type@K,1q SubstructureKind~I x . . NimonyOther@2)
+ (type@E,1r PragmaKind~C x . . NimonyPragma@2)
+ (type@C,1s TypeKind~A x . . NimonyType@2)
+ (type@K,21 NimonyTagKind~F x . .
+  (infix@m,1 |
+   (infix~F |
+    (infix~E |
+     (infix~D |
+      (infix~D | NimonyStmt~B NimonyExpr@2)NimonyType@2)NimonyOther@2)NimonyPragma@2)NimonySym@2))
+ (when@,2D
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@8 pragma~6 tagDispatch@2)untyped@N)))
+  (else@,2
+   (stmts@2,1
+    (pragmas
+     (kv@8 pragma~6 tagDispatch@2)))))
+ (template@,2I kindMatches@9 . . .
+  (params@K
+   (param@1 c . . Cursor@3 .)
+   (param@C expected . . NimonyTagKind@A .))bool@c
+  (pragmas@11 tagDispatch@2).
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@9 is expected~9 NimonyStmt@3)
+     (stmts@R
+      (infix@B ==
+       (dot~A c~1 stmtKind@1)expected@3)))
+    (elif@5,1
+     (infix@9 is expected~9 NimonyExpr@3)
+     (stmts@R
+      (infix@B ==
+       (dot~A c~1 exprKind@1)expected@3)))
+    (elif@5,2
+     (infix@9 is expected~9 NimonyType@3)
+     (stmts@R
+      (infix@B ==
+       (dot~A c~1 typeKind@1)expected@3)))
+    (elif@5,3
+     (infix@9 is expected~9 NimonyOther@3)
+     (stmts@R
+      (infix@J ==
+       (dot~I c~1 substructureKind@1)expected@3)))
+    (elif@5,4
+     (infix@9 is expected~9 NimonyPragma@3)
+     (stmts@R
+      (infix@D ==
+       (dot~C c~1 pragmaKind@1)expected@3)))
+    (elif@5,5
+     (infix@9 is expected~9 NimonySym@3)
+     (stmts@R
+      (infix@A ==
+       (dot~9 c~1 symKind@1)expected@3)))
+    (else@,6
+     (stmts@W false)))))
+ (template@,2R skip@9 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . NimonyTagKind@A .)).
+  (pragmas@t tagDispatch@2).
+  (stmts@2,1
+   (cmd assert
+    (call@I kindMatches~B c@1 expected@4)
+    (infix@1E,2 &
+     (infix~E &
+      (infix~B &
+       (infix~E &
+        (infix~B &
+         (infix~E &
+          (infix@g,~1 &
+           (infix~A &
+            (infix~M &
+             (infix~C & "skip "~8
+              (prefix@2 $ expected@1))"\3A cursor at kind="@2)
+            (prefix@2 $
+             (dot@2 c~1 kind@1)))" \28stmt="~q,1)
+          (prefix@2 $
+           (dot@2 c~1 stmtKind@1)))" expr="@2)
+        (prefix@2 $
+         (dot@2 c~1 exprKind@1)))" type="@2)
+      (prefix@2 $
+       (dot@2 c~1 typeKind@1)))"\29"@2))
+   (cmd@,3 skip c@5)))
+ (template@,2X inc@9 x . .
+  (params@D
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . NimonyTagKind@A .)).
+  (pragmas@s tagDispatch@2).
+  (stmts@2,1
+   (cmd assert
+    (call@I kindMatches~B c@1 expected@4)
+    (infix@1E,2 &
+     (infix~E &
+      (infix~B &
+       (infix~E &
+        (infix~B &
+         (infix~E &
+          (infix@f,~1 &
+           (infix~A &
+            (infix~M &
+             (infix~C & "inc "~7
+              (prefix@2 $ expected@1))"\3A cursor at kind="@2)
+            (prefix@2 $
+             (dot@2 c~1 kind@1)))" \28stmt="~p,1)
+          (prefix@2 $
+           (dot@2 c~1 stmtKind@1)))" expr="@2)
+        (prefix@2 $
+         (dot@2 c~1 exprKind@1)))" type="@2)
+      (prefix@2 $
+       (dot@2 c~1 typeKind@1)))"\29"@2))
+   (cmd@,3 inc c@4)))
+ (template@,2d into@9 x . .
+  (params@E
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . NimonyTagKind@A .)
+   (param@f body . . untyped@6 .)).
+  (pragmas@18 tagDispatch@2).
+  (stmts@2,1
+   (cmd assert
+    (call@I kindMatches~B c@1 expected@4)
+    (infix@1E,2 &
+     (infix~E &
+      (infix~B &
+       (infix~E &
+        (infix~B &
+         (infix~E &
+          (infix@g,~1 &
+           (infix~A &
+            (infix~M &
+             (infix~C & "into "~8
+              (prefix@2 $ expected@1))"\3A cursor at kind="@2)
+            (prefix@2 $
+             (dot@2 c~1 kind@1)))" \28stmt="~q,1)
+          (prefix@2 $
+           (dot@2 c~1 stmtKind@1)))" expr="@2)
+        (prefix@2 $
+         (dot@2 c~1 exprKind@1)))" type="@2)
+      (prefix@2 $
+       (dot@2 c~1 typeKind@1)))"\29"@2))
+   (cmd@,3 into c@5
+    (stmts@2,1 body))))
+ (template@,2k loopInto@9 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G expected . . NimonyTagKind@A .)
+   (param@f body . . untyped@6 .)).
+  (pragmas@1C tagDispatch@2).
+  (stmts@2,1
+   (cmd assert
+    (call@I kindMatches~B c@1 expected@4)
+    (infix@1E,2 &
+     (infix~E &
+      (infix~B &
+       (infix~E &
+        (infix~B &
+         (infix~E &
+          (infix@k,~1 &
+           (infix~A &
+            (infix~M &
+             (infix~C & "loopInto "~C
+              (prefix@2 $ expected@1))"\3A cursor at kind="@2)
+            (prefix@2 $
+             (dot@2 c~1 kind@1)))" \28stmt="~u,1)
+          (prefix@2 $
+           (dot@2 c~1 stmtKind@1)))" expr="@2)
+        (prefix@2 $
+         (dot@2 c~1 exprKind@1)))" type="@2)
+      (prefix@2 $
+       (dot@2 c~1 typeKind@1)))"\29"@2))
+   (cmd@,3 loopInto c@9
+    (stmts@2,1 body))))
+ (const@6,2s IntT~4 x . . IT@4)
+ (const@7,2t UIntT~5 x . . UT@4)
+ (const@8,2u FloatT~6 x . . FT@4)
+ (const@7,2v CharT~5 x . . CT@4)
+ (const@C,2w HoleyEnumT~A x . . OnumT@4)
+ (const@9,2x InvokeT~7 x . . AtT@4)
+ (const@E,30 RoutineKinds~C x . .
+  (curly@4 ProcY@1 FuncY@8 IteratorY@F TemplateY@Q MacroY@b ConverterY@j MethodY@v))
+ (const@B,31 CallKinds~9 x . .
+  (curly@4 CallX@1 CallstrlitX@8 CmdX@L PrefixX@R InfixX@a HcallX@i ProccallX@q DelayX@11))
+ (const@C,32 CallKindsS~A x . .
+  (curly@4 CallS@1 CallstrlitS@8 CmdS@L PrefixS@R InfixS@a HcallS@i))
+ (const@B,33 ConvKinds~9 x . .
+  (curly@4 HconvX@1 ConvX@9 DconvX@G CastX@O))
+ (const@G,34 TypeclassKinds~E x . .
+  (curly@4 ConceptT@1 TypekindT@B OrdinalT@M OrT@W AndT@b NotT@h))
+ (const@E,35 RoutineTypes~C x . .
+  (curly@4 ProcT@1 FuncT@8 IteratorT@F TemplateT@Q MacroT@b ConverterT@j MethodT@v ProctypeT@14 ItertypeT@1F))
+ (proc@,37 addParLe@5 x .
+  (typevars@E
+   (typevar@1 T . .
+    (infix@1H |
+     (infix~9 |
+      (infix~G |
+       (infix~H |
+        (infix~9 |
+         (infix~9 |
+          (infix~8 | TypeKind~8 SymKind@1)ExprKind@1)StmtKind@1)SubstructureKind@1)ControlFlowKind@1)CallConv@1)PragmaKind@1).))
+  (params@1i
+   (param~1e,1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param~1K,1 kind . . T@6 .)
+   (param~1B,1 info . . . NoLineInfo@7)). . .
+  (stmts@2,2
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A
+     (cast@1 TagId@5 kind@C)info@K))))
+ (proc@,3B addParPair@5 x .
+  (typevars@G
+   (typevar@1 T . .
+    (infix@v |
+     (infix~H |
+      (infix~9 |
+       (infix~9 |
+        (infix~B | TypeKind~8 PragmaKind@1)ExprKind@1)StmtKind@1)SubstructureKind@1)CallConv@1).))
+  (params@1M
+   (param~1I,1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param~y,1 kind . . T@6 .)
+   (param~p,1 info . . . NoLineInfo@7)). . .
+  (stmts@2,2
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A
+     (cast@1 TagId@5 kind@C)info@K))
+   (call@D,1
+    (dot~9 dest~4 addParRi@1))))
+ (proc@,3G parLeToken@5 x .
+  (typevars@G
+   (typevar@1 T . .
+    (infix@s |
+     (infix~H |
+      (infix~9 |
+       (infix~9 |
+        (infix~8 | TypeKind~8 SymKind@1)ExprKind@1)StmtKind@1)SubstructureKind@1)PragmaKind@1).))
+  (params@1L
+   (param~1H,1 kind . . T@6 .)
+   (param~18,1 info . . . NoLineInfo@7))PackedToken~o,1 . .
+  (stmts@2,2
+   (call@A parLeToken~A
+    (cast@1 TagId@5 kind@C)info@K)))
+ (proc@,3K tagToken@5 x . .
+  (params@E
+   (param@1 tag . . string@5 .)
+   (param@E info . . PackedLineInfo@6 .))PackedToken@b
+  (pragmas@11 inline@2).
+  (stmts@2,1
+   (call@A parLeToken~A
+    (call@K
+     (dot~A
+      (dot~5 pool~4 tags@1)getOrIncl@1)tag@1)info@R)))
+ (template@,3N copyIntoKind@9 x . .
+  (params@M
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L kind . .
+    (infix@v |
+     (infix~H |
+      (infix~9 |
+       (infix~9 |
+        (infix~8 | TypeKind~8 SymKind@1)ExprKind@1)StmtKind@1)SubstructureKind@1)PragmaKind@1).)
+   (param@1,1 info . . PackedLineInfo@6 .)
+   (param@N,1 body . . untyped@6 .)). . .
+  (stmts@2,2
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A kind@1 info@7))body@,1
+   (call@D,2
+    (dot~9 dest~4 addParRi@1))))
+ (template@,3T copyIntoKinds@9 x . .
+  (params@N
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L kinds . .
+    (at@C array~5 2@1 StmtKind@4).)
+   (param@m info . . PackedLineInfo@6 .)
+   (param@18 body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@F parLeToken~A
+     (at@6 kinds~5 0@1)info@B))
+   (cmd@4,1
+    (dot dest~4 add@1)
+    (call@F parLeToken~A
+     (at@6 kinds~5 1@1)info@B))body@,2
+   (call@D,3
+    (dot~9 dest~4 addParRi@1))
+   (call@D,4
+    (dot~9 dest~4 addParRi@1))))
+ (proc@,3a skipParRi@5 . . .
+  (params@E
+   (param@1 n . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (cmd assert
+    (infix@E ==
+     (dot~6 n~1 kind@1)ParRi@3)"expected \27\29\27"@O)
+   (cmd@,1 consumeParRi n@D)))
+ (template@,3e copyInto@9 x . .
+  (params@I
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L n . .
+    (mut@3 Cursor@4).)
+   (param@a body . . untyped@6 .)). . .
+  (stmts@2,1
+   (cmd assert
+    (infix@E ==
+     (dot~6 n~1 kind@1)ParLe@3))
+   (cmd@4,1
+    (dot dest~4 add@1)n@5)
+   (call@1,2
+    (dot n~1 into@1)
+    (stmts@1,1 body))
+   (call@D,4
+    (dot~9 dest~4 addParRi@1))))
+ (proc@,3l isAtom@5 x . .
+  (params@C
+   (param@1 n . . Cursor@3 .))bool@D
+  (pragmas@U inline@2).
+  (stmts@h
+   (infix@7 <
+    (dot~6 n~1 kind@1)ParLe@2)))
+ (proc@,3n copyIntoSymUse@5 x . .
+  (params@K
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L s . . SymId@3 .)
+   (param@V info . . PackedLineInfo@6 .)).
+  (pragmas@1B inline@2).
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D symToken~8 s@1 info@4))))
+ (proc@,3q copyTree@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . TokenBuf@5 .)).
+  (pragmas@o inline@2).
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)src@5)))
+ (proc@,3t copyTree@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L src . . Cursor@5 .)).
+  (pragmas@m inline@2).
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 addSubtree@1)src@C)))
+ (proc@,3w addEmpty@5 x . .
+  (params@E
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L info . . PackedLineInfo@6 NoLineInfo@N)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))))
+ (proc@,3z addEmpty2@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L info . . PackedLineInfo@6 NoLineInfo@N)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))
+   (cmd@4,1
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))))
+ (proc@,43 addEmpty3@5 x . .
+  (params@F
+   (param@1 dest . .
+    (mut@6 TokenBuf@4).)
+   (param@L info . . PackedLineInfo@6 NoLineInfo@N)). . .
+  (stmts@2,1
+   (cmd@4
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))
+   (cmd@4,1
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))
+   (cmd@4,2
+    (dot dest~4 add@1)
+    (call@D dotToken~8 info@1))))
+ (proc@,48 symNameId@5 . . .
+  (params@E
+   (param@1 s . . SymId@3 .))StrId@C . .
+  (stmts@2,1
+   (var@4 name . . .
+    (at@G
+     (dot~5 pool~4 syms@1)s@1))
+   (cmd@,1 extractBasename name@G)
+   (call@M,2
+    (dot~A
+     (dot~8 pool~4 strings@1)getOrIncl@1)name@1)))
+ (proc@,4D sameTrees@5 x . .
+  (params@F
+   (param@1 a . . Cursor@6 .)
+   (param@4 b . . Cursor@3 .))bool@G . .
+  (stmts@2,1
+   (var@4 a . . . a@4)
+   (var@4,1 b . . . b@4)
+   (var@4,2 nested . . . 0@9)
+   (let@4,3 isAtom . . .
+    (infix@G !=
+     (dot~6 a~1 kind@1)ParLe@3))
+   (while@,4 true@6
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 !=
+        (dot~6 a~1 kind@1)
+        (dot@4 b~1 kind@1))
+       (stmts@I
+        (ret false@7))))
+     (case@,1
+      (dot@6 a~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 !=
+           (dot~7 a~1 tagId@1)
+           (dot@4 b~1 tagId@1))
+          (stmts@K
+           (ret false@7))))
+        (cmd@,1 inc nested@4)))
+      (of@,4
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts@D
+           (ret true@7))))))
+      (of@,7
+       (ranges Symbol@3 SymbolDef@B)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 !=
+           (dot~7 a~1 symId@1)
+           (dot@4 b~1 symId@1))
+          (stmts@K
+           (ret false@7))))))
+      (of@,9
+       (ranges IntLit@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 !=
+           (dot~7 a~1 intId@1)
+           (dot@4 b~1 intId@1))
+          (stmts@K
+           (ret false@7))))))
+      (of@,B
+       (ranges UIntLit@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@9 !=
+           (dot~8 a~1 uintId@1)
+           (dot@4 b~1 uintId@1))
+          (stmts@M
+           (ret false@7))))))
+      (of@,D
+       (ranges FloatLit@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@A !=
+           (dot~9 a~1 floatId@1)
+           (dot@4 b~1 floatId@1))
+          (stmts@O
+           (ret false@7))))))
+      (of@,F
+       (ranges StringLit@3 Ident@E)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 !=
+           (dot~7 a~1 litId@1)
+           (dot@4 b~1 litId@1))
+          (stmts@K
+           (ret false@7))))))
+      (of@,H
+       (ranges CharLit@3 UnknownToken@C)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@B !=
+           (dot~A a~1 uoperand@1)
+           (dot@4 b~1 uoperand@1))
+          (stmts@Q
+           (ret false@7))))))
+      (of@,J
+       (ranges DotToken@3 EofToken@D)
+       (stmts@N
+        (discard "nothing else to compare"@8))))
+     (if@,L
+      (elif@3 isAtom
+       (stmts@8
+        (ret true@7))))
+     (cmd@,M inc a@4)
+     (cmd@,N inc b@4)))
+   (ret@,T false@7)))
+ (proc@,4j sameTreesButIgnoreSymIds@5 x . .
+  (params@U
+   (param@1 a . . Cursor@6 .)
+   (param@4 b . . Cursor@3 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (var@4,2 a . . . a@4)
+   (var@4,3 b . . . b@4)
+   (var@4,4 nested . . . 0@9)
+   (let@4,5 isAtom . . .
+    (infix@G !=
+     (dot~6 a~1 kind@1)ParLe@3))
+   (while@,6 true@6
+    (stmts@2,2
+     (let@4 aIsName . . .
+      (infix@H in
+       (dot~6 a~1 kind@1)
+       (curly@3 Symbol@1 SymbolDef@9 Ident@K)))
+     (let@4,1 bIsName . . .
+      (infix@H in
+       (dot~6 b~1 kind@1)
+       (curly@3 Symbol@1 SymbolDef@9 Ident@K)))
+     (if@,2
+      (elif@3
+       (infix@8 and aIsName~8 bIsName@4)
+       (stmts~1,1
+        (let@4 aName . . .
+         (if@8
+          (elif@3
+           (infix@7 ==
+            (dot~6 a~1 kind@1)Ident@3)
+           (stmts@H
+            (dot@1 a~1 litId@1)))
+          (else@S
+           (stmts@6
+            (call@9 symNameId~9
+             (dot@2 a~1 symId@1))))))
+        (let@4,1 bName . . .
+         (if@8
+          (elif@3
+           (infix@7 ==
+            (dot~6 b~1 kind@1)Ident@3)
+           (stmts@H
+            (dot@1 b~1 litId@1)))
+          (else@S
+           (stmts@6
+            (call@9 symNameId~9
+             (dot@2 b~1 symId@1))))))
+        (if@,2
+         (elif@3
+          (infix@6 != aName~6 bName@3)
+          (stmts@G
+           (ret false@7))))))
+      (elif@5,4
+       (infix@8 or aIsName~8 bIsName@3)
+       (stmts~3,1
+        (ret false@7)))
+      (elif@5,6
+       (infix@7 !=
+        (dot~6 a~1 kind@1)
+        (dot@4 b~1 kind@1))
+       (stmts~3,1
+        (ret false@7)))
+      (else@,8
+       (stmts@2,1
+        (case
+         (dot@6 a~1 kind@1)
+         (of@,1
+          (ranges ParLe@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@8 !=
+              (dot~7 a~1 tagId@1)
+              (dot@4 b~1 tagId@1))
+             (stmts@K
+              (ret false@7))))
+           (cmd@,1 inc nested@4)))
+         (of@,4
+          (ranges ParRi@3)
+          (stmts@2,1
+           (cmd dec nested@4)
+           (if@,1
+            (elif@3
+             (infix@7 == nested~7 0@3)
+             (stmts@D
+              (ret true@7))))))
+         (of@,7
+          (ranges IntLit@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@8 !=
+              (dot~7 a~1 intId@1)
+              (dot@4 b~1 intId@1))
+             (stmts@K
+              (ret false@7))))))
+         (of@,9
+          (ranges UIntLit@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@9 !=
+              (dot~8 a~1 uintId@1)
+              (dot@4 b~1 uintId@1))
+             (stmts@M
+              (ret false@7))))))
+         (of@,B
+          (ranges FloatLit@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@A !=
+              (dot~9 a~1 floatId@1)
+              (dot@4 b~1 floatId@1))
+             (stmts@O
+              (ret false@7))))))
+         (of@,D
+          (ranges StringLit@3)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@8 !=
+              (dot~7 a~1 litId@1)
+              (dot@4 b~1 litId@1))
+             (stmts@K
+              (ret false@7))))))
+         (of@,F
+          (ranges CharLit@3 UnknownToken@C)
+          (stmts@2,1
+           (if
+            (elif@3
+             (infix@B !=
+              (dot~A a~1 uoperand@1)
+              (dot@4 b~1 uoperand@1))
+             (stmts@Q
+              (ret false@7))))))
+         (of@,H
+          (ranges DotToken@3 EofToken@D)
+          (stmts@N
+           (discard .)))
+         (of@,I
+          (ranges Symbol@3 SymbolDef@B Ident@M)
+          (stmts@T
+           (discard .)))))))
+     (if@,U
+      (elif@3 isAtom
+       (stmts@8
+        (ret true@7))))
+     (cmd@,V inc a@4)
+     (cmd@,W inc b@4)))
+   (ret@,f false@7)))
+ (proc@,5R isDeclarative@5 x . .
+  (params@J
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (case
+    (dot@6 n~1 stmtKind@1)
+    (of@,1
+     (ranges FromimportS@3 ImportS@G ExportS@P IncludeS@Y ImportexceptS@i TypeS@x CommentS@14 TemplateS@1E)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (else@,3
+     (stmts@2,1
+      (case
+       (dot@6 n~1 substructureKind@1)
+       (of@,1
+        (ranges PragmasU@3 TypevarsU@D)
+        (stmts@2,1
+         (asgn@7 result~7 true@2)))
+       (else@,3
+        (stmts@2,1
+         (case
+          (dot@6 n~1 exprKind@1)
+          (of@,1
+           (ranges TypeofX@3)
+           (stmts@2,1
+            (asgn@7 result~7 true@2)))
+          (else@,3
+           (stmts@2,1
+            (asgn@7 result~7 false@2))))))))))))
+ (proc@,5g isCompileTimeType@5 x . .
+  (params@N
+   (param@1 n . . Cursor@3 .))bool@D
+  (pragmas@f inline@2).
+  (stmts@2,1
+   (infix@B in
+    (dot~A n~1 typeKind@1)
+    (curly@3 TypekindT@1 TypedescT@C SymkindT@N OrT@X AndT@c NotT@i ConceptT@o StaticT@y))))
+ (proc@,5j hookName@5 x . .
+  (params@E
+   (param@1 op . . HookKind@4 .))string@G . .
+  (stmts@2,1
+   (case op@5
+    (of@,1
+     (ranges DestroyH@3)
+     (stmts@D "destroy"))
+    (of@,2
+     (ranges WasmovedH@3)
+     (stmts@E "wasMoved"))
+    (of@,3
+     (ranges DupH@3)
+     (stmts@9 "dup"))
+    (of@,4
+     (ranges CopyH@3)
+     (stmts@A "copy"))
+    (of@,5
+     (ranges SinkhH@3)
+     (stmts@B "sink"))
+    (of@,6
+     (ranges TraceH@3)
+     (stmts@B "trace"))
+    (of@,7
+     (ranges NoHook@3)
+     (stmts@B "\28NoHook\29")))))
+ (const@9,5u NoSymId~7 x . .
+  (call@9 SymId~5 0@1))
+ (proc@,5w extractPragma@5 x . .
+  (params@J
+   (param@1 n . . Cursor@3 .)
+   (param@C kind . . PragmaKind@6 .))Cursor@V . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (if@,1
+    (elif@3
+     (infix@7 !=
+      (dot~6 n~1 kind@1)DotToken@3)
+     (stmts~1,1
+      (call@1
+       (dot n~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 n~1 hasMore@1)
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@E ==
+             (call~4 pragmaKind~A n@1)kind@3)
+            (stmts~1,1
+             (cmd inc n@4 SkipTag@7)
+             (ret@,1 n@7))))
+          (cmd@,3 skip n@5))))))))
+   (asgn@7,8 result~7
+    (call@9 default~7 Cursor@1))))
+ (proc@,67 hasPragma@5 x . .
+  (params@F
+   (param@1 n . . Cursor@3 .)
+   (param@C kind . . PragmaKind@6 .))bool@V . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (prefix@2 not
+     (call@F cursorIsNil~B
+      (call@E extractPragma~D n@1 kind@4))))))
+ (proc@,6A hasPragmaOfValue@5 x . .
+  (params@M
+   (param@1 n . . Cursor@3 .)
+   (param@C kind . . PragmaKind@6 .)
+   (param@U val . . string@5 .))bool@i . .
+  (stmts@2,1
+   (let@4 p . . .
+    (call@H extractPragma~D n@1 kind@4))
+   (asgn@7,1 result~7
+    (infix@j and
+     (infix~O and
+      (prefix~J not
+       (call@F cursorIsNil~B p@1))
+      (infix@B ==
+       (dot~6 p~1 kind@1)StringLit@3))
+     (infix@Q ==
+      (at~A
+       (dot~8 pool~4 strings@1)
+       (dot@2 p~1 litId@1))val@3)))))
+ (const@F,6F TypeModifiers~D x . .
+  (curly@4 MutT@1 OutT@7 LentT@D SinkT@K StaticT@R))
+ (proc@,6H removeModifier@5 x . .
+  (params@K
+   (param@1 a . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 a~1 kind@1)ParLe@3)
+      (infix@F in
+       (dot~A a~1 typeKind@1)TypeModifiers@3))
+     (stmts~1,1
+      (cmd inc a@4))))))
+ (proc@,6L skipModifier@5 x . .
+  (params@I
+   (param@1 a . . Cursor@3 .))Cursor@D . .
+  (stmts@2,1
+   (asgn@7 result~7 a@2)
+   (call@E,1 removeModifier~E result@1)))
+ (const@C,6Q LocalDecls~A x . .
+  (curly@4 VarS@1 LetS@7 ConstS@D ResultS@L CursorS@U PatternvarS@d GvarS@q TvarS@x GletS@14 TletS@1B))
+ (template@,6S skipToLocalType@9 x . .
+  (params@P
+   (param@1 n . . . .)). . .
+  (stmts@2,1
+   (cmd inc n@4)
+   (cmd@,1 inc n@4)
+   (cmd@,2 skip n@5)
+   (cmd@,3 skip n@5)))
+ (proc@,6Y skipToReturnType@5 x . .
+  (params@M
+   (param@1 n . .
+    (mut@3 Cursor@4).)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 skipKind . . .
+    (dot@C n~1 typeKind@1))
+   (cmd@,4 inc n@4)
+   (if@,5
+    (elif@3
+     (infix@9 in skipKind~9
+      (curly@3 ProctypeT@1 ItertypeT@C))
+     (stmts~1,1
+      (cmd skip n@5)
+      (cmd@,1 skip n@5)))
+    (else@,3
+     (stmts@2,1
+      (cmd skip n@5)
+      (cmd@,1 skip n@5)
+      (cmd@,2 skip n@5)
+      (cmd@,3 skip n@5)
+      (cmd@,4 skip n@5))))))
+ (proc@,6o procHasPragma@5 x . .
+  (params@J
+   (param@1 typ . . Cursor@5 .)
+   (param@E kind . . PragmaKind@6 .))bool@X . .
+  (stmts@2,1
+   (var@4 typ . . . typ@6)
+   (if@,1
+    (elif@3
+     (infix@D in
+      (dot~A typ~3 typeKind@1)RoutineTypes@3)
+     (stmts~1,1
+      (cmd skipToReturnType typ@H)
+      (cmd@,1 skip typ@5 SkipType@A)
+      (asgn@7,2 result~7
+       (call@B hasPragma~9 typ@1 kind@6))))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (type@A,6y Effect~8 x . .
+  (enum@2 .
+   (efld~8,1 HasNoSideEffect . . . .)
+   (efld~8,2 HasSideEffect . . . .)))
+ (proc@,72 whichEffect@5 x . .
+  (params@H
+   (param@1 k . . StmtKind@3 .)
+   (param@E pragmas . . Cursor@9 .))Effect@W . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@2 in k~2
+      (curly@3 FuncS@1 IteratorS@8 ConverterS@J))
+     (stmts~1,1
+      (asgn@7 result~7 HasNoSideEffect@2)
+      (if@,1
+       (elif@3
+        (call@9 hasPragma~9 pragmas@1 SideEffectP@A)
+        (stmts~1,2
+         (asgn@7 result~7 HasSideEffect@2))))))
+    (elif@5,5
+     (call@9 hasPragma~9 pragmas@1 NoSideEffectP@A)
+     (stmts~3,1
+      (asgn@7 result~7 HasNoSideEffect@2)))
+    (else@,7
+     (stmts@2,1
+      (asgn@7 result~7 HasSideEffect@2))))))
+ (proc@,7D isNilAnnotation@5 x . .
+  (params@L
+   (param@1 n . . Cursor@3 .))bool@D
+  (pragmas@d inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@G,1 and
+    (infix~9 ==
+     (dot~6 n~1 kind@1)ParLe@3)
+    (infix@N in
+     (dot~I n~1 substructureKind@1)
+     (curly@3 NotnilU@1 NilU@A UncheckedU@G)))))
+ (proc@,7H skipNilAnnotation@5 x . .
+  (params@N
+   (param@1 n . .
+    (mut@3 Cursor@4).)).
+  (pragmas@d inline@2).
+  (stmts@2,1
+   (comment)
+   (while@,3
+    (dot@7 n~1 hasMore@1)
+    (stmts@2,1
+     (cmd skip n@5))))))

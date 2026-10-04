@@ -1,0 +1,1190 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/dbg.nim
+ (comment)
+ (type@D,g DebugMode~B x . .
+  (enum@2 .
+   (efld~B,1 dmRun . . . .)
+   (efld~B,2 dmBreak . . . .)
+   (efld~B,3 dmStep . . . .)))
+ (type@C,l StepMode~A x . .
+  (enum@2 .
+   (efld~A,5 ssContinue . . . .)
+   (efld~A,6 ssInto . . . .)
+   (efld~A,7 ssOver . . . .)
+   (efld~A,8 ssOut . . . .)))
+ (type@F,v DbgSnapshot~D x . .
+  (object@2 .
+   (fld~9,7 name~4 x . string@3 .)
+   (fld~A,8 pid~3 x . int32@3 .)
+   (fld~9,9 wake~4 x . int32@3 .)))
+ (type@D,16 BreakKind~B x . .
+  (enum@2 .
+   (efld~B,1 bkLine . . . .)
+   (efld~B,2 bkFunc . . . .)
+   (efld~B,3 bkLineInFunc . . . .)))
+ (type@E,1B Breakpoint~C x . .
+  (object@2 .
+   (fld~8,4 kind~4 x . BreakKind@3 .)
+   (fld~8,5 line~4 x . int@3 .)
+   (fld~4,6 funcName~8 x . string@3 .)
+   (fld~8,7 file~4 x . string@3 .)
+   (fld~5,C enabled~7 x . bool@3 .)))
+ (type@F,1P DebugConfig~D x . .
+  (object@2 .
+   (fld~9,3 mode~4 x . DebugMode@3 .)
+   (fld~6,4 session~7 x . bool@3 .)
+   (fld~2,9 breakpoints~B x .
+    (at@6 seq~3 Breakpoint@1).)
+   (fld~7,A expand~6 x .
+    (at@6 seq~3 string@1).)))
+ (type@B,1h VarSnap~9 x . .
+  (object@2 .
+   (fld~5,6 name~4 x . string@3 .)
+   (fld~4,7 value~5 x . string@3 .)
+   (fld~1,8 isExpand~8 x . bool@3 .)))
+ (type@C,1u BreakHit~A x . .
+  (object@2 .
+   (fld~6,4 line~4 x . int@3 .)
+   (fld~6,5 file~4 x . string@3 .)
+   (fld~2,8 funcName~8 x . string@3 .)
+   (fld~6,9 vars~4 x .
+    (at@6 seq~3 VarSnap@1).)
+   (fld~5,A depth~5 x . int@3 .)
+   (fld~4,D outLen~6 x . int@3 .)))
+ (proc@,2A newDebugConfig@5 x . .
+  (params@K
+   (param@1 mode . . . dmRun@7))DebugConfig@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (oconstr@D DebugConfig~B
+     (kv@5 mode~4 mode@2)
+     (kv@O breakpoints~B
+      (prefix@2 \40
+       (bracket@1)))))))
+ (proc@,2F lineBreak@5 x . .
+  (params@F
+   (param@1 line . . int@6 .)
+   (param@C file . . . ""@7)
+   (param@N enabled . . . true@A))Breakpoint@e . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7
+    (oconstr@C Breakpoint~A
+     (kv@5 kind~4 bkLine@2)
+     (kv@J line~4 line@2)
+     (kv@Z funcName~8 ""@2)
+     (kv@j file~4 file@2)
+     (kv@8,1 enabled~7 enabled@2)))))
+ (proc@,2N funcBreak@5 x . .
+  (params@F
+   (param@1 name . . string@6 .)
+   (param@F enabled . . . true@A))Breakpoint@W . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (oconstr@C Breakpoint~A
+     (kv@5 kind~4 bkFunc@2)
+     (kv@J line~4 0@2)
+     (kv@W funcName~8 name@2)
+     (kv@l enabled~7 enabled@2)))))
+ (proc@,2R lineInFuncBreak@5 x . .
+  (params@L
+   (param@1 line . . int@6 .)
+   (param@C name . . string@6 .)
+   (param@Q enabled . . . true@A))Breakpoint@h . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (oconstr@C Breakpoint~A
+     (kv@5 kind~4 bkLineInFunc@2)
+     (kv@P line~4 line@2)
+     (kv@f funcName~8 name@2)
+     (kv@8,1 enabled~7 enabled@2)))))
+ (proc@,2W add@5 x . .
+  (params@9
+   (param@1 cfg . .
+    (mut@5 DebugConfig@4).)
+   (param@N bp . . Breakpoint@4 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@F,1
+    (dot
+     (dot~C cfg~3 breakpoints@1)add@1)bp@5)))
+ (proc@,2a clear@5 x . .
+  (params@B
+   (param@1 cfg . .
+    (mut@5 DebugConfig@4).)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@G,1
+    (dot~D cfg~3 breakpoints@1)
+    (prefix@2 \40
+     (bracket@1)))))
+ (proc@,2e matches@5 . . .
+  (params@C
+   (param@1 bp . . Breakpoint@4 .)
+   (param@H file . . string@6 .)
+   (param@V line . . int@6 .)
+   (param@g funcName . . string@A .))bool@z . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 false@2)
+   (if@,5
+    (elif@3
+     (prefix not
+      (dot@6 bp~2 enabled@1))
+     (stmts@G
+      (ret .))))
+   (let@4,6 fileOk . . .
+    (infix@Q or
+     (infix~5 ==
+      (dot~5
+       (dot~5 bp~2 file@1)len@1)0@3)
+     (infix@B ==
+      (dot~6 bp~2 file@1)file@3)))
+   (case@,7
+    (dot@7 bp~2 kind@1)
+    (of@,1
+     (ranges bkLine@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@Q and
+        (infix~H and fileOk~7
+         (infix@C !=
+          (dot~6 bp~2 line@1)0@3))
+        (infix@C ==
+         (dot~6 bp~2 line@1)line@3)))))
+    (of@,3
+     (ranges bkFunc@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@N and
+        (infix~5 !=
+         (dot~5
+          (dot~9 bp~2 funcName@1)len@1)0@3)
+        (infix@G ==
+         (dot~A bp~2 funcName@1)funcName@3)))))
+    (of@,5
+     (ranges bkLineInFunc@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@I,1 and
+        (infix@X,~1 and
+         (infix~P and
+          (infix~H and fileOk~7
+           (infix@C !=
+            (dot~6 bp~2 line@1)0@3))
+          (infix@K !=
+           (dot~5
+            (dot~9 bp~2 funcName@1)len@1)0@3))
+         (infix~f,1 ==
+          (dot~6 bp~2 line@1)line@3))
+        (infix@G ==
+         (dot~A bp~2 funcName@1)funcName@3))))))))
+ (proc@,2v funcEntryOnlyMatch@5 x . .
+  (params@O
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J file . . string@6 .)
+   (param@X line . . int@6 .)
+   (param@1,1 funcName . . string@A .))bool@K,1 . .
+  (stmts@2,2
+   (comment)
+   (asgn@7,C result~7 false@2)
+   (var@4,D sawFunc . . . false@A)
+   (for@4,E
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (prefix not
+        (dot@6 bp~2 enabled@1))
+       (stmts@G
+        (continue .))))
+     (if@,1
+      (elif@3
+       (prefix not
+        (call@B matches~7 bp@1 file@5 line@B funcName@H))
+       (stmts@d
+        (continue .))))
+     (if@,2
+      (elif@3
+       (infix@8 ==
+        (dot~6 bp~2 kind@1)bkFunc@3)
+       (stmts@J
+        (asgn@8 sawFunc~8 true@2)))
+      (else@,1
+       (stmts@6
+        (ret false@7))))))
+   (asgn@7,J result~7 sawFunc@2)))
+ (proc@,3I shouldBreak@5 x . .
+  (params@H
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J file . . string@6 .)
+   (param@X line . . int@6 .)
+   (param@i funcName . . string@A .))bool@11 . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,9 result~7 false@2)
+   (case@,A
+    (dot@8 cfg~3 mode@1)
+    (of@,1
+     (ranges dmRun@3)
+     (stmts@2,1
+      (asgn@7 result~7 false@2)))
+    (of@,3
+     (ranges dmStep@3)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (of@,5
+     (ranges dmBreak@3)
+     (stmts@2,1
+      (for@4
+       (dot@9 cfg~3 breakpoints@1)
+       (unpackflat
+        (let bp . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@7 matches~7 bp@1 file@5 line@B funcName@H)
+          (stmts~1,1
+           (asgn@7 result~7 true@2)
+           (ret@,1 .)))))))))))
+ (proc@,3e lineBreakAt@5 x . .
+  (params@H
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J file . . string@6 .)
+   (param@X line . . int@6 .)
+   (param@i funcName . . string@A .))bool@11 . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,9 result~7 false@2)
+   (if@,A
+    (elif@3
+     (infix@9 !=
+      (dot~6 cfg~3 mode@1)dmBreak@3)
+     (stmts@L
+      (ret .))))
+   (for@4,B
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@8 ==
+        (dot~6 bp~2 kind@1)bkFunc@3)
+       (stmts@J
+        (continue .))))
+     (if@,1
+      (elif@3
+       (call@7 matches~7 bp@1 file@5 line@B funcName@H)
+       (stmts~1,1
+        (asgn@7 result~7 true@2)
+        (ret@,1 .))))))))
+ (proc@,3w anyEnabled@5 x . .
+  (params@G
+   (param@1 cfg . . DebugConfig@5 .))bool@K . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 false@2)
+   (for@4,3
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@2 bp~2 enabled@1)
+       (stmts~1,1
+        (asgn@7 result~7 true@2)
+        (ret@,1 .))))))))
+ (proc@,45 isActive@5 x . .
+  (params@E
+   (param@1 cfg . . DebugConfig@5 .))bool@K . .
+  (stmts@2,1
+   (comment)
+   (case@,4
+    (dot@8 cfg~3 mode@1)
+    (of@,1
+     (ranges dmRun@3)
+     (stmts@A
+      (asgn@7 result~7 false@2)))
+    (of@,2
+     (ranges dmStep@3)
+     (stmts@B
+      (asgn@7 result~7 true@2)))
+    (of@,3
+     (ranges dmBreak@3)
+     (stmts@C
+      (asgn@7 result~7
+       (call@C anyEnabled~A cfg@1)))))))
+ (proc@,4F firstEq@5 x . .
+  (params@D
+   (param@1 s . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7 -1@2)
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@8 < i~2
+     (dot@3 s~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'='@3)
+       (stmts~1,1
+        (asgn@7 result~7 i@2)
+        (ret@,1 .))))
+     (cmd@,3 inc i@4)))))
+ (proc@,4R hitMatchesWhen@5 x . .
+  (params@K
+   (param@1 hit . . BreakHit@5 .)
+   (param@G name . . string@D .)
+   (param@M value . . string@7 .))bool@c . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 false@2)
+   (for@4,5
+    (dot@9 hit~3 vars@1)
+    (unpackflat
+     (let vs . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@8 ==
+        (dot~6 vs~2 name@1)name@3)
+       (stmts~1,1
+        (ret
+         (infix@G ==
+          (dot~7 vs~2 value@1)value@3)))))))))
+ (proc@,4b seenHasStr@5 . . .
+  (params@F
+   (param@1 xs . .
+    (at@7 seq~3 string@1).)
+   (param@I s . . string@3 .))bool@U . .
+  (stmts@2,1
+   (for@4 xs@5
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@2 == x~2 s@3)
+       (stmts@8
+        (ret true@7))))))
+   (asgn@7,2 result~7 false@2)))
+ (proc@,4g nearestSeen@5 . . .
+  (params@G
+   (param@1 seenLines . .
+    (at@E seq~3
+     (at@4 seq~3 bool@1)).)
+   (param@S seenFiles . .
+    (at@E seq~3 string@1).)
+   (param@1,1 onlyFile . . string@A .)
+   (param@J,1 line . . int@6 .)
+   (param@U,1 want . . int@6 .))
+  (at@j,1 seq~3 string@1). .
+  (stmts@2,2
+   (comment)
+   (asgn@7,5 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,6 d . . . 0@4)
+   (var@4,7 span . . . 0@7)
+   (for@4,8 seenLines@5
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@6 >
+        (dot~5 s~1 len@1)span@2)
+       (stmts@E
+        (asgn@5 span~5
+         (dot@3 s~1 len@1)))))))
+   (while@,A
+    (infix@O and
+     (infix~7 <
+      (dot~5 result~6 len@1)want@2)
+     (infix@6 <= d~2 span@3))
+    (stmts@2,1
+     (var@4 f . . . 0@4)
+     (while@,1
+      (infix@O and
+       (infix~G < f~2
+        (dot@B seenLines~9 len@1))
+       (infix@F <
+        (dot~5 result~6 len@1)want@2))
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@I or
+          (infix~5 ==
+           (dot~5 onlyFile~8 len@1)0@3)
+          (par@3
+           (infix@J and
+            (infix~G < f~2
+             (dot@B seenFiles~9 len@1))
+            (infix@H ==
+             (at~4 seenFiles~9 f@1)onlyFile@3))))
+         (stmts~1,1
+          (let@4 s . . .
+           (at@D seenLines~9 f@1))
+          (let@4,1 nm . . .
+           (if@5
+            (elif@3
+             (infix@2 < f~2
+              (dot@B seenFiles~9 len@1))
+             (stmts@J
+              (at@9 seenFiles~9 f@1)))
+            (else@Z
+             (stmts@6 "?"))))
+          (let@4,2 lo . . .
+           (infix@A \2D line~5 d@2))
+          (let@4,3 hi . . .
+           (infix@A \2B line~5 d@2))
+          (if@,4
+           (elif@3
+            (infix@N and
+             (infix~F and
+              (infix~5 >= lo~3 0@3)
+              (infix@7 < lo~3
+               (dot@3 s~1 len@1)))
+             (at@5 s~1 lo@1))
+            (stmts@Y
+             (cmd@6
+              (dot result~6 add@1)
+              (infix@E &
+               (infix~6 & nm~3 "\3A"@2)
+               (prefix@2 $ lo@1))))))
+          (if@,5
+           (elif@3
+            (infix@t and
+             (infix~F and
+              (infix~C and
+               (infix~M and
+                (infix~4 > d~2 0@2)
+                (infix@F <
+                 (dot~5 result~6 len@1)want@2))
+               (infix@7 >= hi~3 0@3))
+              (infix@7 < hi~3
+               (dot@3 s~1 len@1)))
+             (at@5 s~1 hi@1))
+            (stmts~1,1
+             (cmd@6
+              (dot result~6 add@1)
+              (infix@E &
+               (infix~6 & nm~3 "\3A"@2)
+               (prefix@2 $ hi@1)))))))))
+       (cmd@,8 inc f@4)))
+     (cmd@,B inc d@4)))))
+ (proc@,56 unresolvedExpandReport@5 x . .
+  (params@S
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J expandOk . .
+    (at@D seq~3 bool@1).))string@f . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 ""@2)
+   (var@4,5 bad . .
+    (at@8 seq~3 string@1)
+    (prefix@J \40
+     (bracket@1)))
+   (var@4,6 i . . . 0@4)
+   (while@,7
+    (infix@8 < i~2
+     (dot@C
+      (dot~7 cfg~3 expand@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@M and
+        (infix~4 >
+         (dot~5
+          (at~3
+           (dot~7 cfg~3 expand@1)i@1)len@1)0@2)
+        (par@4
+         (infix@J or
+          (infix~G >= i~2
+           (dot@B expandOk~8 len@1))
+          (prefix@3 not
+           (at@C expandOk~8 i@1)))))
+       (stmts~1,1
+        (cmd@3
+         (dot bad~3 add@1)
+         (at@F
+          (dot~7 cfg~3 expand@1)i@1)))))
+     (cmd@,2 inc i@4)))
+   (if@,B
+    (elif@3
+     (infix@8 ==
+      (dot~5 bad~3 len@1)0@3)
+     (stmts@E
+      (ret ""@7))))
+   (asgn@7,C result~7
+    (infix@W &
+     (infix~B & "==== aowli-dbg\3A "~J
+      (prefix@2 $
+       (dot@4 bad~3 len@1)))" --expand path\28s\29 never resolved ====\0A"@2))
+   (for@4,D bad@5
+    (unpackflat
+     (let b . . ..))
+    (stmts~2,1
+     (var@4 head . . . b@7)
+     (var@4,1 k . . . 0@4)
+     (while@,2
+      (infix@8 < k~2
+       (dot@3 b~1 len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@C or
+          (infix~7 ==
+           (at~4 b~1 k@1)'.'@3)
+          (infix@8 ==
+           (at~4 b~1 k@1)'\5B'@3))
+         (stmts~1,1
+          (asgn@5 head~5
+           (at@3 b~1
+            (infix@3 \2E\2E< 0~2 k@4)))
+          (break@,1 .))))
+       (cmd@,3 inc k@4)))
+     (cmd@6,7
+      (dot result~6 add@1)
+      (infix@u &
+       (infix~7 &
+        (infix~Q &
+         (infix~4 & "  --expand\3A"~E b@2)" — no local named \27"@2)head@2)"\27 was in scope at any hit.\0A"~p,1))))))
+ (proc@,5V bpSpec@5 x . .
+  (params@C
+   (param@1 bp . . Breakpoint@4 .))string@I . .
+  (stmts@2,1
+   (comment)
+   (case@,2
+    (dot@7 bp~2 kind@1)
+    (of@,1
+     (ranges bkFunc@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@I & "--break-func\3A"~G
+        (dot@4 bp~2 funcName@1)))))
+    (of@,3
+     (ranges bkLine@3 bkLineInFunc@B)
+     (stmts@2,1
+      (asgn@7 result~7 "--break\3A"@2)
+      (if@,1
+       (elif@3
+        (infix@C >
+         (dot~5
+          (dot~5 bp~2 file@1)len@1)0@2)
+        (stmts@H
+         (cmd@6
+          (dot result~6 add@1)
+          (infix@D &
+           (dot~6 bp~2 file@1)"\3A"@2)))))
+      (cmd@6,2
+       (dot result~6 add@1)
+       (prefix@5 $
+        (dot@3 bp~2 line@1)))
+      (if@,3
+       (elif@3
+        (infix@O and
+         (infix~G ==
+          (dot~6 bp~2 kind@1)bkLineInFunc@3)
+         (infix@K >
+          (dot~5
+           (dot~9 bp~2 funcName@1)len@1)0@2))
+        (stmts~1,1
+         (cmd@6
+          (dot result~6 add@1)
+          (infix@R &
+           (infix~E & " \28in "~8
+            (dot@4 bp~2 funcName@1))"\29"@2))))))))))
+ (proc@,5i unboundLines@5 x . .
+  (params@I
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J knownLines . .
+    (at@F seq~3
+     (at@4 seq~3 bool@1)).)
+   (param@1,1 knownFiles . .
+    (at@F seq~3 string@1).))
+  (at@U,1 seq~3 string@1). .
+  (stmts@2,2
+   (comment)
+   (asgn@7,F result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (if@,G
+    (elif@3
+     (infix@F ==
+      (dot~5 knownFiles~A len@1)0@3)
+     (stmts@L
+      (ret .))))
+   (for@4,H
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (prefix not
+        (dot@6 bp~2 enabled@1))
+       (stmts@G
+        (continue .))))
+     (if@,1
+      (elif@3
+       (infix@I or
+        (infix~A ==
+         (dot~6 bp~2 kind@1)bkFunc@3)
+        (infix@B <=
+         (dot~6 bp~2 line@1)0@3))
+       (stmts@Z
+        (continue .))))
+     (var@4,2 bindable . . . false@B)
+     (var@4,3 fileKnown . . .
+      (infix@O ==
+       (dot~5
+        (dot~5 bp~2 file@1)len@1)0@3))
+     (var@4,4 f . . . 0@4)
+     (while@,5
+      (infix@8 < f~2
+       (dot@C knownLines~A len@1))
+      (stmts@2,1
+       (if
+        (elif@3
+         (infix@H or
+          (infix~5 ==
+           (dot~5
+            (dot~5 bp~2 file@1)len@1)0@3)
+          (par@3
+           (infix@K and
+            (infix~H < f~2
+             (dot@C knownFiles~A len@1))
+            (infix@I ==
+             (at~4 knownFiles~A f@1)
+             (dot@5 bp~2 file@1)))))
+         (stmts~1,1
+          (if
+           (elif@3
+            (infix@C >
+             (dot~5
+              (dot~5 bp~2 file@1)len@1)0@2)
+            (stmts@H
+             (asgn@A fileKnown~A true@2))))
+          (if@,1
+           (elif@3
+            (infix@S and
+             (infix~K <
+              (dot~6 bp~2 line@1)
+              (dot@F
+               (at~3 knownLines~A f@1)len@1))
+             (at@H
+              (at~3 knownLines~A f@1)
+              (dot@3 bp~2 line@1)))
+            (stmts~1,1
+             (asgn@9 bindable~9 true@2)
+             (break@,1 .)))))))
+       (cmd@,5 inc f@4)))
+     (if@,C
+      (elif@3 bindable
+       (stmts@A
+        (continue .))))
+     (var@4,D m . . .
+      (infix@1E &
+       (infix~s &
+        (infix~D & "  "~5
+         (call@8 bpSpec~6 bp@1))" is UNBOUND\3A no code in the loaded program is at "@2)"that line."~1A,1))
+     (if@,F
+      (elif@3
+       (prefix not fileKnown@4)
+       (stmts~1,1
+        (cmd@1
+         (dot m~1 add@1)
+         (infix@19 &
+          (infix~p &
+           (infix~A & " \28"~5
+            (dot@4 bp~2 file@1))" is not part of the loaded program at all — "@2)"check the name, or that the module is actually imported.\29"~14,1))))
+      (else@,3
+       (stmts@2,1
+        (cmd@1
+         (dot m~1 add@1)
+         (infix@1A & " A breakpoint that cannot bind looks EXACTLY like a branch that "~15 "never runs, so treat a 0-hit run as unproven, not as evidence."~15,1)))))
+     (cmd@6,L
+      (dot result~6 add@1)m@5)))))
+ (proc@,6P unboundReport@5 x . .
+  (params@J
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J knownLines . .
+    (at@F seq~3
+     (at@4 seq~3 bool@1)).)
+   (param@1,1 knownFiles . .
+    (at@F seq~3 string@1).))string@R,1 . .
+  (stmts@2,2
+   (comment)
+   (let@4,3 lines . . .
+    (call@K unboundLines~C cfg@1 knownLines@6 knownFiles@I))
+   (if@,4
+    (elif@3
+     (infix@A ==
+      (dot~5 lines~5 len@1)0@3)
+     (stmts@G
+      (ret ""@7))))
+   (var@4,5 armed . . . 0@8)
+   (for@4,6
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@X and
+        (infix~M and
+         (dot~9 bp~2 enabled@1)
+         (infix@C !=
+          (dot~6 bp~2 kind@1)bkFunc@3))
+        (infix@C >
+         (dot~6 bp~2 line@1)0@2))
+       (stmts@o
+        (cmd inc armed@4))))))
+   (asgn@7,8 result~7
+    (infix@10 &
+     (infix~9 &
+      (infix~9 &
+       (infix~N & "==== aowli-dbg\3A "~J
+        (prefix@2 $
+         (par@1
+          (infix@7 \2D armed~6
+           (dot@7 lines~5 len@1)))))" of "@2)
+      (prefix@2 $ armed@1))" line breakpoint\28s\29 bound ====\0A"~y,1))
+   (for@4,A lines@5
+    (unpackflat
+     (let l . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (infix@7 & l~2 "\0A"@2))))))
+ (proc@,6e unmatchedLines@5 x . .
+  (params@K
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J seenLines . .
+    (at@E seq~3
+     (at@4 seq~3 bool@1)).)
+   (param@1,1 seenFiles . .
+    (at@P seq~3 string@1).)
+   (param@C,1 seenFuncs . .
+    (at@E seq~3 string@1).)
+   (param@1,2 truncated . . . false@C))
+  (at@O,2 seq~3 string@1). .
+  (stmts@2,3
+   (comment)
+   (asgn@7,H result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (for@4,I
+    (dot@9 cfg~3 breakpoints@1)
+    (unpackflat
+     (let bp . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (prefix not
+        (dot@6 bp~2 enabled@1))
+       (stmts@G
+        (continue .))))
+     (case@,1
+      (dot@7 bp~2 kind@1)
+      (of@,1
+       (ranges bkFunc@3)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@K and
+           (infix~4 >
+            (dot~5
+             (dot~9 bp~2 funcName@1)len@1)0@2)
+           (prefix@4 not
+            (call@E seenHasStr~A seenFuncs@1
+             (dot@E bp~2 funcName@1))))
+          (stmts~1,1
+           (var@4 m . . .
+            (if@4
+             (elif@3 truncated
+              (stmts~1,1
+               (infix@11 &
+                (infix~V &
+                 (infix~E & "  --break-func\3A"~I
+                  (dot@4 bp~2 funcName@1))" had not matched when the "@2)"session ended early\3A no routine by that name had been entered YET."~11,1)))
+             (else@,3
+              (stmts@2,1
+               (infix@15 &
+                (infix~Z &
+                 (infix~E & "  --break-func\3A"~I
+                  (dot@4 bp~2 funcName@1))" never matched\3A no routine by "@2)"that name was entered."~15,1)))))
+           (if@,6
+            (elif@3
+             (infix@E >
+              (dot~5 seenFuncs~9 len@1)0@2)
+             (stmts~1,1
+              (cmd@1
+               (dot m~1 add@1)" Routines that ran\3A "@5)
+              (var@4,1 i . . . 0@4)
+              (while@,2
+               (infix@O and
+                (infix~G < i~2
+                 (dot@B seenFuncs~9 len@1))
+                (infix@6 < i~2 12@2))
+               (stmts@2,1
+                (if
+                 (elif@3
+                  (infix@2 > i~2 0@2)
+                  (stmts@7
+                   (cmd@1
+                    (dot m~1 add@1)", "@5))))
+                (cmd@1,1
+                 (dot m~1 add@1)
+                 (at@E seenFuncs~9 i@1))
+                (cmd@,2 inc i@4)))
+              (if@,6
+               (elif@3
+                (infix@E >
+                 (dot~5 seenFuncs~9 len@1)12@2)
+                (stmts@K
+                 (cmd@1
+                  (dot m~1 add@1)
+                  (infix@d &
+                   (infix~O & ", …\28+"~A
+                    (prefix@2 $
+                     (par@1
+                      (infix@F \2D
+                       (dot~5 seenFuncs~9 len@1)12@2))))" more\29"@2))))))))
+           (cmd@6,E
+            (dot result~6 add@1)m@5))))))
+      (of@,I
+       (ranges bkLine@3 bkLineInFunc@B)
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 <=
+           (dot~6 bp~2 line@1)0@3)
+          (stmts@E
+           (continue .))))
+        (var@4,1 ranHere . . . false@A)
+        (var@4,2 f . . . 0@4)
+        (while@,3
+         (infix@8 < f~2
+          (dot@B seenLines~9 len@1))
+         (stmts@2,1
+          (if
+           (elif@3
+            (infix@H or
+             (infix~5 ==
+              (dot~5
+               (dot~5 bp~2 file@1)len@1)0@3)
+             (par@3
+              (infix@J and
+               (infix~G < f~2
+                (dot@B seenFiles~9 len@1))
+               (infix@H ==
+                (at~4 seenFiles~9 f@1)
+                (dot@5 bp~2 file@1)))))
+            (stmts~1,1
+             (if
+              (elif@3
+               (infix@R and
+                (infix~J <
+                 (dot~6 bp~2 line@1)
+                 (dot@E
+                  (at~3 seenLines~9 f@1)len@1))
+                (at@G
+                 (at~3 seenLines~9 f@1)
+                 (dot@3 bp~2 line@1)))
+               (stmts~1,1
+                (asgn@8 ranHere~8 true@2)
+                (break@,1 .)))))))
+          (cmd@,4 inc f@4)))
+        (if@,9
+         (elif@3 ranHere
+          (stmts@9
+           (continue .))))
+        (var@4,A spec . . . "--break\3A"@7)
+        (if@,B
+         (elif@3
+          (infix@C >
+           (dot~5
+            (dot~5 bp~2 file@1)len@1)0@2)
+          (stmts@H
+           (cmd@4
+            (dot spec~4 add@1)
+            (infix@D &
+             (dot~6 bp~2 file@1)"\3A"@2)))))
+        (cmd@4,C
+         (dot spec~4 add@1)
+         (prefix@5 $
+          (dot@3 bp~2 line@1)))
+        (if@,D
+         (elif@3
+          (infix@O and
+           (infix~G ==
+            (dot~6 bp~2 kind@1)bkLineInFunc@3)
+           (infix@K >
+            (dot~5
+             (dot~9 bp~2 funcName@1)len@1)0@2))
+          (stmts~1,1
+           (cmd@4
+            (dot spec~4 add@1)
+            (infix@R &
+             (infix~E & " \28in "~8
+              (dot@4 bp~2 funcName@1))"\29"@2)))))
+        (var@4,F m . . .
+         (if@4
+          (elif@3 truncated
+           (stmts~1,1
+            (infix@15 &
+             (infix~t &
+              (infix~7 & "  "~5 spec@2)" had not matched when the session ended early\3A no "@2)"statement executed at that line BEFORE the run was cut short."~15,1)))
+          (else@,3
+           (stmts@2,1
+            (infix@C &
+             (infix~7 & "  "~5 spec@2)" never matched\3A no statement executed at that line."@2)))))
+        (if@,K
+         (elif@3
+          (infix@G and
+           (infix~4 >
+            (dot~5
+             (dot~5 bp~2 file@1)len@1)0@2)
+           (prefix@4 not
+            (call@E seenHasStr~A seenFiles@1
+             (dot@E bp~2 file@1))))
+          (stmts~1,1
+           (if
+            (elif@3 truncated
+             (stmts~1,1
+              (cmd@1
+               (dot m~1 add@1)
+               (infix@X &
+                (infix~A & " \28No code from "~I
+                 (dot@4 bp~2 file@1))" had run YET.\29"@2))))
+            (else@,2
+             (stmts@2,1
+              (cmd@1
+               (dot m~1 add@1)
+               (infix@X &
+                (infix~A & " \28No code from "~I
+                 (dot@4 bp~2 file@1))" ran at all.\29"@2))))))))
+        (let@4,P near . . .
+         (call@I nearestSeen~B seenLines@1 seenFiles@C
+          (dot@P bp~2 file@1)
+          (dot@Y bp~2 line@1)4@f))
+        (if@,Q
+         (elif@3
+          (infix@9 >
+           (dot~5 near~4 len@1)0@2)
+          (stmts~1,1
+           (cmd@1
+            (dot m~1 add@1)" Nearest executed lines\3A "@5)
+           (var@4,1 i . . . 0@4)
+           (while@,2
+            (infix@8 < i~2
+             (dot@6 near~4 len@1))
+            (stmts@2,1
+             (if
+              (elif@3
+               (infix@2 > i~2 0@2)
+               (stmts@7
+                (cmd@1
+                 (dot m~1 add@1)", "@5))))
+             (cmd@1,1
+              (dot m~1 add@1)
+              (at@9 near~4 i@1))
+             (cmd@,2 inc i@4)))
+           (cmd@1,6
+            (dot m~1 add@1)"."@5))))
+        (if@,Y
+         (elif@3 truncated
+          (stmts~1,1
+           (cmd@1
+            (dot m~1 add@1)
+            (infix@16,2 &
+             (infix@5,~1 &
+              (infix~3,~1 & "\0A     The program did NOT run to completion \28the session was "~13 "quit / the control channel closed\29, so this is NOT evidence that "~13,1)"the line never runs — drive the session to the end before "~16,1)"concluding anything about it."~11,1))))
+         (else@,5
+          (stmts@2,1
+           (cmd@1
+            (dot m~1 add@1)
+            (infix@1G,2 &
+             (infix~2,~1 &
+              (infix~5,~1 & "\0A     A line whose only call the compiler INLINED or EXPANDED "~14 "\28a template/macro — `assert` above all\29 carries the callee\27s line "~14,1)"info, not the call site — break on the nearest executed line above, "~19,1)"or use --break-func\3ANAME."~1B,1)))))
+        (cmd@6,i
+         (dot result~6 add@1)m@5))))))))
+ (proc@,84 unmatchedReport@5 x . .
+  (params@L
+   (param@1 cfg . . DebugConfig@5 .)
+   (param@J seenLines . .
+    (at@E seq~3
+     (at@4 seq~3 bool@1)).)
+   (param@1,1 seenFiles . .
+    (at@P seq~3 string@1).)
+   (param@C,1 seenFuncs . .
+    (at@E seq~3 string@1).)
+   (param@1,2 truncated . . . false@C))string@L,2 . .
+  (stmts@2,3
+   (comment)
+   (let@4,3 lines . . .
+    (call@M unmatchedLines~E cfg@1 seenLines@6 seenFiles@H seenFuncs@S truncated@d))
+   (if@,4
+    (elif@3
+     (infix@A ==
+      (dot~5 lines~5 len@1)0@3)
+     (stmts@G
+      (ret ""@7))))
+   (asgn@7,5 result~7
+    (if@2
+     (elif@3 truncated
+      (stmts~1,1
+       (infix@B,1 &
+        (infix@k,~1 & "==== aowli-dbg\3A run INCOMPLETE \28session ended early\29; "~v
+         (prefix~v,1 $
+          (dot@6 lines~5 len@1)))" breakpoint\28s\29 had not matched yet ====\0A"@2)))
+     (else@,3
+      (stmts@2,1
+       (infix@W &
+        (infix~D & "==== aowli-dbg\3A "~J
+         (prefix@2 $
+          (dot@6 lines~5 len@1)))" breakpoint\28s\29 never matched ====\0A"@2)))))
+   (for@4,A lines@5
+    (unpackflat
+     (let l . . ..))
+    (stmts~2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (infix@7 & l~2 "\0A"@2))))))
+ (proc@,8K render@5 x . .
+  (params@C
+   (param@1 hit . . BreakHit@5 .)
+   (param@G watch . .
+    (at@A seq~3 string@1)
+    (prefix@L \40
+     (bracket@1))))string@h . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7 "break \40 "@2)
+   (if@,4
+    (elif@3
+     (infix@D >
+      (dot~5
+       (dot~5 hit~3 file@1)len@1)0@2)
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)
+       (infix@K &
+        (infix~6 &
+         (dot~6 hit~3 file@1)"\3A"@2)
+        (prefix@2 $
+         (dot@4 hit~3 line@1))))))
+    (else@,2
+     (stmts@2,1
+      (cmd@6
+       (dot result~6 add@1)
+       (infix@D & "line "~8
+        (prefix@2 $
+         (dot@4 hit~3 line@1)))))))
+   (if@,8
+    (elif@3
+     (infix@H >
+      (dot~5
+       (dot~9 hit~3 funcName@1)len@1)0@2)
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)
+       (infix@R &
+        (infix~F & " in "~7
+         (dot@5 hit~3 funcName@1))"\28\29"@2))))
+    (else@,2
+     (stmts@2,1
+      (cmd@6
+       (dot result~6 add@1)" \28top level\29"@5))))
+   (cmd@6,C
+    (dot result~6 add@1)"\0A"@5)
+   (if@,D
+    (elif@3
+     (infix@A >
+      (dot~5 watch~5 len@1)0@2)
+     (stmts~1,6
+      (for@4
+       (dot@9 hit~3 vars@1)
+       (unpackflat
+        (let vs . . ..))
+       (stmts~2,1
+        (var@4 show . . .
+         (dot@9 vs~2 isExpand@1))
+        (if@,1
+         (elif@3
+          (prefix not show@4)
+          (stmts~1,1
+           (for@4 watch@5
+            (unpackflat
+             (let w . . ..))
+            (stmts~2,1
+             (if
+              (elif@3
+               (infix@D or
+                (infix~5 ==
+                 (dot~6 vs~2 name@1)w@3)
+                (par~D,1
+                 (infix@p and
+                  (infix~U and
+                   (infix~8 >
+                    (dot~5
+                     (dot~5 vs~2 name@1)len@1)
+                    (dot@3 w~1 len@1))
+                   (infix@P ==
+                    (at~E
+                     (dot~5 vs~2 name@1)
+                     (infix@3 \2E\2E< 0~2
+                      (dot@5 w~1 len@1)))w@3))
+                  (infix@J ==
+                   (at~8
+                    (dot~5 vs~2 name@1)
+                    (dot@2 w~1 len@1))'.'@3))))
+               (stmts~1,2
+                (asgn@5 show~5 true@2)
+                (break@,1 .)))))))))
+        (if@,7
+         (elif@3 show
+          (stmts~1,1
+           (cmd@6
+            (dot result~6 add@1)
+            (infix@d &
+             (infix~B &
+              (infix~8 &
+               (infix~A & "  "~5
+                (dot@4 vs~2 name@1))" = "@2)
+              (dot@4 vs~2 value@1))"\0A"@2)))))))))
+    (elif@5,G
+     (infix@D ==
+      (dot~5
+       (dot~5 hit~3 vars@1)len@1)0@3)
+     (stmts~3,1
+      (cmd@6
+       (dot result~6 add@1)"  \28no locals\29\0A"@5)))
+    (else@,I
+     (stmts@2,1
+      (for@4
+       (dot@9 hit~3 vars@1)
+       (unpackflat
+        (let vs . . ..))
+       (stmts~2,1
+        (cmd@6
+         (dot result~6 add@1)
+         (infix@d &
+          (infix~B &
+           (infix~8 &
+            (infix~A & "  "~5
+             (dot@4 vs~2 name@1))" = "@2)
+           (dot@4 vs~2 value@1))"\0A"@2))))))))))

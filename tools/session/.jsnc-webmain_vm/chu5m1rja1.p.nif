@@ -1,0 +1,190 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/chunk.nim
+ (comment)
+ (import@,B values@7)
+ (import@,C nimony_tags@7)
+ (import@,D nifstreams@7)
+ (type@A,G OpCode~8 x . .
+  (enum@2 .
+   (efld~8,1 opPushConst . . . .)
+   (efld~8,2 opPushNil . . . .)
+   (efld~8,3 opPushEmptySeq . . . .)
+   (efld~8,4 opPushEmptyStr . . . .)
+   (efld~8,5 opPop . . . .)
+   (efld~8,6 opLoadLocal . . . .)
+   (efld~8,7 opStoreLocal . . . .)
+   (efld~8,8 opLoadLocalAddr . . . .)
+   (efld~8,9 opLoadGlobal . . . .)
+   (efld~8,A opStoreGlobal . . . .)
+   (efld~8,B opLoadGlobalAddr . . . .)
+   (efld~8,C opLoadGlobalInit . . . .)
+   (efld~8,E opLoadGlobalAddrInit . . . .)
+   (efld~8,G opDeref . . . .)
+   (efld~8,H opStoreDeref . . . .)
+   (efld~8,I opWasMoved . . . .)
+   (efld~8,L opKeepOvfBegin . . . .)
+   (efld~8,M opKeepOvfEnd . . . .)
+   (efld~8,N opOverflowFlag . . . .)
+   (efld~8,O opBinMagic . . . .)
+   (efld~8,P opUnMagic . . . .)
+   (efld~8,Q opConv . . . .)
+   (efld~8,R opRewidth . . . .)
+   (efld~8,U opEnumWrap . . . .)
+   (efld~8,V opJump . . . .)
+   (efld~8,W opJumpIfFalse . . . .)
+   (efld~8,X opCall . . . .)
+   (efld~8,Y opCallIndirect . . . .)
+   (efld~8,a opCallMethod . . . .)
+   (efld~8,c opCallNested . . . .)
+   (efld~8,k opLoadEnv . . . .)
+   (efld~8,l opStoreEnv . . . .)
+   (efld~8,m opLoadEnvAddr . . . .)
+   (efld~8,o opCaptureEnv . . . .)
+   (efld~8,r opCallNative . . . .)
+   (efld~8,s opCallNativeGated . . . .)
+   (efld~8,v opRet . . . .)
+   (efld~8,x opMakeObj . . . .)
+   (efld~8,y opMakeRef . . . .)
+   (efld~8,z opNewRefInit . . . .)
+   (efld~8,10 opMakeTuple . . . .)
+   (efld~8,11 opLoadField . . . .)
+   (efld~8,12 opLoadFieldAddr . . . .)
+   (efld~8,13 opTupIndex . . . .)
+   (efld~8,14 opTupIndexAddr . . . .)
+   (efld~8,16 opMakeArray . . . .)
+   (efld~8,17 opMakeSeq . . . .)
+   (efld~8,18 opFillSeqDefaults . . . .)
+   (efld~8,1A opIndexGet . . . .)
+   (efld~8,1B opIndexAddr . . . .)
+   (efld~8,1C opIndexSet . . . .)
+   (efld~8,1D opCopyAssign . . . .)
+   (efld~8,1H opNewSet . . . .)
+   (efld~8,1I opSetInclTos . . . .)
+   (efld~8,1J opSetInclRangeTos . . . .)
+   (efld~8,1K opSetIncl . . . .)
+   (efld~8,1L opSetExcl . . . .)
+   (efld~8,1M opInSet . . . .)
+   (efld~8,1N opCard . . . .)
+   (efld~8,1O opSetCombine . . . .)
+   (efld~8,1P opSetCmp . . . .)
+   (efld~8,1R opNewObj . . . .)
+   (efld~8,1S opGetField . . . .)
+   (efld~8,1T opInstanceOf . . . .)
+   (efld~8,1U opSetupTry . . . .)
+   (efld~8,1V opPopTry . . . .)
+   (efld~8,1W opRaise . . . .)
+   (efld~8,1X opReRaise . . . .)
+   (efld~8,1Y opEndFinally . . . .)
+   (efld~8,1Z opLoadExc . . . .)
+   (efld~8,1a opFinMark . . . .)
+   (efld~8,1d opFinSkip . . . .)
+   (efld~8,1h opYield . . . .)
+   (efld~8,1j opCoroInit . . . .)
+   (efld~8,1n opCoroResume . . . .)
+   (efld~8,1p opSetScheduler . . . .)
+   (efld~8,1w opDelay0 . . . .)
+   (efld~8,1y opDelay . . . .)
+   (efld~8,20 opSuspend . . . .)
+   (efld~8,23 opPassiveCall . . . .)
+   (efld~8,27 opDrivePassive . . . .)
+   (efld~8,2B opPassiveMethodCall . . . .)
+   (efld~8,2D opDrivePassiveMethod . . . .)))
+ (type@B,2W ObjSpec~9 x . .
+  (object@2 .
+   (fld~2,1 typeSym~7 x . SymId@3 .)
+   (fld~4,2 isRef~5 x . bool@3 .)
+   (fld~3,3 fields~6 x .
+    (at@6 seq~3 SymId@1).)))
+ (type@9,2b Instr~7 x . .
+  (object@2 .
+   (fld~5,1 op~2 x . OpCode@3 .)
+   (fld~6,2 a~1 x . int@3 .)
+   (fld~6,3 b~1 x . int@3 .)))
+ (type@D,2g MagicSpec~B x . .
+  (object@2 .
+   (fld~9,1 op~2 x . NimonyExpr@3 .)
+   (fld~7,2 bits~4 x . int@3 .)
+   (fld~5,3 signed~6 x . bool@3 .)
+   (fld~5,4 caseEq~6 x . bool@3 .)))
+ (type@C,2t ConvSpec~A x . .
+  (object@2 .
+   (fld~6,6 mode~4 x . int@3 .)
+   (fld~6,7 bits~4 x . int@3 .)
+   (fld~4,8 signed~6 x . bool@3 .)
+   (fld~6,9 code~4 x . TCode@3 .)
+   (fld~5,A etype~5 x . SymId@3 .)))
+ (type@B,37 ObjInfo~9 x . .
+  (object@2 .
+   (fld~2,4 typeSym~7 x . SymId@3 .)
+   (fld@,5 fieldSyms~9 x .
+    (at@6 seq~3 SymId@1).)))
+ (type@E,3E MethodSite~C x . .
+  (object@2 .
+   (fld~4,2 staticFn~8 x . SymId@3 .)
+   (fld~1,3 fallbackIdx~B x . int@3 .)))
+ (type@D,3J GatedCall~B x . .
+  (object@2 .
+   (fld~8,3 nat~3 x . int@3 .)
+   (fld~3,4 fallback~8 x . int@3 .)
+   (fld@1,5 dollarScalar~C x . bool@3 .)))
+ (type@F,3S MethodEntry~D x . .
+  (object@2 .
+   (fld~A,2 sym~3 x . SymId@3 .)
+   (fld~A,3 idx~3 x . int@3 .)))
+ (type@E,3X GlobalSeed~C x . .
+  (object@2 .
+   (fld~8,7 slot~4 x . int@3 .)
+   (fld~8,8 name~4 x . string@3 .)
+   (fld~7,9 cname~5 x . string@3 .)
+   (fld~B,A v~1 x . Value@3 .)))
+ (type@8,3j Proc~6 x . .
+  (object@2 .
+   (fld~2,1 code~4 x .
+    (at@6 seq~3 Instr@1).)
+   (fld~1,2 lines~5 x .
+    (at@6 seq~3 int@1).)
+   (fld@3,3 numParams~9 x . int@3 .)
+   (fld@3,4 numLocals~9 x . int@3 .)
+   (fld@4,5 resultSlot~A x . int@3 .)
+   (fld~2,6 name~4 x . string@3 .)
+   (fld@3,7 isPassive~9 x . bool@3 .)
+   (fld@2,8 slotSyms~8 x .
+    (at@6 seq~3 SymId@1).)))
+ (type@D,3w VmProgram~B x . .
+  (object@2 .
+   (fld~6,1 procs~5 x .
+    (at@6 seq~3 Proc@1).)
+   (fld~5,2 consts~6 x .
+    (at@6 seq~3 Value@1).)
+   (fld~5,3 magics~6 x .
+    (at@6 seq~3 MagicSpec@1).)
+   (fld~6,4 convs~5 x .
+    (at@6 seq~3 ConvSpec@1).)
+   (fld~4,5 natives~7 x .
+    (at@6 seq~3 string@1).)
+   (fld~2,6 enumWraps~9 x .
+    (at@6 seq~3 SymId@1).)
+   (fld~1,7 gatedCalls~A x .
+    (at@6 seq~3 GatedCall@1).)
+   (fld~3,8 objInfos~8 x .
+    (at@6 seq~3 ObjInfo@1).)
+   (fld~2,9 fieldSyms~9 x .
+    (at@6 seq~3 SymId@1).)
+   (fld~3,A objSpecs~8 x .
+    (at@6 seq~3 ObjSpec@1).)
+   (fld~3,B typeSyms~8 x .
+    (at@6 seq~3 SymId@1).)
+   (fld~4,C envSyms~7 x .
+    (at@6 seq~3 SymId@1).)
+   (fld@,E methodSites~B x .
+    (at@6 seq~3 MethodSite@1).)
+   (fld@,F methodTable~B x .
+    (at@6 seq~3 MethodEntry@1).)
+   (fld~8,G top~3 x . Proc@3 .)
+   (fld~6,H inits~5 x .
+    (at@6 seq~3 Proc@1).)
+   (fld~1,I numGlobals~A x . int@3 .)
+   (fld@,J globalSeeds~B x .
+    (at@6 seq~3 GlobalSeed@1).))))

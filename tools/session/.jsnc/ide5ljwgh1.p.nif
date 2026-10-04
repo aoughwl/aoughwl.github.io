@@ -1,0 +1,217 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/identstyle.nim
+ (comment)
+ (import@,G
+  (infix@B / std~4 tables@2))
+ (import@,H
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 bitabs@1 nifstreams@9)))
+ (import@,I
+  (infix@L /
+   (infix~9 / ".."~5 models@2)
+   (bracket@2 tags@1 nimony_tags@7)))
+ (var@2,L styleGroups . .
+  (at@I Table~5 StrId@1
+   (at@B seq~3 StrId@1)).)
+ (var@2,M styleHighWaterMark . . int@K 0@Q)
+ (proc@,O normalizeStyleIdent@5 x . .
+  (params@P
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@G newStringOfCap~E
+     (dot@2 s~1 len@1)))
+   (if@,3
+    (elif@3
+     (infix@6 ==
+      (dot~5 s~1 len@1)0@3)
+     (stmts@C
+      (ret .))))
+   (cmd@6,4
+    (dot result~6 add@1)
+    (at@6 s~1 0@1))
+   (for@4,5
+    (infix@7 \2E\2E< 1~2
+     (dot@5 s~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (let@4 ch . . .
+      (at@6 s~1 i@1))
+     (if@,1
+      (elif@3
+       (infix@3 == ch~3 '_'@3)
+       (stmts@B
+        (discard .)))
+      (elif@5,1
+       (infix@A and
+        (infix~7 >= ch~3 'A'@3)
+        (infix@7 <= ch~3 'Z'@3))
+       (stmts@P
+        (cmd@6
+         (dot result~6 add@1)
+         (call@8 chr~3
+          (infix@9 \2B
+           (call~5 ord~3 ch@1)
+           (par@2
+            (infix@A \2D
+             (call~6 ord~3 'a'@1)
+             (call@5 ord~3 'A'@1))))))))
+      (else@,2
+       (stmts@6
+        (cmd@6
+         (dot result~6 add@1)ch@5))))))))
+ (proc@,a normalizeStyleFull@5 x . .
+  (params@O
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (call@G newStringOfCap~E
+     (dot@2 s~1 len@1)))
+   (for@4,3 s@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@3 == ch~3 '_'@3)
+       (stmts@B
+        (discard .)))
+      (elif@5,1
+       (infix@A and
+        (infix~7 >= ch~3 'A'@3)
+        (infix@7 <= ch~3 'Z'@3))
+       (stmts@P
+        (cmd@6
+         (dot result~6 add@1)
+         (call@8 chr~3
+          (infix@9 \2B
+           (call~5 ord~3 ch@1)
+           (par@2
+            (infix@A \2D
+             (call~6 ord~3 'a'@1)
+             (call@5 ord~3 'A'@1))))))))
+      (else@,2
+       (stmts@6
+        (cmd@6
+         (dot result~6 add@1)ch@5))))))))
+ (proc@,j ensureStyleGroups@5 . . .
+  (params@M).
+  (pragmas@P sideEffect@2).
+  (stmts@2,1
+   (comment)
+   (while@,5
+    (infix@P < styleHighWaterMark~J
+     (dot@E
+      (dot~8 pool~4 strings@1)len@1))
+    (stmts@2,1
+     (let@4 id . . .
+      (call@A StrId~5
+       (infix@K \2B styleHighWaterMark~J 1@2)))
+     (cmd@,1 inc styleHighWaterMark@4)
+     (let@4,2 norm . . .
+      (call@T
+       (dot~A
+        (dot~8 pool~4 strings@1)getOrIncl@1)
+       (call@K normalizeStyleIdent~J
+        (at@D
+         (dot~8 pool~4 strings@1)id@1))))
+     (var@4,3 slot . . .
+      (cmd@C addr~5
+       (call@L
+        (dot~A styleGroups~B mgetOrPut@1)norm@1
+        (prefix@7 \40
+         (bracket@1)))))
+     (if@,4
+      (elif@3
+       (infix@3 notin id~3
+        (at@A slot~4))
+       (stmts@H
+        (cmd@6
+         (dot
+          (at~2 slot~4)add@1)id@5))))))))
+ (iterator@,w styleSiblings@9 x . .
+  (params@N
+   (param@1 name . . StrId@6 .))StrId@F
+  (pragmas@i sideEffect@2).
+  (stmts@2,1
+   (comment)
+   (call@H,3 ensureStyleGroups~H)
+   (let@4,4 norm . . .
+    (call@T
+     (dot~A
+      (dot~8 pool~4 strings@1)getOrIncl@1)
+     (call@K normalizeStyleIdent~J
+      (at@D
+       (dot~8 pool~4 strings@1)name@1))))
+   (call@H,5 ensureStyleGroups~H)
+   (let@4,8 siblings . . .
+    (call@Z
+     (dot~D styleGroups~B getOrDefault@1)norm@1))
+   (for@4,9 siblings@5
+    (unpackflat
+     (let k . . ..))
+    (stmts~2,1
+     (yld k@6)))))
+ (var@2,1J pragmaStyleIndex . .
+  (at@N Table~5 StrId@1 NimonyPragma@8).)
+ (proc@,1L ensurePragmaStyleIndex@5 x . .
+  (params@S).
+  (pragmas@V sideEffect@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@L !=
+      (dot~5 pragmaStyleIndex~G len@1)0@3)
+     (stmts@R
+      (ret .))))
+   (for@4,4
+    (infix@E \2E\2E 1~2
+     (dot@G
+      (call~9 high~4 TagEnum@1)int@1))
+    (unpackflat
+     (let tagIdInt . . ..))
+    (stmts~2,1
+     (let@4 raw . . .
+      (cast@6 TagEnum@5 tagIdInt@E))
+     (if@,1
+      (elif@3
+       (prefix not
+        (call@O rawTagIsNimonyPragma~K raw@1))
+       (stmts@V
+        (continue .))))
+     (let@4,2 p . . .
+      (cast@4 NimonyPragma@5 raw@J))
+     (let@4,3 canonicalName . . .
+      (at@P
+       (dot~5 pool~4 tags@1)
+       (call@6 TagId~5 tagIdInt@1)))
+     (let@4,4 norm . . .
+      (call@T
+       (dot~A
+        (dot~8 pool~4 strings@1)getOrIncl@1)
+       (call@J normalizeStyleFull~I canonicalName@1)))
+     (asgn@N,5
+      (at~7 pragmaStyleIndex~G norm@1)p@2)))))
+ (proc@,1Y pragmaKindByStyle@5 x . .
+  (params@N
+   (param@1 name . . StrId@6 .))NimonyPragma@F
+  (pragmas@p sideEffect@2).
+  (stmts@2,1
+   (comment)
+   (call@M,4 ensurePragmaStyleIndex~M)
+   (let@4,5 norm . . .
+    (call@T
+     (dot~A
+      (dot~8 pool~4 strings@1)getOrIncl@1)
+     (call@J normalizeStyleFull~I
+      (at@D
+       (dot~8 pool~4 strings@1)name@1))))
+   (asgn@7,6 result~7
+    (call@V
+     (dot~D pragmaStyleIndex~G getOrDefault@1)norm@1 NoPragma@7)))))

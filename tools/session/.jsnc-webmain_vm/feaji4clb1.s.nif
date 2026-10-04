@@ -1,0 +1,320 @@
+(.nif27)
+(.indexat 10302            )
+(stmts@,8,../../../../../../home/savant/nimony/src/nimony/features.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@B,1 :Feature.0.~9 x . .
+  (enum@2
+   (u 8)
+   (efld~9,2 :InvalidFeature.0. x . Feature.0.
+    (tup 0 "InvalidFeature"))
+   (efld~9,3 :ResemChoiceFeature.0. x . Feature.0.
+    (tup 1 "ResemChoiceFeature"))
+   (efld~9,4 :UntypedFeature.0. x . Feature.0.
+    (tup 2 "UntypedFeature"))
+   (efld~9,5 :CanRaiseFeature.0. x . Feature.0.
+    (tup 3 "CanRaiseFeature"))
+   (efld~9,6 :LenientConvertersFeature.0. x . Feature.0.
+    (tup 4 "LenientConvertersFeature"))
+   (efld~9,7 :EarlyMagicsFeature.0. x . Feature.0.
+    (tup 5 "EarlyMagicsFeature"))
+   (efld~9,8 :AutoClosuresFeature.0. x . Feature.0.
+    (tup 6 "AutoClosuresFeature"))
+   (efld~9,9 :LenientNilsFeature.0. x . Feature.0.
+    (tup 7 "LenientNilsFeature"))
+   (efld~9,A :IgnoreStyleFeature.0. x . Feature.0.
+    (tup 8 "IgnoreStyleFeature"))
+   (efld~9,E :VarToverloadsFeature.0. x . Feature.0.
+    (tup 9 "VarToverloadsFeature"))
+   (efld~9,J :LenientFloatsFeature.0. x . Feature.0.
+    (tup 10 "LenientFloatsFeature"))))
+ (proc@2,1 :dollar`.Feature.0. x . .
+  (params
+   (param :e.0 . . Feature.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@B :result.0 . . string.0.sysvq0asl .)
+   (case@B e.0
+    (of~9,2
+     (ranges InvalidFeature.0.)
+     (stmts
+      (ret "InvalidFeature")))
+    (of~9,3
+     (ranges ResemChoiceFeature.0.)
+     (stmts
+      (ret "ResemChoiceFeature")))
+    (of~9,4
+     (ranges UntypedFeature.0.)
+     (stmts
+      (ret "UntypedFeature")))
+    (of~9,5
+     (ranges CanRaiseFeature.0.)
+     (stmts
+      (ret "CanRaiseFeature")))
+    (of~9,6
+     (ranges LenientConvertersFeature.0.)
+     (stmts
+      (ret "LenientConvertersFeature")))
+    (of~9,7
+     (ranges EarlyMagicsFeature.0.)
+     (stmts
+      (ret "EarlyMagicsFeature")))
+    (of~9,8
+     (ranges AutoClosuresFeature.0.)
+     (stmts
+      (ret "AutoClosuresFeature")))
+    (of~9,9
+     (ranges LenientNilsFeature.0.)
+     (stmts
+      (ret "LenientNilsFeature")))
+    (of~9,A
+     (ranges IgnoreStyleFeature.0.)
+     (stmts
+      (ret "IgnoreStyleFeature")))
+    (of~9,E
+     (ranges VarToverloadsFeature.0.)
+     (stmts
+      (ret "VarToverloadsFeature")))
+    (of~9,J
+     (ranges LenientFloatsFeature.0.)
+     (stmts
+      (ret "LenientFloatsFeature"))))
+   (ret result.0)))
+ (proc@,R :normalizeFeatureName.0.@5 . . .
+  (params@P
+   (param@1 :s.0 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result@7 :result.1 . . string.0.sysvq0asl .)
+   (asgn@7 result.1~7
+    (call@G newStringOfCap.0.sysvq0asl~E
+     (call@2 len.4.sysvq0asl@1 s.0~1)))
+   (for@4,1
+    (hderef@6
+     (call items.1.I4py2pf1.~6
+      (hcall toOpenArray.2.sysvq0asl s.0)))
+    (unpackflat
+     (let :ch.0 . .
+      (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+       (c@E,~L 8)).))
+    (stmts~2,1
+     (if
+      (elif@3
+       (eq@3
+        (c 8)
+        (hderef~3 ch.0)'_'@3)
+       (stmts@B
+        (discard .)))
+      (elif@5,1
+       (and@A
+        (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (le@2,1
+          (c 8)'A'@F,d,../../../../../../home/savant/nimony/src/nimony/features.nim
+          (hderef@9,d,../../../../../../home/savant/nimony/src/nimony/features.nim ch.0)))
+        (le@7
+         (c 8)
+         (hderef~3 ch.0)'Z'@3))
+       (stmts@P
+        (cmd@6 add.1.sysvq0asl@1
+         (haddr~6 result.1)
+         (call@8 chr.0.sysvq0asl~3
+          (add@9
+           (i 32)
+           (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+            (conv@3,2
+             (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)
+             (hderef@r,d,../../../../../../home/savant/nimony/src/nimony/features.nim ch.0)))
+           (sub@C
+            (i 32)
+            (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+             (conv@3,2
+              (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)'a'@12,d,../../../../../../home/savant/nimony/src/nimony/features.nim))
+            (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+             (conv@3,2
+              (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)'A'@1D,d,../../../../../../home/savant/nimony/src/nimony/features.nim))))))))
+      (else@,2
+       (stmts@6
+        (cmd@6 add.1.sysvq0asl@1
+         (haddr~6 result.1)
+         (hderef@5 ch.0)))))))
+   (ret~2,~1 result.1)))
+ (proc@,Y :parseFeatures.0.@5 x . .
+  (params@J
+   (param@1 :s.1 . . string.0.sysvq0asl@3 .))
+  (set@G Feature.0.@1). .
+  (stmts@2,1
+   (result :result.2 . .
+    (set@E,~1 Feature.0.@1).)
+   (asgn result.2
+    (case
+     (call@P normalizeFeatureName.0.~K s.1@1)
+     (of@,1
+      (ranges "resemchoice"@3)
+      (expr@I
+       (setconstr
+        (set~4,~2 Feature.0.@1)ResemChoiceFeature.0.@1)))
+     (of@,2
+      (ranges "untyped"@3)
+      (expr@E
+       (setconstr
+        (set@,~3 Feature.0.@1)UntypedFeature.0.@1)))
+     (of@,3
+      (ranges "canraise"@3)
+      (expr@F
+       (setconstr
+        (set~1,~4 Feature.0.@1)CanRaiseFeature.0.@1)))
+     (of@,4
+      (ranges "lenientconverters"@3)
+      (expr@O
+       (setconstr
+        (set~A,~5 Feature.0.@1)LenientConvertersFeature.0.@1)))
+     (of@,5
+      (ranges "earlymagics"@3)
+      (expr@I
+       (setconstr
+        (set~4,~6 Feature.0.@1)EarlyMagicsFeature.0.@1)))
+     (of@,6
+      (ranges "autoclosures"@3)
+      (expr@J
+       (setconstr
+        (set~5,~7 Feature.0.@1)AutoClosuresFeature.0.@1)))
+     (of@,7
+      (ranges "lenientnils"@3)
+      (expr@I
+       (setconstr
+        (set~4,~8 Feature.0.@1)LenientNilsFeature.0.@1)))
+     (of@,8
+      (ranges "ignorestyle"@3)
+      (expr@I
+       (setconstr
+        (set~4,~9 Feature.0.@1)IgnoreStyleFeature.0.@1)))
+     (of@,9
+      (ranges "vartoverloads"@3)
+      (expr@K
+       (setconstr
+        (set~6,~A Feature.0.@1)VarToverloadsFeature.0.@1)))
+     (of@,A
+      (ranges "lenientfloats"@3)
+      (expr@K
+       (setconstr
+        (set~6,~B Feature.0.@1)LenientFloatsFeature.0.@1)))
+     (of@,B
+      (ranges "v2"@3)
+      (expr@9
+       (setconstr
+        (set@5,~C Feature.0.@1)UntypedFeature.0.@1 LenientConvertersFeature.0.@H EarlyMagicsFeature.0.@h AutoClosuresFeature.0.@1,1 LenientNilsFeature.0.@M,1 IgnoreStyleFeature.0.@g,1 VarToverloadsFeature.0.@1,2 LenientFloatsFeature.0.@N,2)))
+     (else@,E
+      (expr@6
+       (setconstr
+        (set@8,~F Feature.0.@1))))))
+   (ret~2,~1 result.2)))
+ (comment@D,Y set.0.sysvq0asl >=.0.sysvq0asl~1,~3 ord.0.sysvq0asl@d,~3 ord.0.sysvq0asl@o,~3 ord.0.sysvq0asl@z,~3)
+ (iterator@C,T :items.1.I4py2pf1. . .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (at items.1.sysvq0asl
+   (c@X,Q,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 8))
+  (params@I,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (param@1 :a.1 . . openArray.0.Ijk0jkw1.@C .))
+  (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (c@E,~L 8)). .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (stmts@2,m,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (var@4 :i.0 . .
+    (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)0@4)
+   (while@,1
+    (lt@8
+     (i 32)i.0~2
+     (call@5 len.6.Iroq7kd1.~3 a.1@1))
+    (stmts@2,1
+     (yld
+      (call@6 \5B\5D.10.I5nt6we. a.1 i.0@2))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.0))))))
+ (func@F,n,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :len.6.Iroq7kd1. . .~F,~I
+  (at len.6.sysvq0asl
+   (c@I,~N 8))
+  (params~3,~I
+   (param@1 :a.3 . . openArray.0.Ijk0jkw1.@C .))
+  (i@4,~I 32)
+  (pragmas@K,~I
+   (inline@2)).~F,~I
+  (stmts@X,~I
+   (result@1 :result.3 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1 result.3
+    (dot a.3~1 len.0 0 "x"))
+   (ret~m result.3)))
+ (func@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :\5B\5D.10.I5nt6we. . .~A,~e
+  (at \5B\5D.10.sysvq0asl
+   (c@N,~O 8))
+  (params@3,~e
+   (param@1 :x.2 . . openArray.0.Ijk0jkw1.@C .)
+   (param@I :idx.1 . .
+    (i@5 32).))
+  (mut@J,~e
+   (c@4,G 8))
+  (pragmas@c,~e
+   (inline@2)
+   (requires@A
+    (and@J
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1D,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim idx.1@16,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim))
+     (lt@8
+      (i 32)idx.1~4
+      (dot@3 x.2~1 len.0 0 "x"))))).~A,~e
+  (stmts@1P,~e
+   (result@3 :result.4 . .
+    (mut~19
+     (c@4,G 8)).)
+   (asgn@3 result.4
+    (haddr~2
+     (pat
+      (dot x.2~1 a.0 0 "x")idx.1@3)))
+   (ret~1Z result.4)))
+ (func@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.3 . .
+    (mut@3
+     (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.3)
+    (add@6
+     (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+     (hderef@1 x.3)
+     (conv@U,~F
+      (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)1@1)))))
+ (type@V,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :openArray.0.Ijk0jkw1. .
+  (at openArray.0.sysvq0asl
+   (c@2,~L 8))
+  (pragmas~F,~f
+   (view@2))
+  (object~4,~f .
+   (fld~N,1 :a.0 . .
+    (ptr@3
+     (uarray@I
+      (c@8,J 8))
+     (unchecked)).)
+   (fld~N,2 :len.0 . .
+    (i@5 32).))))(.index@,8,../../../../../../home/savant/nimony/src/nimony/features.nim
+ (x Feature.0. 193)
+ (x@D,1 InvalidFeature.0. 50)
+ (x@D,1 ResemChoiceFeature.0. 77)
+ (x@D,1 UntypedFeature.0. 85)
+ (x@D,1 CanRaiseFeature.0. 77)
+ (x@D,1 LenientConvertersFeature.0. 79)
+ (x@D,1 EarlyMagicsFeature.0. 97)
+ (x@D,1 AutoClosuresFeature.0. 85)
+ (x@D,1 LenientNilsFeature.0. 87)
+ (x@D,1 IgnoreStyleFeature.0. 85)
+ (x@D,1 VarToverloadsFeature.0. 85)
+ (x@D,1 LenientFloatsFeature.0. 89)
+ (x dollar`.Feature.0. 92)
+ (h normalizeFeatureName.0. 1242)
+ (x parseFeatures.0. 2181)
+ (h items.1.I4py2pf1. 2130)
+ (h len.6.Iroq7kd1. 897)
+ (h \5B\5D.10.I5nt6we. 453)
+ (h inc.1.I6wjjge. 846)
+ (h openArray.0.Ijk0jkw1. 1055))

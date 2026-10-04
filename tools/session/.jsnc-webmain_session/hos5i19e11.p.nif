@@ -1,0 +1,1050 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/hostfd.nim
+ (comment)
+ (when@,G
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,J
+  (infix@A / std~3 syncio@1))
+ (import@,K
+  (infix@A / std~3 os@1))
+ (import@,L natives@7)
+ (import@,M iopolicy@7)
+ (import@,N journal@7)
+ (proc@,R modeFromPosixFlags@5 . . .
+  (params@N
+   (param@1 flags . . int@7 .))FileMode@E . .
+  (stmts@2,1
+   (comment)
+   (const@2,2 O_WRONLY . . . 1@B)
+   (const@2,3 O_RDWR . . . 2@B)
+   (const@2,4 O_CREAT . . . 64@B)
+   (const@2,5 O_TRUNC . . . 512@B)
+   (const@2,6 O_APPEND . . . 1024@B)
+   (let@4,7 acc . . .
+    (infix@C and flags~6 3@4))
+   (if@,8
+    (elif@3
+     (infix@L !=
+      (par~L
+       (infix@7 and flags~6 O_APPEND@4))0@3)
+     (stmts~1,1
+      (asgn@7 result~7 fmAppend@2)))
+    (elif@5,2
+     (infix@4 == acc~4 O_RDWR@3)
+     (stmts~3,1
+      (if
+       (elif@3
+        (infix@P or
+         (infix~5 !=
+          (par~K
+           (infix@7 and flags~6 O_CREAT@4))0@3)
+         (infix@N !=
+          (par~K
+           (infix@7 and flags~6 O_TRUNC@4))0@3))
+        (stmts@s
+         (asgn@7 result~7 fmReadWrite@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7 fmReadWriteExisting@2))))))
+    (elif@5,5
+     (infix@4 == acc~4 O_WRONLY@3)
+     (stmts~3,1
+      (asgn@7 result~7 fmWrite@2)))
+    (else@,7
+     (stmts@2,1
+      (asgn@7 result~7 fmRead@2))))))
+ (proc@,k modeFromCString@5 . . .
+  (params@K
+   (param@1 m . . string@3 .))FileMode@D . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@6 ==
+      (dot~5 m~1 len@1)0@3)
+     (stmts@C
+      (ret fmRead@7))))
+   (let@4,2 plus . . .
+    (infix@a or
+     (par~T
+      (infix@C and
+       (infix~5 >=
+        (dot~5 m~1 len@1)2@3)
+       (infix@9 ==
+        (at~4 m~1 1@1)'+'@3)))
+     (par@3
+      (infix@C and
+       (infix~5 >=
+        (dot~5 m~1 len@1)3@3)
+       (infix@9 ==
+        (at~4 m~1 2@1)'+'@3)))))
+   (case@,3
+    (at@6 m~1 0@1)
+    (of@,1
+     (ranges 'r'@3)
+     (stmts@8
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3 plus fmReadWriteExisting@6)
+         (else@T fmRead@6))))))
+    (of@,2
+     (ranges 'w'@3)
+     (stmts@8
+      (asgn@7 result~7
+       (expr
+        (stmts@2)
+        (if@1
+         (elif@3 plus fmReadWrite@6)
+         (else@L fmWrite@6))))))
+    (of@,3
+     (ranges 'a'@3)
+     (stmts@8
+      (asgn@7 result~7 fmAppend@2)))
+    (else@,4
+     (stmts@6
+      (asgn@7 result~7 fmRead@2))))))
+ (proc@,u registerFd@5 . . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G f . . File@3 .))int@Q . .
+  (stmts@2,1
+   (comment)
+   (while@,1
+    (infix@J <
+     (dot~5
+      (dot~4 sink~4 fds@1)len@1)3@2)
+    (stmts@O
+     (cmd@8
+      (dot
+       (dot~4 sink~4 fds@1)add@1)
+      (nil@5))))
+   (var@4,2 i . . . 3@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@A
+      (dot~4 sink~4 fds@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@C ==
+        (at~4
+         (dot~4 sink~4 fds@1)i@1)
+        (nil@3))
+       (stmts~1,1
+        (asgn@C
+         (at~4
+          (dot~4 sink~4 fds@1)i@1)f@2)
+        (ret@,1 i@7))))
+     (cmd@,3 inc i@4)))
+   (cmd@8,8
+    (dot
+     (dot~4 sink~4 fds@1)add@1)f@5)
+   (asgn@7,9 result~7
+    (infix@F \2D
+     (dot~5
+      (dot~4 sink~4 fds@1)len@1)1@2))))
+ (proc@,1A pipeAt@5 . . .
+  (params@B
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))PipeBuf@Q . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@E
+        (dot~8 sink~4 pipeFds@1)len@1)))
+     (stmts@Z
+      (ret
+       (at@J
+        (dot~8 sink~4 pipeFds@1)fd@1)))))
+   (ret@,2
+    (nil@7))))
+ (proc@,1F registerPipeEnd@5 . . .
+  (params@K
+   (param@1 sink . . OutSink@6 .)
+   (param@G pb . . PipeBuf@4 .))int@U . .
+  (stmts@2,1
+   (comment)
+   (while@,1
+    (infix@J <
+     (dot~5
+      (dot~4 sink~4 fds@1)len@1)3@2)
+    (stmts@O
+     (cmd@8
+      (dot
+       (dot~4 sink~4 fds@1)add@1)
+      (nil@5))))
+   (while@,2
+    (infix@N <
+     (dot~5
+      (dot~8 sink~4 pipeFds@1)len@1)
+     (dot@A
+      (dot~4 sink~4 fds@1)len@1))
+    (stmts@d
+     (cmd@C
+      (dot
+       (dot~8 sink~4 pipeFds@1)add@1)
+      (call@C default~7 PipeBuf@1))))
+   (var@4,3 i . . . 3@4)
+   (while@,4
+    (infix@8 < i~2
+     (dot@A
+      (dot~4 sink~4 fds@1)len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@J and
+        (infix~7 ==
+         (at~4
+          (dot~4 sink~4 fds@1)i@1)
+         (nil@3))
+        (infix@K ==
+         (at~4
+          (dot~8 sink~4 pipeFds@1)i@1)
+         (nil@3)))
+       (stmts~1,1
+        (asgn@G
+         (at~4
+          (dot~8 sink~4 pipeFds@1)i@1)pb@2)
+        (ret@,1 i@7))))
+     (cmd@,3 inc i@4)))
+   (cmd@8,9
+    (dot
+     (dot~4 sink~4 fds@1)add@1)
+    (nil@5))
+   (cmd@C,A
+    (dot
+     (dot~8 sink~4 pipeFds@1)add@1)pb@5)
+   (asgn@7,B result~7
+    (infix@F \2D
+     (dot~5
+      (dot~4 sink~4 fds@1)len@1)1@2))))
+ (proc@,1T hostPipe@5 x . .
+  (params@E
+   (param@1 sink . . OutSink@6 .)
+   (param@G rfd . .
+    (mut@A int@4).)
+   (param@L wfd . .
+    (mut@5 int@4).))bool@a . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 pb . . .
+    (oconstr@C PipeBuf~7
+     (kv@5 data~4 ""@2)
+     (kv@F rpos~4 0@2)
+     (kv@R writeFd~7 0@2)
+     (kv@h writeClosed~B false@2)))
+   (asgn@4,3 rfd~4
+    (call@H registerPipeEnd~F sink@1 pb@7))
+   (asgn@4,4 wfd~4
+    (call@H registerPipeEnd~F sink@1 pb@7))
+   (asgn@B,5
+    (dot~9 pb~2 writeFd@1)wfd@2)
+   (asgn@7,6 result~7 true@2)))
+ (proc@,1c hostOpen@5 x . .
+  (params@E
+   (param@1 sink . . OutSink@6 .)
+   (param@G path . . string@6 .)
+   (param@U mode . . FileMode@6 .))int@l . .
+  (stmts@2,1
+   (comment)
+   (if@,I
+    (elif@3
+     (call@G journalReplaying~G)
+     (stmts~1,4
+      (let@4 a . . .
+       (call@A jServe~6 "open"@1
+        (call@H portPath~8 path@1)))
+      (if@,1
+       (elif@3
+        (infix@J <
+         (call~F jInt~4
+          (call@7 jField~6 a@1 0@4))0@2)
+        (stmts@O
+         (ret -1@7))))
+      (let@4,2 pb . . .
+       (oconstr@C PipeBuf~7
+        (kv@5 data~4
+         (call@8 jField~6 a@1 1@4))
+        (kv@P rpos~4 0@2)
+        (kv@b writeFd~7 -1@2)
+        (kv@s writeClosed~B true@2)))
+      (ret@,3
+       (call@M registerPipeEnd~F sink@1 pb@7)))))
+   (if@,Q
+    (elif@3
+     (infix@U and
+      (call~I capsDeniedOn~C capFsRead@1 path@C)
+      (call@G capsDeniedOn~C capFsWrite@1 path@D))
+     (stmts~1,1
+      (call@F recordViolation~F
+       (infix@N &
+        (infix~7 & "open\282\29 on \27"~F path@2)"\27"@2)
+       (infix@e or capFsRead~A capFsWrite@3))
+      (ret@,1 -1@7))))
+   (var@4,T f . . File@3 .)
+   (if@,U
+    (elif@3
+     (prefix not
+      (call@8 open~4 f@1 path@4 mode@A))
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@G journalRecording~G)
+        (stmts@K
+         (call@7 jRecord~7 "open"@1
+          (call@H portPath~8 path@1)
+          (prefix@P \40
+           (bracket@1 "-1"@1 ""@7))))))
+      (ret@,1 -1@7))))
+   (asgn@7,X result~7
+    (call@C registerFd~A sink@1 f@7))
+   (if@,Y
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts~1,3
+      (call@7 jRecord~7 "open"@1
+       (call@H portPath~8 path@1)
+       (prefix@P \40
+        (bracket@1
+         (prefix@1 $ result@1)
+         (call@G jSlurp~6 path@1)))))))))
+ (proc@,2G hostOpenPosix@5 x . .
+  (params@J
+   (param@1 sink . . OutSink@6 .)
+   (param@G path . . string@6 .)
+   (param@U flags . . int@7 .))int@h . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A hostOpen~8 sink@1 path@7
+     (call@V modeFromPosixFlags~I flags@1)))))
+ (proc@,2J hostOpenC@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G path . . string@F .)
+   (param@M modeStr . . string@9 .))int@e . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@A hostOpen~8 sink@1 path@7
+     (call@S modeFromCString~F modeStr@1)))))
+ (proc@,2O hostClose@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))int@Q . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 0@3)
+      (infix@7 <= fd~3 2@3))
+     (stmts@L
+      (ret 0@7))))
+   (block@,2 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@3 == fd~3
+           (dot@5 pb~2 writeFd@1))
+          (stmts@I
+           (asgn@F
+            (dot~D pb~2 writeClosed@1)true@2))))
+        (asgn@H,1
+         (at~5
+          (dot~8 sink~4 pipeFds@1)fd@1)
+         (call@9 default~7 PipeBuf@1))
+        (ret@,2 0@7))))))
+   (if@,8
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts~1,1
+      (let@4 f . . .
+       (at@C
+        (dot~4 sink~4 fds@1)fd@1))
+      (if@,1
+       (elif@3
+        (infix@2 != f~2
+         (nil@3))
+        (stmts~1,1
+         (call@5 close~5 f@1)
+         (asgn@D,1
+          (at~5
+           (dot~4 sink~4 fds@1)fd@1)
+          (nil@2))
+         (ret@,2 0@7)))))))
+   (asgn@7,E result~7 -1@2)))
+ (proc@,2f isHostFd@5 x . .
+  (params@E
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))bool@Q . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@Y and
+      (infix~Q and
+       (infix~5 >= fd~3 3@3)
+       (infix@7 < fd~3
+        (dot@E
+         (dot~8 sink~4 pipeFds@1)len@1)))
+      (infix@L !=
+       (at~5
+        (dot~8 sink~4 pipeFds@1)fd@1)
+       (nil@3)))
+     (stmts@11
+      (ret true@7))))
+   (asgn@7,1 result~7
+    (infix@W and
+     (infix~M and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (infix@H !=
+      (at~5
+       (dot~4 sink~4 fds@1)fd@1)
+      (nil@3))))))
+ (proc@,2j hostPread@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .)
+   (param@P off . . int@8 .)
+   (param@U n . . int@3 .))string@d . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 ""@2)
+   (if@,3
+    (elif@3
+     (infix@7 or
+      (infix~4 < fd~3 3@2)
+      (infix@6 >= fd~3
+       (dot@B
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts@U
+      (ret .))))
+   (block@,4 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,1
+        (var@4 i . . . off@4)
+        (var@4,1 k . . . 0@4)
+        (while@,2
+         (infix@C and
+          (infix~4 < k~2 n@2)
+          (infix@6 < i~2
+           (dot@9
+            (dot~5 pb~2 data@1)len@1)))
+         (stmts@2,1
+          (cmd@6
+           (dot result~6 add@1)
+           (at@C
+            (dot~5 pb~2 data@1)i@1))
+          (cmd@,1 inc i@4)
+          (cmd@,2 inc k@4)))
+        (ret@,6 .))))))
+   (let@4,E f . . .
+    (at@C
+     (dot~4 sink~4 fds@1)fd@1))
+   (if@,F
+    (elif@3
+     (infix@2 == f~2
+      (nil@3))
+     (stmts@A
+      (ret .))))
+   (try@,G
+    (stmts@2,1
+     (let@4 pos . . .
+      (call@G getFilePos~A f@1))
+     (call@A,1 setFilePos~A f@1
+      (call@9 int64~5 off@1)fspSet@G)
+     (var@4,3 buf . .
+      (at@A array~5 65536@1 char@8)
+      (call@X default~7
+       (at@6 array~5 65536@1 char@8)))
+     (var@4,4 left . . . n@7)
+     (while@,5
+      (infix@B > left~5 0@2)
+      (stmts@2,1
+       (let@4 want . . .
+        (expr
+         (stmts@7)
+         (if@1
+          (elif@3
+           (infix@5 < left~5
+            (dot@5 buf~3 len@1))left@G)
+          (else@O
+           (dot@9 buf~3 len@1)))))
+       (let@4,1 got . . .
+        (call@G readBuffer~A f@1
+         (cmd@9 addr~5
+          (at@3 buf~3 0@1))want@H))
+       (if@,2
+        (elif@3
+         (infix@4 <= got~4 0@3)
+         (stmts@A
+          (break .))))
+       (var@4,3 i . . . 0@4)
+       (while@,4
+        (infix@8 < i~2 got@2)
+        (stmts@2,1
+         (cmd@6
+          (dot result~6 add@1)
+          (at@8 buf~3 i@1))
+         (cmd@,1 inc i@4)))
+       (asgn@5,7 left~5
+        (infix@7 \2D left~5 got@2))))
+     (call@A,E setFilePos~A f@1 pos@4 fspSet@9))
+    (except@,G .
+     (stmts@2,1
+      (asgn@7 result~7 ""@2))))))
+ (proc@,3J hostFileOfFd@5 x . .
+  (params@I
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))File@Q . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts@V
+      (ret
+       (at@F
+        (dot~4 sink~4 fds@1)fd@1)))))
+   (asgn@7,2 result~7
+    (nil@2))))
+ (proc@,3Q hostWrite@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .)
+   (param@P data . . string@6 .)
+   (param@d n . . int@3 .))int@m . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 cnt . . .
+    (if@6
+     (elif@3
+      (infix@2 < n~2
+       (dot@6 data~4 len@1))
+      (stmts@E n))
+     (else@J
+      (stmts@6
+       (dot@4 data~4 len@1)))))
+   (block@,4 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,1
+        (var@4 i . . . 0@4)
+        (while@,1
+         (infix@8 < i~2 cnt@2)
+         (stmts@F
+          (cmd@7
+           (dot
+            (dot~5 pb~2 data@1)add@1)
+           (at@9 data~4 i@1))
+          (cmd@L inc i@4)))
+        (ret@,2 cnt@7))))))
+   (if@,A
+    (elif@3
+     (infix@3 == fd~3 1@3)
+     (stmts~1,3
+      (if
+       (elif@3
+        (prefix not
+         (dot@8 sink~4 didQuit@1))
+        (stmts~1,1
+         (var@4 i . . . 0@4)
+         (while@,1
+          (infix@8 < i~2 cnt@2)
+          (stmts@F
+           (cmd@B
+            (dot
+             (dot~7 sink~4 outBuf@1)add@1)
+            (at@9 data~4 i@1))
+           (cmd@P inc i@4))))))
+      (ret@,3 cnt@7))))
+   (if@,H
+    (elif@3
+     (infix@3 == fd~3 2@3)
+     (stmts~1,1
+      (var@4 i . . . 0@4)
+      (while@,1
+       (infix@8 < i~2 cnt@2)
+       (stmts@F
+        (cmd@B
+         (dot
+          (dot~7 sink~4 errBuf@1)add@1)
+         (at@9 data~4 i@1))
+        (cmd@P inc i@4)))
+      (ret@,2 cnt@7))))
+   (if@,L
+    (elif@3
+     (infix@3 == fd~3 0@3)
+     (stmts@9
+      (ret -1@7))))
+   (if@,M
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts~1,1
+      (let@4 f . . .
+       (at@C
+        (dot~4 sink~4 fds@1)fd@1))
+      (if@,1
+       (elif@3
+        (infix@2 != f~2
+         (nil@3))
+        (stmts~1,1
+         (let@4 chunk . . .
+          (if@8
+           (elif@3
+            (infix@4 < cnt~4
+             (dot@6 data~4 len@1))
+            (stmts@G
+             (call@6 substr~6 data@1 0@7
+              (infix@E \2D cnt~4 1@2))))
+           (else@i
+            (stmts@6 data))))
+         (call@5,1 write~5 f@1 chunk@4)
+         (ret@,2 cnt@7)))))))
+   (asgn@7,S result~7 -1@2)))
+ (proc@,3x hostRead@5 x . .
+  (params@E
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .)
+   (param@P n . . int@3 .))string@Y . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 ""@2)
+   (if@,3
+    (elif@3
+     (infix@2 <= n~2 0@3)
+     (stmts@8
+      (ret .))))
+   (block@,4 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,3
+        (var@4 k . . . 0@4)
+        (while@,1
+         (infix@C and
+          (infix~4 < k~2 n@2)
+          (infix@C <
+           (dot~6 pb~2 rpos@1)
+           (dot@9
+            (dot~5 pb~2 data@1)len@1)))
+         (stmts@2,1
+          (cmd@6
+           (dot result~6 add@1)
+           (at@C
+            (dot~5 pb~2 data@1)
+            (dot@3 pb~2 rpos@1)))
+          (cmd@,1 inc
+           (dot@6 pb~2 rpos@1))
+          (cmd@,2 inc k@4)))
+        (ret@,5 .))))))
+   (if@,F
+    (elif@3
+     (infix@3 == fd~3 0@3)
+     (stmts~1,1
+      (var@4 k . . . 0@4)
+      (while@,1
+       (infix@C and
+        (infix~4 < k~2 n@2)
+        (infix@F <
+         (dot~7 sink~4 inPos@1)
+         (dot@C
+          (dot~6 sink~4 inBuf@1)len@1)))
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)
+         (at@F
+          (dot~6 sink~4 inBuf@1)
+          (dot@5 sink~4 inPos@1)))
+        (cmd@,1 inc
+         (dot@8 sink~4 inPos@1))
+        (cmd@,2 inc k@4)))
+      (ret@,5 .))))
+   (if@,M
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts~1,1
+      (let@4 f . . .
+       (at@C
+        (dot~4 sink~4 fds@1)fd@1))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (ret .))))
+      (var@4,2 buf . .
+       (at@A array~5 65536@1 char@8)
+       (call@X default~7
+        (at@6 array~5 65536@1 char@8)))
+      (var@4,3 remaining . . . n@C)
+      (while@,4
+       (infix@G > remaining~A 0@2)
+       (stmts@2,1
+        (let@4 take . . .
+         (if@7
+          (elif@3
+           (infix@A < remaining~A
+            (dot@5 buf~3 len@1))
+           (stmts@L remaining))
+          (else@Y
+           (stmts@6
+            (dot@3 buf~3 len@1)))))
+        (let@4,1 got . . .
+         (call@G readBuffer~A f@1
+          (cmd@9 addr~5
+           (at@3 buf~3 0@1))take@H))
+        (if@,2
+         (elif@3
+          (infix@4 <= got~4 0@3)
+          (stmts@A
+           (break .))))
+        (var@4,3 i . . . 0@4)
+        (while@,4
+         (infix@8 < i~2 got@2)
+         (stmts@F
+          (cmd@6
+           (dot result~6 add@1)
+           (at@8 buf~3 i@1))
+          (cmd@J inc i@4)))
+        (infix@A,5 \2D= remaining~A got@3)
+        (if@,6
+         (elif@3
+          (infix@4 < got~4 take@2)
+          (stmts@C
+           (break .)))))))))))
+ (proc@,4Y hostReadAll@5 x . .
+  (params@H
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))string@Q . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 ""@2)
+   (block@,2 .
+    (stmts@2,5
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@8 <
+           (dot~6 pb~2 rpos@1)
+           (dot@9
+            (dot~5 pb~2 data@1)len@1))
+          (stmts~1,1
+           (asgn@7 result~7
+            (call@8 substr~6
+             (dot@3 pb~2 data@1)
+             (dot@C pb~2 rpos@1)
+             (infix@V \2D
+              (dot~5
+               (dot~5 pb~2 data@1)len@1)1@2)))
+           (asgn@8,1
+            (dot~6 pb~2 rpos@1)
+            (dot@9
+             (dot~5 pb~2 data@1)len@1)))))
+        (ret@,3 .))))))
+   (if@,D
+    (elif@3
+     (infix@3 == fd~3 0@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@B <
+         (dot~7 sink~4 inPos@1)
+         (dot@C
+          (dot~6 sink~4 inBuf@1)len@1))
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@8 substr~6
+           (dot@5 sink~4 inBuf@1)
+           (dot@H sink~4 inPos@1)
+           (infix@e \2D
+            (dot~5
+             (dot~6 sink~4 inBuf@1)len@1)1@2)))
+         (asgn@B,1
+          (dot~7 sink~4 inPos@1)
+          (dot@C
+           (dot~6 sink~4 inBuf@1)len@1)))))
+      (ret@,3 .))))
+   (if@,I
+    (elif@3
+     (infix@8 and
+      (infix~5 >= fd~3 3@3)
+      (infix@7 < fd~3
+       (dot@A
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts~1,1
+      (let@4 f . . .
+       (at@C
+        (dot~4 sink~4 fds@1)fd@1))
+      (if@,1
+       (elif@3
+        (infix@2 == f~2
+         (nil@3))
+        (stmts@A
+         (ret .))))
+      (var@4,2 buf . .
+       (at@A array~5 65536@1 char@8)
+       (call@X default~7
+        (at@6 array~5 65536@1 char@8)))
+      (while@,3 true@6
+       (stmts@2,1
+        (let@4 got . . .
+         (call@G readBuffer~A f@1
+          (cmd@9 addr~5
+           (at@3 buf~3 0@1))
+          (dot@K buf~3 len@1)))
+        (if@,1
+         (elif@3
+          (infix@4 <= got~4 0@3)
+          (stmts@A
+           (break .))))
+        (var@4,2 i . . . 0@4)
+        (while@,3
+         (infix@8 < i~2 got@2)
+         (stmts@F
+          (cmd@6
+           (dot result~6 add@1)
+           (at@8 buf~3 i@1))
+          (cmd@J inc i@4)))
+        (if@,4
+         (elif@3
+          (infix@4 < got~4
+           (dot@5 buf~3 len@1))
+          (stmts@F
+           (break .)))))))))))
+ (proc@,54 hostLseek@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .)
+   (param@P offset . . int64@8 .)
+   (param@e whence . . int@8 .))int64@s . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@7 or
+      (infix~4 < fd~3 3@2)
+      (infix@6 >= fd~3
+       (dot@B
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts@U
+      (ret -1@7))))
+   (block@,3 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts~1,1
+        (var@4 np . . . 0@5)
+        (case@,1 whence@5
+         (of@,1
+          (ranges 0@3)
+          (stmts@6
+           (asgn@3 np~3
+            (call@5 int~3 offset@1))))
+         (of@,2
+          (ranges 1@3)
+          (stmts@6
+           (asgn@3 np~3
+            (infix@A \2B
+             (dot~6 pb~2 rpos@1)
+             (call@5 int~3 offset@1)))))
+         (of@,3
+          (ranges 2@3)
+          (stmts@6
+           (asgn@3 np~3
+            (infix@E \2B
+             (dot~5
+              (dot~5 pb~2 data@1)len@1)
+             (call@5 int~3 offset@1)))))
+         (else@,4
+          (stmts@6
+           (ret -1@7))))
+        (if@,6
+         (elif@3
+          (infix@3 < np~3 0@2)
+          (stmts@8
+           (ret -1@7))))
+        (asgn@8,7
+         (dot~6 pb~2 rpos@1)np@2)
+        (ret@,8
+         (call@C int64~5 np@1)))))))
+   (let@4,F f . . .
+    (at@C
+     (dot~4 sink~4 fds@1)fd@1))
+   (if@,G
+    (elif@3
+     (infix@2 == f~2
+      (nil@3))
+     (stmts@A
+      (ret -1@7))))
+   (let@4,H rel . . .
+    (case~2,1 whence@5
+     (of@,1
+      (ranges 0@3)
+      (stmts@6 fspSet))
+     (of@,2
+      (ranges 1@3)
+      (stmts@6 fspCur))
+     (of@,3
+      (ranges 2@3)
+      (stmts@6 fspEnd))
+     (else@,4
+      (stmts@6
+       (ret -1@7)))))
+   (try@,N
+    (stmts@2,1
+     (call@A setFilePos~A f@1 offset@4 rel@C)
+     (asgn@7,1 result~7
+      (call@C getFilePos~A f@1)))
+    (except@,3 .
+     (stmts@2,1
+      (asgn@7 result~7 -1@2))))))
+ (proc@,5Y hostFdLen@5 x . .
+  (params@F
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))int@Q . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 pb . . .
+    (call@B pipeAt~6 sink@1 fd@7))
+   (if@,3
+    (elif@3
+     (infix@3 != pb~3
+      (nil@3))
+     (stmts@B
+      (ret
+       (dot@E
+        (dot~5 pb~2 data@1)len@1)))))
+   (asgn@7,4 result~7 -1@2)))
+ (proc@,5f hostTell@5 x . .
+  (params@E
+   (param@1 sink . . OutSink@6 .)
+   (param@G fd . . int@4 .))int64@Q . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@7 or
+      (infix~4 < fd~3 3@2)
+      (infix@6 >= fd~3
+       (dot@B
+        (dot~4 sink~4 fds@1)len@1)))
+     (stmts@U
+      (ret -1@7))))
+   (block@,1 .
+    (stmts@2,1
+     (let@4 pb . . .
+      (call@B pipeAt~6 sink@1 fd@7))
+     (if@,1
+      (elif@3
+       (infix@3 != pb~3
+        (nil@3))
+       (stmts@B
+        (ret
+         (call@C int64~5
+          (dot@3 pb~2 rpos@1))))))))
+   (let@4,4 f . . .
+    (at@C
+     (dot~4 sink~4 fds@1)fd@1))
+   (if@,5
+    (elif@3
+     (infix@2 == f~2
+      (nil@3))
+     (stmts@A
+      (ret -1@7))))
+   (try@,6
+    (stmts@2,1
+     (asgn@7 result~7
+      (call@C getFilePos~A f@1)))
+    (except@,2 .
+     (stmts@2,1
+      (asgn@7 result~7 -1@2))))))
+ (proc@,5t hostExpandFilename@5 x . .
+  (params@O
+   (param@1 path . . string@6 .))string@G . .
+  (stmts@2,1
+   (comment)
+   (if@,D
+    (elif@3
+     (call@G journalReplaying~G)
+     (stmts~1,1
+      (ret
+       (call@D jField~6
+        (call@7 jServe~6 "expandpath"@1
+         (call@N portPath~8 path@1))0@d)))))
+   (try@,F
+    (stmts@2,1
+     (asgn@7 result~7
+      (call@G normalizedPath~E
+       (call@D absolutePath~C path@1))))
+    (except@,2 .
+     (stmts@2,1
+      (asgn@7 result~7 path@2))))
+   (if@,J
+    (elif@3
+     (call@G journalRecording~G)
+     (stmts@K
+      (call@7 jRecord~7 "expandpath"@1
+       (call@N portPath~8 path@1)
+       (prefix@V \40
+        (bracket@1 result@1)))))))))

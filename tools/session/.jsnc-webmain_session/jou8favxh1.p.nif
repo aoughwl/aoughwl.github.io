@@ -1,0 +1,993 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/journal.nim
+ (comment)
+ (when@,Q
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,T
+  (infix@A / std~3 syncio@1))
+ (import@,U
+  (infix@A / std~3 os@1))
+ (import@,V
+  (infix@A / std~3 envvars@1))
+ (const@H,Y journalExitCode~F x . . 78@4)
+ (const@2,b journalMagic . . . "aowli-journal"@F)
+ (const@2,c journalVersion . . . "1"@H)
+ (const@2,d hexDigits . . . "0123456789abcdef"@C)
+ (type@9,g JEvent~7 . . .
+  (object@2 .
+   (fld~7,1 kind . . string@6 .)
+   (fld~7,2 key . . string@5 .)
+   (fld~7,3 fields . .
+    (at@B seq~3 string@1).)))
+ (var@2,m gMode . . . 0@8)
+ (var@2,n gEvents . .
+  (at@C seq~3 JEvent@1)
+  (prefix@N \40
+   (bracket@1)))
+ (var@2,o gPos . . . 0@7)
+ (var@2,p gPath . . . ""@8)
+ (var@2,q gCwd . . . ""@7)
+ (var@2,r gHome . . . ""@8)
+ (var@2,s gRecCwd . . . ""@A)
+ (var@2,t gProgram . . . ""@B)
+ (var@2,u gArgv . .
+  (at@A seq~3 string@1)
+  (prefix@L \40
+   (bracket@1)))
+ (proc@,w journalOff@5 x . .
+  (params@G)bool@4 . .
+  (stmts@R
+   (infix@6 == gMode~6 0@3)))
+ (proc@,x journalRecording@5 x . .
+  (params@M)bool@4 . .
+  (stmts@X
+   (infix@6 == gMode~6 1@3)))
+ (proc@,y journalReplaying@5 x . .
+  (params@M)bool@4 . .
+  (stmts@X
+   (infix@6 == gMode~6 2@3)))
+ (proc@,15 jEsc@5 x . .
+  (params@A
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 s~1 len@1))
+    (stmts@2,1
+     (let@4 b . . .
+      (call@7 int~3
+       (call@6 uint8~5
+        (at@2 s~1 i@1))))
+     (if@,1
+      (elif@3
+       (infix@5 ==
+        (at~4 s~1 i@1)'\5C'@3)
+       (stmts@E
+        (cmd@6
+         (dot result~6 add@1)"\5C\5C"@5)))
+      (elif@5,1
+       (infix@5 ==
+        (at~4 s~1 i@1)'\0A'@3)
+       (stmts@E
+        (cmd@6
+         (dot result~6 add@1)"\5Cn"@5)))
+      (elif@5,2
+       (infix@5 ==
+        (at~4 s~1 i@1)'\09'@3)
+       (stmts@E
+        (cmd@6
+         (dot result~6 add@1)"\5Ct"@5)))
+      (elif@5,3
+       (infix@5 ==
+        (at~4 s~1 i@1)'\0D'@3)
+       (stmts@E
+        (cmd@6
+         (dot result~6 add@1)"\5Cr"@5)))
+      (elif@5,4
+       (infix@7 or
+        (infix~5 < b~2 32@2)
+        (infix@5 > b~2 126@2))
+       (stmts~3,1
+        (cmd@6
+         (dot result~6 add@1)"\5Cx"@5)
+        (cmd@6,1
+         (dot result~6 add@1)
+         (at@E hexDigits~9
+          (infix@B and
+           (par~A
+            (infix@3 shr b~2 4@4))15@4)))
+        (cmd@6,2
+         (dot result~6 add@1)
+         (at@E hexDigits~9
+          (infix@3 and b~2 15@4)))))
+      (else@,8
+       (stmts@6
+        (cmd@6
+         (dot result~6 add@1)
+         (at@6 s~1 i@1)))))
+     (cmd@,A inc i@4)))))
+ (proc@,1L hexVal@5 . . .
+  (params@B
+   (param@1 c . . char@3 .))int@B . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 and
+      (infix~7 >= c~2 '0'@3)
+      (infix@6 <= c~2 '9'@3))
+     (stmts@N
+      (infix@7 \2D
+       (call~4 int~3 c@1)
+       (call@5 int~3 '0'@1))))
+    (elif@5,1
+     (infix@9 and
+      (infix~7 >= c~2 'a'@3)
+      (infix@6 <= c~2 'f'@3))
+     (stmts@N
+      (infix@C \2D
+       (infix~9 \2B 10~3
+        (call@5 int~3 c@1))
+       (call@5 int~3 'a'@1))))
+    (elif@5,2
+     (infix@9 and
+      (infix~7 >= c~2 'A'@3)
+      (infix@6 <= c~2 'F'@3))
+     (stmts@N
+      (infix@C \2D
+       (infix~9 \2B 10~3
+        (call@5 int~3 c@1))
+       (call@5 int~3 'A'@1))))
+    (else@,3
+     (stmts@6 0)))))
+ (proc@,1R jUnesc@5 x . .
+  (params@C
+   (param@1 s . . string@3 .))string@D . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 s~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@D and
+        (infix~8 ==
+         (at~4 s~1 i@1)'\5C'@3)
+        (infix@A <
+         (infix~4 \2B i~2 1@2)
+         (dot@3 s~1 len@1)))
+       (stmts~1,1
+        (let@4 c . . .
+         (at@5 s~1
+          (infix@2 \2B i~1 1@1)))
+        (if@,1
+         (elif@3
+          (infix@2 == c~2 '\5C'@3)
+          (stmts@B
+           (cmd@6
+            (dot result~6 add@1)'\5C'@5)
+           (asgn@J i~2
+            (infix@4 \2B i~2 2@2))))
+         (elif@5,1
+          (infix@2 == c~2 'n'@3)
+          (stmts@A
+           (cmd@6
+            (dot result~6 add@1)'\0A'@5)
+           (asgn@J i~2
+            (infix@4 \2B i~2 2@2))))
+         (elif@5,2
+          (infix@2 == c~2 't'@3)
+          (stmts@A
+           (cmd@6
+            (dot result~6 add@1)'\09'@5)
+           (asgn@J i~2
+            (infix@4 \2B i~2 2@2))))
+         (elif@5,3
+          (infix@2 == c~2 'r'@3)
+          (stmts@A
+           (cmd@6
+            (dot result~6 add@1)'\0D'@5)
+           (asgn@J i~2
+            (infix@4 \2B i~2 2@2))))
+         (elif@5,4
+          (infix@9 and
+           (infix~7 == c~2 'x'@3)
+           (infix@A <
+            (infix~4 \2B i~2 3@2)
+            (dot@3 s~1 len@1)))
+          (stmts~3,1
+           (cmd@6
+            (dot result~6 add@1)
+            (call@9 char~4
+             (call@6 uint8~5
+              (infix@L \2B
+               (infix~5 *
+                (call~9 hexVal~6
+                 (at@2 s~1
+                  (infix@2 \2B i~1 2@1)))16@2)
+               (call@8 hexVal~6
+                (at@2 s~1
+                 (infix@2 \2B i~1 3@1)))))))
+           (asgn@2,1 i~2
+            (infix@4 \2B i~2 4@2))))
+         (else@,7
+          (stmts@2,1
+           (cmd@6
+            (dot result~6 add@1)
+            (at@6 s~1 i@1))
+           (cmd@,1 inc i@4))))))
+      (else@,C
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)
+         (at@6 s~1 i@1))
+        (cmd@,1 inc i@4))))))))
+ (proc@,1l jInt@5 x . .
+  (params@A
+   (param@1 s . . string@3 .))int@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7 0@2)
+   (var@4,2 i . . . 0@4)
+   (var@4,3 neg . . . false@6)
+   (if@,4
+    (elif@3
+     (infix@A and
+      (infix~8 < i~2
+       (dot@3 s~1 len@1))
+      (infix@9 ==
+       (at~4 s~1 i@1)'-'@3))
+     (stmts@R
+      (asgn@4 neg~4 true@2)
+      (cmd@C inc i@4))))
+   (while@,5
+    (infix@W and
+     (infix~G and
+      (infix~8 < i~2
+       (dot@3 s~1 len@1))
+      (infix@9 >=
+       (at~4 s~1 i@1)'0'@3))
+     (infix@9 <=
+      (at~4 s~1 i@1)'9'@3))
+    (stmts@2,1
+     (asgn@7 result~7
+      (infix@E \2B
+       (infix~5 * result~7 10@2)
+       (par@2
+        (infix@B \2D
+         (call~7 int~3
+          (at@2 s~1 i@1))
+         (call@5 int~3 '0'@1)))))
+     (cmd@,1 inc i@4)))
+   (if@,8
+    (elif@3 neg
+     (stmts@5
+      (asgn@7 result~7
+       (prefix@2 \2D result@1)))))))
+ (proc@,25 startsWithStr@5 . . .
+  (params@I
+   (param@1 s . . string@6 .)
+   (param@4 p . . string@3 .))bool@G . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@B or
+      (infix~5 ==
+       (dot~5 p~1 len@1)0@3)
+      (infix@9 >
+       (dot~5 p~1 len@1)
+       (dot@3 s~1 len@1)))
+     (stmts@T
+      (ret false@7))))
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 p~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 !=
+        (at~4 s~1 i@1)
+        (at@4 p~1 i@1))
+       (stmts@E
+        (ret false@7))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,5 result~7 true@2)))
+ (proc@,2D portPath@5 x . .
+  (params@E
+   (param@1 p . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@6 ==
+      (dot~5 p~1 len@1)0@3)
+     (stmts@C
+      (ret p@7))))
+   (if@,2
+    (elif@3
+     (infix@9 >
+      (dot~5 gCwd~4 len@1)0@2)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@2 == p~2 gCwd@3)
+        (stmts@B
+         (ret "<cwd>"@7))))
+      (if@,1
+       (elif@3
+        (call@D startsWithStr~D p@1
+         (infix@9 & gCwd~5 "/"@2))
+        (stmts@U
+         (ret
+          (infix@G & "<cwd>/"~9
+           (call@8 substr~6 p@1
+            (infix@D \2B
+             (dot~5 gCwd~4 len@1)1@2)
+            (infix@O \2D
+             (dot~5 p~1 len@1)1@2))))))))))
+   (if@,5
+    (elif@3
+     (infix@A >
+      (dot~5 gHome~5 len@1)0@2)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@2 == p~2 gHome@3)
+        (stmts@C
+         (ret "<home>"@7))))
+      (if@,1
+       (elif@3
+        (call@D startsWithStr~D p@1
+         (infix@A & gHome~6 "/"@2))
+        (stmts@V
+         (ret
+          (infix@H & "<home>/"~A
+           (call@8 substr~6 p@1
+            (infix@E \2B
+             (dot~5 gHome~5 len@1)1@2)
+            (infix@P \2D
+             (dot~5 p~1 len@1)1@2))))))))))
+   (asgn@7,8 result~7 p@2)))
+ (proc@,2R journalFail@5 . . .
+  (params@G
+   (param@1 msg . . string@5 .)). . .
+  (stmts@2,1
+   (cmd write stderr@6 "aowli\3A REPLAY DIVERGENCE — the run asked the host for something the\0A"@E)
+   (cmd@,1 write stderr@6
+    (infix@f &
+     (infix~8 & "       journal \27"~J gPath@2)"\27 cannot answer. Refusing to fall through\0A"@2))
+   (cmd@,2 write stderr@6 "       to the real OS.\0A"@E)
+   (cmd@,3 write stderr@6 msg@E)
+   (cmd@,4 quit journalExitCode@5)))
+ (proc@,2Y journalRefuse@5 . . .
+  (params@I
+   (param@1 msg . . string@5 .)). . .
+  (stmts@2,1
+   (cmd write stderr@6 "aowli\3A this journal does not belong to this run — refusing to replay.\0A"@E)
+   (cmd@,1 write stderr@6 msg@E)
+   (cmd@,2 quit journalExitCode@5)))
+ (proc@,2g jRecord@5 x . .
+  (params@D
+   (param@1 kind . . string@B .)
+   (param@7 key . . string@5 .)
+   (param@K fields . .
+    (at@B seq~3 string@1).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 e . . .
+    (oconstr@A JEvent~6
+     (kv@5 kind~4 kind@2)
+     (kv@G key~3 key@2)
+     (kv@T fields~6
+      (prefix@2 \40
+       (bracket@1)))))
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@8 fields~6 len@1))
+    (stmts@2,1
+     (cmd@8
+      (dot
+       (dot~7 e~1 fields@1)add@1)
+      (at@B fields~6 i@1))
+     (cmd@,1 inc i@4)))
+   (cmd@7,6
+    (dot gEvents~7 add@1)e@5)))
+ (proc@,2p jServe@5 x . .
+  (params@C
+   (param@1 kind . . string@B .)
+   (param@7 key . . string@5 .))
+  (at@O seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (if@,3
+    (elif@3
+     (infix@5 >= gPos~5
+      (dot@A gEvents~7 len@1))
+     (stmts~1,1
+      (call@B journalFail~B
+       (infix@c,1 &
+        (infix~6 &
+         (infix~7 &
+          (infix~7 &
+           (infix@z,~1 &
+            (infix~Z &
+             (infix~F & "  journal EXHAUSTED\3A all "~S
+              (prefix@2 $
+               (dot@8 gEvents~7 len@1)))" recorded event\28s\29 consumed.\0A"@2)"  asked for \3A "~1G,1)kind@2)"  "@2)key@2)"\0A"@2))
+      (ret@,2 .))))
+   (if@,7
+    (elif@3
+     (infix@R or
+      (infix~8 !=
+       (dot~6
+        (at~6 gEvents~7 gPos@1)kind@1)kind@3)
+      (infix@L !=
+       (dot~5
+        (at~6 gEvents~7 gPos@1)key@1)key@3))
+     (stmts~1,1
+      (call@B journalFail~B
+       (infix@d,2 &
+        (infix~6 &
+         (infix~7 &
+          (infix~7 &
+           (infix@t,~1 &
+            (infix~7 &
+             (infix~K &
+              (infix~7 &
+               (infix~L &
+                (infix@g,~1 &
+                 (infix~7 &
+                  (infix~F &
+                   (infix~9 &
+                    (infix~E & "  at event \23"~F
+                     (prefix@2 $
+                      (par@1
+                       (infix@6 \2B gPos~5 1@2))))" of "@2)
+                   (prefix@2 $
+                    (dot@8 gEvents~7 len@1)))"\0A"@2)"  journal has\3A "~y,1)
+                (dot@F
+                 (at~6 gEvents~7 gPos@1)kind@1))"  "@2)
+              (dot@F
+               (at~6 gEvents~7 gPos@1)key@1))"\0A"@2)"  asked for  \3A "~1B,1)kind@2)"  "@2)key@2)"\0A"@2))
+      (ret@,3 .))))
+   (var@4,C i . . . 0@4)
+   (while@,D
+    (infix@8 < i~2
+     (dot@M
+      (dot~7
+       (at~6 gEvents~7 gPos@1)fields@1)len@1))
+    (stmts@2,1
+     (cmd@6
+      (dot result~6 add@1)
+      (at@P
+       (dot~7
+        (at~6 gEvents~7 gPos@1)fields@1)i@1))
+     (cmd@,1 inc i@4)))
+   (cmd@,G inc gPos@4)))
+ (proc@,38 jField@5 x . .
+  (params@C
+   (param@1 f . .
+    (at@6 seq~3 string@1).)
+   (param@H i . . int@3 .))string@Q . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@2 < i~2
+      (dot@3 f~1 len@1))
+     (stmts@B
+      (at@1 f~1 i@1)))
+    (else@J
+     (stmts@6 "")))))
+ (proc@,3G jSlurp@5 x . .
+  (params@C
+   (param@1 p . . string@3 .))string@D . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 ""@2)
+   (var@4,3 f . . File@3 .)
+   (if@,4
+    (elif@3
+     (prefix not
+      (call@8 open~4 f@1 p@4 fmRead@7))
+     (stmts@O
+      (ret .))))
+   (var@4,5 buf . .
+    (at@A array~5 65536@1 char@8)
+    (call@X default~7
+     (at@6 array~5 65536@1 char@8)))
+   (while@,6 true@6
+    (stmts@2,1
+     (let@4 n . . .
+      (call@E readBuffer~A f@1
+       (cmd@9 addr~5
+        (at@3 buf~3 0@1))
+       (dot@K buf~3 len@1)))
+     (if@,1
+      (elif@3
+       (infix@2 <= n~2 0@3)
+       (stmts@8
+        (break .))))
+     (var@4,2 i . . . 0@4)
+     (while@,3
+      (infix@8 < i~2 n@2)
+      (stmts@2,1
+       (cmd@6
+        (dot result~6 add@1)
+        (at@8 buf~3 i@1))
+       (cmd@,1 inc i@4)))))
+   (call@5,D close~5 f@1)))
+ (proc@,3Z splitTabs@5 . . .
+  (params@E
+   (param@1 line . . string@6 .))
+  (at@J seq~3 string@1). .
+  (stmts@2,1
+   (asgn@7 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,1 cur . . . ""@6)
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 <= i~2
+     (dot@7 line~4 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@E or
+        (infix~C == i~2
+         (dot@7 line~4 len@1))
+        (infix@B ==
+         (at~4 line~4 i@1)'\09'@3))
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)cur@5)
+        (asgn@4,1 cur~4 ""@2)))
+      (else@,3
+       (stmts@2,1
+        (asgn@4 cur~4
+         (infix@6 & cur~4
+          (at@6 line~4 i@1))))))
+     (cmd@,5 inc i@4)))))
+ (proc@,3l splitLines2@5 . . .
+  (params@G
+   (param@1 text . . string@6 .))
+  (at@J seq~3 string@1). .
+  (stmts@2,1
+   (asgn@7 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,1 cur . . . ""@6)
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@8 < i~2
+     (dot@6 text~4 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@8 ==
+        (at~4 text~4 i@1)'\0A'@3)
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)cur@5)
+        (asgn@4,1 cur~4 ""@2)))
+      (else@,3
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@8 !=
+           (at~4 text~4 i@1)'\0D'@3)
+          (stmts@H
+           (asgn@4 cur~4
+            (infix@6 & cur~4
+             (at@6 text~4 i@1)))))))))
+     (cmd@,5 inc i@4)))
+   (if@,A
+    (elif@3
+     (infix@8 >
+      (dot~5 cur~3 len@1)0@2)
+     (stmts@D
+      (cmd@6
+       (dot result~6 add@1)cur@5))))))
+ (proc@,3y hostCwd@5 . . .
+  (params@C)string@4 . .
+  (stmts@2,1
+   (try
+    (stmts@5
+     (asgn@7 result~7
+      (call@F getCurrentDir~D)))
+    (except@,1 .
+     (stmts@8
+      (asgn@7 result~7 ""@2))))))
+ (proc@,42 initPaths@5 . . .
+  (params@E). . .
+  (stmts@2,1
+   (asgn@5 gCwd~5
+    (call@9 hostCwd~7))
+   (try@,1
+    (stmts@5
+     (asgn@6 gHome~6
+      (call@8 getEnv~6 "HOME"@1)))
+    (except@,1 .
+     (stmts@8
+      (asgn@6 gHome~6 ""@2))))))
+ (proc@,47 argvJoin@5 . . .
+  (params@D
+   (param@1 a . .
+    (at@6 seq~3 string@1).))string@I . .
+  (stmts@2,1
+   (asgn@7 result~7 ""@2)
+   (var@4,1 i . . . 0@4)
+   (while@,2
+    (infix@8 < i~2
+     (dot@3 a~1 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@2 > i~2 0@2)
+       (stmts@7
+        (asgn@7 result~7
+         (infix@9 & result~7 " "@2)))))
+     (asgn@7,1 result~7
+      (infix@9 & result~7
+       (call@6 jEsc~4
+        (at@2 a~1 i@1))))
+     (cmd@,2 inc i@4)))))
+ (proc@,4F startRecord@5 x . .
+  (params@H
+   (param@1 path . . string@F .)
+   (param@7 program . . string@9 .)
+   (param@O argv . .
+    (at@9 seq~3 string@1).)). . .
+  (stmts@2,1
+   (comment)
+   (call@9,3 initPaths~9)
+   (asgn@6,4 gMode~6 1@2)
+   (asgn@6,5 gPath~6 path@2)
+   (asgn@9,6 gProgram~9 program@2)
+   (asgn@6,7 gArgv~6 argv@2)
+   (asgn@8,8 gRecCwd~8 gCwd@2)
+   (asgn@8,9 gEvents~8
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@5,A gPos~5 0@2)))
+ (proc@,4S startReplay@5 x . .
+  (params@H
+   (param@1 path . . string@F .)
+   (param@7 program . . string@9 .)
+   (param@O argv . .
+    (at@9 seq~3 string@1).)). . .
+  (stmts@2,1
+   (comment)
+   (call@9,1 initPaths~9)
+   (asgn@6,2 gPath~6 path@2)
+   (asgn@9,3 gProgram~9 program@2)
+   (asgn@6,4 gArgv~6 argv@2)
+   (let@4,5 text . . .
+    (call@D jSlurp~6 path@1))
+   (if@,6
+    (elif@3
+     (infix@9 ==
+      (dot~5 text~4 len@1)0@3)
+     (stmts~1,1
+      (call@D journalRefuse~D
+       (infix@Y &
+        (infix~7 & "  cannot read journal \27"~Q path@2)"\27 \28missing or empty\29.\0A"@2))
+      (ret@,1 .))))
+   (asgn@8,9 gEvents~8
+    (prefix@2 \40
+     (bracket@1)))
+   (asgn@5,A gPos~5 0@2)
+   (var@4,B sawMagic . . . false@B)
+   (var@4,C hdrProgram . . . ""@D)
+   (var@4,D hdrArgv . . . ""@A)
+   (let@4,E lines . . .
+    (call@J splitLines2~B text@1))
+   (var@4,F li . . . 0@5)
+   (while@,G
+    (infix@9 < li~3
+     (dot@7 lines~5 len@1))
+    (stmts@2,1
+     (let@4 f . . .
+      (call@D splitTabs~9
+       (at@6 lines~5 li@1)))
+     (cmd@,1 inc li@4)
+     (if@,2
+      (elif@3
+       (infix@6 ==
+        (dot~5 f~1 len@1)0@3)
+       (stmts@C
+        (continue .))))
+     (if@,3
+      (elif@3
+       (infix@5 ==
+        (at~4 f~1 0@1)journalMagic@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (infix@A or
+           (infix~4 <
+            (dot~5 f~1 len@1)2@2)
+           (infix@8 !=
+            (at~4 f~1 1@1)journalVersion@3))
+          (stmts~1,1
+           (call@D journalRefuse~D
+            (infix@h,1 &
+             (infix~H &
+              (infix@J,~1 &
+               (infix~F & "  journal format version \27"~T
+                (call@8 jField~6 f@1 1@4))"\27, this build speaks \27"~i,1)journalVersion@2)"\27.\0A"@2))
+           (ret@,2 .))))
+        (asgn@9,4 sawMagic~9 true@2)))
+      (elif@5,6
+       (infix@5 ==
+        (at~4 f~1 0@1)"header"@3)
+       (stmts~3,1
+        (if
+         (elif@3
+          (infix@D ==
+           (call~7 jField~6 f@1 1@4)"program"@3)
+          (stmts@R
+           (asgn@B hdrProgram~B
+            (call@8 jUnesc~6
+             (call@7 jField~6 f@1 2@4)))))
+         (elif@5,1
+          (infix@D ==
+           (call~7 jField~6 f@1 1@4)"argv"@3)
+          (stmts@O
+           (asgn@8 hdrArgv~8
+            (call@8 jField~6 f@1 2@4))))
+         (elif@5,2
+          (infix@D ==
+           (call~7 jField~6 f@1 1@4)"cwd"@3)
+          (stmts@N
+           (asgn@8 gRecCwd~8
+            (call@8 jUnesc~6
+             (call@7 jField~6 f@1 2@4))))))))
+      (elif@5,A
+       (infix@C or
+        (infix~7 ==
+         (at~4 f~1 0@1)"\23"@3)
+        (infix@8 ==
+         (at~4 f~1 0@1)""@3))
+       (stmts~3,1
+        (discard .)))
+      (else@,C
+       (stmts@2,1
+        (var@4 e . . .
+         (oconstr@A JEvent~6
+          (kv@5 kind~4
+           (at@3 f~1 0@1))
+          (kv@G key~3
+           (call@8 jUnesc~6
+            (call@7 jField~6 f@1 1@4)))
+          (kv@k fields~6
+           (prefix@2 \40
+            (bracket@1)))))
+        (var@4,1 i . . . 2@4)
+        (while@,2
+         (infix@8 < i~2
+          (dot@3 f~1 len@1))
+         (stmts@2,1
+          (cmd@8
+           (dot
+            (dot~7 e~1 fields@1)add@1)
+           (call@B jUnesc~6
+            (at@2 f~1 i@1)))
+          (cmd@,1 inc i@4)))
+        (cmd@7,5
+         (dot gEvents~7 add@1)e@5))))))
+   (if@,d
+    (elif@3
+     (prefix not sawMagic@4)
+     (stmts~1,1
+      (call@D journalRefuse~D
+       (infix@13 &
+        (infix~F &
+         (infix~a &
+          (infix~7 & "  \27"~6 path@2)"\27 is not an aowli journal \28no \27"@2)journalMagic@2)"\27 header\29.\0A"@2))
+      (ret@,1 .))))
+   (if@,g
+    (elif@3
+     (infix@B != hdrProgram~B program@3)
+     (stmts~1,1
+      (call@D journalRefuse~D
+       (infix@U,1 &
+        (infix~A &
+         (infix@Y,~1 &
+          (infix~D & "  journal was recorded from program \27"~e hdrProgram@2)"\27, this run is \27"~r,1)program@2)"\27.\0A"@2))
+      (ret@,2 .))))
+   (let@4,k nowArgv . . .
+    (call@I argvJoin~8 argv@1))
+   (if@,l
+    (elif@3
+     (infix@8 != hdrArgv~8 nowArgv@3)
+     (stmts~1,1
+      (call@D journalRefuse~D
+       (infix@V,1 &
+        (infix~A &
+         (infix@R,~1 &
+          (infix~A & "  journal was recorded with argv \5B"~b hdrArgv@2)"\5D, this run has \5B"~l,1)nowArgv@2)"\5D.\0A"@2))
+      (ret@,2 .))))
+   (asgn@6,p gMode~6 2@2)))
+ (proc@,5K journalFinish@5 x . .
+  (params@J). . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@6 == gMode~6 1@3)
+     (stmts~1,1
+      (var@4 text . . .
+       (infix@i &
+        (infix~H &
+         (infix~7 & journalMagic~D "\09"@2)journalVersion@2)"\0A"@2))
+      (asgn@5,1 text~5
+       (infix@7 & text~5 "header\09engine\09aowli-interp\0A"@2))
+      (asgn@5,2 text~5
+       (infix@k &
+        (infix~H &
+         (infix~M & text~5 "header\09program\09"@2)
+         (call@6 jEsc~4 gProgram@1))"\0A"@2))
+      (asgn@5,3 text~5
+       (infix@i &
+        (infix~I &
+         (infix~J & text~5 "header\09argv\09"@2)
+         (call@A argvJoin~8 gArgv@1))"\0A"@2))
+      (asgn@5,4 text~5
+       (infix@f &
+        (infix~G &
+         (infix~I & text~5 "header\09cwd\09"@2)
+         (call@6 jEsc~4 gRecCwd@1))"\0A"@2))
+      (asgn@5,5 text~5
+       (infix@h &
+        (infix~F &
+         (infix~L & text~5 "header\09events\09"@2)
+         (prefix@2 $
+          (dot@8 gEvents~7 len@1)))"\0A"@2))
+      (var@4,6 i . . . 0@4)
+      (while@,7
+       (infix@8 < i~2
+        (dot@9 gEvents~7 len@1))
+       (stmts@2,1
+        (asgn@5 text~5
+         (infix@W &
+          (infix~7 &
+           (infix~I & text~5
+            (dot@C
+             (at~3 gEvents~7 i@1)kind@1))"\09"@2)
+          (call@6 jEsc~4
+           (dot@B
+            (at~3 gEvents~7 i@1)key@1))))
+        (var@4,1 k . . . 0@4)
+        (while@,2
+         (infix@8 < k~2
+          (dot@J
+           (dot~7
+            (at~3 gEvents~7 i@1)fields@1)len@1))
+         (stmts@2,1
+          (asgn@5 text~5
+           (infix@E &
+            (infix~7 & text~5 "\09"@2)
+            (call@6 jEsc~4
+             (at@I
+              (dot~7
+               (at~3 gEvents~7 i@1)fields@1)k@1))))
+          (cmd@,1 inc k@4)))
+        (asgn@5,5 text~5
+         (infix@7 & text~5 "\0A"@2))
+        (cmd@,6 inc i@4)))
+      (var@4,F f . . File@3 .)
+      (if@,G
+       (elif@3
+        (call@4 open~4 f@1 gPath@4 fmWrite@B)
+        (stmts~1,1
+         (call@5 write~5 f@1 text@4)
+         (call@5,1 close~5 f@1)))
+       (else@,3
+        (stmts@2,1
+         (cmd write stderr@6
+          (infix@s &
+           (infix~8 & "aowli\3A cannot write journal \27"~W gPath@2)"\27\0A"@2)))))))
+    (elif@5,M
+     (infix@6 == gMode~6 2@3)
+     (stmts~3,1
+      (if
+       (elif@3
+        (infix@5 < gPos~5
+         (dot@9 gEvents~7 len@1))
+        (stmts~1,1
+         (cmd write stderr@6
+          (infix@1F,2 &
+           (infix~K &
+            (infix~7 &
+             (infix~L &
+              (infix@c,~1 &
+               (infix~Z &
+                (infix~F &
+                 (infix~9 &
+                  (infix@17,~1 & "aowli\3A REPLAY DIVERGENCE — the replayed run stopped after "~11
+                   (prefix~1D,1 $ gPos@1))" of "@2)
+                 (prefix@2 $
+                  (dot@8 gEvents~7 len@1)))" recorded boundary event\28s\29.\0A"@2)"       next unconsumed\3A "~13,1)
+              (dot@F
+               (at~6 gEvents~7 gPos@1)kind@1))"  "@2)
+            (dot@F
+             (at~6 gEvents~7 gPos@1)key@1))"\0A"@2))
+         (cmd@,3 quit journalExitCode@5)))))))))
+ (proc@,60 jEnvSeed@5 x . .
+  (params@E
+   (param@1 keys . .
+    (mut@6
+     (at@7 seq~3 string@1)).)
+   (param@O vals . .
+    (mut@6
+     (at@7 seq~3 string@1)).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 == gMode~6 1@3)
+     (stmts~1,1
+      (var@4 fs . .
+       (at@7 seq~3 string@1)
+       (prefix@I \40
+        (bracket@1)))
+      (var@4,1 i . . . 0@4)
+      (while@,2
+       (infix@8 < i~2
+        (dot@6 keys~4 len@1))
+       (stmts@2,1
+        (cmd@2
+         (dot fs~2 add@1)
+         (at@9 keys~4 i@1))
+        (cmd@2,1
+         (dot fs~2 add@1)
+         (expr
+          (stmts@5)
+          (if@1
+           (elif@3
+            (infix@2 < i~2
+             (dot@6 vals~4 len@1))
+            (at@I vals~4 i@1))
+           (else@P ""@6))))
+        (cmd@,2 inc i@4)))
+      (call@7,6 jRecord~7 "envseed"@1 ""@C fs@G)))
+    (elif@5,8
+     (infix@6 == gMode~6 2@3)
+     (stmts~3,1
+      (let@4 fs . . .
+       (call@B jServe~6 "envseed"@1 ""@C))
+      (asgn@5,1 keys~5
+       (prefix@2 \40
+        (bracket@1)))
+      (asgn@5,2 vals~5
+       (prefix@2 \40
+        (bracket@1)))
+      (var@4,3 i . . . 0@4)
+      (while@,4
+       (infix@C <
+        (infix~4 \2B i~2 1@2)
+        (dot@4 fs~2 len@1))
+       (stmts@2,1
+        (cmd@4
+         (dot keys~4 add@1)
+         (at@7 fs~2 i@1))
+        (cmd@4,1
+         (dot vals~4 add@1)
+         (at@7 fs~2
+          (infix@2 \2B i~1 1@1)))
+        (asgn@2,2 i~2
+         (infix@4 \2B i~2 2@2))))))))))

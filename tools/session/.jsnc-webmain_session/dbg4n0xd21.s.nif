@@ -1,0 +1,275 @@
+(.nif27)
+(.indexat 9350             )
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv syn1lfpjv "../../../../../../home/savant/nimony/lib/std/syncio.nim"))
+ (const@6,D :HexDigits.0. . . string.0.sysvq0asl@E,2 "0123456789abcdef"@C)
+ (proc@,F :jsonEscape.0.@5 x . .
+  (params@G
+   (param@1 :s.0 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result :result.0 . . string.0.sysvq0asl@I,~1 .)
+   (asgn@7,4 result.0~7 ""@2)
+   (for@4,5
+    (hderef@6
+     (call items.1.I4py2pf1.~6
+      (hcall toOpenArray.2.sysvq0asl s.0)))
+    (unpackflat
+     (let :ch.0 . .
+      (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+       (c@E,~L 8)).))
+    (stmts~2,1
+     (case
+      (hderef@5 ch.0)
+      (of@,1
+       (ranges '\22'@3)
+       (stmts@8
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.0)"\5C\22"@5)))
+      (of@,2
+       (ranges '\5C'@3)
+       (stmts@9
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.0)"\5C\5C"@5)))
+      (of@,3
+       (ranges '\0A'@3)
+       (stmts@9
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.0)"\5Cn"@5)))
+      (of@,4
+       (ranges '\0D'@3)
+       (stmts@9
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.0)"\5Cr"@5)))
+      (of@,5
+       (ranges '\09'@3)
+       (stmts@9
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.0)"\5Ct"@5)))
+      (else@,6
+       (stmts@2,1
+        (let@4 :o.0 . .
+         (i@Z,H 32)
+         (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+          (conv@3,2
+           (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)
+           (hderef@I,U,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim ch.0))))
+        (if@,1
+         (elif@3
+          (lt@2
+           (i 32)o.0~2 32@2)
+          (stmts~1,1
+           (cmd@6 add.2.sysvq0asl@1
+            (haddr~6 result.0)"\5Cu00"@5)
+           (cmd@6,1 add.1.sysvq0asl@1
+            (haddr~6 result.0)
+            (call@5 \5B\5D.9.sysvq0asl HexDigits.0.
+             (bitand@K
+              (i 32)
+              (ashr~7
+               (i 32)o.0~2 4@4)15@4)))
+           (cmd@6,2 add.1.sysvq0asl@1
+            (haddr~6 result.0)
+            (call@5 \5B\5D.9.sysvq0asl HexDigits.0.
+             (bitand@C
+              (i 32)o.0~2 15@4)))))
+         (else@,4
+          (stmts@2,1
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.0)
+            (hderef@5 ch.0))))))))))
+   (ret~2,~1 result.0)))
+ (proc@,b :dbgEmit.0.@5 x . .
+  (params@D
+   (param@1 :line.0 . . string.0.sysvq0asl@6 .)). . .
+  (stmts@2,1
+   (call@5,3 write.0.syn1lfpjv~5 stdout.0.syn1lfpjv@1 line.0@9)
+   (call@5,4 write.0.syn1lfpjv~5 stdout.0.syn1lfpjv@1 "\0A"@9)
+   (call@9,5 flushFile.0.syn1lfpjv~9 stdout.0.syn1lfpjv@1)))
+ (stmts@2,k
+  (proc :dbgRawRead.0.@5 . . .
+   (params@F
+    (param@1 :fd.0 . .
+     (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+      (importc "int")).)
+    (param@B :buf.0 . .
+     (pointer@5
+      (notnil)).)
+    (param@P :n.0 . .
+     (i@3 32).))
+   (i@Y 32)
+   (pragmas@r
+    (importc@2 "read"@9)
+    (header@J "<unistd.h>"@8)
+    (sideEffect@f)). .))
+ (proc@,m :dbgReadCmd.0.@5 x . .
+  (params@G)
+  (tuple@4 string.0.sysvq0asl@1
+   (bool@9)). .
+  (stmts@2,1
+   (result :result.1 . .
+    (tuple@2,~1 string.0.sysvq0asl@1
+     (bool@9)).)
+   (stmts@2,C
+    (var@4 :line.1 . . string.0.sysvq0asl ""@7)
+    (var@4,1 :ch.1 . .
+     (c 8)'\00'@5)
+    (while@,2
+     (true@6)
+     (stmts@2,1
+      (let@4 :k.0 . .
+       (i@Z,~I 32)
+       (call@E dbgRawRead.0.~A
+        (conv@2
+         (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+          (importc "int"))0~1)
+        (hconv@E
+         (pointer~5,~I
+          (notnil))
+         (addr ch.1))1@I))
+      (if@,1
+       (elif@3
+        (le@2
+         (i 32)k.0~2 0@3)
+        (stmts~1,1
+         (if
+          (elif@3
+           (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (lt@2,1
+             (i 32)0@M,15,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim
+             (call@F,15,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim len.4.sysvq0asl@1 line.1~4)))
+           (stmts@E
+            (ret
+             (tupconstr@7
+              (tuple~S,~I string.0.sysvq0asl@1
+               (bool@9))line.1@1
+              (true@7))))))
+         (ret@,1
+          (tupconstr@7
+           (tuple~B,~J string.0.sysvq0asl@1
+            (bool@9))""@1
+           (false@5))))))
+      (if@,4
+       (elif@3
+        (eq@3
+         (c 8)ch.1~3 '\0A'@3)
+        (stmts@C
+         (break .))))
+      (if@,5
+       (elif@3
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (c 8)ch.1@9,18,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim '\0D'@F,18,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim)))
+        (stmts@C
+         (cmd@4 add.1.sysvq0asl@1
+          (haddr~4 line.1)ch.1@5))))))
+    (ret@,9
+     (tupconstr@7
+      (tuple~7,~M string.0.sysvq0asl@1
+       (bool@9))line.1@1
+      (true@7))))
+   (ret~2,~1 result.1)))
+ (comment@X,k pointer.0.sysvq0asl int.0.sysvq0asl@C int.0.sysvq0asl@3 bool.0.sysvq0asl~K,2 ord.0.sysvq0asl~G,~H true.0.sysvq0asl~N,H >.0.sysvq0asl~D,K true.0.sysvq0asl@6,K false.0.sysvq0asl~D,L !=.0.sysvq0asl~L,N true.0.sysvq0asl~F,O)
+ (iterator@C,L :items.1.I4py2pf1. . .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (at items.1.sysvq0asl
+   (c@X,Q,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 8))
+  (params@I,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (param@1 :a.1 . . openArray.0.Ijk0jkw1.@C .))
+  (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (c@E,~L 8)). .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (stmts@2,m,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (var@4 :i.0 . .
+    (i@j,l,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim 32)0@4)
+   (while@,1
+    (lt@8
+     (i 32)i.0~2
+     (call@5 len.6.Iroq7kd1.~3 a.1@1))
+    (stmts@2,1
+     (yld
+      (call@6 \5B\5D.10.I5nt6we. a.1 i.0@2))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.0))))))
+ (func@F,n,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :len.6.Iroq7kd1. . .~F,~I
+  (at len.6.sysvq0asl
+   (c@I,~N 8))
+  (params~3,~I
+   (param@1 :a.3 . . openArray.0.Ijk0jkw1.@C .))
+  (i@4,~I 32)
+  (pragmas@K,~I
+   (inline@2)).~F,~I
+  (stmts@X,~I
+   (result@1 :result.2 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1 result.2
+    (dot a.3~1 len.0 0 "x"))
+   (ret~m result.2)))
+ (func@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :\5B\5D.10.I5nt6we. . .~A,~e
+  (at \5B\5D.10.sysvq0asl
+   (c@N,~O 8))
+  (params@3,~e
+   (param@1 :x.2 . . openArray.0.Ijk0jkw1.@C .)
+   (param@I :idx.1 . .
+    (i@5 32).))
+  (mut@J,~e
+   (c@4,G 8))
+  (pragmas@c,~e
+   (inline@2)
+   (requires@A
+    (and@J
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1D,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim idx.1@16,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim))
+     (lt@8
+      (i 32)idx.1~4
+      (dot@3 x.2~1 len.0 0 "x"))))).~A,~e
+  (stmts@1P,~e
+   (result@3 :result.3 . .
+    (mut~19
+     (c@4,G 8)).)
+   (asgn@3 result.3
+    (haddr~2
+     (pat
+      (dot x.2~1 a.0 0 "x")idx.1@3)))
+   (ret~1Z result.3)))
+ (func@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i@j,l,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.3 . .
+    (mut@3
+     (i@j,l,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.3)
+    (add@6
+     (i@j,l,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim 32)
+     (hderef@1 x.3)
+     (conv@U,~F
+      (i@j,l,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim 32)1@1)))))
+ (type@V,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :openArray.0.Ijk0jkw1. .
+  (at openArray.0.sysvq0asl
+   (c@2,~L 8))
+  (pragmas~F,~f
+   (view@2))
+  (object~4,~f .
+   (fld~N,1 :a.0 . .
+    (ptr@3
+     (uarray@I
+      (c@8,J 8))
+     (unchecked)).)
+   (fld~N,2 :len.0 . .
+    (i@5 32).))))(.index@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/dbgio.nim
+ (h HexDigits.0. 297)
+ (x jsonEscape.0. 75)
+ (x dbgEmit.0. 2260)
+ (h@2,k dbgRawRead.0. 309)
+ (x dbgReadCmd.0. 373)
+ (h items.1.I4py2pf1. 2358)
+ (h len.6.Iroq7kd1. 919)
+ (h \5B\5D.10.I5nt6we. 453)
+ (h inc.1.I6wjjge. 846)
+ (h openArray.0.Ijk0jkw1. 1143))

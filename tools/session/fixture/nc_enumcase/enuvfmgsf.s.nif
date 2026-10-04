@@ -1,0 +1,132 @@
+(.nif27)
+(.indexat 2891             )
+(stmts@,1,enumcase.nim
+ (import
+  (kv sysvq0asl "../../../../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@C,7 :Action.0.~7 . . .
+  (enum@2
+   (u 8)
+   (efld@5 :ActNone.0. . . Action.0.
+    (tup 0 "ActNone"))
+   (efld@E :ActDelete.0. . . Action.0.
+    (tup 1 "ActDelete"))
+   (efld@P :ActEdit.0. . . Action.0.
+    (tup 2 "ActEdit"))
+   (efld@Y :ActCopy.0. . . Action.0.
+    (tup 3 "ActCopy"))))
+ (proc@5,7 :dollar`.Action.0. x . .
+  (params
+   (param :e.0 . . Action.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@9 :result.0 . . string.0.sysvq0asl .)
+   (case@9 e.0
+    (of@5
+     (ranges ActNone.0.)
+     (stmts
+      (ret "ActNone")))
+    (of@E
+     (ranges ActDelete.0.)
+     (stmts
+      (ret "ActDelete")))
+    (of@P
+     (ranges ActEdit.0.)
+     (stmts
+      (ret "ActEdit")))
+    (of@Y
+     (ranges ActCopy.0.)
+     (stmts
+      (ret "ActCopy"))))
+   (ret result.0)))
+ (gvar@4,9 :log.0. . .
+  (i 64)0@6)
+ (proc@,B :decide.0.@5 . . .
+  (params@B)Action.0.@4 . .
+  (stmts@2,1
+   (result :result.1 . . Action.0.@3,~5 .)
+   (asgn@7,1 result.1~7 ActNone.0.@2)
+   (ret~2,~1 result.1)))
+ (proc@,F :runCase.0.@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (case
+    (call@B decide.0.~6)
+    (of@,1
+     (ranges ActDelete.0.@3)
+     (stmts@E
+      (asgn@4 log.0.~4 1@2)))
+    (of@,2
+     (ranges ActEdit.0.@3)
+     (stmts@C
+      (asgn@4 log.0.~4 2@2)))
+    (of@,3
+     (ranges ActCopy.0.@3)
+     (stmts@C
+      (asgn@4 log.0.~4 3@2)))
+    (else@,4
+     (stmts@6
+      (asgn@4 log.0.~4 99@2))))))
+ (proc@,N :runCaseViaLocal.0.@5 . . .
+  (params@K). . .
+  (stmts@2,1
+   (let@4 :a.0 . . Action.0.~1,~H
+    (call@A decide.0.~6))
+   (case@,1 a.0@5
+    (of@,1
+     (ranges ActDelete.0.@3)
+     (stmts@E
+      (asgn@4 log.0.~4 1@2)))
+    (of@,2
+     (ranges ActEdit.0.@3)
+     (stmts@C
+      (asgn@4 log.0.~4 2@2)))
+    (of@,3
+     (ranges ActCopy.0.@3)
+     (stmts@C
+      (asgn@4 log.0.~4 3@2)))
+    (else@,4
+     (stmts@6
+      (asgn@4 log.0.~4 99@2))))))
+ (proc@,V :viaCall.0.@5 . . .
+  (params@C)
+  (i@4 64). .
+  (stmts@2,1
+   (result@7 :result.2 . .
+    (i~5,~1 64).)
+   (call@7 runCase.0.~7)
+   (asgn@7,1 result.2~7 log.0.@2)
+   (ret~2,~1 result.2)))
+ (proc@,Z :viaLocal.0.@5 . . .
+  (params@D)
+  (i@4 64). .
+  (stmts@2,1
+   (result@F :result.3 . .
+    (i~D,~5 64).)
+   (call@F runCaseViaLocal.0.~F)
+   (asgn@7,1 result.3~7 log.0.@2)
+   (ret~2,~1 result.3)))
+ (proc@,e :ordOfDecide.0.@5 . . .
+  (params@G)
+  (i@4 64). .
+  (stmts@Q
+   (result@3 :result.4 . .
+    (i~P,~9 64).)
+   (asgn@3 result.4
+    (expr@2,3S,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+     (conv@3,2
+      (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)
+      (call@a,f,enumcase.nim decide.0.~6))))
+   (ret~Q result.4)))
+ (comment@4,V int.0.sysvq0asl int.0.sysvq0asl@,4 int.0.sysvq0asl@,9 ord.0.sysvq0asl@P,9))(.index@,1,enumcase.nim
+ (h Action.0. 154)
+ (h@E,7 ActNone.0. 49)
+ (h@E,7 ActDelete.0. 60)
+ (h@E,7 ActEdit.0. 64)
+ (h@E,7 ActCopy.0. 60)
+ (x dollar`.Action.0. 62)
+ (h log.0. 483)
+ (h decide.0. 36)
+ (h runCase.0. 176)
+ (h runCaseViaLocal.0. 404)
+ (h viaCall.0. 456)
+ (h viaLocal.0. 199)
+ (h ordOfDecide.0. 208))

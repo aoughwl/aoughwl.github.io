@@ -1,0 +1,145 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlhl/src/aowlhl/hlclassify.nim
+ (comment)
+ (when@,D
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,G nifcursors@7 nifstreams@J nimony_model@V)
+ (import@,H tags@7)
+ (proc@,J hasPragma@5 x . .
+  (params@F
+   (param@1 pragmasCur . . Cursor@C .)
+   (param@L tag . . TagEnum@5 .))bool@a . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 c . . . pragmasCur@4)
+   (if@,2
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret false@7))))
+   (cmd@,3 inc c@4)
+   (while@,4
+    (infix@D !=
+     (dot~6 c~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (infix@E ==
+         (dot~9 c~1 tagEnum@1)tag@3))
+       (stmts~1,1
+        (ret true@7))))
+     (cmd@,2 skip c@5)))
+   (asgn@7,8 result~7 false@2)))
+ (proc@,U hasEitherPragma@5 x . .
+  (params@L
+   (param@1 pragmasCur . . Cursor@C .)
+   (param@L a . . TagEnum@6 .)
+   (param@O b . . TagEnum@3 .))bool@b . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 c . . . pragmasCur@4)
+   (if@,2
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret false@7))))
+   (cmd@,3 inc c@4)
+   (while@,4
+    (infix@D !=
+     (dot~6 c~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (par@4
+         (infix@G or
+          (infix~5 ==
+           (dot~9 c~1 tagEnum@1)a@3)
+          (infix@D ==
+           (dot~9 c~1 tagEnum@1)b@3))))
+       (stmts~1,1
+        (ret true@7))))
+     (cmd@,2 skip c@5)))
+   (asgn@7,8 result~7 false@2)))
+ (proc@,f pragmaStrArg@5 x . .
+  (params@I
+   (param@1 pragmasCur . . Cursor@C .)
+   (param@L a . . TagEnum@6 .)
+   (param@O b . . TagEnum@3 .))string@b . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7 ""@2)
+   (var@4,3 c . . . pragmasCur@4)
+   (if@,4
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (cmd@,5 inc c@4)
+   (while@,6
+    (infix@D !=
+     (dot~6 c~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@G and
+        (infix~9 ==
+         (dot~6 c~1 kind@1)ParLe@3)
+        (par@4
+         (infix@G or
+          (infix~5 ==
+           (dot~9 c~1 tagEnum@1)a@3)
+          (infix@D ==
+           (dot~9 c~1 tagEnum@1)b@3))))
+       (stmts~1,1
+        (var@4 arg . . . c@6)
+        (cmd@,1 inc arg@4)
+        (if@,2
+         (elif@3
+          (infix@9 ==
+           (dot~6 arg~3 kind@1)StringLit@3)
+          (stmts@N
+           (asgn@7 result~7
+            (at@E
+             (dot~8 pool~4 strings@1)
+             (dot@4 arg~3 litId@1))))))
+        (ret@,3 .))))
+     (cmd@,5 skip c@5)))))
+ (proc@,u hasImportc@5 x . .
+  (params@G
+   (param@1 pragmasCur . . Cursor@C .))bool@M . .
+  (stmts@2,1
+   (comment)
+   (call@F,2 hasEitherPragma~F pragmasCur@1 ImportcTagId@D ImportcppTagId@R)))
+ (proc@,z importcName@5 x . .
+  (params@H
+   (param@1 pragmasCur . . Cursor@C .))string@M . .
+  (stmts@2,1
+   (comment)
+   (call@C,3 pragmaStrArg~C pragmasCur@1 ImportcTagId@D ImportcppTagId@R)))
+ (proc@,15 hasHeader@5 x . .
+  (params@F
+   (param@1 pragmasCur . . Cursor@C .))bool@M . .
+  (stmts@2,1
+   (comment)
+   (call@9,6 hasPragma~9 pragmasCur@1 HeaderTagId@D)))
+ (proc@,1E hasClosure@5 x . .
+  (params@G
+   (param@1 pragmasCur . . Cursor@C .))bool@M . .
+  (stmts@2,1
+   (comment)
+   (call@9,4 hasPragma~9 pragmasCur@1 ClosureTagId@D))))

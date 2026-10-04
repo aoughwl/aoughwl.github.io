@@ -1,0 +1,66 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/webmain_vm.nim
+ (comment)
+ (when@,8
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,B nifcursors@7 programs@J)
+ (import@,C natives@7 trace@G chunk@N compiler@U vm@e)
+ (import@,D webvfs@7)
+ (import@,E jsffi@7)
+ (proc@,G runNif@5 . . .
+  (params@B
+   (param@1 src . . string@5 .))OutSink@F . .
+  (stmts@2,5
+   (call@D installWebVfs~D)
+   (call@E,1 loadWebModules~E
+    (dot@N
+     (call~G global~6 "__aowli_mods"@1)toStr@1))
+   (call@H,5 publishMainModule~H src@1)
+   (call@M,6 setupProgramForTesting~M WebDir@1 MainModuleName@9 ".s.nif"@P)
+   (var@4,8 buf . . .
+    (call@L parseFromBuffer~F src@1 MainModuleName@6))
+   (var@4,9 root . . .
+    (call@G beginRead~9 buf@1))
+   (let@4,B sink . . .
+    (call@H newOutSink~A))
+   (asgn@B,C
+    (dot~7 sink~4 inBuf@1)
+    (dot@M
+     (call~E global~6 "__aowli_in"@1)toStr@1))
+   (asgn@B,D
+    (dot~7 sink~4 inPos@1)0@2)
+   (let@4,E tr . . .
+    (call@D newTrace~8 tmOff@1))
+   (let@4,F prog . . .
+    (call@K compileModule~D root@1))
+   (call@A,G runProgram~A prog@1 sink@7 tr@D)
+   (asgn@7,H result~7 sink@2)))
+ (proc@,e aowliRun@5 . . .
+  (params@D). . .
+  (stmts@2,1
+   (let@4 src . . .
+    (dot@R
+     (call~F global~6 "__aowli_src"@1)toStr@1))
+   (let@4,1 sink . . .
+    (call@D runNif~6 src@1))
+   (let@4,2 g . . .
+    (call@A global~6 "globalThis"@1))
+   (call@5,3
+    (dot~4 g~1 set@1)"__aowli_out"@1
+    (call@K toJs~4
+     (dot@5 sink~4 outBuf@1)))
+   (call@5,4
+    (dot~4 g~1 set@1)"__aowli_err"@1
+    (call@K toJs~4
+     (dot@5 sink~4 errBuf@1)))
+   (call@5,5
+    (dot~4 g~1 set@1)"__aowli_exit"@1
+    (call@L toJs~4
+     (dot@5 sink~4 exitCode@1)))))
+ (call@8,m aowliRun~8))

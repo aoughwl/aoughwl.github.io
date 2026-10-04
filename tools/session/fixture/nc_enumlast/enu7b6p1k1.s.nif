@@ -1,0 +1,142 @@
+(.nif27)
+(.indexat 3004             )
+(stmts@,1,enumlast.nim
+ (import
+  (kv sysvq0asl "../../../../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@C,7 :Action.0.~7 . . .
+  (enum@2
+   (u 8)
+   (efld@5 :ActNone.0. . . Action.0.
+    (tup 0 "ActNone"))
+   (efld@E :ActDelete.0. . . Action.0.
+    (tup 1 "ActDelete"))
+   (efld@P :ActEdit.0. . . Action.0.
+    (tup 2 "ActEdit"))
+   (efld@Y :ActCopy.0. . . Action.0.
+    (tup 3 "ActCopy"))))
+ (proc@5,7 :dollar`.Action.0. x . .
+  (params
+   (param :e.0 . . Action.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@9 :result.0 . . string.0.sysvq0asl .)
+   (case@9 e.0
+    (of@5
+     (ranges ActNone.0.)
+     (stmts
+      (ret "ActNone")))
+    (of@E
+     (ranges ActDelete.0.)
+     (stmts
+      (ret "ActDelete")))
+    (of@P
+     (ranges ActEdit.0.)
+     (stmts
+      (ret "ActEdit")))
+    (of@Y
+     (ranges ActCopy.0.)
+     (stmts
+      (ret "ActCopy"))))
+   (ret result.0)))
+ (gvar@4,9 :hit.0. . .
+  (i 64)0@6)
+ (proc@,B :decide.0.@5 . . .
+  (params@B)Action.0.@4 . .
+  (stmts@O
+   (result :result.1 . . Action.0.~J,~4 .)
+   (asgn result.1 ActNone.0.)
+   (ret~O result.1)))
+ (proc@,E :lastBranch.0.@5 . . .
+  (params@F)
+  (i@4 64). .
+  (stmts@2,1
+   (result@4 :result.2 . .
+    (i~2,~1 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (let@4,1 :a.0 . . Action.0.~1,~9
+    (call@A decide.0.~6))
+   (case@,2 a.0@5
+    (of@,1
+     (ranges ActDelete.0.@3)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,2
+     (ranges ActEdit.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,3
+     (ranges ActCopy.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2)))
+    (of@,4
+     (ranges ActNone.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2))))
+   (asgn@7,7 result.2~7 hit.0.@2)
+   (ret~2,~1 result.2)))
+ (proc@,P :firstBranch.0.@5 . . .
+  (params@G)
+  (i@4 64). .
+  (stmts@2,1
+   (result@4 :result.3 . .
+    (i~2,~C 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (let@4,1 :a.1 . . Action.0.~1,~K
+    (call@A decide.0.~6))
+   (case@,2 a.1@5
+    (of@,1
+     (ranges ActNone.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2)))
+    (of@,2
+     (ranges ActDelete.0.@3)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,3
+     (ranges ActEdit.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,4
+     (ranges ActCopy.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2))))
+   (asgn@7,7 result.3~7 hit.0.@2)
+   (ret~2,~1 result.3)))
+ (proc@,a :lastBranchOnCall.0.@5 . . .
+  (params@L)
+  (i@4 64). .
+  (stmts@2,1
+   (result@4 :result.4 . .
+    (i~2,~N 64).)
+   (asgn@4 hit.0.~4 0@2)
+   (case@,1
+    (call@B decide.0.~6)
+    (of@,1
+     (ranges ActDelete.0.@3)
+     (stmts@E
+      (asgn@4 hit.0.~4 1@2)))
+    (of@,2
+     (ranges ActEdit.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 2@2)))
+    (of@,3
+     (ranges ActCopy.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 3@2)))
+    (of@,4
+     (ranges ActNone.0.@3)
+     (stmts@C
+      (asgn@4 hit.0.~4 0@2))))
+   (asgn@7,6 result.4~7 hit.0.@2)
+   (ret~2,~1 result.4)))
+ (comment@4,E int.0.sysvq0asl int.0.sysvq0asl@,B int.0.sysvq0asl@,M))(.index@,1,enumlast.nim
+ (h Action.0. 154)
+ (h@E,7 ActNone.0. 49)
+ (h@E,7 ActDelete.0. 60)
+ (h@E,7 ActEdit.0. 64)
+ (h@E,7 ActCopy.0. 60)
+ (x dollar`.Action.0. 62)
+ (h hit.0. 483)
+ (h decide.0. 36)
+ (h lastBranch.0. 163)
+ (h firstBranch.0. 613)
+ (h lastBranchOnCall.0. 614))

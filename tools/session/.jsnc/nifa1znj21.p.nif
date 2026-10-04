@@ -1,0 +1,726 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/nifindexes.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4
+   (bracket@2 tables@1 assertions@9 hashes@L syncio@T strutils@b)))
+ (import@,3 bitabs@7 lineinfos@F nifreader@Q nifstreams@b nifcursors@n nifchecksums@z symparser@1D vfs@1O)
+ (when@,5
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (import
+     (infix@B / std~4 sha1@2))))
+  (else@,2
+   (stmts@2,4
+    (pragmas push@2
+     (kv@Q
+      (at~C warning~7 Deprecated@1)off@2))
+    (import@,1
+     (infix@B / std~4 sha1@2))
+    (pragmas@,2 pop@2))))
+ (import@,E
+  (infix@L /
+   (infix~9 / ".."~5 models@2)
+   (bracket@2 tags@1 nifindex_tags@7)))
+ (include@,G compat2@8)
+ (proc@,I entryKind@5 . . .
+  (params@E
+   (param@1 tag . . TagId@5 .))NifIndexKind@E . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@K rawTagIsNifIndexKind~K
+      (cast@1 TagEnum@5 tag@E))
+     (stmts~1,1
+      (asgn@7 result~7
+       (cast@2 NifIndexKind@5 tag@J))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 NoIndexTag@2))))))
+ (proc@,O isImportant@5 . . .
+  (params@G
+   (param@1 s . . string@3 .))bool@D . .
+  (stmts@2,1
+   (var@4 c . . . 0@4)
+   (for@4,1 s@6
+    (unpackflat
+     (let ch . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@3 == ch~3 '.'@3)
+       (stmts@B
+        (cmd inc c@4))))))
+   (asgn@7,3 result~7
+    (infix@4 >= c~2 2@3))))
+ (proc@,U isExported@5 . . .
+  (params@F
+   (param@1 n . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (if@,1
+    (elif@3
+     (infix@7 ==
+      (dot~6 n~1 kind@1)SymbolDef@3)
+     (stmts~1,1
+      (cmd inc n@4)
+      (if@,1
+       (elif@3
+        (infix@7 !=
+         (dot~6 n~1 kind@1)DotToken@3)
+        (stmts~1,1
+         (ret true@7)))))))
+   (ret@,5 false@7)))
+ (proc@,c processForChecksum@5 . . .
+  (params@N
+   (param@1 dest . .
+    (mut@6 Sha1State@4).)
+   (param@M content . .
+    (mut@9 TokenBuf@4).)). . .
+  (stmts@2,1
+   (var@4 n . . .
+    (call@D beginRead~9 content@1))
+   (var@4,1 nested . . . 0@9)
+   (let@4,2 inlineT . . .
+    (call@F TagId~5 InlineIdx@1))
+   (while@,3 true@6
+    (stmts@2,1
+     (case
+      (dot@6 n~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (var@4 foundInline . . . false@E)
+        (let@4,1 k . . .
+         (call@D entryKind~9
+          (dot@2 n~1 tagId@1)))
+        (case@,2 k@5
+         (of@,1
+          (ranges LetIdx@3 VarIdx@B CursorIdx@J ConstIdx@U TypeIdx@e GletIdx@n TletIdx@w GvarIdx@15 TvarIdx@1E)
+          (stmts@2,1
+           (cmd inc n@4)
+           (if@,1
+            (elif@3
+             (call@A isExported~A n@1)
+             (stmts~1,1
+              (call@A updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,1 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,2 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,3 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,4 updateLoop~A dest@1 n@7 inlineT@A foundInline@J))))
+           (while@,7
+            (dot@7 n~1 hasMore@1)
+            (stmts@H
+             (cmd skip n@5)))
+           (cmd@,8 consumeParRi n@D)))
+         (of@,B
+          (ranges TemplateIdx@3 MacroIdx@G IteratorIdx@Q)
+          (stmts@2,2
+           (cmd inc n@4)
+           (if@,1
+            (elif@3
+             (call@A isExported~A n@1)
+             (stmts~1,1
+              (call@A updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,1 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,2 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,3 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,4 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,5 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,6 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,7 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,8 updateLoop~A dest@1 n@7 inlineT@A foundInline@J))))
+           (while@,B
+            (dot@7 n~1 hasMore@1)
+            (stmts@H
+             (cmd skip n@5)))
+           (cmd@,C consumeParRi n@D)))
+         (of@,Q
+          (ranges ProcIdx@3 FuncIdx@C MethodIdx@L ConverterIdx@W)
+          (stmts@2,1
+           (cmd inc n@4)
+           (if@,1
+            (elif@3
+             (call@A isExported~A n@1)
+             (stmts~1,1
+              (var@4 dummy . . . false@8)
+              (call@A,1 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,2 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,3 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,4 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,5 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,6 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (call@A,7 updateLoop~A dest@1 n@7 inlineT@A foundInline@J)
+              (call@A,8 updateLoop~A dest@1 n@7 inlineT@A dummy@J)
+              (if@,9
+               (elif@3 foundInline
+                (stmts~1,1
+                 (call@A updateLoop~A dest@1 n@7 inlineT@A dummy@J)))
+               (else@,2
+                (stmts@2,1
+                 (cmd skip n@5)))))))
+           (while@,F
+            (dot@7 n~1 hasMore@1)
+            (stmts@H
+             (cmd skip n@5)))
+           (cmd@,G consumeParRi n@D)))
+         (of@,i
+          (ranges NoIndexTag@3 InlineIdx@F KvIdx@Q VvIdx@X BuildIdx@e BundleIdx@o IndexIdx@z ExportIdx@3,1 FromexportIdx@E,1 ExportexceptIdx@T,1)
+          (stmts@2,2
+           (cmd inc n@4)
+           (cmd@,1 inc nested@4))))))
+      (of@,q
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (break .))))
+        (cmd@,3 inc n@4)))
+      (else@,v
+       (stmts@2,1
+        (cmd inc n@4))))))))
+ (type@I,1g HookIndexEntry~G x . .
+  (object@2 .
+   (fld~D,1 typ~3 x . SymId@A .)
+   (fld~6,1 hook~4 x . SymId@3 .)
+   (fld~7,2 isGeneric~9 x . bool@3 .)))
+ (type@H,1k IndexSections~F x . .
+  (object@2 .
+   (fld~5,1 converters~A x .
+    (at@6 seq~3
+     (tup@1 SymId@1 SymId@8)).)
+   (fld~6,2 exportBuf~9 x . TokenBuf@3 .)))
+ (proc@,1o getSymbolSection@5 . . .
+  (params@L
+   (param@1 tag . . TagId@5 .)
+   (param@D values . .
+    (at@B seq~3
+     (tup@1 SymId@1 SymId@8)).))TokenBuf@h . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@G createTokenBuf~E 30@1))
+   (cmd@6,1
+    (dot result~6 addParLe@1)tag@A)
+   (for@4,3 values@9
+    (unpackflat
+     (let value . . ..))
+    (stmts~2,1
+     (unpackdecl@4 value@D
+      (unpacktup
+       (let key@1 . . ..)
+       (let sym@6 . . ..)))
+     (cmd@6,1
+      (dot result~6 buildTree@1)
+      (call@G TagId~5 KvIdx@1)NoLineInfo@P
+      (stmts~4,1
+       (if
+        (elif@3
+         (infix@4 == key~4
+          (call@8 SymId~5 0@1))
+         (stmts~1,1
+          (cmd@6
+           (dot result~6 add@1)
+           (call@D dotToken~8 NoLineInfo@1))))
+        (else@,2
+         (stmts@2,1
+          (cmd@6
+           (dot result~6 add@1)
+           (call@D symToken~8 key@1 NoLineInfo@6)))))
+       (cmd@6,4
+        (dot result~6 add@1)
+        (call@D symToken~8 sym@1 NoLineInfo@6))))))
+   (call@F,C
+    (dot~9 result~6 addParRi@1))))
+ (proc@,23 createIndex@5 x . .
+  (params@H
+   (param@1 infile . . string@8 .)
+   (param@H root . . PackedLineInfo@6 .)
+   (param@d buildChecksum . . bool@F .)
+   (param@y sections . . IndexSections@A .)).
+  (pragmas@1e canRaise@2).
+  (stmts@2,3
+   (let@4 isDocMode . . .
+    (call@R
+     (dot~9 infile~6 endsWith@1)".sc.nif"@1))
+   (let@4,1 idxExt . . .
+    (if@9
+     (elif@3 isDocMode
+      (stmts@B ".sc.idx.nif"))
+     (else@S
+      (stmts@6 ".s.idx.nif"))))
+   (let@4,2 indexName . . .
+    (call@R changeModuleExt~F infile@1 idxExt@9))
+   (var@4,3 content . . . "\28.nif27\29\0A\28index\0A"@A)
+   (if@,5
+    (elif@3
+     (infix@O !=
+      (dot~5
+       (dot~B sections~8 converters@1)len@1)0@3)
+     (stmts~1,1
+      (let@4 converterSectionBuf . . .
+       (call@c getSymbolSection~G
+        (call@6 TagId~5 ConverterIdx@1)
+        (dot@U sections~8 converters@1)))
+      (cmd@7,2
+       (dot content~7 add@1)
+       (call@D toString~8 converterSectionBuf@1))
+      (cmd@7,3
+       (dot content~7 add@1)"\0A"@5))))
+   (if@,B
+    (elif@3
+     (infix@N !=
+      (dot~5
+       (dot~A sections~8 exportBuf@1)len@1)0@3)
+     (stmts~1,1
+      (cmd@7
+       (dot content~7 add@1)
+       (call@D toString~8
+        (dot@9 sections~8 exportBuf@1)))
+      (cmd@7,1
+       (dot content~7 add@1)"\0A"@5))))
+   (if@,F
+    (elif@3 buildChecksum
+     (stmts~1,1
+      (var@4 s . . .
+       (call@J
+        (dot~5 nifstreams~A open@1)infile@1))
+      (discard@,1
+       (call@P processDirectives~H
+        (dot@2 s~1 r@1)))
+      (var@4,2 buf . . .
+       (call@G fromStream~A s@1))
+      (cmd@,3 close s@6)
+      (var@4,4 checksum . . .
+       (call@N newSha1State~C))
+      (call@I,5 processForChecksum~I checksum@1 buf@B)
+      (let@4,6 final . . .
+       (cmd@J SecureHash~B
+        (call@H
+         (dot~9 checksum~8 finalize@1))))
+      (cmd@7,7
+       (dot content~7 add@1)
+       (infix@T &
+        (infix~9 & "\28checksum \22"~F
+         (prefix@2 $ final@1))"\22\29"@2)))))
+   (cmd@7,O
+    (dot content~7 add@1)"\0A\29\0A"@5)
+   (let@4,V existingContent . . .
+    (try@I
+     (stmts@5
+      (call@7 vfsRead~7 indexName@1))
+     (except@O .
+      (stmts@8 ""))))
+   (if@,W
+    (elif@3
+     (infix@G != existingContent~G content@3)
+     (stmts~1,1
+      (call@8 vfsWrite~8 indexName@1 content@C))))))
+ (proc@,2f createIndex@5 x . .
+  (params@H
+   (param@1 infile . . string@8 .)
+   (param@H buildChecksum . . bool@F .)
+   (param@c root . . PackedLineInfo@6 .)).
+  (pragmas@1F canRaise@2).
+  (stmts@2,1
+   (call@B createIndex~B infile@1 root@9 buildChecksum@F
+    (call@h IndexSections~D))))
+ (proc@,2i writeFileAndIndex@5 x . .
+  (params@N
+   (param@1 outfile . . string@9 .)
+   (param@I content . . TokenBuf@9 .)).
+  (pragmas@y canRaise@2).
+  (stmts@2,1
+   (call@9 writeFile~9 content@1 outfile@A)
+   (call@B,1 createIndex~B outfile@1 true@A
+    (dot@Q
+     (at~3 content~7 0@1)info@1))))
+ (type@J,2n IndexVisibility~H x . .
+  (enum@2 .
+   (efld~H,1 Hidden . . . .)
+   (efld~9,1 Exported . . . .)))
+ (type@H,2p NifIndexEntry~F x . .
+  (object@2 .
+   (fld~9,1 offset~6 x . int@3 .)
+   (fld~B,2 info~4 x . PackedLineInfo@3 .)
+   (fld~C,3 vis~3 x . IndexVisibility@3 .)))
+ (type@C,2u NifIndex~A x . .
+  (object@2 .
+   (fld@,1 converters~A x .
+    (at@6 seq~3
+     (tup@1 string@1 string@9)).)
+   (fld~3,2 exports~7 x .
+    (at@6 seq~3
+     (tup@1 string@1 NifIndexKind@9
+      (at@Q seq~3 StrId@1))).)))
+ (proc@,2y readSymbolSection@5 . . .
+  (params@M
+   (param@1 s . .
+    (mut@3 Stream@4).)
+   (param@G tab . .
+    (mut@5
+     (at@7 seq~3
+      (tup@1 string@1 string@9))).)). . .
+  (stmts@2,1
+   (var@4 t . . .
+    (call@8 next~4 s@1))
+   (var@4,1 nested . . . 1@9)
+   (while@,2
+    (infix@D !=
+     (dot~6 t~1 kind@1)EofToken@3)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 t~1 kind@1)ParLe@3)
+       (stmts~1,1
+        (cmd inc nested@4)
+        (if@,1
+         (elif@3
+          (infix@8 ==
+           (dot~7 t~1 tagId@1)
+           (call@8 TagId~5 KvIdx@1))
+          (stmts~1,1
+           (asgn@2 t~2
+            (call@6 next~4 s@1))
+           (var@4,1 key . . string@5 .)
+           (if@,2
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)Symbol@3)
+             (stmts~1,1
+              (asgn@4 key~4
+               (at@B
+                (dot~5 pool~4 syms@1)
+                (dot@2 t~1 symId@1)))))
+            (elif@5,2
+             (infix@7 ==
+              (dot~6 t~1 kind@1)Ident@3)
+             (stmts~3,1
+              (asgn@4 key~4
+               (at@E
+                (dot~8 pool~4 strings@1)
+                (dot@2 t~1 litId@1)))))
+            (elif@5,4
+             (infix@7 ==
+              (dot~6 t~1 kind@1)DotToken@3)
+             (stmts~3,1
+              (asgn@4 key~4 "."@2)))
+            (else@,6
+             (stmts@2,1
+              (cmd raiseAssert "invalid \28kv\29 construct\3A symbol expected"@C))))
+           (asgn@2,A t~2
+            (call@6 next~4 s@1))
+           (var@4,B value . . string@7 .)
+           (if@,C
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)Symbol@3)
+             (stmts~1,1
+              (asgn@6 value~6
+               (at@B
+                (dot~5 pool~4 syms@1)
+                (dot@2 t~1 symId@1)))))
+            (elif@5,2
+             (infix@7 ==
+              (dot~6 t~1 kind@1)Ident@3)
+             (stmts~3,1
+              (asgn@6 value~6
+               (at@E
+                (dot~8 pool~4 strings@1)
+                (dot@2 t~1 litId@1)))))
+            (else@,4
+             (stmts@2,1
+              (cmd raiseAssert "invalid \28kv\29 construct\3A symbol expected"@C))))
+           (asgn@2,I t~2
+            (call@6 next~4 s@1))
+           (call@7,J
+            (dot~4 tab~3 add@1)
+            (tup@1 key@1 value@6))
+           (if@,K
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)ParRi@3)
+             (stmts~1,1
+              (asgn@2 t~2
+               (call@6 next~4 s@1))
+              (cmd@,1 dec nested@4)))
+            (else@,3
+             (stmts@2,1
+              (cmd assert false@7 "invalid \28kv\29 construct\3A \27\29\27 expected"@E))))))
+         (else@,Q
+          (stmts@2,1
+           (cmd assert false@7 "expected \28kv\29 construct"@E))))))
+      (elif@5,U
+       (infix@7 ==
+        (dot~6 t~1 kind@1)ParRi@3)
+       (stmts~3,1
+        (cmd dec nested@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (break .))))
+        (asgn@2,3 t~2
+         (call@6 next~4 s@1))))
+      (else@,Z
+       (stmts@2,1
+        (cmd assert false@7 "expected \28kv\29 construct"@E))))))))
+ (proc@,3f readIndex@5 x . .
+  (params@F
+   (param@1 indexName . . string@B .))NifIndex@L . .
+  (stmts@2,1
+   (var@4 s . . .
+    (call@J
+     (dot~5 nifstreams~A open@1)indexName@1))
+   (let@4,1 res . . .
+    (call@N processDirectives~H
+     (dot@2 s~1 r@1)))
+   (cmd@,2 assert
+    (infix@B == res~4 Success@3))
+   (asgn@7,4 result~7
+    (call@9 default~7 NifIndex@1))
+   (var@4,5 t . . .
+    (call@8 next~4 s@1))
+   (if@,6
+    (elif@3
+     (infix@6 !=
+      (dot~5 t~1 tag@1)
+      (call@8 TagId~5 IndexIdx@1))
+     (stmts~1,1
+      (cmd assert false@7 "expected \27index\27 tag"@E))))
+   (asgn@2,8 t~2
+    (call@6 next~4 s@1))
+   (while@,9
+    (infix@M and
+     (infix~9 !=
+      (dot~6 t~1 kind@1)ParRi@3)
+     (infix@B !=
+      (dot~6 t~1 kind@1)EofToken@3))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 t~1 kind@1)ParLe@3)
+       (stmts~1,1
+        (case
+         (dot@6 t~1 tagId@1)
+         (of@,1
+          (ranges
+           (call@8 TagId~5 ConverterIdx@1))
+          (stmts@2,1
+           (call@H readSymbolSection~H s@1
+            (dot@A result~6 converters@1))
+           (asgn@2,1 t~2
+            (call@6 next~4 s@1))))
+         (of@,4
+          (ranges
+           (call@8 TagId~5 ExportIdx@1)
+           (call@Q TagId~5 FromexportIdx@1)
+           (call@m TagId~5 ExportexceptIdx@1))
+          (stmts@2,1
+           (let@4 kind . . .
+            (cast@7 NifIndexKind@5
+             (dot@K t~1 tag@1)))
+           (asgn@2,1 t~2
+            (call@6 next~4 s@1))
+           (cmd@,2 assert
+            (infix@E ==
+             (dot~6 t~1 kind@1)StringLit@3))
+           (let@4,3 path . . .
+            (at@J
+             (dot~8 pool~4 strings@1)
+             (dot@2 t~1 litId@1)))
+           (asgn@2,4 t~2
+            (call@6 next~4 s@1))
+           (var@4,5 names . .
+            (at@A seq~3 StrId@1)
+            (prefix@K \40
+             (bracket@1)))
+           (while@,6
+            (infix@D !=
+             (dot~6 t~1 kind@1)ParRi@3)
+            (stmts@2,1
+             (cmd assert
+              (infix@E ==
+               (dot~6 t~1 kind@1)Ident@3))
+             (cmd@5,1
+              (dot names~5 add@1)
+              (dot@6 t~1 litId@1))
+             (asgn@2,2 t~2
+              (call@6 next~4 s@1))))
+           (cmd@E,A
+            (dot
+             (dot~8 result~6 exports@1)add@1)
+            (tup@5 path@1 kind@7 names@D))
+           (asgn@2,B t~2
+            (call@6 next~4 s@1))))
+         (else@,H
+          (stmts@2,1
+           (var@4 nested . . . 1@9)
+           (asgn@2,1 t~2
+            (call@6 next~4 s@1))
+           (while@,2
+            (infix@D !=
+             (dot~6 t~1 kind@1)EofToken@3)
+            (stmts@2,1
+             (case
+              (dot@6 t~1 kind@1)
+              (of@,1
+               (ranges ParLe@3)
+               (stmts@A
+                (cmd inc nested@4)))
+              (of@,2
+               (ranges ParRi@3)
+               (stmts@2,1
+                (cmd dec nested@4)
+                (if@,1
+                 (elif@3
+                  (infix@7 == nested~7 0@3)
+                  (stmts@D
+                   (break .))))))
+              (else@,5
+               (stmts@6
+                (discard .))))
+             (asgn@2,6 t~2
+              (call@6 next~4 s@1))))
+           (asgn@2,A t~2
+            (call@6 next~4 s@1)))))))
+      (else@,U
+       (stmts@2,1
+        (asgn@2 t~2
+         (call@6 next~4 s@1)))))))))
+ (proc@,4N readEmbeddedIndex@5 x . .
+  (params@N
+   (param@1 s . .
+    (mut@3 Stream@4).))
+  (at@M Table~5 string@1 NifIndexEntry@9). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (call@Y
+     (at~N initTable~9 string@1 NifIndexEntry@9)))
+   (let@4,2 indexPos . . .
+    (call@O indexStartsAt~D
+     (dot@2 s~1 r@1)))
+   (if@,3
+    (elif@3
+     (infix@9 <= indexPos~9 0@3)
+     (stmts~1,1
+      (ret result@7))))
+   (let@4,5 contentPos . . .
+    (call@J offset~6
+     (dot@2 s~1 r@1)))
+   (call@A,6
+    (dot~7
+     (dot~2 s~1 r@1)jumpTo@1)indexPos@1)
+   (var@4,8 previousOffset . . . 0@H)
+   (var@4,9 t . . .
+    (call@8 next~4 s@1))
+   (let@4,A exportedTagId . . .
+    (call@Z
+     (dot~A
+      (dot~5 pool~4 tags@1)getOrIncl@1)"x"@1))
+   (if@,B
+    (elif@3
+     (infix@G and
+      (infix~9 ==
+       (dot~6 t~1 kind@1)ParLe@3)
+      (infix@N ==
+       (at~A
+        (dot~5 pool~4 tags@1)
+        (dot@2 t~1 tagId@1))".index"@3))
+     (stmts~1,1
+      (asgn@2 t~2
+       (call@6 next~4 s@1))
+      (while@,1
+       (infix@P and
+        (infix~C !=
+         (dot~6 t~1 kind@1)EofToken@3)
+        (infix@B !=
+         (dot~6 t~1 kind@1)ParRi@3))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@7 ==
+           (dot~6 t~1 kind@1)ParLe@3)
+          (stmts~1,1
+           (let@4 vis . . .
+            (if@6
+             (elif@3
+              (infix@8 ==
+               (dot~7 t~1 tagId@1)exportedTagId@3)
+              (stmts@Q Exported))
+             (else@c
+              (stmts@6 Hidden))))
+           (let@4,1 info . . .
+            (dot@8 t~1 info@1))
+           (asgn@2,2 t~2
+            (call@6 next~4 s@1))
+           (var@4,3 key . . . ""@6)
+           (if@,4
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)Symbol@3)
+             (stmts~1,1
+              (asgn@4 key~4
+               (at@B
+                (dot~5 pool~4 syms@1)
+                (dot@2 t~1 symId@1)))))
+            (else@,2
+             (stmts@2,1
+              (cmd raiseAssert "invalid \28kv\29 in .index\3A symbol expected"@C))))
+           (asgn@2,8 t~2
+            (call@6 next~4 s@1))
+           (if@,9
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)IntLit@3)
+             (stmts~1,1
+              (let@4 offset . . .
+               (infix@b \2B
+                (call~P int~3
+                 (at@E
+                  (dot~9 pool~4 integers@1)
+                  (dot@2 t~1 intId@1)))previousOffset@2))
+              (asgn@C,1
+               (at~6 result~6 key@1)
+               (oconstr@F NifIndexEntry~D
+                (kv@7 offset~6 offset@2)
+                (kv@L info~4 info@2)
+                (kv@W vis~3 vis@2)))
+              (asgn@F,2 previousOffset~F offset@2))))
+           (asgn@2,D t~2
+            (call@6 next~4 s@1))
+           (if@,E
+            (elif@3
+             (infix@7 ==
+              (dot~6 t~1 kind@1)ParRi@3)
+             (stmts~1,1
+              (asgn@2 t~2
+               (call@6 next~4 s@1)))))))
+         (else@,H
+          (stmts@2,1
+           (asgn@2 t~2
+            (call@6 next~4 s@1))))))))))
+   (call@A,Y
+    (dot~7
+     (dot~2 s~1 r@1)jumpTo@1)contentPos@1)))
+ (when@,4y
+  (elif@5 isMainModule
+   (stmts~3,1
+    (import
+     (infix@B / std~4
+      (bracket@2 os@1)))
+    (try@,1
+     (stmts@2,1
+      (cmd createIndex
+       (call@K paramStr~8 1@1)false@P NoLineInfo@W))
+     (except@,2 .
+      (stmts@2,1
+       (cmd quit "createIndex failed"@5))))))))

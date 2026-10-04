@@ -1,0 +1,59 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,enumeq.nim
+ (comment)
+ (type@D,6 Action~8 x . .
+  (enum@2 .
+   (efld@5 ActNone . . . .)
+   (efld@E ActDelete . . . .)
+   (efld@P ActEdit . . . .)
+   (efld@Y ActCopy . . . .)))
+ (proc@,8 decide@5 . . .
+  (params@B)Action@4 . .
+  (stmts@O ActNone))
+ (proc@,A isNone@5 . . .
+  (params@B)bool@4 . .
+  (stmts@M
+   (infix@9 ==
+    (call~3 decide~6)ActNone@3)))
+ (proc@,B isDelete@5 . . .
+  (params@D)bool@4 . .
+  (stmts@O
+   (infix@9 ==
+    (call~3 decide~6)ActDelete@3)))
+ (proc@,C isEdit@5 . . .
+  (params@B)bool@4 . .
+  (stmts@M
+   (infix@9 ==
+    (call~3 decide~6)ActEdit@3)))
+ (proc@,D notNone@5 . . .
+  (params@C)bool@4 . .
+  (stmts@N
+   (infix@9 !=
+    (call~3 decide~6)ActNone@3)))
+ (comment@,F)
+ (proc@,G localIsDelete@5 . . .
+  (params@I)bool@4 . .
+  (stmts@2,1
+   (let@4 a . . .
+    (call@A decide~6))
+   (asgn@7,1 result~7
+    (infix@4 == a~2 ActDelete@3))))
+ (proc@,K localNotNone@5 . . .
+  (params@H)bool@4 . .
+  (stmts@2,1
+   (let@4 a . . .
+    (call@A decide~6))
+   (asgn@7,1 result~7
+    (infix@4 != a~2 ActNone@3))))
+ (comment@,O)
+ (proc@,P ordValue@5 . . .
+  (params@D)int@4 . .
+  (stmts@N
+   (call@3 ord~3
+    (call@7 decide~6))))
+ (proc@,Q ordDelete@5 . . .
+  (params@E)int@4 . .
+  (stmts@O
+   (call@3 ord~3 ActDelete@1))))

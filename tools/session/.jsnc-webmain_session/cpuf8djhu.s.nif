@@ -1,0 +1,38 @@
+(.nif27)
+(.indexat 969              )
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/cpuinfo.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv pososrh1q1 "../../../../../../home/savant/nimony/lib/std/posix/posix.nim"))
+ (stmts@2,K
+  (stmts@2,1)
+  (proc@,w :countProcessorsImpl.0.@5 . . .
+   (params@O)
+   (i@4 32)
+   (pragmas@W
+    (inline@2)).
+   (stmts@2,1
+    (result :result.0 . .
+     (i@2,~1 32).)
+    (stmts@2,U
+     (asgn@7 result.0~7
+      (call@9 sysconf.0.pososrh1q1~7 SC_NPROCESSORS_ONLN.0.pososrh1q1@1)))
+    (if@,V
+     (elif@3
+      (lt@7
+       (i 32)result.0~7 0@2)
+      (stmts@C
+       (asgn@7 result.0~7 0@2))))
+    (ret~2,~1 result.0))))
+ (proc@,1q :countProcessors.0.@5 x . .
+  (params@L)
+  (i@4 32). .
+  (stmts@2,1
+   (result :result.1 . .
+    (i@4,~b 32).)
+   (asgn@J,2 result.1
+    (call countProcessorsImpl.0.~J))
+   (ret~2,~1 result.1)))
+ (comment@6,1G int.0.sysvq0asl int.0.sysvq0asl~2,a))(.index@,A,../../../../../../home/savant/nimony/lib/std/cpuinfo.nim
+ (h@2,K countProcessorsImpl.0. 296)
+ (x countProcessors.0. 414))

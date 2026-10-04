@@ -1,0 +1,245 @@
+(.nif27)
+(.indexat 6227             )
+(stmts@,2,../../../../../../home/savant/nimony/lib/std/sets.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv tabcr240b1 "../../../../../../home/savant/nimony/lib/std/tables.nim"))
+ (type@N,3 :HashSet.0.~L x
+  (typevars~D
+   (typevar@1 :T.0. . . Keyable.0.tabcr240b1@3 .)).
+  (object@2 .
+   (fld~L,1 :t.0 . .
+    (at@8 Table.0.tabcr240b1~5 T.0.@1
+     (bool@4)).)))
+ (func@,6 :initHashSet.0.@5 x .
+  (typevars@H
+   (typevar@1 :T.1. . . Keyable.0.tabcr240b1@3 .))
+  (params@T)
+  (at@B HashSet.0.~7 T.1.@1). .
+  (stmts@2,1
+   (result :result.0 . .
+    (at@9,~1 HashSet.0.~7 T.1.@1).)
+   (asgn@A,1 result.0
+    (oconstr
+     (at~1,~2 HashSet.0.~7 T.1.@1)
+     (kv@2 t~1
+      (call@K
+       (at~I initTable.0.tabcr240b1 T.1.@A
+        (bool@D))))))
+   (ret~2,~1 result.0)))
+ (func@,A :incl.0.@5 x .
+  (typevars@A
+   (typevar@1 :T.2. . . Keyable.0.tabcr240b1@3 .))
+  (params@M
+   (param@1 :s.0 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.2.@1)).)
+   (param@K :x.0 . .
+    (sink@3 T.2.@5).)). . .
+  (stmts@2,1
+   (call@1,1 \5B\5D=.0.tabcr240b1
+    (dot s.0~1 t.0 0 "x")x.0@3
+    (true@8))))
+ (func@,E :excl.0.@5 x .
+  (typevars@A
+   (typevar@1 :T.3. . . Keyable.0.tabcr240b1@3 .))
+  (params@M
+   (param@1 :s.1 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.3.@1)).)
+   (param@K :x.1 . . T.3.@3 .)). . .
+  (stmts@2,1
+   (call@1,1 \5B\5D=.0.tabcr240b1
+    (dot s.1~1 t.0 0 "x")x.1@3
+    (false@8))))
+ (func@,I :contains.0.@5 x .
+  (typevars@E
+   (typevar@1 :T.4. . . Keyable.0.tabcr240b1@3 .))
+  (params@Q
+   (param@1 :s.2 . .
+    (at@A HashSet.0.~7 T.4.@1).)
+   (param@G :x.2 . . T.4.@3 .))
+  (bool@N). .
+  (stmts@2,1
+   (result :result.1 . .
+    (bool@L,~1).)
+   (asgn@G,1 result.1
+    (call getOrDefault.0.tabcr240b1~C
+     (dot~F s.2~1 t.0 0 "x")x.2@1))
+   (ret~2,~1 result.1)))
+ (func@,M :containsOrIncl.0.@5 x .
+  (typevars@K
+   (typevar@1 :T.5. . . Keyable.0.tabcr240b1@3 .))
+  (params@W
+   (param@1 :s.3 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.5.@1)).)
+   (param@K :x.3 . . T.5.@3 .))
+  (bool@R). .
+  (stmts@2,1
+   (result :result.2 . .
+    (bool@L,~5).)
+   (asgn@7,1 result.2~7
+    (call@A contains.0.~8 s.3@1 x.3@4))
+   (if@,2
+    (elif@3
+     (not result.2@4)
+     (stmts~1,1
+      (cmd incl.0. s.3@5 x.3@8))))
+   (ret~2,~1 result.2)))
+ (func@,S :missingOrExcl.0.@5 x .
+  (typevars@J
+   (typevar@1 :T.6. . . Keyable.0.tabcr240b1@3 .))
+  (params@V
+   (param@1 :s.4 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.6.@1)).)
+   (param@K :x.4 . . T.6.@3 .))
+  (bool@R). .
+  (stmts@2,1
+   (result :result.3 . .
+    (bool@L,~B).)
+   (asgn@7,2 result.3~7
+    (not@2
+     (call@C contains.0.~8 s.4@1 x.4@4)))
+   (if@,3
+    (elif@3
+     (not result.3@4)
+     (stmts~1,1
+      (cmd excl.0. s.4@5 x.4@8))))
+   (ret~2,~1 result.3)))
+ (iterator@,Z :items.0.@9 x .
+  (typevars@F
+   (typevar@1 :T.7. . . Keyable.0.tabcr240b1@3 .))
+  (params@R
+   (param@1 :s.5 . .
+    (at@A HashSet.0.~7 T.7.@1).))
+  (lent@H T.7.@5). .
+  (stmts@2,1
+   (for@4,1
+    (call@D pairs.0.tabcr240b1~5
+     (dot@2 s.5~1 t.0 0 "x"))
+    (unpackflat
+     (let :k.0 . .
+      (lent@J,2F,../../../../../../home/savant/nimony/lib/std/tables.nim T.7.@d,b,../../../../../../home/savant/nimony/lib/std/sets.nim).)
+     (let :v.0@3 . .
+      (lent@J,2F,../../../../../../home/savant/nimony/lib/std/tables.nim
+       (bool@G,6,../../../../../../home/savant/nimony/lib/std/sets.nim)).))
+    (stmts~2,1
+     (if
+      (elif@3 v.0
+       (stmts@3
+        (yld k.0@6))))))))
+ (func@,e :len.0.@5 x .
+  (typevars@9
+   (typevar@1 :T.8. . . Keyable.0.tabcr240b1@3 .))
+  (params@L
+   (param@1 :s.6 . .
+    (at@A HashSet.0.~7 T.8.@1).))
+  (i@H 32). .
+  (stmts@2,1
+   (result :result.4 . .
+    (i@F,~1 32).)
+   (asgn@7,1 result.4~7 0@2)
+   (for@4,2
+    (call@D pairs.0.tabcr240b1~5
+     (dot@2 s.6~1 t.0 0 "x"))
+    (unpackflat
+     (let :k.1 . .
+      (lent@J,2F,../../../../../../home/savant/nimony/lib/std/tables.nim T.8.@X,g,../../../../../../home/savant/nimony/lib/std/sets.nim).)
+     (let :v.1@3 . .
+      (lent@J,2F,../../../../../../home/savant/nimony/lib/std/tables.nim
+       (bool@G,6,../../../../../../home/savant/nimony/lib/std/sets.nim)).))
+    (stmts~2,1
+     (if
+      (elif@3 v.1
+       (stmts@3
+        (cmd inc.1.sysvq0asl result.4@4))))))
+   (ret~2,~1 result.4)))
+ (func@,k :intersection.0.@5 x .
+  (typevars@I
+   (typevar@1 :T.9. . . Keyable.0.tabcr240b1@3 .))
+  (params@U
+   (param@1 :a.0 . .
+    (at@D HashSet.0.~7 T.9.@1).)
+   (param@4 :b.0 . .
+    (at@A HashSet.0.~7 T.9.@1).))
+  (at@R HashSet.0.~7 T.9.@1). .
+  (stmts@2,1
+   (result :result.5 . .
+    (at@g,~1 HashSet.0.~7 T.9.@1).)
+   (asgn@7,1 result.5~7
+    (call@G
+     (at~E initHashSet.0. T.9.@C)))
+   (for@4,2
+    (call@A items.0.~5 a.0@1)
+    (unpackflat
+     (let :x.5 . .
+      (lent@B,~E T.9.@S,B).))
+    (stmts~2,1
+     (if
+      (elif@3
+       (expr@2,2k,../../../../../../home/savant/nimony/lib/std/system.nim
+        (call@8 contains.0.~8 b.0@C,q,../../../../../../home/savant/nimony/lib/std/sets.nim x.5@7,q,../../../../../../home/savant/nimony/lib/std/sets.nim))
+       (stmts~1,1
+        (cmd@6 incl.0.@1 result.5~6 x.5@6))))))
+   (ret~2,~1 result.5)))
+ (func@,r :incl.1.@5 x .
+  (typevars@A
+   (typevar@1 :T.10. . . Keyable.0.tabcr240b1@3 .))
+  (params@M
+   (param@1 :s.7 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.10.@1)).)
+   (param@K :other.0 . .
+    (at@E HashSet.0.~7 T.10.@1).)). . .
+  (stmts@2,1
+   (for@4,1
+    (call@A items.0.~5 other.0@1)
+    (unpackflat
+     (let :x.6 . .
+      (lent@B,~K T.10.@e,I).))
+    (stmts~2,1
+     (cmd@1 incl.0.@1 s.7~1 x.6@6)))))
+ (func@,w :excl.1.@5 x .
+  (typevars@A
+   (typevar@1 :T.11. . . Keyable.0.tabcr240b1@3 .))
+  (params@M
+   (param@1 :s.8 . .
+    (mut@3
+     (at@B HashSet.0.~7 T.11.@1)).)
+   (param@K :other.1 . .
+    (at@E HashSet.0.~7 T.11.@1).)). . .
+  (stmts@2,1
+   (for@4,1
+    (call@A items.0.~5 other.1@1)
+    (unpackflat
+     (let :x.7 . .
+      (lent@B,~P T.11.@e,N).))
+    (stmts~2,1
+     (cmd@1 excl.0.@1 s.8~1 x.7@6)))))
+ (comment@G,4 bool.0.sysvq0asl sink.0.sysvq0asl@T,6 bool.0.sysvq0asl@7,E bool.0.sysvq0asl@B,I bool.0.sysvq0asl@B,O lent.0.sysvq0asl@1,V int.0.sysvq0asl@1,a bool.0.sysvq0asl@D,4 true.0.sysvq0asl~5,8 false.0.sysvq0asl~5,C in.0.sysvq0asl~7,k))(.index@,2,../../../../../../home/savant/nimony/lib/std/sets.nim
+ (x HashSet.0. 262)
+ (h@A,3 T.0. 41)
+ (x initHashSet.0. 144)
+ (h@H,6 T.1. 46)
+ (x incl.0. 359)
+ (h@A,A T.2. 39)
+ (x excl.0. 273)
+ (h@A,E T.3. 39)
+ (x contains.0. 262)
+ (h@E,I T.4. 43)
+ (x containsOrIncl.0. 340)
+ (h@K,M T.5. 49)
+ (x missingOrExcl.0. 416)
+ (h@J,S T.6. 48)
+ (x items.0. 429)
+ (h@F,Z T.7. 44)
+ (x len.0. 656)
+ (h@9,e T.8. 38)
+ (x intersection.0. 765)
+ (h@I,k T.9. 47)
+ (x incl.1. 816)
+ (h@A,r T.10. 39)
+ (x excl.1. 376)
+ (h@A,w T.11. 39))

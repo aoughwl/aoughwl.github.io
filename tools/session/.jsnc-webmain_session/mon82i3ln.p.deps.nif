@@ -1,0 +1,11 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (when
+   (infix and
+    (call defined posix)
+    (prefix not
+     (call defined osx))))
+  (infix / posix posix)))

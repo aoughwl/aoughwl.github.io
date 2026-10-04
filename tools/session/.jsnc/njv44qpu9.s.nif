@@ -1,0 +1,323 @@
+(.nif27)
+(.indexat 10799            )
+(stmts@,7,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv assy765wm "../../../../../../home/savant/nimony/lib/std/assertions.nim")
+  (kv bitekkhcx1 "../../../../../../home/savant/nimony/src/lib/bitabs.nim")
+  (kv nifb6mq6y1 "../../../../../../home/savant/nimony/src/lib/nifcursors.nim")
+  (kv vfsc9jn7 "../../../../../../home/savant/nimony/src/lib/vfs.nim")
+  (kv nifh7u8pu1 "../../../../../../home/savant/nimony/src/lib/nifstreams.nim")
+  (kv nif81dubp1 "../../../../../../home/savant/nimony/src/lib/nifreader.nim")
+  (kv linxafkvx1 "../../../../../../home/savant/nimony/src/lib/lineinfos.nim")
+  (kv nifjp9lau1 "../../../../../../home/savant/nimony/src/lib/nifbuilder.nim")
+  (kv tagygirdh1 "../../../../../../home/savant/nimony/src/models/tags.nim")
+  (kv njvhmst99 "../../../../../../home/savant/nimony/src/models/njvl_tags.nim"))
+ (stmts@,1,../../../../../../home/savant/nimony/src/lib/nifprelude.nim)
+ (stmts@,7,../../../../../../home/savant/nimony/src/lib/compat2.nim
+  (stmts@2,5
+   (pragmas@2
+    (pragma canRaise@6)raises@I))
+  (stmts@2,A
+   (template :onRaiseQuit.0.@9 . . .
+    (params@K
+     (param@1 :call.0 . .
+      (untyped@6).))
+    (untyped@H). .
+    (stmts@2,1
+     (try@,7
+      (expr@2,1 call.0)
+      (except@,2 .
+       (expr@2,1
+        (cmd quit
+         (infix@H
+          (ochoice &.1.sysvq0asl &.2.sysvq0asl &.0.sysvq0asl)"FAILURE\3A "~C
+          (call@A astToStr.0.sysvq0asl~8 call.0@1))))))))))
+ (template@,7 :tagEnum.0.@9 . . .
+  (params@G
+   (param@1 :c.0 . . Cursor.0.nifb6mq6y1@3 .))TagEnum.0.tagygirdh1@D . .
+  (stmts@d
+   (cast TagEnum.0.tagygirdh1@5
+    (call@H tag.0.nifb6mq6y1~3 c.0@1))))
+ (template@,9 :tagEnum.1.@9 . . .
+  (params@G
+   (param@1 :c.1 . . PackedToken.0.nifh7u8pu1@3 .))TagEnum.0.tagygirdh1@I . .
+  (stmts@i
+   (cast TagEnum.0.tagygirdh1@5
+    (call@H tag.0.nifh7u8pu1~3 c.1@1))))
+ (proc@,B :njvlKind.0.@5 x . .
+  (params@E
+   (param@1 :c.2 . . PackedToken.0.nifh7u8pu1@3 .))NjvlKind.0.njvhmst99@I
+  (pragmas@f
+   (inline@2)).
+  (stmts@2,1
+   (result :result.0 . . NjvlKind.0.njvhmst99@G,~1 .)
+   (if
+    (elif@3
+     (and@G
+      (eq~9 NifKind.0.nif81dubp1
+       (expr@g,p,../../../../../../home/savant/nimony/src/lib/nifstreams.nim
+        (cast NifKind.0.nif81dubp1@5
+         (bitand@I
+          (u 32)
+          (dot~3 c.2@5,J,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim x.0 0 "x")TokenKindMask.0.nifh7u8pu1@4)))ParLe.0.nif81dubp1@3)
+      (call@K rawTagIsNjvlKind.0.njvhmst99~G
+       (expr@3,~3
+        (cast TagEnum.0.tagygirdh1@5
+         (call@H tag.0.nifh7u8pu1~3 c.2~B,3)))))
+     (stmts~1,1
+      (asgn@7 result.0~7
+       (cast@2 NjvlKind.0.njvhmst99@5
+        (expr@V,~4
+         (cast TagEnum.0.tagygirdh1@5
+          (call@H tag.0.nifh7u8pu1~3 c.2~P,4)))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result.0~7 NoVTag.0.njvhmst99@2))))
+   (ret~2,~1 result.0)))
+ (proc@,H :njvlKind.1.@5 x . .
+  (params@E
+   (param@1 :c.3 . . Cursor.0.nifb6mq6y1@3 .))NjvlKind.0.njvhmst99@D
+  (pragmas@a
+   (inline@2)).
+  (stmts@2,1
+   (result@7 :result.1 . . NjvlKind.0.njvhmst99@9,~7 .)
+   (asgn@7 result.1~7
+    (call@A njvlKind.0.~8
+     (call@7 load.0.nifb6mq6y1~4 c.3~6)))
+   (ret~2,~1 result.1)))
+ (proc@,K :parLeToken.0.@5 x . .
+  (params@G
+   (param@1 :kind.0 . . NjvlKind.0.njvhmst99@6 .)
+   (param@H :info.0 . . PackedLineInfo.0.linxafkvx1~4,4 NoLineInfo.0.linxafkvx1@7))PackedToken.0.nifh7u8pu1@b . .
+  (stmts@2,1
+   (result@A :result.2 . . PackedToken.0.nifh7u8pu1@8,~C .)
+   (asgn@A result.2
+    (call parLeToken.0.nifh7u8pu1~A
+     (cast@1 TagId.0.nifh7u8pu1@5 kind.0@C)info.0@K))
+   (ret~2,~1 result.2)))
+ (template@,N :copyIntoKind.0.@9 x . .
+  (params@M
+   (param@1 :dest.0 . .
+    (mut@6 TokenBuf.0.nifb6mq6y1@4).)
+   (param@L :kind.1 . . NjvlKind.0.njvhmst99@6 .)
+   (param@1,1 :info.1 . . PackedLineInfo.0.linxafkvx1@6 .)
+   (param@N,1 :body.0 . .
+    (untyped@6).)). . .
+  (stmts@2,2
+   (cmd@4 add.0.nifb6mq6y1@1 dest.0~4
+    (call@F parLeToken.0.~A kind.1@1 info.1@7))body.0@,1
+   (call@D,2 addParRi.0.nifb6mq6y1~8 dest.0~D)))
+ (type@H,U :IteTracker.0.~F x
+  (typevars~4
+   (typevar@1 :T.0. . . . .)).
+  (object@2 .
+   (fld~F,5 :data.0 . .
+    (at@9 seq.0.sysvq0asl~3 T.0.@1).)))
+ (proc@,b :checkpoint.0.@5 x .
+  (typevars@G
+   (typevar@1 :T.2. . . . .))
+  (params@J
+   (param@1 :t.0 . .
+    (at@D IteTracker.0.~A T.2.@1).))
+  (i@K 32)
+  (pragmas@h
+   (inline@2)).
+  (stmts@2,1
+   (result :result.3 . .
+    (i@I,~1 32).)
+   (asgn@6,1 result.3
+    (call len.3.sysvq0asl@1
+     (dot~5 t.0~1 data.0 0 "x")))
+   (ret~2,~1 result.3)))
+ (proc@,f :rollback.0.@5 x .
+  (typevars@E
+   (typevar@1 :T.3. . . . .))
+  (params@H
+   (param@1 :t.1 . .
+    (mut@3
+     (at@E IteTracker.0.~A T.3.@1)).)
+   (param@N :cp.0 . .
+    (i@4 32).)).
+  (pragmas@n
+   (inline@2)).
+  (stmts@2,1
+   (cmd@6,1 shrink.0.sysvq0asl@1
+    (dot~5 t.1~1 data.0 0 "x")cp.0@8)))
+ (proc@,j :add.0.@5 x .
+  (typevars@9
+   (typevar@1 :T.4. . . . .))
+  (params@C
+   (param@1 :t.2 . .
+    (mut@3
+     (at@E IteTracker.0.~A T.4.@1)).)
+   (param@N :item.0 . .
+    (sink@6 T.4.@5).)).
+  (pragmas@n
+   (inline@2)).
+  (stmts@2,1
+   (cmd@6 add.0.sysvq0asl@1
+    (dot~5 t.2~1 data.0 0 "x")item.0@5)))
+ (proc@,m :contains.0.@5 x .
+  (typevars@E
+   (typevar@1 :T.5. . . Equatable.0.sysvq0asl@3 .))
+  (params@S
+   (param@1 :t.3 . .
+    (at@D IteTracker.0.~A T.5.@1).)
+   (param@J :item.1 . . T.5.@6 .))
+  (bool@T)
+  (pragmas@10
+   (inline@2)).
+  (stmts@2,1
+   (result@5 :result.4 . .
+    (bool@B,19,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (asgn@5 result.4
+    (expr@2,2k,../../../../../../home/savant/nimony/lib/std/system.nim
+     (call@8 contains.3.sysvq0asl~8
+      (hcall@B,u,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim
+       (at toOpenArray.1.sysvq0asl T.5.@W,~1)
+       (dot t.3~1 data.0 0 "x"))item.1@2,u,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim)))
+   (ret~2,~1 result.4)))
+ (iterator@,p :since.0.@9 x .
+  (typevars@F
+   (typevar@1 :T.6. . . . .))
+  (params@I
+   (param@1 :t.4 . .
+    (at@D IteTracker.0.~A T.6.@1).)
+   (param@J :cp.1 . .
+    (i@4 32).))
+  (lent@T T.6.@5). .
+  (stmts@2,1
+   (for@4,1
+    (infix@8 \2E.<.0.sysvq0asl cp.1~3
+     (call@A len.3.sysvq0asl@1
+      (dot~5 t.4~1 data.0 0 "x")))
+    (unpackflat
+     (let :i.0 . .
+      (i@E,~G 32).))
+    (stmts~2,1
+     (yld
+      (call@7 \5B\5D.7.sysvq0asl
+       (dot t.4~1 data.0 0 "x")i.0@6))))))
+ (type@H,v :SplitPoint.0.~F x
+  (typevars~4
+   (typevar@1 :T.1. . . . .)).
+  (object@2 .
+   (fld~D,2 :cp.0~2 x .
+    (i@3 32).)
+   (fld~7,3 :thenData.0~8 x .
+    (at@6 seq.0.sysvq0asl~3 T.1.@1).)))
+ (proc@,10 :split.0.@5 x .
+  (typevars@B
+   (typevar@1 :T.7. . . . .))
+  (params@E
+   (param@1 :t.5 . .
+    (at@D IteTracker.0.~A T.7.@1).))
+  (at@U SplitPoint.0.~A T.7.@1)
+  (pragmas@m
+   (inline@2)).
+  (stmts@2,1
+   (result :result.5 . .
+    (at@S,~1 SplitPoint.0.~A T.7.@1).)
+   (asgn@D,1 result.5
+    (oconstr
+     (at@F,~2 SplitPoint.0.~A T.7.@1)
+     (kv@3 cp~2
+      (call@E checkpoint.0.~A t.5~C))
+     (kv thenData.0
+      (expr@q,1S,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+       (call@F
+        (at~F newSeqUninit.0.sysvq0asl T.7.@V,17,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim)0@1)))))
+   (ret~2,~1 result.5)))
+ (proc@,14 :thenDone.0.@5 x .
+  (typevars@E
+   (typevar@1 :T.8. . . . .))
+  (params@H
+   (param@1 :t.6 . .
+    (mut@3
+     (at@E IteTracker.0.~A T.8.@1)).)
+   (param@N :s.0 . .
+    (mut@3
+     (at@E SplitPoint.0.~A T.8.@1)).)). . .
+  (stmts@2,1
+   (for@4,2
+    (call@F since.0.~5 t.6~7
+     (dot@2 s.0~1 cp.0 0))
+    (unpackflat
+     (let :item.2 . .
+      (lent@N,~I T.8.@7,F).))
+    (stmts@N
+     (cmd@A add.0.sysvq0asl@1
+      (dot~9 s.0~1 thenData.0 0)item.2@5)))
+   (call@A,3 rollback.0.~8 t.6~A
+    (dot@2 s.0~1 cp.0 0))))
+ (proc@,1A :join.0.@5 x .
+  (typevars@A
+   (typevar@1 :T.9. . . Equatable.0.sysvq0asl@3 .))
+  (params@O
+   (param@1 :t.7 . .
+    (mut@3
+     (at@E IteTracker.0.~A T.9.@1)).)
+   (param@N :s.1 . .
+    (at@D SplitPoint.0.~A T.9.@1).)). . .
+  (stmts@2,1
+   (var@4,3 :elseData.0 . .
+    (at@D seq.0.sysvq0asl~3 T.9.@1)
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1
+      (at~F newSeqUninit.0.sysvq0asl T.9.@K,1L,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim)0@1)))
+   (for@4,4
+    (call@F since.0.~5 t.7~7
+     (dot@2 s.1~1 cp.0 0))
+    (unpackflat
+     (let :item.3 . .
+      (lent@N,~Q T.9.@E,L).))
+    (stmts@N
+     (cmd@8 add.0.sysvq0asl@1 elseData.0~8 item.3@5)))
+   (call@A,5 rollback.0.~8 t.7~A
+    (dot@2 s.1~1 cp.0 0))
+   (for@4,6
+    (call@9 items.1.sysvq0asl~9
+     (hcall
+      (at toOpenArray.1.sysvq0asl T.9.@5,~3)
+      (dot s.1~1 thenData.0 0)))
+    (unpackflat
+     (let :item.4 . .
+      (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim T.9.@K,1L,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim).))
+    (stmts~2,1
+     (if
+      (elif@3
+       (expr@2,2k,../../../../../../home/savant/nimony/lib/std/system.nim
+        (call@8 contains.3.sysvq0asl~8
+         (hcall@F,1P,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim
+          (at toOpenArray.1.sysvq0asl T.9.@5,~4)elseData.0)item.4@7,1P,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim))
+       (stmts@I
+        (cmd@1 add.0.@1 t.7~1 item.4@5))))))))
+ (comment@T,H,../../../../../../home/savant/nimony/src/lib/compat2.nim untyped.0.sysvq0asl untyped.0.sysvq0asl~A untyped.0.sysvq0asl@p,V,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim int.0.sysvq0asl@K,i,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim int.0.sysvq0asl@i,m,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim sink.0.sysvq0asl@f,q,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim bool.0.sysvq0asl@T,t,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim int.0.sysvq0asl@f,w,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim lent.0.sysvq0asl@T,w,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim int.0.sysvq0asl@9,14,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim kind.0.nifh7u8pu1@6,J,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim tagEnum.1.@n,J,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim tagEnum.1.@Z,K,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim in.0.sysvq0asl@7,u,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim default.25.sysvq0asl@F,19,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim \40.1.sysvq0asl@P,1L,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim in.0.sysvq0asl@C,1P,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim))(.index@,7,../../../../../../home/savant/nimony/src/njvl/njvl_model.nim
+ (h@2,H,../../../../../../home/savant/nimony/src/lib/compat2.nim onRaiseQuit.0. 1189)
+ (h tagEnum.0. 378)
+ (h tagEnum.1. 203)
+ (x njvlKind.0. 208)
+ (x njvlKind.1. 1017)
+ (x parLeToken.0. 325)
+ (x copyIntoKind.0. 417)
+ (x IteTracker.0. 429)
+ (h@D,U T.0. 44)
+ (x checkpoint.0. 109)
+ (h@G,b T.2. 45)
+ (x rollback.0. 305)
+ (h@E,f T.3. 43)
+ (x add.0. 266)
+ (h@9,j T.4. 38)
+ (x contains.0. 272)
+ (h@E,m T.5. 43)
+ (x since.0. 706)
+ (h@F,p T.6. 44)
+ (x SplitPoint.0. 444)
+ (h@D,v T.1. 44)
+ (x split.0. 154)
+ (h@B,10 T.7. 41)
+ (x thenDone.0. 625)
+ (h@E,14 T.8. 44)
+ (x join.0. 485)
+ (h@A,1A T.9. 40))

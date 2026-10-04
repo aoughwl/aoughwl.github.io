@@ -1,0 +1,262 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/stringviews.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4 hashes@2))
+ (when@,3
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (type@9,7 pchar~7 x . .
+  (ptr@2
+   (at@I UncheckedArray~E char@1)))
+ (type@E,8 StringView~C x . .
+  (object@2 .
+   (fld~B,1 p~1 x . pchar@3 .)
+   (fld~9,2 len~3 x . int@3 .)))
+ (template@,C
+  (quoted@9 \5B\5D@1) x . .
+  (params@E
+   (param@1 s . . StringView@3 .)
+   (param@G i . . int@3 .))char@P . .
+  (stmts@k
+   (at@3
+    (dot~2 s~1 p@1)i@1)))
+ (when@,E
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (pragmas
+     (kv@8 pragma~6 untyped@2)))))
+ (template@,H eqImpl@9 . . .
+  (params@F).
+  (pragmas@I untyped@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 ==
+      (dot~5 a~1 len@1)
+      (dot@4 b~1 len@1))
+     (stmts~1,1
+      (for@4
+       (infix@6 \2E\2E< 0~1
+        (dot@4 a~1 len@1))
+       (unpackflat
+        (let i . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@5 !=
+           (at~4 a~1 i@1)
+           (at@4 b~1 i@1))
+          (stmts@E
+           (ret false@7))))))
+      (asgn@7,2 result~7 true@2)))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,P
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . StringView@6 .)
+   (param@4 b . . StringView@3 .))bool@K . .
+  (stmts@b
+   (call@6 eqImpl~6)))
+ (proc@,Q
+  (quoted@5 ==@1) x . .
+  (params@A
+   (param@1 a . . StringView@3 .)
+   (param@G b . . string@3 .))bool@S . .
+  (stmts@j
+   (call@6 eqImpl~6)))
+ (proc@,S startsWith@5 x . .
+  (params@G
+   (param@1 s . . StringView@3 .)
+   (param@G prefix . . string@8 .))bool@X . .
+  (stmts@2,1
+   (let@4 prefixLen . . .
+    (dot@I prefix~6 len@1))
+   (let@4,1 sLen . . .
+    (dot@8 s~1 len@1))
+   (var@4,2 i . . . 0@4)
+   (while@,3 true@6
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@2 >= i~2 prefixLen@3)
+       (stmts@G
+        (ret true@7))))
+     (if@,1
+      (elif@3
+       (infix@A or
+        (infix~8 >= i~2 sLen@3)
+        (infix@8 !=
+         (at~4 s~1 i@1)
+         (at@9 prefix~6 i@1)))
+       (stmts@W
+        (ret false@7))))
+     (call@3,2 inc~3 i@1)))
+   (ret@,7 false@7)))
+ (proc@,c add@5 x . .
+  (params@9
+   (param@1 s . .
+    (mut@3 string@4).)
+   (param@G b . . StringView@3 .)). . .
+  (stmts@2,1
+   (let@4 l . . .
+    (dot@5 s~1 len@1))
+   (cmd@1,1
+    (dot s~1 setLen@1)
+    (infix@A \2B l~2
+     (dot@3 b~1 len@1)))
+   (for@4,2
+    (infix@6 \2E\2E< 0~1
+     (dot@4 b~1 len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (asgn@7
+      (at~6 s~1
+       (infix@2 \2B l~1 i@1))
+      (at@3 b~1 i@1))))))
+ (when@,i
+  (elif@5
+   (prefix not
+    (call@B defined~7 nimony@1))
+   (stmts~3,1
+    (when
+     (elif@5
+      (prefix not
+       (call@C declared~8 readRawData@1))
+      (stmts~3,1
+       (proc readRawData@5 x . .
+        (params@H
+         (param@1 s . . string@3 .))
+        (ptr@D
+         (at@I UncheckedArray~E char@1))
+        (pragmas@t inline@2).
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@6 ==
+            (dot~5 s~1 len@1)0@3)
+           (stmts~1,1
+            (nil)))
+          (else@,2
+           (stmts@2,1
+            (cast
+             (ptr@5
+              (at@I UncheckedArray~E char@1))
+             (call@Z addr~4
+              (at@2 s~1 0@1)))))))))))
+    (when@,7
+     (elif@5
+      (prefix not
+       (call@C declared~8 beginStore@1))
+      (stmts~3,1
+       (proc beginStore@5 x . .
+        (params@G
+         (param@1 s . .
+          (mut@3 string@4).)
+         (param@G newLen . . int@8 .)
+         (param@T start . . . 0@8))
+        (ptr@f
+         (at@I UncheckedArray~E char@1))
+        (pragmas@1K inline@2).
+        (stmts@2,1
+         (call@8
+          (dot~7 s~1 setLen@1)newLen@1)
+         (if@,1
+          (elif@3
+           (infix@6 ==
+            (dot~5 s~1 len@1)0@3)
+           (stmts~1,1
+            (nil)))
+          (else@,2
+           (stmts@2,1
+            (cast
+             (ptr@5
+              (at@I UncheckedArray~E char@1))
+             (call@Z addr~4
+              (at@2 s~1 start@1)))))))))))
+    (when@,F
+     (elif@5
+      (prefix not
+       (call@C declared~8 endStore@1))
+      (stmts~3,1
+       (proc endStore@5 x . .
+        (params@E
+         (param@1 s . .
+          (mut@3 string@4).)).
+        (pragmas@U inline@2).
+        (stmts@2,1
+         (discard .)))))))))
+ (proc@,12
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 s . . StringView@3 .))string@H . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@B newString~9
+     (dot@2 s~1 len@1)))
+   (if@,1
+    (elif@3
+     (infix@6 >
+      (dot~5 s~1 len@1)0@2)
+     (stmts~1,1
+      (cmd copyMem
+       (call@I beginStore~A result@1
+        (dot@A s~1 len@1)0@G)
+       (dot@d s~1 p@1)
+       (dot@i s~1 len@1))
+      (call@8,1 endStore~8 result@1))))))
+ (proc@,18 toStringViewUnsafe@5 x . .
+  (params@O
+   (param@1 s . . string@3 .))StringView@D . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (infix@6 !=
+      (dot~5 s~1 len@1)0@3)
+     (stmts~1,1
+      (asgn@7 result~7
+       (oconstr@C StringView~A
+        (kv@2 p~1
+         (cast@2 pchar@5
+          (dot@D s~1 readRawData@1)))
+        (kv@Z len~3
+         (dot@3 s~1 len@1))))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (oconstr@C StringView~A
+        (kv@2 p~1
+         (nil@2))
+        (kv@C len~3 0@2))))))))
+ (proc@,1F hash@5 x . .
+  (params@A
+   (param@1 a . . StringView@3 .))Hash@H
+  (pragmas@W inline@2).
+  (stmts@2,1
+   (when
+    (elif@5
+     (call@7 defined~7 nimony@1)
+     (stmts~3,1
+      (cmd hash
+       (call@O borrowCStringUnsafe~J
+        (cast@1 cstring@5
+         (dot@F a~1 p@1))
+        (dot@M a~1 len@1)))))
+    (else@,2
+     (stmts@2,1
+      (cmd hash
+       (call@G toOpenArray~B
+        (dot@2 a~1 p@1)0@6
+        (infix@E \2D
+         (dot~4 a~1 len@1)1@1)))))))))

@@ -1,0 +1,2795 @@
+(.nif27)
+(.indexat 98457            )
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+ (proc@,Q :toXint.0.@5
+  (params@B
+   (param@1 :v.0 .
+    (ptr@3 Value.0.valzr1t4f)))xint.0.xinat3x34@C
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.0 . xint.0.xinat3x34@A,~1 .)
+   (case@,2
+    (dot@6
+     (deref~1 v.0)kind.0 0)
+    (of@,1
+     (ranges@3 1@4,a,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 2@4,b,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@2,1
+      (asgn@7 result.0~7
+       (dot@3
+        (deref~1 v.0)ival.0 0))))
+    (else@,3
+     (stmts@2,1
+      (var@P :`x.4 .
+       (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+       (call asInt.0.valzr1t4f~5
+        (addr@1
+         (deref v.0))))
+      (var@J :`x.5 . xint.0.xinat3x34@C,1w,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call createXint.0.xinat3x34~A `x.4@6))
+      (asgn@7 result.0~7 `x.5@C))))
+   (ret~2,~1 result.0)))
+ (proc@,Z :u64bits.0.@5
+  (params@C
+   (param@1 :v.1 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (u@C 64)
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.1 .
+    (u@A,~1 64).)
+   (var@4,5 :x.1 . xint.0.xinat3x34@6,~F
+    (call@A toXint.0.~6
+     (addr@1
+      (deref v.1))))
+   (var@4,6 :err.0 .
+    (bool@C,h,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@6))
+   (var@J,7 :`x.6 .
+    (u@Q,e,../../../../../../home/savant/nimony/src/nimony/xints.nim 64)
+    (call asUnsigned.0.xinat3x34~A x.1@1
+     (addr@4 err.0)))
+   (asgn@7,7 result.1~7 `x.6@C)
+   (if@,8
+    (elif@3 err.0
+     (stmts~1,1
+      (asgn@4 err.0~4
+       (false@2))
+      (var@U,1 :`x.7 .
+       (i@Q,O,../../../../../../home/savant/nimony/src/nimony/xints.nim 64)
+       (call asSigned.0.xinat3x34~8 x.1@1
+        (addr@4 err.0)))
+      (asgn@7,1 result.1~7
+       (cast@2
+        (u@5 64)`x.7@L)))))
+   (ret~2,~1 result.1)))
+ (proc@,m :toFloat.0.@5
+  (params@C
+   (param@1 :v.2 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (f@C 64)
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.2 .
+    (f@A,~1 64).)
+   (case
+    (dot@6
+     (deref~1 v.2)kind.0 0)
+    (of@,1
+     (ranges@3 3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@2,1
+      (asgn@7 result.2~7
+       (dot@3
+        (deref~1 v.2)fval.0 0))))
+    (of@,3
+     (ranges@3 1@4,a,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 2@4,b,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@2,1
+      (var@I :`x.8 .
+       (f@B,4v,../../../../../../home/savant/nimony/src/nimony/xints.nim 64)
+       (call toFloat64.0.xinat3x34~9
+        (dot@2
+         (deref~1 v.2)ival.0 0)))
+      (asgn@7 result.2~7 `x.8@B)))
+    (else@,5
+     (stmts@2,1
+      (var@M :`x.9 .
+       (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+       (call asInt.0.valzr1t4f~5
+        (addr@1
+         (deref v.2))))
+      (asgn@7 result.2~7
+       (conv@9
+        (f~7 64)`x.9@6)))))
+   (ret~2,~1 result.2)))
+ (proc@,y :strEq.0.@5
+  (params@A
+   (param@1 :a.0 . string.0.sysvq0asl@6)
+   (param@4 :b.0 . string.0.sysvq0asl@3))
+  (bool@G)
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 1 reads writes escapes)))
+  (stmts@2,1
+   (var :result.3 .
+    (bool@E,~1).)
+   (var@4 :`x.10 .
+    (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+    (call len.4.sysvq0asl@1 a.0~1))
+   (var@D :`x.11 .
+    (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+    (call len.4.sysvq0asl@1 b.0~1))
+   (if
+    (elif@3
+     (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (eq@7 `x.10@6,10,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim `x.11@F,10,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))
+     (stmts~1,1
+      (asgn@7 result.3~7
+       (false@2))))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (stmts@2,3
+         (var@4 :i.0 .
+          (i 32)0@4)
+         (asgn@7,1 result.3~7
+          (true@2))
+         (scope@,2
+          (stmts
+           (while
+            (true)
+            (stmts
+             (var@B :`x.12 .
+              (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+              (call len.4.sysvq0asl@1 a.0~1))
+             (if
+              (elif
+               (lt@8 i.0~2 `x.12@3)
+               (stmts@2,1
+                (var@3 :`x.13 .
+                 (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+                 (call \5B\5D.9.sysvq0asl a.0 i.0@2))
+                (var@B :`x.14 .
+                 (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+                 (call \5B\5D.9.sysvq0asl b.0 i.0@2))
+                (if
+                 (elif@3
+                  (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                   (eq@7 `x.13@9,16,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim `x.14@H,16,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))
+                  (stmts~1,1
+                   (asgn@7 result.3~7
+                    (false@2))
+                   (jmp@,1 whileStmtLabel.0))))
+                (call@,3 inc.1.I6wjjge.
+                 (addr@4 i.0))))
+              (else
+               (stmts
+                (break))))))))
+         (lab@,2 :whileStmtLabel.0)))))))
+   (ret~2,~1 result.3)))
+ (proc@,1A :strLt.0.@5
+  (params@A
+   (param@1 :a.1 . string.0.sysvq0asl@6)
+   (param@4 :b.1 . string.0.sysvq0asl@3))
+  (bool@G)
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 1 reads writes escapes)))
+  (stmts@2,1
+   (var@4 :result.4 .
+    (bool@A,~D).)
+   (var@4 :n.0 .
+    (i@h,2n 32)
+    (call@5 len.4.sysvq0asl@1 a.1~1))
+   (var@4,1 :`x.15 .
+    (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+    (call len.4.sysvq0asl@1 b.1~1))
+   (if@,1
+    (elif@3
+     (lt@6 `x.15~5 n.0@2)
+     (stmts~1,1
+      (var@5 :`x.16 .
+       (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+       (call len.4.sysvq0asl@1 b.1~1))
+      (asgn@2 n.0~2 `x.16@3))))
+   (var@4,3 :i.1 .
+    (i 32)0@4)
+   (asgn@7,4 result.4~7
+    (false@2))
+   (var@4,5 :decided.0 .
+    (bool@C,h,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@A))
+   (scope@,6
+    (stmts
+     (while
+      (lt@8 i.1~2 n.0@2)
+      (stmts@2,1
+       (var@3 :`x.17 .
+        (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+        (call \5B\5D.9.sysvq0asl a.1 i.1@2))
+       (var@B :`x.18 .
+        (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+        (call \5B\5D.9.sysvq0asl b.1 i.1@2))
+       (if
+        (elif@3
+         (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (eq@7 `x.17@7,1J,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim `x.18@F,1J,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))
+         (stmts~1,1
+          (var@9 :`x.19 .
+           (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+           (call \5B\5D.9.sysvq0asl a.1 i.1@2))
+          (var@G :`x.20 .
+           (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+           (call \5B\5D.9.sysvq0asl b.1 i.1@2))
+          (asgn@7 result.4~7
+           (lt@7 `x.19~5 `x.20@2))
+          (asgn@8,1 decided.0~8
+           (true@2))
+          (jmp@,2 whileStmtLabel.0))))
+       (call@,4 inc.1.I6wjjge.
+        (addr@4 i.1))))))
+   (lab@,6 :whileStmtLabel.0)
+   (if@,C
+    (elif@3
+     (not decided.0@4)
+     (stmts~1,1
+      (var@A :`x.21 .
+       (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+       (call len.4.sysvq0asl@1 a.1~1))
+      (var@I :`x.22 .
+       (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+       (call len.4.sysvq0asl@1 b.1~1))
+      (asgn@7 result.4~7
+       (lt@8 `x.21~5 `x.22@3)))))
+   (ret~2,~1 result.4)))
+ (proc@,1T :sameRegionTarget.0.@5
+  (params@L
+   (param@1 :x.0 .
+    (ptr@G,2D,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim `t.0.IArefSX46latX52egionX4fbj0valzr1t4f.))
+   (param@4 :y.0 .
+    (ptr@G,2D,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim `t.0.IArefSX46latX52egionX4fbj0valzr1t4f.)))
+  (bool@K)
+  (pragmas
+   (smry
+    (param 0 0 reads)
+    (param 1 1 reads)))
+  (stmts@2,1
+   (var :result.5 .
+    (bool@E,~W).)
+   (if@,9
+    (elif@3
+     (eq@2 x.0~2 y.0@3)
+     (stmts@8
+      (ret
+       (true@7)))))
+   (var@C,A :`x.23 .
+    (bool).)
+   (if@C,A
+    (elif
+     (eq~7 x.0~2
+      (nil))
+     (stmts
+      (asgn `x.23
+       (true))))
+    (else
+     (stmts
+      (asgn@5 `x.23
+       (eq y.0~2
+        (nil))))))
+   (if@,A
+    (elif@3 `x.23@9
+     (stmts@M
+      (ret
+       (false@7)))))
+   (if@,B
+    (elif@3
+     (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (eq@7
+       (dot@6,1g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (dot
+         (deref x.0~1)d.00 0)kind.0 0)
+       (dot@G,1g,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (dot
+         (deref y.0~1)d.00 0)kind.0 0)))
+     (stmts@I
+      (ret
+       (false@7)))))
+   (case@,C
+    (dot@6
+     (dot
+      (deref x.0~1)d.00 0)kind.0 0)
+    (of@,1
+     (ranges@3 0@4,1p,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@C
+      (asgn@7 result.5~7
+       (false@2))))
+    (of@,2
+     (ranges@3 6@4,1v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@2,9
+      (asgn@7 result.5~7
+       (eq@A
+        (dot~7
+         (dot
+          (deref x.0~1)d.00 0)haddr.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)haddr.0 0)))))
+    (of@,C
+     (ranges@3 1@4,1q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@A
+      (asgn@7 result.5~7
+       (eq@9
+        (dot~6
+         (dot
+          (deref x.0~1)d.00 0)sbox.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)sbox.0 0)))))
+    (of@,D
+     (ranges@3 2@4,1r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@A
+      (asgn@7 result.5~7
+       (eq@9
+        (dot~6
+         (dot
+          (deref x.0~1)d.00 0)abox.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)abox.0 0)))))
+    (of@,E
+     (ranges@3 3@4,1s,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@A
+      (asgn@7 result.5~7
+       (eq@A
+        (dot~7
+         (dot
+          (deref x.0~1)d.00 0)scell.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)scell.0 0)))))
+    (of@,F
+     (ranges@3 4@4,1t,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@B
+      (asgn@7 result.5~7
+       (eq@A
+        (dot~7
+         (dot
+          (deref x.0~1)d.00 0)ccell.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)ccell.0 0)))))
+    (of@,G
+     (ranges@3 5@4,1u,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts@A
+      (asgn@7 result.5~7
+       (eq@9
+        (dot~6
+         (dot
+          (deref x.0~1)d.00 0)obox.0 0)
+        (dot@4
+         (dot
+          (deref y.0~1)d.00 0)obox.0 0))))))
+   (ret~2,~1 result.5)))
+ (proc@,1y :cstringAddrVsValue.0.@5
+  (params@N
+   (param@1 :a.2 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@4 :b.2 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@F)
+  (pragmas
+   (smry
+    (param 0 0)
+    (param 1 1)))
+  (stmts@2,1
+   (var :result.6 .
+    (bool@E,~11).)
+   (asgn@7,4 result.6~7
+    (false@2))
+   (ret~2,~1 result.6)))
+ (proc@,25 :cmpEq.0.@5
+  (params@A
+   (param@1 :a.3 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@4 :b.3 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@F)
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.7 .
+    (bool@E,~18).)
+   (var@i :`x.24 .
+    (bool).)
+   (var@K :`x.25 .
+    (bool).)
+   (if@K
+    (elif
+     (eq~9
+      (dot~6
+       (deref~1 a.3)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts
+      (asgn@B `x.25
+       (eq
+        (dot~6
+         (deref~1 b.3)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+    (else
+     (stmts
+      (asgn `x.25
+       (false)))))
+   (if@i
+    (elif `x.25~O
+     (stmts
+      (asgn `x.24
+       (true))))
+    (else
+     (stmts
+      (var~L,1 :`x.26 .
+       (bool).)
+      (if~L,1
+       (elif
+        (eq~C
+         (dot~6
+          (deref~1 a.3)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+        (stmts
+         (asgn@B `x.26
+          (eq
+           (dot~6
+            (deref~1 b.3)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+       (else
+        (stmts
+         (asgn `x.26
+          (false)))))
+      (asgn~L,1 `x.24 `x.26))))
+   (if
+    (elif@3 `x.24@f
+     (stmts~1,A
+      (var@R :`x.27 .
+       (bool~G,~I)
+       (call cstringAddrVsValue.0.~I
+        (addr@1
+         (deref a.3))
+        (addr@4
+         (deref b.3))))
+      (asgn@7 result.7~7 `x.27@K)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (var@O,B :`x.28 .
+         (bool).)
+        (if@O,B
+         (elif
+          (eq~C
+           (dot~6
+            (deref~1 a.3)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (stmts
+           (asgn@B `x.28
+            (eq
+             (dot~6
+              (deref~1 b.3)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+         (else
+          (stmts
+           (asgn `x.28
+            (false)))))
+        (if
+         (elif@5,B `x.28@J
+          (stmts~3,1
+           (var@E :`x.29 .
+            (bool~2,~1K)
+            (call strEq.0.~5
+             (dot@2
+              (deref~1 a.3)sval.0 0)
+             (dot@A
+              (deref~1 b.3)sval.0 0)))
+           (asgn@7 result.7~7 `x.29@7)))
+         (else
+          (stmts
+           (stmts
+            (stmts
+             (var@N,D :`x.30 .
+              (bool).)
+             (if@N,D
+              (elif
+               (eq~B
+                (dot~6
+                 (deref~1 a.3)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+               (stmts
+                (asgn `x.30
+                 (true))))
+              (else
+               (stmts
+                (asgn@A `x.30
+                 (eq
+                  (dot~6
+                   (deref~1 b.3)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+             (if
+              (elif@5,D `x.30@I
+               (stmts~3,1
+                (var@G :`x.31 .
+                 (f~8,~1Y 64)
+                 (call toFloat.0.~7
+                  (addr@1
+                   (deref a.3))))
+                (var@U :`x.32 .
+                 (f~M,~1Y 64)
+                 (call toFloat.0.~7
+                  (addr@1
+                   (deref b.3))))
+                (asgn@7 result.7~7
+                 (eq@D `x.31~4 `x.32@A))))
+              (else
+               (stmts
+                (stmts
+                 (stmts
+                  (var@L,F :`x.33 .
+                   (bool).)
+                  (if@L,F
+                   (elif
+                    (eq~9
+                     (dot~6
+                      (deref~1 a.3)kind.0 0)0@4,Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                    (stmts
+                     (asgn `x.33
+                      (true))))
+                   (else
+                    (stmts
+                     (asgn@A `x.33
+                      (eq
+                       (dot~6
+                        (deref~1 b.3)kind.0 0)0@4,Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+                  (if
+                   (elif@5,F `x.33@G
+                    (stmts~3,1
+                     (var@P :`x.34 .
+                      (bool).)
+                     (if@P
+                      (elif
+                       (eq~9
+                        (dot~6
+                         (deref~1 a.3)kind.0 0)0@4,Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                       (stmts
+                        (asgn@B `x.34
+                         (eq
+                          (dot~6
+                           (deref~1 b.3)kind.0 0)0@4,Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+                      (else
+                       (stmts
+                        (asgn `x.34
+                         (false)))))
+                     (asgn@7 result.7~7 `x.34@I)))
+                   (else
+                    (stmts
+                     (stmts
+                      (stmts
+                       (var@h,H :`x.35 .
+                        (bool).)
+                       (var@M,H :`x.36 .
+                        (bool).)
+                       (if@M,H
+                        (elif
+                         (eq~9
+                          (dot~6
+                           (deref~1 a.3)kind.0 0)1@4,a,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                         (stmts
+                          (asgn `x.36
+                           (true))))
+                        (else
+                         (stmts
+                          (asgn@A `x.36
+                           (eq
+                            (dot~6
+                             (deref~1 a.3)kind.0 0)2@4,b,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+                       (if@h,H
+                        (elif `x.36~L
+                         (stmts
+                          (var~L,1 :`x.37 .
+                           (bool).)
+                          (if~L,1
+                           (elif
+                            (eq~9
+                             (dot~6
+                              (deref~1 b.3)kind.0 0)1@4,a,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                            (stmts
+                             (asgn `x.37
+                              (true))))
+                           (else
+                            (stmts
+                             (asgn@A `x.37
+                              (eq
+                               (dot~6
+                                (deref~1 b.3)kind.0 0)2@4,b,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+                          (asgn~L,1 `x.35 `x.37)))
+                        (else
+                         (stmts
+                          (asgn `x.35
+                           (false)))))
+                       (if
+                        (elif@5,H `x.35@c
+                         (stmts~3,5
+                          (var@G :`x.38 .
+                           (u~8,~1t 64)
+                           (call u64bits.0.~7
+                            (addr@1
+                             (deref a.3))))
+                          (var@U :`x.39 .
+                           (u~M,~1t 64)
+                           (call u64bits.0.~7
+                            (addr@1
+                             (deref b.3))))
+                          (asgn@7 result.7~7
+                           (eq@D `x.38~4 `x.39@A))))
+                        (else
+                         (stmts
+                          (stmts
+                           (stmts
+                            (var@L,N :`x.40 .
+                             (bool).)
+                            (if@L,N
+                             (elif
+                              (eq~9
+                               (dot~6
+                                (deref~1 a.3)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                              (stmts
+                               (asgn@B `x.40
+                                (eq
+                                 (dot~6
+                                  (deref~1 b.3)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+                             (else
+                              (stmts
+                               (asgn `x.40
+                                (false)))))
+                            (if
+                             (elif@5,N `x.40@G
+                              (stmts~3,5
+                               (var@J :`x.41 .
+                                (bool).)
+                               (if@J
+                                (elif
+                                 (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                                  (eq@7
+                                   (dot@8,2Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                    (deref~1 a.3)region.0 0)
+                                   (nil)))
+                                 (stmts
+                                  (asgn `x.41
+                                   (true))))
+                                (else
+                                 (stmts
+                                  (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.41
+                                   (not
+                                    (eq@7
+                                     (dot@R,2Z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                      (deref~1 b.3)region.0 0)
+                                     (nil)))))))
+                               (if
+                                (elif@3 `x.41@G
+                                 (stmts~1,5
+                                  (var@k :`x.42 .
+                                   (bool).)
+                                  (var@P :`x.43 .
+                                   (bool~B,~1A)
+                                   (call sameRegionTarget.0.~G
+                                    (dot@2
+                                     (deref~1 a.3)region.0 0)
+                                    (dot@C
+                                     (deref~1 b.3)region.0 0)))
+                                  (if@k
+                                   (elif `x.43~L
+                                    (stmts
+                                     (asgn@B `x.42
+                                      (eq
+                                       (dot~6
+                                        (deref~1 a.3)foff.0 0)
+                                       (dot@4
+                                        (deref~1 b.3)foff.0 0)))))
+                                   (else
+                                    (stmts
+                                     (asgn `x.42
+                                      (false)))))
+                                  (asgn@7 result.7~7 `x.42@d)))
+                                (else
+                                 (stmts
+                                  (stmts
+                                   (stmts
+                                    (var@L,6 :`x.44 .
+                                     (bool).)
+                                    (if@L,6
+                                     (elif
+                                      (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                                       (eq@7
+                                        (dot@A,2f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                         (deref~1 a.3)arrOwn.0 0)
+                                        (nil)))
+                                      (stmts
+                                       (asgn `x.44
+                                        (true))))
+                                     (else
+                                      (stmts
+                                       (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.44
+                                        (not
+                                         (eq@7
+                                          (dot@T,2f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                           (deref~1 b.3)arrOwn.0 0)
+                                          (nil)))))))
+                                    (if
+                                     (elif@5,6 `x.44@G
+                                      (stmts~3,1
+                                       (var@U :`x.45 .
+                                        (bool).)
+                                       (if@U
+                                        (elif
+                                         (eq~C
+                                          (dot~8
+                                           (deref~1 a.3)arrOwn.0 0)
+                                          (dot@4
+                                           (deref~1 b.3)arrOwn.0 0))
+                                         (stmts
+                                          (asgn@B `x.45
+                                           (eq
+                                            (dot~6
+                                             (deref~1 a.3)base.0 0)
+                                            (dot@4
+                                             (deref~1 b.3)base.0 0)))))
+                                        (else
+                                         (stmts
+                                          (asgn `x.45
+                                           (false)))))
+                                       (asgn@7 result.7~7 `x.45@N)))
+                                     (else
+                                      (stmts
+                                       (stmts
+                                        (stmts
+                                         (var@L,8 :`x.46 .
+                                          (bool).)
+                                         (if@L,8
+                                          (elif
+                                           (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                                            (eq@7
+                                             (dot@A,2h,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                              (deref~1 a.3)seqOwn.0 0)
+                                             (nil)))
+                                           (stmts
+                                            (asgn `x.46
+                                             (true))))
+                                          (else
+                                           (stmts
+                                            (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.46
+                                             (not
+                                              (eq@7
+                                               (dot@T,2h,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                                                (deref~1 b.3)seqOwn.0 0)
+                                               (nil)))))))
+                                         (if
+                                          (elif@5,8 `x.46@G
+                                           (stmts~3,1
+                                            (var@U :`x.47 .
+                                             (bool).)
+                                            (if@U
+                                             (elif
+                                              (eq~C
+                                               (dot~8
+                                                (deref~1 a.3)seqOwn.0 0)
+                                               (dot@4
+                                                (deref~1 b.3)seqOwn.0 0))
+                                              (stmts
+                                               (asgn@B `x.47
+                                                (eq
+                                                 (dot~6
+                                                  (deref~1 a.3)base.0 0)
+                                                 (dot@4
+                                                  (deref~1 b.3)base.0 0)))))
+                                             (else
+                                              (stmts
+                                               (asgn `x.47
+                                                (false)))))
+                                            (asgn@7 result.7~7 `x.47@N)))
+                                          (else
+                                           (stmts
+                                            (stmts
+                                             (stmts
+                                              (stmts@2,D
+                                               (asgn@7 result.7~7
+                                                (eq@8
+                                                 (dot~5
+                                                  (deref~1 a.3)loc.0 0)
+                                                 (dot@4
+                                                  (deref~1 b.3)loc.0 0)))))))))))))))))))))
+                             (else
+                              (stmts
+                               (stmts
+                                (stmts
+                                 (var@L,g :`x.48 .
+                                  (bool).)
+                                 (if@L,g
+                                  (elif
+                                   (eq~9
+                                    (dot~6
+                                     (deref~1 a.3)kind.0 0)12@4,l,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+                                   (stmts
+                                    (asgn@B `x.48
+                                     (eq
+                                      (dot~6
+                                       (deref~1 b.3)kind.0 0)12@4,l,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+                                  (else
+                                   (stmts
+                                    (asgn `x.48
+                                     (false)))))
+                                 (if
+                                  (elif@5,g `x.48@G
+                                   (stmts~3,1
+                                    (asgn@7 result.7~7
+                                     (eq@7
+                                      (dot~4
+                                       (deref~1 a.3)rf.0 0)
+                                      (dot@4
+                                       (deref~1 b.3)rf.0 0)))))
+                                  (else
+                                   (stmts
+                                    (stmts
+                                     (stmts
+                                      (stmts@2,j
+                                       (var@F :`x.49 . xint.0.xinat3x34~7,~2P
+                                        (call toXint.0.~6
+                                         (addr@1
+                                          (deref a.3))))
+                                       (var@S :`x.50 . xint.0.xinat3x34~K,~2P
+                                        (call toXint.0.~6
+                                         (addr@1
+                                          (deref b.3))))
+                                       (var@J :`x.51 .
+                                        (bool@E,43,../../../../../../home/savant/nimony/src/nimony/xints.nim)
+                                        (call ==.0.xinat3x34 `x.49~4 `x.50@9))
+                                       (asgn@7 result.7~7 `x.51@C)))))))))))))))))))))))))))))))))))))
+   (ret~2,~1 result.7)))
+ (proc@,2r :ptrOrdLt.0.@5
+  (params@D
+   (param@1 :a.4 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@4 :b.4 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@F)
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.8 .
+    (bool@E,~1u).)
+   (var@d,5 :`x.52 .
+    (bool).)
+   (var@J,5 :`x.53 .
+    (bool).)
+   (if@J,5
+    (elif
+     (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (eq@7
+       (dot@6,2y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (deref~1 a.4)region.0 0)
+       (nil)))
+     (stmts
+      (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.53
+       (not
+        (eq@7
+         (dot@Q,2y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+          (deref~1 b.4)region.0 0)
+         (nil))))))
+    (else
+     (stmts
+      (asgn `x.53
+       (false)))))
+   (if@d,5
+    (elif `x.53~K
+     (stmts
+      (asgn@D `x.52
+       (eq
+        (dot~8
+         (deref~1 a.4)region.0 0)
+        (dot@4
+         (deref~1 b.4)region.0 0)))))
+    (else
+     (stmts
+      (asgn `x.52
+       (false)))))
+   (if@,5
+    (elif@3 `x.52@a
+     (stmts~1,1
+      (asgn@7 result.8~7
+       (lt@D
+        (conv~5
+         (i@1 32)
+         (dot~5
+          (deref~1 a.4)foff.0 0))
+        (conv@8
+         (i~C 32)
+         (dot~5
+          (deref~1 b.4)foff.0 0))))))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (var@f,2 :`x.54 .
+         (bool).)
+        (var@L,2 :`x.55 .
+         (bool).)
+        (if@L,2
+         (elif
+          (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (eq@7
+            (dot@8,30,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+             (deref~1 a.4)arrOwn.0 0)
+            (nil)))
+          (stmts
+           (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.55
+            (not
+             (eq@7
+              (dot@S,30,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+               (deref~1 b.4)arrOwn.0 0)
+              (nil))))))
+         (else
+          (stmts
+           (asgn `x.55
+            (false)))))
+        (if@f,2
+         (elif `x.55~K
+          (stmts
+           (asgn@D `x.54
+            (eq
+             (dot~8
+              (deref~1 a.4)arrOwn.0 0)
+             (dot@4
+              (deref~1 b.4)arrOwn.0 0)))))
+         (else
+          (stmts
+           (asgn `x.54
+            (false)))))
+        (if
+         (elif@5,2 `x.54@a
+          (stmts~3,1
+           (asgn@7 result.8~7
+            (lt@9
+             (dot~6
+              (deref~1 a.4)base.0 0)
+             (dot@3
+              (deref~1 b.4)base.0 0)))))
+         (else
+          (stmts
+           (stmts
+            (stmts
+             (var@f,4 :`x.56 .
+              (bool).)
+             (var@L,4 :`x.57 .
+              (bool).)
+             (if@L,4
+              (elif
+               (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                (eq@7
+                 (dot@8,32,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                  (deref~1 a.4)seqOwn.0 0)
+                 (nil)))
+               (stmts
+                (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.57
+                 (not
+                  (eq@7
+                   (dot@S,32,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                    (deref~1 b.4)seqOwn.0 0)
+                   (nil))))))
+              (else
+               (stmts
+                (asgn `x.57
+                 (false)))))
+             (if@f,4
+              (elif `x.57~K
+               (stmts
+                (asgn@D `x.56
+                 (eq
+                  (dot~8
+                   (deref~1 a.4)seqOwn.0 0)
+                  (dot@4
+                   (deref~1 b.4)seqOwn.0 0)))))
+              (else
+               (stmts
+                (asgn `x.56
+                 (false)))))
+             (if
+              (elif@5,4 `x.56@a
+               (stmts~3,1
+                (asgn@7 result.8~7
+                 (lt@9
+                  (dot~6
+                   (deref~1 a.4)base.0 0)
+                  (dot@3
+                   (deref~1 b.4)base.0 0)))))
+              (else
+               (stmts
+                (stmts
+                 (stmts
+                  (stmts@2,7
+                   (var@F :`x.58 . xint.0.xinat3x34~7,~2e
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref a.4))))
+                   (var@R :`x.59 . xint.0.xinat3x34~J,~2e
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref b.4))))
+                   (var@J :`x.60 .
+                    (bool@E,4C,../../../../../../home/savant/nimony/src/nimony/xints.nim)
+                    (call <.0.xinat3x34 `x.58~4 `x.59@8))
+                   (asgn@7 result.8~7 `x.60@C)))))))))))))))))
+   (ret~2,~1 result.8)))
+ (proc@,36 :cmpLt.0.@5
+  (params@A
+   (param@1 :a.5 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@4 :b.5 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@F)
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.9 .
+    (bool@E,~29).)
+   (var@M :`x.61 .
+    (bool).)
+   (if@M
+    (elif
+     (eq~C
+      (dot~6
+       (deref~1 a.5)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts
+      (asgn@B `x.61
+       (eq
+        (dot~6
+         (deref~1 b.5)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+    (else
+     (stmts
+      (asgn `x.61
+       (false)))))
+   (if
+    (elif@3 `x.61@J
+     (stmts~1,1
+      (var@E :`x.62 .
+       (bool~2,~1y)
+       (call strLt.0.~5
+        (dot@2
+         (deref~1 a.5)sval.0 0)
+        (dot@A
+         (deref~1 b.5)sval.0 0)))
+      (asgn@7 result.9~7 `x.62@7)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (var@N,2 :`x.63 .
+         (bool).)
+        (if@N,2
+         (elif
+          (eq~B
+           (dot~6
+            (deref~1 a.5)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (stmts
+           (asgn `x.63
+            (true))))
+         (else
+          (stmts
+           (asgn@A `x.63
+            (eq
+             (dot~6
+              (deref~1 b.5)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+        (if
+         (elif@5,2 `x.63@I
+          (stmts~3,1
+           (var@G :`x.64 .
+            (f~8,~2O 64)
+            (call toFloat.0.~7
+             (addr@1
+              (deref a.5))))
+           (var@T :`x.65 .
+            (f~L,~2O 64)
+            (call toFloat.0.~7
+             (addr@1
+              (deref b.5))))
+           (asgn@7 result.9~7
+            (lt@D `x.64~4 `x.65@9))))
+         (else
+          (stmts
+           (stmts
+            (stmts
+             (var@L,4 :`x.66 .
+              (bool).)
+             (if@L,4
+              (elif
+               (eq~9
+                (dot~6
+                 (deref~1 a.5)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+               (stmts
+                (asgn@B `x.66
+                 (eq
+                  (dot~6
+                   (deref~1 b.5)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+              (else
+               (stmts
+                (asgn `x.66
+                 (false)))))
+             (if
+              (elif@5,4 `x.66@G
+               (stmts~3,1
+                (var@H :`x.67 .
+                 (bool~6,~L)
+                 (call ptrOrdLt.0.~8
+                  (addr@1
+                   (deref a.5))
+                  (addr@4
+                   (deref b.5))))
+                (asgn@7 result.9~7 `x.67@A)))
+              (else
+               (stmts
+                (stmts
+                 (stmts
+                  (stmts@2,7
+                   (var@F :`x.68 . xint.0.xinat3x34~7,~2o
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref a.5))))
+                   (var@R :`x.69 . xint.0.xinat3x34~J,~2o
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref b.5))))
+                   (var@J :`x.70 .
+                    (bool@E,4C,../../../../../../home/savant/nimony/src/nimony/xints.nim)
+                    (call <.0.xinat3x34 `x.68~4 `x.69@8))
+                   (asgn@7 result.9~7 `x.70@C)))))))))))))))))
+   (ret~2,~1 result.9)))
+ (proc@,3G :cmpLe.0.@5
+  (params@A
+   (param@1 :a.6 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@4 :b.6 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@F)
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.10 .
+    (bool@E,~2J).)
+   (var@M :`x.71 .
+    (bool).)
+   (if@M
+    (elif
+     (eq~C
+      (dot~6
+       (deref~1 a.6)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts
+      (asgn@B `x.71
+       (eq
+        (dot~6
+         (deref~1 b.6)kind.0 0)6@4,f,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+    (else
+     (stmts
+      (asgn `x.71
+       (false)))))
+   (if
+    (elif@3 `x.71@J
+     (stmts~1,1
+      (var@V :`x.72 .
+       (bool).)
+      (var@E :`x.73 .
+       (bool~2,~28)
+       (call strLt.0.~5
+        (dot@2
+         (deref~1 a.6)sval.0 0)
+        (dot@A
+         (deref~1 b.6)sval.0 0)))
+      (if@V
+       (elif `x.73~H
+        (stmts
+         (asgn `x.72
+          (true))))
+       (else
+        (stmts
+         (var@8 :`x.74 .
+          (bool~R,~2K)
+          (call strEq.0.~5
+           (dot@2
+            (deref~1 a.6)sval.0 0)
+           (dot@A
+            (deref~1 b.6)sval.0 0)))
+         (asgn@8 `x.72 `x.74))))
+      (asgn@7 result.10~7 `x.72@O)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (var@N,2 :`x.75 .
+         (bool).)
+        (if@N,2
+         (elif
+          (eq~B
+           (dot~6
+            (deref~1 a.6)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (stmts
+           (asgn `x.75
+            (true))))
+         (else
+          (stmts
+           (asgn@A `x.75
+            (eq
+             (dot~6
+              (deref~1 b.6)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+        (if
+         (elif@5,2 `x.75@I
+          (stmts~3,1
+           (var@G :`x.76 .
+            (f~8,~2Y 64)
+            (call toFloat.0.~7
+             (addr@1
+              (deref a.6))))
+           (var@U :`x.77 .
+            (f~M,~2Y 64)
+            (call toFloat.0.~7
+             (addr@1
+              (deref b.6))))
+           (asgn@7 result.10~7
+            (le@D `x.76~4 `x.77@A))))
+         (else
+          (stmts
+           (stmts
+            (stmts
+             (var@L,4 :`x.78 .
+              (bool).)
+             (if@L,4
+              (elif
+               (eq~9
+                (dot~6
+                 (deref~1 a.6)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+               (stmts
+                (asgn@B `x.78
+                 (eq
+                  (dot~6
+                   (deref~1 b.6)kind.0 0)13@4,m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))))
+              (else
+               (stmts
+                (asgn `x.78
+                 (false)))))
+             (if
+              (elif@5,4 `x.78@G
+               (stmts~3,1
+                (var@O :`x.79 .
+                 (bool).)
+                (var@H :`x.80 .
+                 (bool~6,~V)
+                 (call ptrOrdLt.0.~8
+                  (addr@1
+                   (deref a.6))
+                  (addr@4
+                   (deref b.6))))
+                (if@O
+                 (elif `x.80~7
+                  (stmts
+                   (asgn `x.79
+                    (true))))
+                 (else
+                  (stmts
+                   (var@8 :`x.81 .
+                    (bool~L,~1H)
+                    (call cmpEq.0.~5
+                     (addr@1
+                      (deref a.6))
+                     (addr@4
+                      (deref b.6))))
+                   (asgn@8 `x.79 `x.81))))
+                (asgn@7 result.10~7 `x.79@H)))
+              (else
+               (stmts
+                (stmts
+                 (stmts
+                  (stmts@2,7
+                   (var@F :`x.82 . xint.0.xinat3x34~7,~2y
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref a.6))))
+                   (var@S :`x.83 . xint.0.xinat3x34~K,~2y
+                    (call toXint.0.~6
+                     (addr@1
+                      (deref b.6))))
+                   (var@J :`x.84 .
+                    (bool@E,4U,../../../../../../home/savant/nimony/src/nimony/xints.nim)
+                    (call <=.0.xinat3x34 `x.82~4 `x.83@9))
+                   (asgn@7 result.10~7 `x.84@C)))))))))))))))))
+   (ret~2,~1 result.10)))
+ (proc@,3T :floatArith.0.@5
+  (params@F
+   (param@1 :op.0 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.7 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.7 .
+    (ptr@3 Value.0.valzr1t4f)))Value.0.valzr1t4f@V
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads writes escapes)
+    (param 2 2 reads writes escapes)result 2))
+  (stmts@2,1
+   (var@4 :result.11 . Value.0.valzr1t4f@9,~34 .)
+   (call@4 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.11))
+   (var@4 :x.3 .
+    (f@6,~2i 64)
+    (call@B toFloat.0.~7
+     (addr@1
+      (deref a.7))))
+   (var@4,1 :y.1 .
+    (f@6,~2j 64)
+    (call@B toFloat.0.~7
+     (addr@1
+      (deref b.7))))
+   (var@4,2 :r.0 .
+    (f 64)0.0@4)
+   (case@,3 op.0@5
+    (of@,1
+     (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (asgn@2 r.0~2
+       (add@4
+        (f 64)x.3~2 y.1@2))))
+    (of@,3
+     (ranges@3 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (asgn@2 r.0~2
+       (sub@4
+        (f 64)x.3~2 y.1@2))))
+    (of@,5
+     (ranges@3 35@F,d,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (asgn@2 r.0~2
+       (mul@4
+        (f 64)x.3~2 y.1@2))))
+    (of@,7
+     (ranges@3 36@F,e,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (asgn@2 r.0~2
+       (div@4
+        (f 64)x.3~2 y.1@2))))
+    (of@,9
+     (ranges@3 37@F,f,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,2
+      (var@4 :q.0 .
+       (f@4,~2w 64)
+       (div@6
+        (f 64)x.3~2 y.1@2))
+      (var@4,1 :t.0 .
+       (f@5,~2q 64)
+       (conv@B
+        (f~6,~2q 64)
+        (conv@6
+         (i~5 64)q.0@1)))
+      (asgn@2,2 r.0~2
+       (sub@4
+        (f 64)x.3~2
+        (mul@4
+         (f 64)t.0~2 y.1@2)))))
+    (else@,E
+     (stmts@2,1
+      (asgn@2 r.0~2 0.0@2))))
+   (var@4,J :fb.0 .
+    (i 32)64@5)
+   (if@,K
+    (elif@3
+     (eq@7
+      (dot~6
+       (deref~1 a.7)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts~1,1
+      (asgn@3 fb.0~3
+       (dot@3
+        (deref~1 a.7)fbits.0 0))))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (if
+         (elif@5,2
+          (eq@7
+           (dot~6
+            (deref~1 b.7)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (stmts~3,1
+           (asgn@3 fb.0~3
+            (dot@3
+             (deref~1 b.7)fbits.0 0))))))))))
+   (if@,R
+    (elif@3
+     (eq@3 fb.0~3 32@3)
+     (stmts@A
+      (asgn@2 r.0~2
+       (conv@9
+        (f~D,~32 64)
+        (conv@8
+         (f~7 32)r.0@1))))))
+   (call@,S =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.11))
+   (var@F,S :`x.85 . Value.0.valzr1t4f@P,6c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+    (call vFloat.0.valzr1t4f~6 r.0@1 fb.0@4))
+   (asgn@7,S result.11~7 `x.85@8)
+   (ret~2,~1 result.11)))
+ (proc@,3y :intArith.0.@5
+  (params@D
+   (param@1 :op.1 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.8 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.8 .
+    (ptr@3 Value.0.valzr1t4f))
+   (param@U :bits.0 .
+    (i@6 32))
+   (param@f :signed.0 .
+    (bool@8)))Value.0.valzr1t4f@u
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads writes escapes)
+    (param 2 2 reads writes escapes)
+    (param 3 3 reads writes escapes)
+    (param 4 3 reads writes escapes)result 3))
+  (stmts@2,5
+   (var@4 :result.12 . Value.0.valzr1t4f@9,~3d .)
+   (call@4 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.12))
+   (var@4 :r.1 . xint.0.xinat3x34@6,~3d
+    (call@8 zero.0.xinat3x34~4))
+   (case@,1 op.1@5
+    (of@,1
+     (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 35@F,d,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,4
+      (var@4 :ua.0 .
+       (u@4,~3a 64)
+       (call@C u64bits.0.~7
+        (addr@1
+         (deref a.8))))
+      (var@4,1 :ub.0 .
+       (u@4,~3b 64)
+       (call@C u64bits.0.~7
+        (addr@1
+         (deref b.8))))
+      (var@4,2 :w.0 .
+       (u@4,~3c 64)
+       (conv@C
+        (u~8,~3c 64)0))
+      (case@,3 op.1@5
+       (of@,1
+        (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+        (stmts@9
+         (asgn@2 w.0~2
+          (add@5
+           (u 64)ua.0~3 ub.0@2))))
+       (of@,2
+        (ranges@3 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+        (stmts@9
+         (asgn@2 w.0~2
+          (sub@5
+           (u 64)ua.0~3 ub.0@2))))
+       (else@,3
+        (stmts@A
+         (asgn@2 w.0~2
+          (mul@5
+           (u 64)ua.0~3 ub.0@2)))))
+      (asgn@2,7 r.1~2
+       (oconstr@6,28,../../../../../../home/savant/nimony/src/nimony/xints.nim xint.0.xinat3x34@C,R,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (kv nan.0
+         (false@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (conv@8
+          (u~L,~1t 64)w.0@J,4H,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))))))
+    (of@,D
+     (ranges@3 36@F,e,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@A :`x.86 . xint.0.xinat3x34~2,~3s
+       (call toXint.0.~6
+        (addr@1
+         (deref a.8))))
+      (var@O :`x.87 . xint.0.xinat3x34~G,~3s
+       (call toXint.0.~6
+        (addr@1
+         (deref b.8))))
+      (var@E :`x.88 . xint.0.xinat3x34@E,1h,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call div.0.xinat3x34 `x.86~4 `x.87@A))
+      (asgn@2 r.1~2 `x.88@C)))
+    (of@,F
+     (ranges@3 37@F,f,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@A :`x.89 . xint.0.xinat3x34~2,~3u
+       (call toXint.0.~6
+        (addr@1
+         (deref a.8))))
+      (var@O :`x.90 . xint.0.xinat3x34~G,~3u
+       (call toXint.0.~6
+        (addr@1
+         (deref b.8))))
+      (var@E :`x.91 . xint.0.xinat3x34@E,31,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call mod.0.xinat3x34 `x.89~4 `x.90@A))
+      (asgn@2 r.1~2 `x.91@C)))
+    (else@,H
+     (stmts@2,1
+      (var@8 :`x.92 . xint.0.xinat3x34@4,H,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call zero.0.xinat3x34~4))
+      (asgn@2 r.1~2 `x.92@6))))
+   (var@4,K :m.0 . xint.0.xinat3x34@6,~3x
+    (call@8 mask.0.xinat3x34~4 r.1@1 bits.0@4 signed.0@A))
+   (if@,L
+    (elif@3 signed.0
+     (stmts~1,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.12))
+      (var@E :`x.93 . Value.0.valzr1t4f@M,61,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vIntX.0.valzr1t4f~5 m.0@1 bits.0@4))
+      (asgn@7 result.12~7 `x.93@7)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (stmts@2,3
+         (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr result.12))
+         (var@F :`x.94 . Value.0.valzr1t4f@M,65,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+          (call vUIntX.0.valzr1t4f~6 m.0@1 bits.0@4))
+         (asgn@7 result.12~7 `x.94@8)))))))
+   (var@A,S :`x.95 .
+    (u@,~3w 64)
+    (call u64bits.0.~7
+     (addr@1 result.12)))
+   (if@,S
+    (elif@3
+     (eq@G `x.95~9
+      (suf@3 0u "u64"))
+     (stmts~1,1
+      (var@9 :`x.0 . Value.0.valzr1t4f@N,5z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim .)
+      (call@9 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr `x.0))
+      (if@9
+       (elif@3 signed.0
+        (stmts
+         (call@8 =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr `x.0))
+         (var@C :`x.96 . Value.0.valzr1t4f@N,5z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+          (call vInt.0.valzr1t4f~4
+           (conv@1
+            (i@E,5z,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)0)bits.0@4))
+         (asgn@8 `x.0 `x.96@4)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (stmts@P
+            (call@6 =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+             (addr `x.0))
+            (var@B :`x.97 . Value.0.valzr1t4f@O,63,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+             (call vUInt.0.valzr1t4f~5
+              (conv@1
+               (u@F,63,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)0)bits.0@4))
+            (asgn@6 `x.0 `x.97@5)))))))
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.12))
+      (asgn@7 result.12~7 `x.0@2)
+      (call@9 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr `x.0))
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr `x.0)))))
+   (ret~2,~5 result.12)))
+ (proc@,4c :bitOp.0.@5
+  (params@A
+   (param@1 :op.2 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.9 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.9 .
+    (ptr@3 Value.0.valzr1t4f))
+   (param@U :bits.1 .
+    (i@6 32))
+   (param@f :signed.1 .
+    (bool@8)))Value.0.valzr1t4f@u
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads writes escapes)
+    (param 2 2 reads writes escapes)
+    (param 3 3 reads writes escapes)
+    (param 4 3 reads writes escapes)result 3))
+  (stmts@2,1
+   (var@4 :result.13 . Value.0.valzr1t4f@9,~4D .)
+   (call@4 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.13))
+   (var@4 :x.4 . xint.0.xinat3x34@6,~4D
+    (call@A toXint.0.~6
+     (addr@1
+      (deref a.9))))
+   (var@4,1 :r.2 . xint.0.xinat3x34@6,~4E
+    (call@8 zero.0.xinat3x34~4))
+   (case@,2 op.2@5
+    (of@,1
+     (ranges@3 40@I,i,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,5
+      (var@M :`x.98 .
+       (u~E,~4C 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref a.9))))
+      (var@b :`x.99 .
+       (u~T,~4C 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref b.9))))
+      (asgn@2 r.2~2
+       (oconstr@6,28,../../../../../../home/savant/nimony/src/nimony/xints.nim xint.0.xinat3x34@C,R,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (kv nan.0
+         (false@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (conv@8
+          (u~L,~1t 64)
+          (bitand@U,4m,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+           (u 64)`x.98~4 `x.99@B)))))))
+    (of@,7
+     (ranges@3 41@H,j,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@M :`x.100 .
+       (u~E,~4E 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref a.9))))
+      (var@a :`x.101 .
+       (u~S,~4E 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref b.9))))
+      (asgn@2 r.2~2
+       (oconstr@6,28,../../../../../../home/savant/nimony/src/nimony/xints.nim xint.0.xinat3x34@C,R,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (kv nan.0
+         (false@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (conv@8
+          (u~L,~1t 64)
+          (bitor@U,4o,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+           (u 64)`x.100~4 `x.101@A)))))))
+    (of@,9
+     (ranges@3 42@I,k,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@M :`x.102 .
+       (u~E,~4G 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref a.9))))
+      (var@b :`x.103 .
+       (u~T,~4G 64)
+       (call u64bits.0.~7
+        (addr@1
+         (deref b.9))))
+      (asgn@2 r.2~2
+       (oconstr@6,28,../../../../../../home/savant/nimony/src/nimony/xints.nim xint.0.xinat3x34@C,R,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (kv nan.0
+         (false@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (conv@8
+          (u~L,~1t 64)
+          (bitxor@U,4q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+           (u 64)`x.102~4 `x.103@B)))))))
+    (of@,B
+     (ranges@3 39@F,h,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,3
+      (var@I :`x.104 .
+       (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+       (call asInt.0.valzr1t4f~5
+        (addr@1
+         (deref b.9))))
+      (var@4 :sh.0 .
+       (i@C,~1v 32)
+       (conv@8
+        (i@4,~1v 32)`x.104@6))
+      (var@C,1 :`x.105 .
+       (bool).)
+      (if@C,1
+       (elif
+        (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64@D,4v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim sh.0@7,4v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)
+        (stmts
+         (asgn `x.105
+          (true))))
+       (else
+        (stmts
+         (asgn@6 `x.105
+          (lt sh.0~3 0@2)))))
+      (if@,1
+       (elif@3 `x.105@9
+        (stmts@K
+         (var@8 :`x.106 . xint.0.xinat3x34@4,H,../../../../../../home/savant/nimony/src/nimony/xints.nim
+          (call zero.0.xinat3x34~4))
+         (asgn@2 r.2~2 `x.106@6)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (stmts@6,1
+            (var@M :`x.107 .
+             (u~K,~4M 64)
+             (call u64bits.0.~7
+              (addr@1
+               (deref a.9))))
+            (asgn@2 r.2~2
+             (oconstr@6,28,../../../../../../home/savant/nimony/src/nimony/xints.nim xint.0.xinat3x34@C,R,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+              (kv nan.0
+               (false@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim))
+              (kv@4 neg.0~3
+               (false@2))
+              (kv@G val.0~3
+               (conv@8
+                (u~L,~1t 64)
+                (shl@a,4w,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                 (u 64)`x.107~4 sh.0@4)))))))))))))
+    (of@,H
+     (ranges@3 38@F,g,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,3
+      (var@J :`x.108 .
+       (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+       (call asInt.0.valzr1t4f~5
+        (addr@1
+         (deref b.9))))
+      (var@6 :`x.109 . xint.0.xinat3x34@J,2O,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call shr.0.xinat3x34 x.4~2
+        (conv@7
+         (i@3,~21 32)`x.108@6)))
+      (asgn@2 r.2~2 `x.109@4)))
+    (of@,L
+     (ranges@3 245@G,17,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,4
+      (var@I :`x.110 .
+       (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+       (call asInt.0.valzr1t4f~5
+        (addr@1
+         (deref b.9))))
+      (var@4 :sh.1 .
+       (i@C,~26 32)
+       (conv@8
+        (i@4,~26 32)`x.110@6))
+      (if@,1
+       (elif@3
+        (le@3 sh.1~3 0@3)
+        (stmts~1,1
+         (asgn@2 r.2~2 x.4@2)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (if
+            (elif@5,2
+             (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64@F,58,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim sh.1@9,58,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)
+             (stmts~3,1
+              (stmts@4)
+              (var@3 :`x.1 . xint.0.xinat3x34@C,1w,../../../../../../home/savant/nimony/src/nimony/xints.nim .)
+              (var@B :`x.111 .
+               (i@C,6q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim 64)
+               (call asInt.0.valzr1t4f~5
+                (addr@1
+                 (deref a.9))))
+              (if@3
+               (elif@3
+                (lt@9 `x.111~4
+                 (conv@2
+                  (i@G,1H,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0))
+                (stmts
+                 (var@O :`x.112 . xint.0.xinat3x34@C,1w,../../../../../../home/savant/nimony/src/nimony/xints.nim
+                  (call createXint.0.xinat3x34~A
+                   (suf@1 -1 "i64")))
+                 (asgn@O `x.1 `x.112)))
+               (else
+                (stmts
+                 (stmts
+                  (stmts
+                   (stmts@a
+                    (var@A :`x.113 . xint.0.xinat3x34@4,H,../../../../../../home/savant/nimony/src/nimony/xints.nim
+                     (call zero.0.xinat3x34~4))
+                    (asgn@A `x.1 `x.113)))))))
+              (asgn@2 r.2~2 `x.1@1)))
+            (else
+             (stmts
+              (stmts
+               (stmts
+                (stmts@2,5
+                 (var@4 :av.0 .
+                  (i@A,1g 64)
+                  (call@A asInt.0.valzr1t4f~5
+                   (addr@1
+                    (deref a.9))))
+                 (var@4,1 :p.0 .
+                  (i@A,1f 64)
+                  (shl@A
+                   (i 64)
+                   (suf~6 1 "i64")sh.1@4))
+                 (var@4,2 :q.1 .
+                  (i@A,1e 64)
+                  (div@7
+                   (i 64)av.0~3 p.0@4))
+                 (var@A,3 :`x.114 .
+                  (bool).)
+                 (if@A,3
+                  (elif
+                   (lt~4 av.0~3
+                    (conv@2
+                     (i@G,1H,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0))
+                   (stmts
+                    (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.114
+                     (not
+                      (eq@7
+                       (mul@M,5E,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                        (i 64)q.1~2 p.0@2)av.0@T,5E,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)))))
+                  (else
+                   (stmts
+                    (asgn `x.114
+                     (false)))))
+                 (if@,3
+                  (elif@3 `x.114@7
+                   (stmts@O
+                    (call dec.1.I2mwrey1.
+                     (addr@4 q.1)))))
+                 (var@E,4 :`x.115 . xint.0.xinat3x34@C,1w,../../../../../../home/savant/nimony/src/nimony/xints.nim
+                  (call createXint.0.xinat3x34~A q.1@1))
+                 (asgn@2,4 r.2~2 `x.115@C))))))))))))))
+    (else@,a
+     (stmts@2,1
+      (var@8 :`x.116 . xint.0.xinat3x34@4,H,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call zero.0.xinat3x34~4))
+      (asgn@2 r.2~2 `x.116@6))))
+   (var@4,e :m.1 . xint.0.xinat3x34@6,~4r
+    (call@8 mask.0.xinat3x34~4 r.2@1 bits.1@4 signed.1@A))
+   (if@,f
+    (elif@3 signed.1
+     (stmts~1,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.13))
+      (var@E :`x.117 . Value.0.valzr1t4f@M,61,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vIntX.0.valzr1t4f~5 m.1@1 bits.1@4))
+      (asgn@7 result.13~7 `x.117@7)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (stmts@2,3
+         (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr result.13))
+         (var@F :`x.118 . Value.0.valzr1t4f@M,65,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+          (call vUIntX.0.valzr1t4f~6 m.1@1 bits.1@4))
+         (asgn@7 result.13~7 `x.118@8)))))))
+   (ret~2,~1 result.13)))
+ (proc@,5f :isDivByZero.0.@5
+  (params@H
+   (param@1 :op.3 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.10 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.10 .
+    (ptr@3 Value.0.valzr1t4f)))
+  (bool@V)
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads)
+    (param 2 2 reads writes escapes)))
+  (stmts@2,1
+   (var :result.15 .
+    (bool@E,~4i).)
+   (var@E,A :`x.119 .
+    (bool).)
+   (if@E,A
+    (elif
+     (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (eq@7 op.3@5,5r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 36@F,e,../../../../../../home/savant/nimony/src/models/nimony_tags.nim))
+     (stmts
+      (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.119
+       (not
+        (eq@7 op.3@K,5r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 37@F,f,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)))))
+    (else
+     (stmts
+      (asgn `x.119
+       (false)))))
+   (if@,A
+    (elif@3 `x.119@B
+     (stmts@R
+      (ret
+       (false@7)))))
+   (var@L,B :`x.120 .
+    (bool).)
+   (if@L,B
+    (elif
+     (eq~B
+      (dot~6
+       (deref~1 a.10)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+     (stmts
+      (asgn `x.120
+       (true))))
+    (else
+     (stmts
+      (asgn@A `x.120
+       (eq
+        (dot~6
+         (deref~1 b.10)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+   (if@,B
+    (elif@3 `x.120@I
+     (stmts@e
+      (ret
+       (false@7)))))
+   (var@J,E :`x.121 .
+    (bool).)
+   (if@J,E
+    (elif
+     (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (eq@7
+       (dot@6,5v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+        (deref~1 b.10)kind.0 0)1@4,a,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim))
+     (stmts
+      (asgn@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.121
+       (not
+        (eq@7
+         (dot@Q,5v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+          (deref~1 b.10)kind.0 0)2@4,b,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+    (else
+     (stmts
+      (asgn `x.121
+       (false)))))
+   (if@,E
+    (elif@3 `x.121@G
+     (stmts@c
+      (ret
+       (false@7)))))
+   (var@G,F :`x.122 .
+    (u~6,~5M 64)
+    (call u64bits.0.~7
+     (addr@1
+      (deref b.10))))
+   (asgn@7,F result.15~7
+    (eq@D `x.122~4
+     (suf@3 0u "u64")))
+   (ret~2,~1 result.15)))
+ (proc@,5x :binMagic.0.@5
+  (params@E
+   (param@1 :op.4 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.11 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.11 .
+    (ptr@3 Value.0.valzr1t4f))
+   (param@U :bits.2 .
+    (i@6 32))
+   (param@f :signed.2 .
+    (bool@8)))Value.0.valzr1t4f@u
+  (pragmas
+   (smry writeGlobal readGlobal callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 1 reads writes escapes)
+    (param 2 1 reads writes escapes)
+    (param 3 3 reads writes escapes)
+    (param 4 3 reads writes escapes)))
+  (stmts@2,1
+   (var@7 :result.16 . Value.0.valzr1t4f@6,~5Y .)
+   (call@7 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.16))
+   (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.16))
+   (var@D :`x.123 . Value.0.valzr1t4f@4,5y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+    (call vNil.0.valzr1t4f~4))
+   (asgn@7 result.16~7 `x.123@6)
+   (case@,1 op.4@5
+    (of@,1
+     (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 35@F,d,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 36@F,e,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 37@F,f,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@L :`x.124 .
+       (bool).)
+      (if@L
+       (elif
+        (eq~B
+         (dot~6
+          (deref~1 a.11)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+        (stmts
+         (asgn `x.124
+          (true))))
+       (else
+        (stmts
+         (asgn@A `x.124
+          (eq
+           (dot~6
+            (deref~1 b.11)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)))))
+      (if
+       (elif@3 `x.124@I
+        (stmts~1,1
+         (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr result.16))
+         (var@J :`x.125 . Value.0.valzr1t4f@6,~2Z
+          (call floatArith.0.~A op.4@1
+           (addr@5
+            (deref a.11))
+           (addr@8
+            (deref b.11))))
+         (asgn@7 result.16~7 `x.125@C)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (stmts@2,3
+            (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+             (addr result.16))
+            (var@H :`x.126 . Value.0.valzr1t4f@X,~26
+             (call intArith.0.~8 op.4@1
+              (addr@5
+               (deref a.11))
+              (addr@8
+               (deref b.11))bits.2@B signed.2@H))
+            (asgn@7 result.16~7 `x.126@A)))))))))
+    (of@,6
+     (ranges@3 40@I,i,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 41@H,j,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 42@I,k,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 39@F,h,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 38@F,g,../../../../../../home/savant/nimony/src/models/nimony_tags.nim 245@G,17,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@E :`x.127 . Value.0.valzr1t4f@c,~1U
+       (call bitOp.0.~5 op.4@1
+        (addr@5
+         (deref a.11))
+        (addr@8
+         (deref b.11))bits.2@B signed.2@H))
+      (asgn@7 result.16~7 `x.127@7)))
+    (of@,8
+     (ranges@3 44@E,m,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@K :`x.128 .
+       (bool~9,~43)
+       (call cmpEq.0.~5
+        (addr@1
+         (deref a.11))
+        (addr@4
+         (deref b.11))))
+      (var@E :`x.129 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5 `x.128@6))
+      (asgn@7 result.16~7 `x.129@7)))
+    (of@,A
+     (ranges@3 45@F,n,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@O :`x.130 .
+       (bool~D,~45)
+       (call cmpEq.0.~5
+        (addr@1
+         (deref a.11))
+        (addr@4
+         (deref b.11))))
+      (var@E :`x.131 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5
+        (not@1 `x.130@9)))
+      (asgn@7 result.16~7 `x.131@7)))
+    (of@,C
+     (ranges@3 47@E,p,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@K :`x.132 .
+       (bool~9,~36)
+       (call cmpLt.0.~5
+        (addr@1
+         (deref a.11))
+        (addr@4
+         (deref b.11))))
+      (var@E :`x.133 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5 `x.132@6))
+      (asgn@7 result.16~7 `x.133@7)))
+    (of@,E
+     (ranges@3 46@E,o,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@K :`x.134 .
+       (bool~9,~2y)
+       (call cmpLe.0.~5
+        (addr@1
+         (deref a.11))
+        (addr@4
+         (deref b.11))))
+      (var@E :`x.135 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5 `x.134@6))
+      (asgn@7 result.16~7 `x.135@7)))
+    (of@,G
+     (ranges@3 17@F,M,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@P :`x.136 .
+       (bool).)
+      (var@L :`x.137 .
+       (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+       (call truthy.0.valzr1t4f~6
+        (addr@1
+         (deref a.11))))
+      (if@P
+       (elif `x.137~4
+        (stmts
+         (var@A :`x.138 .
+          (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (call truthy.0.valzr1t4f~6
+           (addr@1
+            (deref b.11))))
+         (asgn@A `x.136 `x.138)))
+       (else
+        (stmts
+         (asgn `x.136
+          (false)))))
+      (var@E :`x.139 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5 `x.136@B))
+      (asgn@7 result.16~7 `x.139@7)))
+    (of@,I
+     (ranges@3 18@E,N,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@P :`x.140 .
+       (bool).)
+      (var@L :`x.141 .
+       (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+       (call truthy.0.valzr1t4f~6
+        (addr@1
+         (deref a.11))))
+      (if@P
+       (elif `x.141~4
+        (stmts
+         (asgn `x.140
+          (true))))
+       (else
+        (stmts
+         (var@9 :`x.142 .
+          (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+          (call truthy.0.valzr1t4f~6
+           (addr@1
+            (deref b.11))))
+         (asgn@9 `x.140 `x.142))))
+      (var@E :`x.143 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5 `x.140@B))
+      (asgn@7 result.16~7 `x.143@7)))
+    (of@,K
+     (ranges@3 19@F,O,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,3
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@L :`x.144 .
+       (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+       (call truthy.0.valzr1t4f~6
+        (addr@1
+         (deref a.11))))
+      (var@Y :`x.145 .
+       (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+       (call truthy.0.valzr1t4f~6
+        (addr@1
+         (deref b.11))))
+      (var@E :`x.146 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5
+        (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (eq@7 `x.144@P,6N,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim `x.145@c,6N,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))))
+      (asgn@7 result.16~7 `x.146@7)))
+    (else@,O
+     (stmts@2,3
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.16))
+      (var@D :`x.147 . Value.0.valzr1t4f@4,5y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vNil.0.valzr1t4f~4))
+      (asgn@7 result.16~7 `x.147@6))))
+   (ret~2,~1 result.16)))
+ (proc@,6S :unMagic.0.@5
+  (params@D
+   (param@1 :op.5 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.12 .
+    (ptr@3 Value.0.valzr1t4f))
+   (param@R :bits.3 .
+    (i@6 32))
+   (param@c :signed.3 .
+    (bool@8)))Value.0.valzr1t4f@r
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads writes escapes)
+    (param 2 2 reads writes escapes)
+    (param 3 3 reads writes escapes)))
+  (stmts@2,1
+   (var@7 :result.17 . Value.0.valzr1t4f@6,~63 .)
+   (call@7 =wasmoved_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.17))
+   (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+    (addr result.17))
+   (var@D :`x.148 . Value.0.valzr1t4f@4,5y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+    (call vNil.0.valzr1t4f~4))
+   (asgn@7 result.17~7 `x.148@6)
+   (case@,1 op.5@5
+    (of@,1
+     (ranges@3 21@F,Q,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (if
+       (elif@3
+        (eq@7
+         (dot~6
+          (deref~1 a.12)kind.0 0)3@4,c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+        (stmts~1,1
+         (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr result.17))
+         (var@F :`x.149 . Value.0.valzr1t4f@P,6c,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+          (call vFloat.0.valzr1t4f~6
+           (neg@1
+            (f 64)
+            (dot@2
+             (deref~1 a.12)fval.0 0))
+           (dot@B
+            (deref~1 a.12)fbits.0 0)))
+         (asgn@7 result.17~7 `x.149@8)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (stmts@2,3
+            (var@K :`x.150 . xint.0.xinat3x34~E,~69
+             (call toXint.0.~6
+              (addr@1
+               (deref a.12))))
+            (var@D :`x.151 . xint.0.xinat3x34@B,o,../../../../../../home/savant/nimony/src/nimony/xints.nim
+             (call \2D.0.xinat3x34 `x.150@7))
+            (var@4 :m.2 . xint.0.xinat3x34@2,~69
+             (call@8 mask.0.xinat3x34~4 `x.151@1 bits.3@D signed.3@J))
+            (if@,1
+             (elif@3 signed.3
+              (stmts~1,1
+               (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+                (addr result.17))
+               (var@E :`x.152 . Value.0.valzr1t4f@M,61,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+                (call vIntX.0.valzr1t4f~5 m.2@1 bits.3@4))
+               (asgn@7 result.17~7 `x.152@7)))
+             (else
+              (stmts
+               (stmts
+                (stmts
+                 (stmts@2,3
+                  (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+                   (addr result.17))
+                  (var@F :`x.153 . Value.0.valzr1t4f@M,65,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+                   (call vUIntX.0.valzr1t4f~6 m.2@1 bits.3@4))
+                  (asgn@7 result.17~7 `x.153@8)))))))))))))))
+    (of@,A
+     (ranges@3 20@F,P,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.17))
+      (var@P :`x.154 .
+       (bool@C,74,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim)
+       (call truthy.0.valzr1t4f~6
+        (addr@1
+         (deref a.12))))
+      (var@E :`x.155 . Value.0.valzr1t4f@B,67,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vBool.0.valzr1t4f~5
+        (not@1 `x.154@A)))
+      (asgn@7 result.17~7 `x.155@7)))
+    (of@,C
+     (ranges@3 43@I,l,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+     (stmts@2,1
+      (var@N :`x.156 . xint.0.xinat3x34~F,~6H
+       (call toXint.0.~6
+        (addr@1
+         (deref a.12))))
+      (var@D :`x.157 . xint.0.xinat3x34@B,2u,../../../../../../home/savant/nimony/src/nimony/xints.nim
+       (call not.0.xinat3x34 `x.156@A))
+      (var@4 :m.3 . xint.0.xinat3x34@4,~6H
+       (call@8 mask.0.xinat3x34~4 `x.157@1 bits.3@G signed.3@M))
+      (if@,1
+       (elif@3 signed.3
+        (stmts~1,1
+         (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+          (addr result.17))
+         (var@E :`x.158 . Value.0.valzr1t4f@M,61,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+          (call vIntX.0.valzr1t4f~5 m.3@1 bits.3@4))
+         (asgn@7 result.17~7 `x.158@7)))
+       (else
+        (stmts
+         (stmts
+          (stmts
+           (stmts@2,3
+            (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+             (addr result.17))
+            (var@F :`x.159 . Value.0.valzr1t4f@M,65,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+             (call vUIntX.0.valzr1t4f~6 m.3@1 bits.3@4))
+            (asgn@7 result.17~7 `x.159@8)))))))))
+    (else@,I
+     (stmts@2,2
+      (call =destroy_SX56alue0valzr1t4f.0.valzr1t4f
+       (addr result.17))
+      (var@D :`x.160 . Value.0.valzr1t4f@4,5y,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim
+       (call vNil.0.valzr1t4f~4))
+      (asgn@7 result.17~7 `x.160@6))))
+   (ret~2,~1 result.17)))
+ (proc@,6q :fitsSigned.0.@5
+  (params@G
+   (param@1 :v.3 .
+    (i@3 64))
+   (param@B :bits.4 .
+    (i@6 32)))
+  (bool@N)
+  (pragmas
+   (smry
+    (param 0 0 reads)
+    (param 1 1 reads)))
+  (stmts@2,1
+   (var :result.18 .
+    (bool@E,~5t).)
+   (if
+    (elif@3
+     (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64@D,6s,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim bits.4@5,6s,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)
+     (stmts@C
+      (ret
+       (true@7)))))
+   (var@4,1 :hi.0 .
+    (i@E,~2 64)
+    (sub@S
+     (i 64)
+     (shl~G
+      (i 64)
+      (suf~6 1 "i64")
+      (sub@A
+       (i 32)bits.4~5 1@2))
+     (conv@2
+      (i@G,r,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1)))
+   (var@4,2 :lo.0 .
+    (i@E,~3 64)
+    (neg@5
+     (i 64)
+     (shl@8
+      (i 64)
+      (suf~6 1 "i64")
+      (sub@A
+       (i 32)bits.4~5 1@2))))
+   (var@H,3 :`x.161 .
+    (bool).)
+   (if@H,3
+    (elif
+     (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim lo.0@G,6v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim v.3@B,6v,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)
+     (stmts
+      (asgn@6 `x.161
+       (le v.3~2 hi.0@3))))
+    (else
+     (stmts
+      (asgn `x.161
+       (false)))))
+   (asgn@7,3 result.18~7 `x.161@A)
+   (ret~2,~1 result.18)))
+ (proc@,6w :arithOverflows.0.@5
+  (params@K
+   (param@1 :op.6 . NimonyExpr.0.nimry5ra91@4)
+   (param@H :a.13 .
+    (ptr@6 Value.0.valzr1t4f))
+   (param@K :b.12 .
+    (ptr@3 Value.0.valzr1t4f))
+   (param@U :bits.5 .
+    (i@6 32))
+   (param@f :signed.4 .
+    (bool@8)))
+  (bool@u)
+  (pragmas
+   (smry readGlobal callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads writes escapes)
+    (param 2 2 reads writes escapes)
+    (param 3 3 reads)
+    (param 4 4 reads)))
+  (stmts@2,1
+   (var :result.19 .
+    (bool@E,~5z).)
+   (var@W,4 :`x.2 .
+    (bool).)
+   (var@G,4 :`desugar.0 . `t.0.IAarrayAuS8ZS3.@E,2n,../../../../../../home/savant/nimony/lib/std/system.nim
+    (aconstr `t.0.IAarrayAuS8ZS3. 6u 0u 0u))
+   (var@4,4 :`desugar.1 .
+    (u 64)
+    (cast
+     (u -1)
+     (dot
+      (deref~1 a.13)kind.0 0)))
+   (if@W,4
+    (elif
+     (not@2,2n,../../../../../../home/savant/nimony/lib/std/system.nim
+      (neq@C
+       (bitand
+        (u 8)
+        (at `desugar.0@I,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+         (shr
+          (u -1)`desugar.1@6,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 3u))
+        (shl
+         (u 8)1u
+         (bitand
+          (u -1)`desugar.1@6,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 7u)))0u))
+     (stmts
+      (asgn `x.2
+       (true))))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (var@G :`desugar.2 . `t.0.IAarrayAuS8ZS3.@E,2n,../../../../../../home/savant/nimony/lib/std/system.nim
+         (aconstr `t.0.IAarrayAuS8ZS3.~W 6u 0u 0u))
+        (var@4 :`desugar.3 .
+         (u 64)
+         (cast
+          (u -1)
+          (dot
+           (deref~1 b.12)kind.0 0)))
+        (asgn@2,2n,../../../../../../home/savant/nimony/lib/std/system.nim `x.2
+         (not
+          (neq@C
+           (bitand
+            (u 8)
+            (at `desugar.2@o,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+             (shr
+              (u -1)`desugar.3@c,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 3u))
+            (shl
+             (u 8)1u
+             (bitand
+              (u -1)`desugar.3@c,72,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 7u)))0u))))))))
+   (if@,4
+    (elif@3 `x.2@T
+     (stmts@10
+      (ret
+       (false@7)))))
+   (var@4,5 :x.6 .
+    (i@E,~C 64)
+    (call@9 asInt.0.valzr1t4f~5
+     (addr@1
+      (deref a.13))))
+   (var@4,6 :y.2 .
+    (i@E,~D 64)
+    (call@9 asInt.0.valzr1t4f~5
+     (addr@1
+      (deref b.12))))
+   (if@,7
+    (elif@3 signed.4
+     (stmts~1,1
+      (case op.6@5
+       (of@,1
+        (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+        (stmts@2,1
+         (if
+          (elif@3
+           (lt@5 bits.5~5 64@2)
+           (stmts@B
+            (var@N :`x.162 .
+             (bool~K,~H)
+             (call fitsSigned.0.~A
+              (add@3
+               (i 64)x.6~2 y.2@2)bits.5@8))
+            (asgn@7 result.19~7
+             (not@2 `x.162@E))))
+          (else
+           (stmts
+            (stmts
+             (stmts
+              (stmts@2,2
+               (var@4 :s.0 .
+                (i@8,~J 64)
+                (cast@4
+                 (i@5 64)
+                 (add@S
+                  (u 64)
+                  (cast~G
+                   (u@5 64)x.6@D)
+                  (cast@2
+                   (u@5 64)y.2@D))))
+               (asgn@7,1 result.19~7
+                (lt@S
+                 (bitand~F
+                  (i 64)
+                  (bitxor~7
+                   (i 64)x.6~2 s.0@4)
+                  (bitxor@7
+                   (i 64)y.2~2 s.0@4))
+                 (conv@2
+                  (i@G,1H,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0)))))))))))
+       (of@,6
+        (ranges@3 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+        (stmts@2,1
+         (if
+          (elif@3
+           (lt@5 bits.5~5 64@2)
+           (stmts@B
+            (var@N :`x.163 .
+             (bool~K,~M)
+             (call fitsSigned.0.~A
+              (sub@3
+               (i 64)x.6~2 y.2@2)bits.5@8))
+            (asgn@7 result.19~7
+             (not@2 `x.163@E))))
+          (else
+           (stmts
+            (stmts
+             (stmts
+              (stmts@2,2
+               (var@4 :s.1 .
+                (i@8,~O 64)
+                (cast@4
+                 (i@5 64)
+                 (sub@S
+                  (u 64)
+                  (cast~G
+                   (u@5 64)x.6@D)
+                  (cast@2
+                   (u@5 64)y.2@D))))
+               (asgn@7,1 result.19~7
+                (lt@S
+                 (bitand~F
+                  (i 64)
+                  (bitxor~7
+                   (i 64)x.6~2 y.2@4)
+                  (bitxor@7
+                   (i 64)x.6~2 s.1@4))
+                 (conv@2
+                  (i@G,1H,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0)))))))))))
+       (of@,B
+        (ranges@3 35@F,d,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+        (stmts@2,1
+         (var@A :`x.164 .
+          (bool).)
+         (if@A
+          (elif
+           (eq~5 x.6~2
+            (conv@3
+             (i@H,17,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0))
+           (stmts
+            (asgn `x.164
+             (true))))
+          (else
+           (stmts
+            (asgn@5 `x.164
+             (eq y.2~2
+              (conv@3
+               (i@H,17,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0))))))
+         (if
+          (elif@3 `x.164@7
+           (stmts@I
+            (asgn@7 result.19~7
+             (false@2))))
+          (else
+           (stmts
+            (stmts
+             (stmts
+              (stmts@2,2
+               (var@4 :p.1 .
+                (i@8,~T 64)
+                (mul@6
+                 (i 64)x.6~2 y.2@2))
+               (var@O,1 :`x.165 .
+                (bool).)
+               (if@O,1
+                (elif
+                 (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+                  (eq@7
+                   (div@K,7L,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                    (i 64)p.1~2 y.2@4)x.6@T,7L,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))
+                 (stmts
+                  (asgn `x.165
+                   (true))))
+                (else
+                 (stmts
+                  (var@H :`x.166 .
+                   (bool~Q,~U)
+                   (call fitsSigned.0.~A p.1@1 bits.5@4))
+                  (asgn@3 `x.165
+                   (not `x.166@E)))))
+               (asgn@7,1 result.19~7 `x.165@H)))))))))
+       (else@,G
+        (stmts@6
+         (asgn@7 result.19~7
+          (false@2)))))))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (stmts@2,J
+         (var@4 :ux.0 .
+          (u@4,~6o 64)
+          (cast@5
+           (u@5 64)x.6@D))
+         (var@4,1 :uy.0 .
+          (u@4,~6p 64)
+          (cast@5
+           (u@5 64)y.2@D))
+         (var@F,2 :`x.3 .
+          (u 64).)
+         (if@F,2
+          (elif@3
+           (le@4,1q,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64@U,7Q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim bits.5@M,7Q,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim)
+           (stmts
+            (asgn@C `x.3
+             (suf@4 18446744073709551615u "u64"))))
+          (else
+           (stmts
+            (stmts
+             (stmts
+              (stmts@S
+               (asgn@6 `x.3
+                (sub@H
+                 (u 64)
+                 (shl~A
+                  (u 64)
+                  (suf~6 1u "u64")bits.5@4)
+                 (conv@2
+                  (u@G,2X,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1)))))))))
+         (var@4,2 :widthMax.0 .
+          (u@4,~6q 64)`x.3@B)
+         (case@,3 op.6@5
+          (of@,1
+           (ranges@3 33@F,b,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+           (stmts@9
+            (asgn@7 result.19~7
+             (lt@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+              (sub@a,7S,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+               (u 64)widthMax.0~9 uy.0@2)ux.0@M,7S,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))))
+          (of@,2
+           (ranges@3 34@F,c,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+           (stmts@9
+            (asgn@7 result.19~7
+             (lt@5 ux.0~3 uy.0@2))))
+          (of@,3
+           (ranges@3 35@F,d,../../../../../../home/savant/nimony/src/models/nimony_tags.nim)
+           (stmts@9
+            (var@m :`x.167 .
+             (bool).)
+            (var@M :`x.168 .
+             (bool).)
+            (if@M
+             (elif
+              (not@2,1m,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+               (eq@7 ux.0@N,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                (suf@T,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 0u "u64")))
+              (stmts
+               (asgn@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.168
+                (lt
+                 (div@r,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                  (u 64)widthMax.0~9 ux.0@4)uy.0@d,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim))))
+             (else
+              (stmts
+               (asgn `x.168
+                (false)))))
+            (if@m
+             (elif `x.168~Q
+              (stmts
+               (asgn `x.167
+                (true))))
+             (else
+              (stmts
+               (asgn@4,1u,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim `x.167
+                (lt widthMax.0@1E,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                 (mul@16,7U,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+                  (u 64)ux.0~3 uy.0@2))))))
+            (asgn@7 result.19~7 `x.167@f)))
+          (else@,4
+           (stmts@6
+            (asgn@7 result.19~7
+             (false@2)))))))))))
+   (ret~2,~1 result.19)))
+ (proc@6,18 :inc.1.I6wjjge.
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.7 .
+    (ptr@3
+     (i 32)))).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline 0 20)
+   (smry@6,19,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+    (param 0 0 reads writes)))
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (deref~2 x.7)
+    (add@6
+     (i 32)
+     (deref@1 x.7)
+     (conv@U,~F
+      (i 32)1@1)))))
+ (proc@X,5D :dec.1.I2mwrey1.
+  (params@L,I,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.8 .
+    (ptr@3
+     (i@K,6r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 64)))).@,I,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,I,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline 0 20)
+   (smry@X,5E,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+    (param 0 0 reads writes)))
+  (stmts@2,J,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (deref~2 x.8)
+    (sub@6
+     (i@K,6r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 64)
+     (deref@1 x.8)
+     (conv@U,~H
+      (i@K,6r,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim 64)1@1)))))
+ (type@G,2D,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/values.nim :`t.0.IArefSX46latX52egionX4fbj0valzr1t4f. .
+  (object .
+   (fld :r.00 .
+    (i -1))
+   (fld :d.00 . FlatRegion.Obj.0.valzr1t4f@4)))
+ (type@S,1s :`t.0.IArefSX53eqX42oxX4fbj0valzr1t4f. .
+  (object .
+   (fld :r.00 .
+    (i -1))
+   (fld :d.00 . SeqBox.Obj.0.valzr1t4f)))
+ (type@S,1t :`t.0.IArefSX41rrX42oxX4fbj0valzr1t4f. .
+  (object .
+   (fld :r.00 .
+    (i -1))
+   (fld :d.00 . ArrBox.Obj.0.valzr1t4f)))
+ (type@T,1u :`t.0.IArefSX43ellX4fbj0valzr1t4f. .
+  (object .
+   (fld :r.00 .
+    (i -1))
+   (fld :d.00 . Cell.Obj.0.valzr1t4f)))
+ (type@S,1w :`t.0.IArefSX4fbjX42oxX4fbj0valzr1t4f. .
+  (object .
+   (fld :r.00 .
+    (i -1))
+   (fld :d.00 . ObjBox.Obj.0.valzr1t4f)))
+ (type@E,2n,../../../../../../home/savant/nimony/lib/std/system.nim :`t.0.IAarrayAuS8ZS3. .
+  (array
+   (u 8)3))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.valzr1t4f)
+   (call `ini.0.xinat3x34)
+   (call `ini.0.nimry5ra91))))(.index@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/aowlimagics.nim
+ (x toXint.0. 135)
+ (x u64bits.0. 1021)
+ (x toFloat.0. 980)
+ (x strEq.0. 1240)
+ (x strLt.0. 2570)
+ (x sameRegionTarget.0. 2708)
+ (x cstringAddrVsValue.0. 3496)
+ (x cmpEq.0. 330)
+ (x ptrOrdLt.0. 20537)
+ (x cmpLt.0. 5188)
+ (x cmpLe.0. 3696)
+ (x floatArith.0. 4597)
+ (x intArith.0. 3021)
+ (x bitOp.0. 6017)
+ (x isDivByZero.0. 11021)
+ (x binMagic.0. 2724)
+ (x unMagic.0. 9048)
+ (x fitsSigned.0. 5163)
+ (x arithOverflows.0. 1497)
+ (x inc.1.I6wjjge. 10700)
+ (x dec.1.I2mwrey1. 651)
+ (h `t.0.IArefSX46latX52egionX4fbj0valzr1t4f. 931)
+ (h `t.0.IArefSX53eqX42oxX4fbj0valzr1t4f. 228)
+ (h `t.0.IArefSX41rrX42oxX4fbj0valzr1t4f. 135)
+ (h `t.0.IArefSX43ellX4fbj0valzr1t4f. 135)
+ (h `t.0.IArefSX4fbjX42oxX4fbj0valzr1t4f. 129)
+ (h `t.0.IAarrayAuS8ZS3. 135)
+ (h `iniGuard.0. 113)
+ (x `ini.0. 34))

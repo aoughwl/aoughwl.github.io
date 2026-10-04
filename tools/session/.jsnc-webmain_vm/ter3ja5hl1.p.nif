@@ -1,0 +1,300 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/terminal.nim
+ (comment)
+ (import@,6
+  (infix@A / std~3
+   (bracket@1 syncio@1)))
+ (const@A,9 fgPrefix~8 x . . "\1B\5B38;2;"@4)
+ (const@A,A bgPrefix~8 x . . "\1B\5B48;2;"@4)
+ (const@F,B ansiResetCode~D x . . "\1B\5B0m"@4)
+ (const@D,C stylePrefix~B x . . "\1B\5B"@4)
+ (type@9,F Style~7 x . .
+  (enum@2 .
+   (efld@7,1 styleBright~E . . . 1)
+   (efld~7,2 styleDim . . . .)
+   (efld~7,3 styleItalic . . . .)
+   (efld~7,4 styleUnderscore . . . .)
+   (efld~7,5 styleBlink . . . .)
+   (efld~7,6 styleBlinkRapid . . . .)
+   (efld~7,7 styleReverse . . . .)
+   (efld~7,8 styleHidden . . . .)
+   (efld~7,9 styleStrikethrough . . . .)))
+ (type@J,Q ForegroundColor~H x . .
+  (enum@2 .
+   (efld~7,1 fgBlack~A . . . 30)
+   (efld~H,2 fgRed . . . .)
+   (efld~H,3 fgGreen . . . .)
+   (efld~H,4 fgYellow . . . .)
+   (efld~H,5 fgBlue . . . .)
+   (efld~H,6 fgMagenta . . . .)
+   (efld~H,7 fgCyan . . . .)
+   (efld~H,8 fgWhite . . . .)
+   (efld~H,9 fg8Bit . . . .)
+   (efld~H,A fgDefault . . . .)))
+ (type@J,c BackgroundColor~H x . .
+  (enum@2 .
+   (efld~7,1 bgBlack~A . . . 40)
+   (efld~H,2 bgRed . . . .)
+   (efld~H,3 bgGreen . . . .)
+   (efld~H,4 bgYellow . . . .)
+   (efld~H,5 bgBlue . . . .)
+   (efld~H,6 bgMagenta . . . .)
+   (efld~H,7 bgCyan . . . .)
+   (efld~H,8 bgWhite . . . .)
+   (efld~H,9 bg8Bit . . . .)
+   (efld~H,A bgDefault . . . .)))
+ (type@F,o TerminalCmd~D x . .
+  (enum@2 .
+   (efld~D,1 resetStyle . . . .)
+   (efld~D,2 fgColor . . . .)
+   (efld~D,3 bgColor . . . .)))
+ (proc@,t ansiStyleCode@5 x . .
+  (params@J
+   (param@1 style . . int@7 .))string@E . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@N &
+     (infix~9 & stylePrefix~C
+      (prefix@2 $ style@1))"m"@2))))
+ (proc@,w ansiStyleCode@5 x . .
+  (params@J
+   (param@1 style . . Style@7 .))string@G . .
+  (stmts@2,1
+   (call@D ansiStyleCode~D
+    (call@4 ord~3 style@1))))
+ (proc@,z ansiForegroundColorCode@5 x . .
+  (params@T
+   (param@1 fg . . ForegroundColor@4 .)
+   (param@M bright . . . false@9))string@d . .
+  (stmts@2,1
+   (var@4 code . . .
+    (call@A ord~3 fg@1))
+   (if@,1
+    (elif@3 bright
+     (stmts@8
+      (asgn@5 code~5
+       (infix@7 \2B code~5 60@2)))))
+   (call@D,2 ansiStyleCode~D code@1)))
+ (proc@,14 ansiBackgroundColorCode@5 x . .
+  (params@T
+   (param@1 bg . . BackgroundColor@4 .)
+   (param@M bright . . . false@9))string@d . .
+  (stmts@2,1
+   (var@4 code . . .
+    (call@A ord~3 bg@1))
+   (if@,1
+    (elif@3 bright
+     (stmts@8
+      (asgn@5 code~5
+       (infix@7 \2B code~5 60@2)))))
+   (call@D,2 ansiStyleCode~D code@1)))
+ (proc@,19 resetAttributes@5 x . .
+  (params@L
+   (param@1 f . . File@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 write f@6 ansiResetCode@9)))
+ (proc@,1D setStyle@5 x . .
+  (params@E
+   (param@1 f . . File@3 .)
+   (param@A style . . Style@7 .)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 write f@6
+    (call@M ansiStyleCode~D style@1))))
+ (proc@,1H setStyle@5 x . .
+  (params@E
+   (param@1 f . . File@3 .)
+   (param@A style . .
+    (at@A set~3 Style@1).)). . .
+  (stmts@2,1
+   (comment)
+   (for@4,1 style@5
+    (unpackflat
+     (let s . . ..))
+    (stmts~2,1
+     (cmd write f@6
+      (call@M ansiStyleCode~D s@1))))))
+ (proc@,1M setForegroundColor@5 x . .
+  (params@O
+   (param@1 f . . File@3 .)
+   (param@A fg . . ForegroundColor@4 .)
+   (param@V bright . . . false@9)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 write f@6
+    (call@W ansiForegroundColorCode~N fg@1 bright@5))))
+ (proc@,1Q setBackgroundColor@5 x . .
+  (params@O
+   (param@1 f . . File@3 .)
+   (param@A bg . . BackgroundColor@4 .)
+   (param@V bright . . . false@9)). . .
+  (stmts@2,1
+   (comment)
+   (cmd@,1 write f@6
+    (call@W ansiBackgroundColorCode~N bg@1 bright@5))))
+ (when@,1U
+  (elif@5
+   (infix@L and
+    (call~E defined~7 nimNativeIo@1)
+    (call@B defined~7 posix@1))
+   (stmts~3,4
+    (proc nativeIoctl@5 . . .
+     (params@G
+      (param@1 fd . . cint@4 .)
+      (param@B request . . uint@9 .)
+      (param@Q arg . . pointer@5 .))cint@f
+     (pragmas@10
+      (kv~r,1 importc~7 "ioctl"@2)sideEffect~g,1). .)
+    (proc@,2 c_fileno@5 . . .
+     (params@D
+      (param@1 f . . File@3 .))cint@B . .
+     (stmts@V
+      (call@D getFileHandle~D f@1)))
+    (proc@,3 c_isatty@5 . . .
+     (params@D
+      (param@1 fildes . . cint@8 .))cint@G . .
+     (stmts@2,1
+      (var@C termbuf~8 .
+       (pragmas noinit@2)
+       (at@H array~5 64@1 byte@5).)
+      (if@,1
+       (elif@3
+        (infix@i ==
+         (call~X nativeIoctl~B fildes@1 21505u@9
+          (cmd@O addr~5 termbuf))
+         (suf@3 0 "i32"))
+        (stmts@s
+         (suf 1 "i32")))
+       (else@11
+        (stmts@6
+         (suf 0 "i32"))))))))
+  (elif@5,A
+   (call@7 defined~7 posix@1)
+   (stmts~3,1
+    (proc c_isatty@5 . . .
+     (params@D
+      (param@1 fildes . . cint@8 .))cint@G
+     (pragmas@Y
+      (kv@9 importc~7 "isatty"@2)
+      (kv@R header~6 "<unistd.h>"@2)). .)
+    (proc@,1 c_fileno@5 . . .
+     (params@D
+      (param@1 f . . File@3 .))cint@B
+     (pragmas@T
+      (kv@9 importc~7 "fileno"@2)
+      (kv@R header~6 "<stdio.h>"@2)). .)))
+  (elif@5,D
+   (call@7 defined~7 windows@1)
+   (stmts~3,1
+    (proc c_isatty@5 . . .
+     (params@D
+      (param@1 fildes . . cint@8 .))cint@G
+     (pragmas@Y
+      (kv@9 importc~7 "_isatty"@2)
+      (kv@S header~6 "<io.h>"@2)). .)
+    (proc@,1 c_fileno@5 . . .
+     (params@D
+      (param@1 f . . File@3 .))cint@B
+     (pragmas@T
+      (kv@9 importc~7 "_fileno"@2)
+      (kv@S header~6 "<stdio.h>"@2)). .))))
+ (proc@,1l isatty@5 x . .
+  (params@C
+   (param@1 f . . File@3 .))bool@B . .
+  (stmts@2,1
+   (comment)
+   (when@,1
+    (elif@5
+     (infix@F or
+      (call~8 defined~7 posix@1)
+      (call@A defined~7 windows@1))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@O !=
+        (call~E c_isatty~8
+         (call@9 c_fileno~8 f@1))
+        (suf@3 0 "i32")))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,1v styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A s . . string@3 .)). . .
+  (stmts@n
+   (cmd write f@6 s@9)))
+ (proc@,1w styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A c . . char@3 .)). . .
+  (stmts@l
+   (cmd write f@6 c@9)))
+ (proc@,1x styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A style . . Style@7 .)). . .
+  (stmts@q
+   (call@8 setStyle~8 f@1 style@4)))
+ (proc@,1y styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A style . .
+    (at@A set~3 Style@1).)). . .
+  (stmts@v
+   (call@8 setStyle~8 f@1 style@4)))
+ (proc@,1z styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A color . . ForegroundColor@7 .)). . .
+  (stmts@2,1
+   (call@I setForegroundColor~I f@1 color@4)))
+ (proc@,21 styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A color . . BackgroundColor@7 .)). . .
+  (stmts@2,1
+   (call@I setBackgroundColor~I f@1 color@4)))
+ (proc@,23 styledEchoProcessArg@5 x . .
+  (params@Q
+   (param@1 f . . File@3 .)
+   (param@A cmd . . TerminalCmd@5 .)). . .
+  (stmts@2,1
+   (case cmd@5
+    (of@,1
+     (ranges resetStyle@3)
+     (stmts@F
+      (call@F resetAttributes~F f@1)))
+    (of@,2
+     (ranges fgColor@3 bgColor@C)
+     (stmts@L
+      (discard .))))))
+ (template@,28 styledWrite@9 x . .
+  (params@L
+   (param@1 f . . File@3 .)).
+  (pragmas@V varargs@2).
+  (stmts@2,1
+   (comment)
+   (for@4,4
+    (call@B unpack~6)
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (call@K styledEchoProcessArg~K f@1 x@4)))
+   (call@F,6 resetAttributes~F f@1)))
+ (template@,2H styledWriteLine@9 x . .
+  (params@P
+   (param@1 f . . File@3 .)).
+  (pragmas@Z varargs@2).
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (call@B unpack~6)
+    (unpackflat
+     (let x . . ..))
+    (stmts~2,1
+     (call@K styledEchoProcessArg~K f@1 x@4)))
+   (cmd@,3 write f@6 '\0A'@9)
+   (call@F,4 resetAttributes~F f@1))))

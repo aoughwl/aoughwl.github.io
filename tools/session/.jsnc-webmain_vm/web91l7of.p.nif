@@ -1,0 +1,350 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/webvfs.nim
+ (comment)
+ (when@,I
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,L
+  (infix@A / std~3 tables@1))
+ (import@,M vfs@7)
+ (const@C,O WebDir~6 x . . "/w"@4)
+ (const@K,U MainModuleName~E x . . "webmod"@4)
+ (var@4,a webFs . .
+  (at@C Table~5 string@1 string@9).)
+ (proc@,c webPut@5 x . .
+  (params@C
+   (param@1 path . . string@F .)
+   (param@7 content . . string@9 .)). . .
+  (stmts@2,1
+   (asgn@C
+    (at~7 webFs~5 path@1)content@2)))
+ (proc@,f webHas@5 x . .
+  (params@C
+   (param@1 path . . string@6 .))bool@G . .
+  (stmts@Z
+   (call@C
+    (dot~7 webFs~5 hasKey@1)path@1)))
+ (proc@,j webRead@5 . . .
+  (params@C
+   (param@1 path . . string@6 .))string@G
+  (pragmas@Z nimcall@2).
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@C
+      (dot~7 webFs~5 hasKey@1)path@1)
+     (stmts@K
+      (call@I
+       (dot~D webFs~5 getOrDefault@1)path@1)))
+    (else@m
+     (stmts@6 "")))))
+ (proc@,n webWrite@5 . . .
+  (params@D
+   (param@1 path . . string@F .)
+   (param@7 content . . string@9 .)).
+  (pragmas@b nimcall@2).
+  (stmts@2,1
+   (asgn@C
+    (at~7 webFs~5 path@1)content@2)))
+ (proc@,q webExists@5 . . .
+  (params@E
+   (param@1 path . . string@6 .))bool@G
+  (pragmas@Z nimcall@2).
+  (stmts@2,1
+   (call@C
+    (dot~7 webFs~5 hasKey@1)path@1)))
+ (proc@,t webMtime@5 . . .
+  (params@D
+   (param@1 path . . string@6 .))int64@G
+  (pragmas@Z nimcall@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@C
+      (dot~7 webFs~5 hasKey@1)path@1)
+     (stmts@K
+      (suf 1 "i64")))
+    (else@T
+     (stmts@6
+      (suf 0 "i64"))))))
+ (proc@,w webNow@5 . . .
+  (params@B)int64@4
+  (pragmas@L nimcall@2).
+  (stmts@Z
+   (suf 2 "i64")))
+ (proc@,y webRemove@5 . . .
+  (params@E
+   (param@1 path . . string@6 .)).
+  (pragmas@T nimcall@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@C
+      (dot~7 webFs~5 hasKey@1)path@1)
+     (stmts@K
+      (call@9
+       (dot~4 webFs~5 del@1)path@1))))))
+ (proc@,11 webBlobCleanup@5 . . .
+  (params@J
+   (param@1 b . .
+    (mut@3 VfsBlob@4).)).
+  (pragmas@a nimcall@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 !=
+      (dot~8 b~1 cookie@1)
+      (nil@3))
+     (stmts@H
+      (call@7 dealloc~7
+       (dot@2 b~1 cookie@1)))))))
+ (proc@,14 webOpenMmap@5 . . .
+  (params@G
+   (param@1 path . . string@6 .))VfsBlob@G
+  (pragmas@e nimcall@2).
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (prefix not
+      (call@G
+       (dot~7 webFs~5 hasKey@1)path@1))
+     (stmts~1,1
+      (ret
+       (call@F initBlob~8
+        (nil@1)0@6)))))
+   (let@4,8 content . . .
+    (call@S
+     (dot~D webFs~5 getOrDefault@1)path@1))
+   (let@4,9 n . . .
+    (dot@B content~7 len@1))
+   (if@,A
+    (elif@3
+     (infix@2 == n~2 0@3)
+     (stmts~1,1
+      (ret
+       (call@F initBlob~8
+        (nil@1)0@6)))))
+   (let@4,C buf . . .
+    (call@B alloc~5 n@1))
+   (let@4,D dst . . .
+    (cast@6
+     (ptr@5
+      (at@I UncheckedArray~E char@1))buf@V))
+   (for@4,E
+    (infix@7 \2E\2E< 0~2 n@4)
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (asgn@7
+      (at~4 dst~3 i@1)
+      (at@9 content~7 i@1))))
+   (asgn@7,G result~7
+    (call@A initBlob~8 buf@1 n@6 buf@9 webBlobCleanup@E))))
+ (proc@,1N installWebVfs@5 x . .
+  (params@J). . .
+  (stmts@2,1
+   (comment)
+   (asgn@E,2 openMmapRelay~E webOpenMmap@2)
+   (asgn@F,3 readBytesRelay~F webRead@2)
+   (asgn@G,4 writeBytesRelay~G webWrite@2)
+   (asgn@C,5 existsRelay~C webExists@2)
+   (asgn@B,6 mtimeRelay~B webMtime@2)
+   (asgn@9,7 nowRelay~9 webNow@2)
+   (asgn@C,8 removeRelay~C webRemove@2)))
+ (proc@,1a hexNib@5 . . .
+  (params@B
+   (param@1 c . . char@3 .))int@B . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@9 and
+      (infix~7 >= c~2 '0'@3)
+      (infix@6 <= c~2 '9'@3))
+     (stmts@N
+      (infix@7 \2D
+       (call~4 ord~3 c@1)
+       (call@5 ord~3 '0'@1))))
+    (elif@5,1
+     (infix@9 and
+      (infix~7 >= c~2 'A'@3)
+      (infix@6 <= c~2 'F'@3))
+     (stmts@N
+      (infix@3 \2B 10~3
+       (par@2
+        (infix@8 \2D
+         (call~4 ord~3 c@1)
+         (call@5 ord~3 'A'@1))))))
+    (elif@5,2
+     (infix@9 and
+      (infix~7 >= c~2 'a'@3)
+      (infix@6 <= c~2 'f'@3))
+     (stmts@N
+      (infix@3 \2B 10~3
+       (par@2
+        (infix@8 \2D
+         (call~4 ord~3 c@1)
+         (call@5 ord~3 'a'@1))))))
+    (else@,3
+     (stmts@6 0)))))
+ (proc@,1g parseInt10@5 . . .
+  (params@F
+   (param@1 s . . string@3 .))int@D . .
+  (stmts@2,1
+   (asgn@7 result~7 0@2)
+   (for@4,1 s@5
+    (unpackflat
+     (let c . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (infix@9 and
+        (infix~7 >= c~2 '0'@3)
+        (infix@6 <= c~2 '9'@3))
+       (stmts~1,1
+        (asgn@7 result~7
+         (infix@E \2B
+          (infix~5 * result~7 10@2)
+          (par@2
+           (infix@8 \2D
+            (call~4 ord~3 c@1)
+            (call@5 ord~3 '0'@1))))))))))))
+ (proc@,1m unescapeTransport@5 . . .
+  (params@M
+   (param@1 body . . string@6 .))string@G . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7
+    (call@G newStringOfCap~E
+     (dot@5 body~4 len@1)))
+   (var@4,5 k . . . 0@4)
+   (let@4,6 m . . .
+    (dot@8 body~4 len@1))
+   (while@,7
+    (infix@8 < k~2 m@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@U and
+        (infix~K and
+         (infix~4 <
+          (infix~4 \2B k~2 3@2)m@2)
+         (infix@C ==
+          (at~4 body~4 k@1)'\5C'@3))
+        (infix@E ==
+         (at~6 body~4
+          (infix@2 \2B k~1 1@1))'x'@3))
+       (stmts~1,1
+        (cmd@6
+         (dot result~6 add@1)
+         (call@8 chr~3
+          (infix@O \2B
+           (infix~5 *
+            (call~C hexNib~6
+             (at@5 body~4
+              (infix@2 \2B k~1 2@1)))16@2)
+           (call@8 hexNib~6
+            (at@5 body~4
+             (infix@2 \2B k~1 3@1))))))
+        (infix@2,1 \2B= k~2 4@3)))
+      (else@,3
+       (stmts@2,1
+        (cmd@6
+         (dot result~6 add@1)
+         (at@9 body~4 k@1))
+        (cmd@K inc k@4))))))))
+ (proc@,21 loadWebModules@5 x . .
+  (params@K
+   (param@1 framed . . string@8 .)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,4 i . . . 0@4)
+   (let@4,5 n . . .
+    (dot@A framed~6 len@1))
+   (while@,6
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (var@4 name . . . ""@7)
+     (while@,1
+      (infix@C and
+       (infix~4 < i~2 n@2)
+       (infix@E !=
+        (at~4 framed~6 i@1)'\09'@3))
+      (stmts@2,1
+       (cmd@4
+        (dot name~4 add@1)
+        (at@B framed~6 i@1))
+       (cmd@K inc i@4)))
+     (cmd@,3 inc i@4)
+     (var@4,4 lenStr . . . ""@9)
+     (while@,5
+      (infix@C and
+       (infix~4 < i~2 n@2)
+       (infix@E !=
+        (at~4 framed~6 i@1)'\0A'@3))
+      (stmts@2,1
+       (cmd@6
+        (dot lenStr~6 add@1)
+        (at@B framed~6 i@1))
+       (cmd@M inc i@4)))
+     (cmd@,7 inc i@4)
+     (let@4,8 blen . . .
+      (call@H parseInt10~A lenStr@1))
+     (var@4,9 body . . .
+      (call@G newString~9 blen@1))
+     (for@4,A
+      (infix@7 \2E\2E< 0~2 blen@4)
+      (unpackflat
+       (let k . . ..))
+      (stmts~2,1
+       (if
+        (elif@3
+         (infix@6 <
+          (infix~4 \2B i~2 k@2)n@2)
+         (stmts@B
+          (asgn@8
+           (at~4 body~4 k@1)
+           (at@8 framed~6
+            (infix@3 \2B i~2 k@2))))))))
+     (infix@2,C \2B= i~2 blen@3)
+     (if@,D
+      (elif@3
+       (infix@9 >
+        (dot~5 name~4 len@1)0@2)
+       (stmts~1,1
+        (call@6 webPut~6
+         (infix@E &
+          (infix~6 & WebDir~7 "/"@2)name@2)
+         (call@d unescapeTransport~H body@1)))))))))
+ (const@6,2P EmptyIndexNif . . . "\28.nif27\29\0A\28index\0A\29\0A"@G)
+ (proc@,2W publishMainModule@5 x . .
+  (params@N
+   (param@1 src . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (let@4,c nif . . .
+    (infix@a &
+     (infix~H &
+      (infix~6 & WebDir~7 "/"@2)MainModuleName@2)".s.nif"@2))
+   (if@,d
+    (elif@3
+     (prefix not
+      (call@A webHas~6 nif@1))
+     (stmts@H
+      (call@6 webPut~6 nif@1 src@6))))
+   (let@4,e idx . . .
+    (infix@a &
+     (infix~H &
+      (infix~6 & WebDir~7 "/"@2)MainModuleName@2)".s.idx.nif"@2))
+   (if@,f
+    (elif@3
+     (prefix not
+      (call@A webHas~6 idx@1))
+     (stmts@H
+      (call@6 webPut~6 idx@1 EmptyIndexNif@6)))))))

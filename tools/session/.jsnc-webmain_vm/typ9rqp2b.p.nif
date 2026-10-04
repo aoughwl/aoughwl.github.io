@@ -1,0 +1,429 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/typekeys.nim
+ (import
+  (infix@A / std~3 assertions@1))
+ (include@,1
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,2
+  (infix@L /
+   (infix~9 / ".."~5 nimony@2)
+   (bracket@2 nimony_model@1 decls@F sigmatch@M)))
+ (import@,3
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 treemangler@1 symparser@E)))
+ (type@E,6 MangleMode~C x . .
+  (enum@2 .
+   (efld~C,1 Backend . . . .)
+   (efld~3,1 Frontend . . . .)))
+ (proc@,A mangleProctype@5 . . .
+  (params@J
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H n . .
+    (mut@3 Cursor@4).)
+   (param@W mm . . MangleMode@4 .))string@n . . .)
+ (proc@,C mangleImpl@5 . . .
+  (params@F
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H c . .
+    (mut@3 Cursor@4).)
+   (param@W mm . . MangleMode@4 .)). . .
+  (stmts@2,1
+   (var@4 nested . . . 0@9)
+   (while@,1 true@6
+    (stmts@2,1
+     (case
+      (dot@6 c~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (let@8 tag~4 .
+         (pragmas cursor@2).
+         (at@M
+          (dot~5 pool~4 tags@1)
+          (dot@2 c~1 tagId@1)))
+        (if@,1
+         (elif@3
+          (infix@J in
+           (dot~I c~1 substructureKind@1)
+           (curly@3 FldU@1 GfldU@7))
+          (stmts~1,1
+           (cmd inc c@4)
+           (cmd@,1 skip c@5 SkipName@8)
+           (cmd@,2 skip c@5 SkipExport@8)
+           (cmd@,3 skip c@5 SkipPragmas@8)
+           (cmd@,4 mangleImpl b@B c@E mm@H)
+           (cmd@,5 skip c@5 SkipValue@8)
+           (cmd@,6 inc c@4)))
+         (elif@5,8
+          (infix@B ==
+           (dot~A c~1 typeKind@1)ArrayT@3)
+          (stmts~3,1
+           (cmd@1
+            (dot b~1 addTree@1)tag@9)
+           (cmd@,1 inc c@4)
+           (cmd@,2 mangleImpl b@B c@E mm@H)
+           (if@,3
+            (elif@3
+             (infix@G and
+              (infix~9 ==
+               (dot~6 c~1 kind@1)ParLe@3)
+              (infix@F ==
+               (dot~A c~1 typeKind@1)RangetypeT@3))
+             (stmts~1,1
+              (cmd inc c@4)
+              (cmd@,1 skip c@5)
+              (cmd@,2 assert
+               (infix@E ==
+                (dot~6 c~1 kind@1)IntLit@3))
+              (let@4,3 first . . .
+               (at@L
+                (dot~9 pool~4 integers@1)
+                (dot@2 c~1 intId@1)))
+              (cmd@,4 inc c@4)
+              (cmd@,5 assert
+               (infix@E ==
+                (dot~6 c~1 kind@1)IntLit@3))
+              (let@4,6 last . . .
+               (at@K
+                (dot~9 pool~4 integers@1)
+                (dot@2 c~1 intId@1)))
+              (cmd@,7 inc c@4)
+              (cmd@,8 inc c@4)
+              (call@B,9
+               (dot~A b~1 addIntLit@1)
+               (infix@E \2B
+                (infix~8 \2D last~5 first@2)1@2))))
+            (else@,B
+             (stmts@2,1
+              (cmd mangleImpl b@B c@E mm@H))))
+           (cmd@,G inc nested@4)))
+         (elif@5,Q
+          (infix@B ==
+           (dot~A c~1 typeKind@1)TupleT@3)
+          (stmts~3,1
+           (call@9
+            (dot~8 b~1 addTree@1)tag@1)
+           (call@1,1
+            (dot c~1 into@1)
+            (stmts@1,1
+             (while
+              (dot@7 c~1 hasMore@1)
+              (stmts@2,1
+               (if
+                (elif@3
+                 (infix@J ==
+                  (dot~I c~1 substructureKind@1)KvU@3)
+                 (stmts~1,1
+                  (cmd@1
+                   (dot c~1 into@1)KvU@6
+                   (stmts@1,1
+                    (cmd skip c@5 SkipName@8)
+                    (cmd@,1 mangleImpl b@B c@E mm@H)
+                    (while@,2
+                     (dot@7 c~1 hasMore@1)
+                     (stmts@H
+                      (cmd skip c@5 SkipFull@8)))))))
+                (else@,5
+                 (stmts@2,1
+                  (cmd mangleImpl b@B c@E mm@H))))))))
+           (call@9,A
+            (dot~8 b~1 endTree@1))))
+         (elif@5,c
+          (infix@B in
+           (dot~A c~1 typeKind@1)
+           (curly@3 UIntT@1 IntT@8 FloatT@E))
+          (stmts~3,1
+           (call@9
+            (dot~8 b~1 addTree@1)tag@1)
+           (cmd@,1 inc c@4)
+           (cmd@,3 assert
+            (infix@E ==
+             (dot~6 c~1 kind@1)IntLit@3))
+           (let@4,4 bits . . .
+            (at@K
+             (dot~9 pool~4 integers@1)
+             (dot@2 c~1 intId@1)))
+           (if@,5
+            (elif@3
+             (infix@9 and
+              (infix~4 < bits~5 0@2)
+              (infix@B >=
+               (dot~6 b~1 bits@1)0@3))
+             (stmts~1,1
+              (call@B
+               (dot~A b~1 addIntLit@1)
+               (dot@2 b~1 bits@1))))
+            (else@,2
+             (stmts@2,1
+              (call@B
+               (dot~A b~1 addIntLit@1)bits@1))))
+           (cmd@,9 inc c@4)
+           (cmd@,A inc nested@4)))
+         (elif@5,o
+          (infix@E and
+           (infix~B == mm~3 Backend@3)
+           (infix@F in
+            (dot~A c~1 typeKind@1)
+            (curly@3 RefT@1 PtrT@7 CstringT@D PointerT@N)))
+          (stmts~3,1
+           (call@9
+            (dot~8 b~1 addTree@1)tag@1)
+           (call@1,1
+            (dot c~1 into@1)
+            (stmts@1,2
+             (while
+              (dot@7 c~1 hasMore@1)
+              (stmts@2,1
+               (if
+                (elif@3
+                 (call@F isNilAnnotation~F c@1)
+                 (stmts~1,1
+                  (cmd skip c@5)))
+                (else@,2
+                 (stmts@2,1
+                  (cmd mangleImpl b@B c@E mm@H))))))))
+           (call@9,8
+            (dot~8 b~1 endTree@1))))
+         (elif@5,y
+          (infix@E and
+           (infix~B == mm~3 Backend@3)
+           (infix@F in
+            (dot~A c~1 typeKind@1)RoutineTypes@3))
+          (stmts~3,1
+           (cmd@1
+            (dot b~1 addRaw@1)
+            (call@M mangleProctype~E b@1 c@4 mm@7))))
+         (elif@5,10
+          (call@F isNilAnnotation~F c@1)
+          (stmts~3,2
+           (cmd skip c@5)))
+         (else@,13
+          (stmts@2,1
+           (call@9
+            (dot~8 b~1 addTree@1)tag@1)
+           (cmd@,1 inc nested@4)
+           (cmd@,2 inc c@4))))))
+      (of@,1A
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)
+        (call@9,1
+         (dot~8 b~1 endTree@1))
+        (cmd@,2 inc c@4)))
+      (of@,1E
+       (ranges Symbol@3)
+       (stmts@2,B
+        (let@4 s . . .
+         (at@D
+          (dot~5 pool~4 syms@1)
+          (dot@2 c~1 symId@1)))
+        (if@,1
+         (elif@3
+          (call@F isInstantiation~F s@1)
+          (stmts~1,1
+           (call@B
+            (dot~A b~1 addSymbol@1)
+            (call@D removeModule~C s@1))))
+         (else@,2
+          (stmts@2,1
+           (call@B
+            (dot~A b~1 addSymbol@1)s@1))))
+        (cmd@,5 inc c@4)))
+      (of@,1V
+       (ranges SymbolDef@3)
+       (stmts@2,1
+        (let@4 s . . .
+         (at@D
+          (dot~5 pool~4 syms@1)
+          (dot@2 c~1 symId@1)))
+        (if@,1
+         (elif@3
+          (call@F isInstantiation~F s@1)
+          (stmts~1,1
+           (call@E
+            (dot~D b~1 addSymbolDef@1)
+            (call@D removeModule~C s@1))))
+         (else@,2
+          (stmts@2,1
+           (call@E
+            (dot~D b~1 addSymbolDef@1)s@1))))
+        (cmd@,5 inc c@4)))
+      (of@,1c
+       (ranges StringLit@3)
+       (stmts@2,1
+        (call@B
+         (dot~A b~1 addStrLit@1)
+         (at@D
+          (dot~8 pool~4 strings@1)
+          (dot@2 c~1 litId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1f
+       (ranges IntLit@3)
+       (stmts@2,1
+        (call@B
+         (dot~A b~1 addIntLit@1)
+         (at@E
+          (dot~9 pool~4 integers@1)
+          (dot@2 c~1 intId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1i
+       (ranges UIntLit@3)
+       (stmts@2,1
+        (call@C
+         (dot~B b~1 addUIntLit@1)
+         (at@F
+          (dot~A pool~4 uintegers@1)
+          (dot@2 c~1 uintId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1l
+       (ranges FloatLit@3)
+       (stmts@2,1
+        (call@D
+         (dot~C b~1 addFloatLit@1)
+         (at@C
+          (dot~7 pool~4 floats@1)
+          (dot@2 c~1 floatId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1o
+       (ranges DotToken@3)
+       (stmts@2,1
+        (call@A
+         (dot~9 b~1 addEmpty@1))
+        (cmd@,1 inc c@4)))
+      (of@,1r
+       (ranges CharLit@3)
+       (stmts@2,1
+        (call@C
+         (dot~B b~1 addCharLit@1)
+         (cmd@6 char~5
+          (dot@1 c~1 uoperand@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1u
+       (ranges Ident@3)
+       (stmts@2,1
+        (call@A
+         (dot~9 b~1 addIdent@1)
+         (at@D
+          (dot~8 pool~4 strings@1)
+          (dot@2 c~1 litId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,1x
+       (ranges UnknownToken@3)
+       (stmts@2,1
+        (cmd@1
+         (dot b~1 addIdent@1)"!unknown!"@A)
+        (cmd@,1 inc c@4)))
+      (of@,20
+       (ranges EofToken@3)
+       (stmts@2,1
+        (cmd@1
+         (dot b~1 addIdent@1)"!eof!"@A)
+        (cmd@,1 inc c@4))))
+     (if@,23
+      (elif@3
+       (infix@7 == nested~7 0@3)
+       (stmts@D
+        (break .))))))))
+ (proc@,2K takeMangle@5 x . .
+  (params@G
+   (param@1 c . .
+    (mut@3 Cursor@4).)
+   (param@G mm . . MangleMode@4 .)
+   (param@W bits . . . -1@7))string@i . .
+  (stmts@2,1
+   (var@4 b . . .
+    (call@H createMangler~D 30@1 bits@5))
+   (cmd@,1 mangleImpl b@B c@E mm@H)
+   (asgn@7,2 result~7
+    (call@B
+     (dot~8 b~1 extract@1)))))
+ (proc@,2P mangle@5 x . .
+  (params@C
+   (param@1 c . . Cursor@3 .)
+   (param@C mm . . MangleMode@4 .)
+   (param@S bits . . . -1@7))string@e . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (cmd@,1 takeMangle c@B mm@E bits@I)))
+ (proc@,2T mangle@5 x . .
+  (params@C
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H c . . Cursor@3 .)
+   (param@S mm . . MangleMode@4 .)). . .
+  (stmts@2,1
+   (var@4 c . . . c@4)
+   (cmd@,1 mangleImpl b@B c@E mm@H)))
+ (proc@,2X mangleProctype@5 . . .
+  (params@J
+   (param@1 b . .
+    (mut@3 Mangler@4).)
+   (param@H n . .
+    (mut@3 Cursor@4).)
+   (param@W mm . . MangleMode@4 .))string@n . .
+  (stmts@2,1
+   (cmd skipToParams n@D)
+   (var@4,2 b . . .
+    (call@H createMangler~D 60@1))
+   (if@,3
+    (elif@3
+     (infix@7 !=
+      (dot~6 n~1 kind@1)DotToken@3)
+     (stmts~1,1
+      (call@1
+       (dot n~1 into@1)
+       (stmts@1,1
+        (while
+         (dot@7 n~1 hasMore@1)
+         (stmts@2,1
+          (let@4 pa . . .
+           (call@E takeLocal~9 n@1 SkipFinalParRi@4))
+          (cmd@,1 assert
+           (infix@F ==
+            (dot~6 pa~2 kind@1)ParamY@3))
+          (cmd@,2 mangle b@7
+           (dot@C pa~2 typ@1)mm@I)))))))
+    (else@,6
+     (stmts@2,1
+      (cmd inc n@4 AnyType@7))))
+   (cmd@,C mangle b@7 n@A Backend@D)
+   (cmd@,D skip n@5)
+   (let@4,F props . . .
+    (call@O extractProcProps~G n@1))
+   (cmd@1,G
+    (dot b~1 addKeyw@1)
+    (prefix@9 $
+     (dot@6 props~5 cc@1)))
+   (cmd@1,H
+    (dot b~1 addKeyw@1)
+    (prefix@9 $
+     (dot@6 props~5 usesRaises@1)))
+   (cmd@1,I
+    (dot b~1 addKeyw@1)
+    (prefix@9 $
+     (dot@6 props~5 usesClosure@1)))
+   (asgn@7,J result~7
+    (call@B
+     (dot~8 b~1 extract@1)))
+   (if@,K
+    (elif@3
+     (dot@1 n~1 hasMore@1)
+     (stmts~1,1
+      (cmd skip n@5)
+      (if@,1
+       (elif@3
+        (dot@1 n~1 hasMore@1)
+        (stmts~1,1
+         (cmd skip n@5)))))))
+   (if@,O
+    (elif@3
+     (dot@1 n~1 hasMore@1)
+     (stmts~1,1
+      (cmd bug "expected \27\29\27, but got\3A "@4 n@V))))
+   (cmd@,Q inc n@4))))

@@ -1,0 +1,170 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/nimony/src/nimony/asthelpers.nim
+ (import
+  (infix@B / std~4
+   (bracket@2 tables@1 sets@9 syncio@F formatfloat@N assertions@a)))
+ (include@,1
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,2 nimony_model@7)
+ (import@,3
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)symparser@2))
+ (proc@,5 takeUnquoted@5 x . .
+  (params@I
+   (param@1 c . .
+    (mut@3 Cursor@4).))StrId@H . .
+  (stmts@2,1
+   (var@4 r . . . ""@4)
+   (while@,1 true@6
+    (stmts@2,1
+     (case
+      (dot@6 c~1 kind@1)
+      (of@,1
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd inc c@4)))
+      (of@,3
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd inc c@4)
+        (break@,1 .)))
+      (of@,6
+       (ranges EofToken@3)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 add@1)"<unexpected eof>"@5)
+        (break@,1 .)))
+      (of@,9
+       (ranges Ident@3 StringLit@A)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 add@1)
+         (at@H
+          (dot~8 pool~4 strings@1)
+          (dot@2 c~1 litId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,C
+       (ranges IntLit@3)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 addInt@1)
+         (at@L
+          (dot~9 pool~4 integers@1)
+          (dot@2 c~1 intId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,F
+       (ranges CharLit@3)
+       (stmts@2,1
+        (let@4 ch . . .
+         (call@9 char~4
+          (dot@2 c~1 uoperand@1)))
+        (cmd@1,1
+         (dot r~1 add@1)ch@5)
+        (cmd@,2 inc c@4)))
+      (of@,J
+       (ranges UIntLit@3)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 add@1)
+         (prefix@5 $
+          (at@F
+           (dot~A pool~4 uintegers@1)
+           (dot@2 c~1 uintId@1))))
+        (cmd@,1 inc c@4)))
+      (of@,M
+       (ranges FloatLit@3)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 addFloat@1)
+         (at@L
+          (dot~7 pool~4 floats@1)
+          (dot@2 c~1 floatId@1)))
+        (cmd@,1 inc c@4)))
+      (of@,P
+       (ranges UnknownToken@3 DotToken@H Symbol@R SymbolDef@Z)
+       (stmts@2,1
+        (cmd@1
+         (dot r~1 add@1)
+         (infix@S & "<unexpected token>\3A "~N
+          (prefix@2 $
+           (dot@2 c~1 kind@1))))
+        (cmd@,1 inc c@4))))))
+   (cmd@,U assert
+    (infix@D >
+     (dot~5 r~1 len@1)0@2))
+   (asgn@7,V result~7
+    (call@B getOrIncl~9
+     (dot@5 pool~4 strings@1)r@F))))
+ (proc@,d takeIdent@5 x . .
+  (params@F
+   (param@1 n . .
+    (mut@3 Cursor@4).))StrId@H . .
+  (stmts@2,1
+   (var@4 nested . . . 0@9)
+   (while@,1
+    (infix@I in
+     (call~4 exprKind~8 n@1)
+     (curly@3 OchoiceX@1 CchoiceX@B))
+    (stmts@2,1
+     (cmd inc nested@4)
+     (cmd@,1 inc n@4)))
+   (case@,4
+    (dot@6 n~1 kind@1)
+    (of@,1
+     (ranges Ident@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (dot@3 n~1 litId@1))
+      (cmd@,1 inc n@4)))
+    (of@,4
+     (ranges Symbol@3 SymbolDef@B)
+     (stmts@2,1
+      (let@4 sym . . .
+       (at@F
+        (dot~5 pool~4 syms@1)
+        (dot@2 n~1 symId@1)))
+      (var@4,1 isGlobal . . . false@B)
+      (asgn@7,2 result~7
+       (call@O
+        (dot~A
+         (dot~8 pool~4 strings@1)getOrIncl@1)
+        (call@G extractBasename~F sym@1 isGlobal@6)))
+      (cmd@,3 inc n@4)))
+    (of@,9
+     (ranges ParLe@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@C ==
+         (call~4 exprKind~8 n@1)QuotedX@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@E takeUnquoted~C n@1))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@7 StrId~5 0@1)))))))
+    (else@,E
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 StrId~5 0@1)))))
+   (while@,K
+    (infix@D > nested~7 0@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@7 ==
+        (dot~6 n~1 kind@1)ParRi@3)
+       (stmts@H
+        (cmd dec nested@4))))
+     (cmd@,1 inc n@4)))))
+ (proc@,12 getIdent@5 x . .
+  (params@E
+   (param@1 n . . Cursor@3 .))StrId@D . .
+  (stmts@2,1
+   (var@4 n . . . n@4)
+   (asgn@7,1 result~7
+    (call@B takeIdent~9 n@1)))))

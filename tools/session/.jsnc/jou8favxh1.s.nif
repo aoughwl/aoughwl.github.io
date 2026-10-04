@@ -1,0 +1,2466 @@
+(.nif27)
+(.indexat 79364            )
+(stmts@,1,../../aowli/src/aowli/journal.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv syn1lfpjv "../../../../../../home/savant/nimony/lib/std/syncio.nim")
+  (kv oswd7dmm "../../../../../../home/savant/nimony/lib/std/os.nim")
+  (kv cmdqs323n1 "../../../../../../home/savant/nimony/lib/std/cmdline.nim")
+  (kv ospaexnw61 "../../../../../../home/savant/nimony/lib/std/private/ospaths2.nim")
+  (kv osalirkw71 "../../../../../../home/savant/nimony/lib/std/private/osappdirs.nim")
+  (kv osc4bsu0d1 "../../../../../../home/savant/nimony/lib/std/private/oscommons.nim")
+  (kv ossk30t39 "../../../../../../home/savant/nimony/lib/std/private/osseps.nim")
+  (kv envto7w6l1 "../../../../../../home/savant/nimony/lib/std/envvars.nim"))
+ (stmts@2,R)
+ (const@H,Y :journalExitCode.0.~F x .
+  (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32)
+  (suf@4 78 "i32"))
+ (const@2,b :journalMagic.0. . . string.0.sysvq0asl@8,6 "aowli-journal"@F)
+ (const@2,c :journalVersion.0. . . string.0.sysvq0asl@8,5 "1"@H)
+ (const@2,d :hexDigits.0. . . string.0.sysvq0asl@8,4 "0123456789abcdef"@C)
+ (type@9,g :JEvent.0.~7 . .
+  (pragmas
+   (destroy =destroy_SX4aX45vent0jou8favxh1.0.)
+   (wasmoved =wasmoved_SX4aX45vent0jou8favxh1.0.)
+   (dup =dup_SX4aX45vent0jou8favxh1.0.)
+   (copy =copy_SX4aX45vent0jou8favxh1.0.))
+  (object@2 .
+   (fld~7,1 :kind.0 . . string.0.sysvq0asl@6 .)
+   (fld~7,2 :key.0 . . string.0.sysvq0asl@5 .)
+   (fld~7,3 :fields.0 . . seq.0.Ixdx2fh1.@B .)))
+ (gvar@2,m :gMode.0. . .
+  (i 32)0@8)
+ (gvar@2,n :gEvents.0. . . seq.0.I467rk41.@C
+  (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (call@F,1 newSeqUninit.0.Iuueuci.~F 0@1)))
+ (gvar@2,o :gPos.0. . .
+  (i 32)0@7)
+ (gvar@2,p :gPath.0. . . string.0.sysvq0asl ""@8)
+ (gvar@2,q :gCwd.0. . . string.0.sysvq0asl ""@7)
+ (gvar@2,r :gHome.0. . . string.0.sysvq0asl ""@8)
+ (gvar@2,s :gRecCwd.0. . . string.0.sysvq0asl ""@A)
+ (gvar@2,t :gProgram.0. . . string.0.sysvq0asl ""@B)
+ (gvar@2,u :gArgv.0. . . seq.0.Ixdx2fh1.@D,~B
+  (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+ (proc@,w :journalOff.0.@5 x . .
+  (params@G)
+  (bool@4). .
+  (stmts@R
+   (result@6 :result.0 . .
+    (bool~T).)
+   (asgn@6 result.0
+    (eq
+     (i 32)gMode.0.~6 0@3))
+   (ret~R result.0)))
+ (proc@,x :journalRecording.0.@5 x . .
+  (params@M)
+  (bool@4). .
+  (stmts@X
+   (result@6 :result.1 . .
+    (bool~Z,~1).)
+   (asgn@6 result.1
+    (eq
+     (i 32)gMode.0.~6 1@3))
+   (ret~X result.1)))
+ (proc@,y :journalReplaying.0.@5 x . .
+  (params@M)
+  (bool@4). .
+  (stmts@X
+   (result@6 :result.2 . .
+    (bool~Z,~2).)
+   (asgn@6 result.2
+    (eq
+     (i 32)gMode.0.~6 2@3))
+   (ret~X result.2)))
+ (proc@,15 :jEsc.0.@5 x . .
+  (params@A
+   (param@1 :s.0 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result@7 :result.3 . . string.0.sysvq0asl@1,~P .)
+   (asgn@7 result.3~7 ""@2)
+   (var@4,1 :i.1 . .
+    (i 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.1~2
+     (call@3 len.4.sysvq0asl@1 s.0~1))
+    (stmts@2,1
+     (let@4 :b.0 . .
+      (i@4 32)
+      (conv@7
+       (i~3 32)
+       (conv@6
+        (u~5 8)
+        (call@1 \5B\5D.9.sysvq0asl s.0 i.1@2))))
+     (if@,1
+      (elif@3
+       (eq@5
+        (c 8)
+        (call~5 \5B\5D.9.sysvq0asl s.0 i.1@2)'\5C'@3)
+       (stmts@E
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.3)"\5C\5C"@5)))
+      (elif@5,1
+       (eq@5
+        (c 8)
+        (call~5 \5B\5D.9.sysvq0asl s.0 i.1@2)'\0A'@3)
+       (stmts@E
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.3)"\5Cn"@5)))
+      (elif@5,2
+       (eq@5
+        (c 8)
+        (call~5 \5B\5D.9.sysvq0asl s.0 i.1@2)'\09'@3)
+       (stmts@E
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.3)"\5Ct"@5)))
+      (elif@5,3
+       (eq@5
+        (c 8)
+        (call~5 \5B\5D.9.sysvq0asl s.0 i.1@2)'\0D'@3)
+       (stmts@E
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.3)"\5Cr"@5)))
+      (elif@5,4
+       (or@7
+        (lt~5
+         (i 32)b.0~2 32@2)
+        (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (lt@2,1
+          (i 32)126@N,1F,../../aowli/src/aowli/journal.nim b.0@J,1F,../../aowli/src/aowli/journal.nim)))
+       (stmts~3,1
+        (cmd@6 add.2.sysvq0asl@1
+         (haddr~6 result.3)"\5Cx"@5)
+        (cmd@6,1 add.1.sysvq0asl@1
+         (haddr~6 result.3)
+         (call@5 \5B\5D.9.sysvq0asl hexDigits.0.
+          (bitand@K
+           (i 32)
+           (ashr~7
+            (i 32)b.0~2 4@4)15@4)))
+        (cmd@6,2 add.1.sysvq0asl@1
+         (haddr~6 result.3)
+         (call@5 \5B\5D.9.sysvq0asl hexDigits.0.
+          (bitand@C
+           (i 32)b.0~2 15@4)))))
+      (else@,8
+       (stmts@6
+        (cmd@6 add.1.sysvq0asl@1
+         (haddr~6 result.3)
+         (call@5 \5B\5D.9.sysvq0asl s.0 i.1@2)))))
+     (cmd@,A inc.1.I6wjjge.
+      (haddr@4 i.1))))
+   (ret~2,~1 result.3)))
+ (proc@,1L :hexVal.0.@5 . . .
+  (params@B
+   (param@1 :c.0 . .
+    (c@3 8).))
+  (i@B 32). .
+  (stmts@2,1
+   (result :result.4 . .
+    (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32).)
+   (asgn result.4
+    (if
+     (elif@3
+      (and@9
+       (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (le@2,1
+         (c 8)'0'@A,1N,../../aowli/src/aowli/journal.nim c.0@5,1N,../../aowli/src/aowli/journal.nim))
+       (le@6
+        (c 8)c.0~2 '9'@3))
+      (expr@N
+       (sub@7
+        (i 32)
+        (conv~4
+         (i~J,~D 32)c.0@1)
+        (conv@5
+         (i~S,~D 32)'0'@1))))
+     (elif@5,1
+      (and@9
+       (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (le@2,1
+         (c 8)'a'@C,1O,../../aowli/src/aowli/journal.nim c.0@7,1O,../../aowli/src/aowli/journal.nim))
+       (le@6
+        (c 8)c.0~2 'f'@3))
+      (expr@N
+       (sub@C
+        (i 32)
+        (add~9
+         (i 32)10~3
+         (conv@5
+          (i~Q,~E 32)c.0@1))
+        (conv@5
+         (i~Z,~E 32)'a'@1))))
+     (elif@5,2
+      (and@9
+       (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (le@2,1
+         (c 8)'A'@C,1P,../../aowli/src/aowli/journal.nim c.0@7,1P,../../aowli/src/aowli/journal.nim))
+       (le@6
+        (c 8)c.0~2 'F'@3))
+      (expr@N
+       (sub@C
+        (i 32)
+        (add~9
+         (i 32)10~3
+         (conv@5
+          (i~Q,~F 32)c.0@1))
+        (conv@5
+         (i~Z,~F 32)'A'@1))))
+     (else@,3
+      (expr@6 0))))
+   (ret~2,~1 result.4)))
+ (proc@,1R :jUnesc.0.@5 x . .
+  (params@C
+   (param@1 :s.1 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result@7 :result.5 . . string.0.sysvq0asl@1,~l .)
+   (asgn@7 result.5~7 ""@2)
+   (var@4,1 :i.2 . .
+    (i 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.2~2
+     (call@3 len.4.sysvq0asl@1 s.1~1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (and@D
+        (eq~8
+         (c 8)
+         (call~5 \5B\5D.9.sysvq0asl s.1 i.2@2)'\5C'@3)
+        (lt@A
+         (i 32)
+         (add~4
+          (i 32)i.2~2 1@2)
+         (call@3 len.4.sysvq0asl@1 s.1~1)))
+       (stmts~1,1
+        (let@4 :c.1 . .
+         (c@5,~B 8)
+         (call@4 \5B\5D.9.sysvq0asl s.1
+          (add@3
+           (i 32)i.2~1 1@1)))
+        (if@,1
+         (elif@3
+          (eq@2
+           (c 8)c.1~2 '\5C'@3)
+          (stmts@B
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)'\5C'@5)
+           (asgn@J i.2~2
+            (add@4
+             (i 32)i.2~2 2@2))))
+         (elif@5,1
+          (eq@2
+           (c 8)c.1~2 'n'@3)
+          (stmts@A
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)'\0A'@5)
+           (asgn@J i.2~2
+            (add@4
+             (i 32)i.2~2 2@2))))
+         (elif@5,2
+          (eq@2
+           (c 8)c.1~2 't'@3)
+          (stmts@A
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)'\09'@5)
+           (asgn@J i.2~2
+            (add@4
+             (i 32)i.2~2 2@2))))
+         (elif@5,3
+          (eq@2
+           (c 8)c.1~2 'r'@3)
+          (stmts@A
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)'\0D'@5)
+           (asgn@J i.2~2
+            (add@4
+             (i 32)i.2~2 2@2))))
+         (elif@5,4
+          (and@9
+           (eq~7
+            (c 8)c.1~2 'x'@3)
+           (lt@A
+            (i 32)
+            (add~4
+             (i 32)i.2~2 3@2)
+            (call@3 len.4.sysvq0asl@1 s.1~1)))
+          (stmts~3,1
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)
+            (conv@9
+             (c~4 8)
+             (conv@6
+              (u~D,~T 8)
+              (add@L
+               (i 32)
+               (mul~5
+                (i 32)
+                (call~9 hexVal.0.~6
+                 (call@1 \5B\5D.9.sysvq0asl s.1
+                  (add@3
+                   (i 32)i.2~1 2@1)))16@2)
+               (call@8 hexVal.0.~6
+                (call@1 \5B\5D.9.sysvq0asl s.1
+                 (add@3
+                  (i 32)i.2~1 3@1)))))))
+           (asgn@2,1 i.2~2
+            (add@4
+             (i 32)i.2~2 4@2))))
+         (else@,7
+          (stmts@2,1
+           (cmd@6 add.1.sysvq0asl@1
+            (haddr~6 result.5)
+            (call@5 \5B\5D.9.sysvq0asl s.1 i.2@2))
+           (cmd@,1 inc.1.I6wjjge.
+            (haddr@4 i.2)))))))
+      (else@,C
+       (stmts@2,1
+        (cmd@6 add.1.sysvq0asl@1
+         (haddr~6 result.5)
+         (call@5 \5B\5D.9.sysvq0asl s.1 i.2@2))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.2)))))))
+   (ret~2,~1 result.5)))
+ (proc@,1l :jInt.0.@5 x . .
+  (params@A
+   (param@1 :s.2 . . string.0.sysvq0asl@3 .))
+  (i@D 32). .
+  (stmts@2,1
+   (result :result.6 . .
+    (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32).)
+   (asgn@7,1 result.6~7 0@2)
+   (var@4,2 :i.3 . .
+    (i 32)0@4)
+   (var@4,3 :neg.0 . .
+    (bool@C,h,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@6))
+   (if@,4
+    (elif@3
+     (and@A
+      (lt~8
+       (i 32)i.3~2
+       (call@3 len.4.sysvq0asl@1 s.2~1))
+      (eq@9
+       (c 8)
+       (call~5 \5B\5D.9.sysvq0asl s.2 i.3@2)'-'@3))
+     (stmts@R
+      (asgn@4 neg.0~4
+       (true@2))
+      (cmd@C inc.1.I6wjjge.
+       (haddr@4 i.3)))))
+   (while@,5
+    (and@W
+     (and~G
+      (lt~8
+       (i 32)i.3~2
+       (call@3 len.4.sysvq0asl@1 s.2~1))
+      (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (le@2,1
+        (c 8)'0'@U,1s,../../aowli/src/aowli/journal.nim
+        (call@M,1s,../../aowli/src/aowli/journal.nim \5B\5D.9.sysvq0asl s.2 i.3@2))))
+     (le@9
+      (c 8)
+      (call~5 \5B\5D.9.sysvq0asl s.2 i.3@2)'9'@3))
+    (stmts@2,1
+     (asgn@7 result.6~7
+      (add@E
+       (i 32)
+       (mul~5
+        (i 32)result.6~7 10@2)
+       (sub@D
+        (i 32)
+        (conv~7
+         (i~J,~j 32)
+         (call@1 \5B\5D.9.sysvq0asl s.2 i.3@2))
+        (conv@5
+         (i~V,~j 32)'0'@1))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.3))))
+   (if@,8
+    (elif@3 neg.0
+     (stmts@5
+      (asgn@7 result.6~7
+       (neg@2
+        (i 32)result.6@1)))))
+   (ret~2,~1 result.6)))
+ (proc@,25 :startsWithStr.0.@5 . . .
+  (params@I
+   (param@1 :s.3 . . string.0.sysvq0asl@6 .)
+   (param@4 :p.0 . . string.0.sysvq0asl@3 .))
+  (bool@G). .
+  (stmts@2,1
+   (result :result.7 . .
+    (bool@2,~1A).)
+   (if
+    (elif@3
+     (or@B
+      (eq~5
+       (i 32)
+       (call~5 len.4.sysvq0asl@1 p.0~1)0@3)
+      (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (lt@2,1
+        (i 32)
+        (call@S,27,../../aowli/src/aowli/journal.nim len.4.sysvq0asl@1 s.3~1)
+        (call@K,27,../../aowli/src/aowli/journal.nim len.4.sysvq0asl@1 p.0~1))))
+     (stmts@T
+      (ret
+       (false@7)))))
+   (var@4,1 :i.4 . .
+    (i 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.4~2
+     (call@3 len.4.sysvq0asl@1 p.0~1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (not@,1
+         (eq@7
+          (c 8)
+          (call@7,2A,../../aowli/src/aowli/journal.nim \5B\5D.9.sysvq0asl s.3 i.4@2)
+          (call@F,2A,../../aowli/src/aowli/journal.nim \5B\5D.9.sysvq0asl p.0 i.4@2))))
+       (stmts@E
+        (ret
+         (false@7)))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.4))))
+   (asgn@7,5 result.7~7
+    (true@2))
+   (ret~2,~1 result.7)))
+ (proc@,2D :portPath.0.@5 x . .
+  (params@E
+   (param@1 :p.1 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result :result.8 . . string.0.sysvq0asl@8,~1X .)
+   (if@,1
+    (elif@3
+     (eq@6
+      (i 32)
+      (call~5 len.4.sysvq0asl@1 p.1~1)0@3)
+     (stmts@C
+      (ret p.1@7))))
+   (if@,2
+    (elif@3
+     (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 32)0@G,2H,../../aowli/src/aowli/journal.nim
+       (call@9,2H,../../aowli/src/aowli/journal.nim len.4.sysvq0asl@1 gCwd.0.~4)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@2 ==.20.sysvq0asl p.1~2 gCwd.0.@3)
+        (stmts@B
+         (ret "<cwd>"@7))))
+      (if@,1
+       (elif@3
+        (call@D startsWithStr.0.~D p.1@1
+         (infix@9 &.0.sysvq0asl gCwd.0.~5 "/"@2))
+        (stmts@U
+         (ret
+          (infix@G &.0.sysvq0asl "<cwd>/"~9
+           (call@8 substr.0.sysvq0asl~6 p.1@1
+            (add@D
+             (i 32)
+             (call~5 len.4.sysvq0asl@1 gCwd.0.~4)1@2)
+            (sub@O
+             (i 32)
+             (call~5 len.4.sysvq0asl@1 p.1~1)1@2))))))))))
+   (if@,5
+    (elif@3
+     (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 32)0@H,2K,../../aowli/src/aowli/journal.nim
+       (call@A,2K,../../aowli/src/aowli/journal.nim len.4.sysvq0asl@1 gHome.0.~5)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@2 ==.20.sysvq0asl p.1~2 gHome.0.@3)
+        (stmts@C
+         (ret "<home>"@7))))
+      (if@,1
+       (elif@3
+        (call@D startsWithStr.0.~D p.1@1
+         (infix@A &.0.sysvq0asl gHome.0.~6 "/"@2))
+        (stmts@V
+         (ret
+          (infix@H &.0.sysvq0asl "<home>/"~A
+           (call@8 substr.0.sysvq0asl~6 p.1@1
+            (add@E
+             (i 32)
+             (call~5 len.4.sysvq0asl@1 gHome.0.~5)1@2)
+            (sub@P
+             (i 32)
+             (call~5 len.4.sysvq0asl@1 p.1~1)1@2))))))))))
+   (asgn@7,8 result.8~7 p.1@2)
+   (ret~2,~1 result.8)))
+ (proc@,2R :journalFail.0.@5 . . .
+  (params@G
+   (param@1 :msg.0 . . string.0.sysvq0asl@5 .)). . .
+  (stmts@2,1
+   (cmd write.0.syn1lfpjv stderr.0.syn1lfpjv@6 "aowli\3A REPLAY DIVERGENCE — the run asked the host for something the\0A"@E)
+   (cmd@,1 write.0.syn1lfpjv stderr.0.syn1lfpjv@6
+    (infix@f &.0.sysvq0asl
+     (infix~8 &.0.sysvq0asl "       journal \27"~J gPath.0.@2)"\27 cannot answer. Refusing to fall through\0A"@2))
+   (cmd@,2 write.0.syn1lfpjv stderr.0.syn1lfpjv@6 "       to the real OS.\0A"@E)
+   (cmd@,3 write.0.syn1lfpjv stderr.0.syn1lfpjv@6 msg.0@E)
+   (cmd@,4 quit.0.syn1lfpjv journalExitCode.0.@5)))
+ (proc@,2Y :journalRefuse.0.@5 . . .
+  (params@I
+   (param@1 :msg.1 . . string.0.sysvq0asl@5 .)). . .
+  (stmts@2,1
+   (cmd write.0.syn1lfpjv stderr.0.syn1lfpjv@6 "aowli\3A this journal does not belong to this run — refusing to replay.\0A"@E)
+   (cmd@,1 write.0.syn1lfpjv stderr.0.syn1lfpjv@6 msg.1@E)
+   (cmd@,2 quit.0.syn1lfpjv journalExitCode.0.@5)))
+ (proc@,2g :jRecord.0.@5 x . .
+  (params@D
+   (param@1 :kind.0 . . string.0.sysvq0asl@B .)
+   (param@7 :key.0 . . string.0.sysvq0asl@5 .)
+   (param@K :fields.0 . . seq.0.Ixdx2fh1.@B .)). . .
+  (stmts@2,1
+   (var@4,1 :e.0 . . JEvent.0.@4
+    (oconstr@A JEvent.0.~6
+     (kv@5 kind.0~4 kind.0@2)
+     (kv@G key.0~3 key.0@2)
+     (kv@T fields.0~6
+      (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+       (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))))
+   (var@4,2 :i.5 . .
+    (i 32)0@4)
+   (while@,3
+    (lt@8
+     (i 32)i.5~2
+     (call@8 len.3.Ixq6taz.@1 fields.0~6))
+    (stmts@2,1
+     (cmd@8 add.0.Ig6072n.@1
+      (haddr~7
+       (dot e.0~1 fields.0 0 "x"))
+      (hderef@5
+       (call \5B\5D.7.Ir6d0tw. fields.0 i.5@7)))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.5))))
+   (cmd@7,6 add.0.Ixpq8s01.@1
+    (haddr~7 gEvents.0.)e.0@5)))
+ (proc@,2p :jServe.0.@5 x . .
+  (params@C
+   (param@1 :kind.1 . . string.0.sysvq0asl@B .)
+   (param@7 :key.1 . . string.0.sysvq0asl@5 .))seq.0.Ixdx2fh1.@O . .
+  (stmts@2,1
+   (result :result.9 . . seq.0.Ixdx2fh1.@D,~27 .)
+   (asgn@7,2 result.9~7
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+   (if@,3
+    (elif@3
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)
+       (dot@K,2u,../../aowli/src/aowli/journal.nim gEvents.0.~7 len.0 0 "x")gPos.0.@5,2u,../../aowli/src/aowli/journal.nim))
+     (stmts~1,1
+      (call@B journalFail.0.~B
+       (infix@c,1 &.0.sysvq0asl
+        (infix~6 &.0.sysvq0asl
+         (infix~7 &.0.sysvq0asl
+          (infix~7 &.0.sysvq0asl
+           (infix@z,~1 &.0.sysvq0asl
+            (infix~Z &.0.sysvq0asl
+             (infix~F &.0.sysvq0asl "  journal EXHAUSTED\3A all "~S
+              (prefix@2 $.2.sysvq0asl
+               (call@8 len.3.Ijmyd9p1.@1 gEvents.0.~7)))" recorded event\28s\29 consumed.\0A"@2)"  asked for \3A "~1G,1)kind.1@2)"  "@2)key.1@2)"\0A"@2))
+      (ret@,2 result.9))))
+   (if@,7
+    (elif@3
+     (or@R
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (infix@7 ==.20.sysvq0asl
+         (dot@I,2y,../../aowli/src/aowli/journal.nim
+          (hderef~D
+           (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))kind.0 0 "x")kind.1@R,2y,../../aowli/src/aowli/journal.nim)))
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (infix@7 ==.20.sysvq0asl
+         (dot@m,2y,../../aowli/src/aowli/journal.nim
+          (hderef~D
+           (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))key.0 0 "x")key.1@u,2y,../../aowli/src/aowli/journal.nim))))
+     (stmts~1,1
+      (call@B journalFail.0.~B
+       (infix@d,2 &.0.sysvq0asl
+        (infix~6 &.0.sysvq0asl
+         (infix~7 &.0.sysvq0asl
+          (infix~7 &.0.sysvq0asl
+           (infix@t,~1 &.0.sysvq0asl
+            (infix~7 &.0.sysvq0asl
+             (infix~K &.0.sysvq0asl
+              (infix~7 &.0.sysvq0asl
+               (infix~L &.0.sysvq0asl
+                (infix@g,~1 &.0.sysvq0asl
+                 (infix~7 &.0.sysvq0asl
+                  (infix~F &.0.sysvq0asl
+                   (infix~9 &.0.sysvq0asl
+                    (infix~E &.0.sysvq0asl "  at event \23"~F
+                     (prefix@2 $.2.sysvq0asl
+                      (add@7
+                       (i 32)gPos.0.~5 1@2)))" of "@2)
+                   (prefix@2 $.2.sysvq0asl
+                    (call@8 len.3.Ijmyd9p1.@1 gEvents.0.~7)))"\0A"@2)"  journal has\3A "~y,1)
+                (dot@F
+                 (hderef~D
+                  (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))kind.0 0 "x"))"  "@2)
+              (dot@F
+               (hderef~D
+                (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))key.0 0 "x"))"\0A"@2)"  asked for  \3A "~1B,1)kind.1@2)"  "@2)key.1@2)"\0A"@2))
+      (ret@,3 result.9))))
+   (var@4,C :i.8 . .
+    (i 32)0@4)
+   (while@,D
+    (lt@8
+     (i 32)i.8~2
+     (call@M len.3.Ixq6taz.@1
+      (dot~7
+       (hderef~D
+        (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))fields.0 0 "x")))
+    (stmts@2,1
+     (cmd@6 add.0.Ig6072n.@1
+      (haddr~6 result.9)
+      (hderef@I
+       (call \5B\5D.7.Ir6d0tw.
+        (dot
+         (hderef~D
+          (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))fields.0 0 "x")i.8@8)))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.8))))
+   (cmd@,G inc.1.I6wjjge.
+    (haddr@4 gPos.0.))
+   (ret~2,~1 result.9)))
+ (proc@,38 :jField.0.@5 x . .
+  (params@C
+   (param@1 :f.0 . . seq.0.Ixdx2fh1.@6 .)
+   (param@H :i.0 . .
+    (i@3 32).))string.0.sysvq0asl@Q . .
+  (stmts@2,1
+   (result :result.10 . . string.0.sysvq0asl@8,~2S .)
+   (asgn@,2 result.10
+    (if
+     (elif@3
+      (lt@2
+       (i 32)i.0~2
+       (call@3 len.3.Ixq6taz.@1 f.0~1))
+      (expr@B
+       (hderef
+        (call \5B\5D.7.Ir6d0tw. f.0 i.0@2))))
+     (else@J
+      (expr@6 ""))))
+   (ret~2,~1 result.10)))
+ (proc@,3G :jSlurp.0.@5 x . .
+  (params@C
+   (param@1 :p.2 . . string.0.sysvq0asl@3 .))string.0.sysvq0asl@D . .
+  (stmts@2,1
+   (result :result.11 . . string.0.sysvq0asl@8,~2a .)
+   (asgn@7,2 result.11~7 ""@2)
+   (var@4,3 :f.1 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (if@,4
+    (elif@3
+     (not
+      (call@8 open.0.syn1lfpjv~4
+       (haddr@1 f.1)p.2@4 fmRead.0.syn1lfpjv@7 -1@Q,65,../../../../../../home/savant/nimony/lib/std/syncio.nim))
+     (stmts@O
+      (ret result.11))))
+   (var@4,5 :buf.0 . .
+    (array@A
+     (c@8 8)
+     (rangetype
+      (i 32)0 65535))
+    (call@X default.23.Isnz07p.~7
+     (array@1
+      (c@D 8)
+      (rangetype
+       (i 32)0 65535))))
+   (while@,6
+    (true@6)
+    (stmts@2,1
+     (let@4 :n.0 . .
+      (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32)
+      (call@E readBuffer.0.syn1lfpjv~A f.1@1
+       (hconv@9
+        (pointer@Y,5T,../../../../../../home/savant/nimony/lib/std/syncio.nim
+         (unchecked))
+        (addr
+         (arrat buf.0 0@4 65535~F,~2)))
+       (expr@2,2Z,../../../../../../home/savant/nimony/lib/std/system.nim
+        (expr@,~4
+         (add@j,2
+          (i 32)
+          (sub~N
+           (i 32)
+           (conv~5
+            (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)
+            (conv~D
+             (i 32)65535@G,3N,../../aowli/src/aowli/journal.nim))
+           (conv@I
+            (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)
+            (conv~D
+             (i 32)0@G,3N,../../aowli/src/aowli/journal.nim)))1@2)))))
+     (if@,1
+      (elif@3
+       (le@2
+        (i 32)n.0~2 0@3)
+       (stmts@8
+        (break .))))
+     (var@4,2 :i.9 . .
+      (i 32)0@4)
+     (while@,3
+      (lt@8
+       (i 32)i.9~2 n.0@2)
+      (stmts@2,1
+       (cmd@6 add.1.sysvq0asl@1
+        (haddr~6 result.11)
+        (arrat@5 buf.0 i.9@4 65535~1,~6))
+       (cmd@,1 inc.1.I6wjjge.
+        (haddr@4 i.9))))))
+   (call@5,D close.0.syn1lfpjv~5 f.1@1)
+   (ret~2,~1 result.11)))
+ (proc@,3Z :splitTabs.0.@5 . . .
+  (params@E
+   (param@1 :line.0 . . string.0.sysvq0asl@6 .))seq.0.Ixdx2fh1.@J . .
+  (stmts@2,1
+   (result@7 :result.12 . . seq.0.Ixdx2fh1.@6,~2r .)
+   (asgn@7 result.12~7
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+   (var@4,1 :cur.0 . . string.0.sysvq0asl ""@6)
+   (var@4,2 :i.10 . .
+    (i 32)0@4)
+   (while@,3
+    (le@8
+     (i 32)i.10~2
+     (call@7 len.4.sysvq0asl@1 line.0~4))
+    (stmts@2,1
+     (if
+      (elif@3
+       (or@E
+        (eq~C
+         (i 32)i.10~2
+         (call@7 len.4.sysvq0asl@1 line.0~4))
+        (eq@B
+         (c 8)
+         (call~8 \5B\5D.9.sysvq0asl line.0 i.10@5)'\09'@3))
+       (stmts~1,1
+        (cmd@6 add.0.Ig6072n.@1
+         (haddr~6 result.12)cur.0@5)
+        (asgn@4,1 cur.0~4 ""@2)))
+      (else@,3
+       (stmts@2,1
+        (asgn@4 cur.0~4
+         (infix@6 &.1.sysvq0asl cur.0~4
+          (call@2 \5B\5D.9.sysvq0asl line.0 i.10@5))))))
+     (cmd@,5 inc.1.I6wjjge.
+      (haddr@4 i.10))))
+   (ret~2,~1 result.12)))
+ (proc@,3l :splitLines2.0.@5 . . .
+  (params@G
+   (param@1 :text.0 . . string.0.sysvq0asl@6 .))seq.0.Ixdx2fh1.@J . .
+  (stmts@2,1
+   (result@7 :result.13 . . seq.0.Ixdx2fh1.@6,~33 .)
+   (asgn@7 result.13~7
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+   (var@4,1 :cur.1 . . string.0.sysvq0asl ""@6)
+   (var@4,2 :i.11 . .
+    (i 32)0@4)
+   (while@,3
+    (lt@8
+     (i 32)i.11~2
+     (call@6 len.4.sysvq0asl@1 text.0~4))
+    (stmts@2,1
+     (if
+      (elif@3
+       (eq@8
+        (c 8)
+        (call~8 \5B\5D.9.sysvq0asl text.0 i.11@5)'\0A'@3)
+       (stmts~1,1
+        (cmd@6 add.0.Ig6072n.@1
+         (haddr~6 result.13)cur.1@5)
+        (asgn@4,1 cur.1~4 ""@2)))
+      (else@,3
+       (stmts@2,1
+        (if
+         (elif@3
+          (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (not@,1
+            (eq@7
+             (c 8)
+             (call@9,3v,../../aowli/src/aowli/journal.nim \5B\5D.9.sysvq0asl text.0 i.11@5)'\0D'@K,3v,../../aowli/src/aowli/journal.nim)))
+          (stmts@H
+           (asgn@4 cur.1~4
+            (infix@6 &.1.sysvq0asl cur.1~4
+             (call@2 \5B\5D.9.sysvq0asl text.0 i.11@5)))))))))
+     (cmd@,5 inc.1.I6wjjge.
+      (haddr@4 i.11))))
+   (if@,A
+    (elif@3
+     (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (lt@2,1
+       (i 32)0@F,3x,../../aowli/src/aowli/journal.nim
+       (call@8,3x,../../aowli/src/aowli/journal.nim len.4.sysvq0asl@1 cur.1~3)))
+     (stmts@D
+      (cmd@6 add.0.Ig6072n.@1
+       (haddr~6 result.13)cur.1@5))))
+   (ret~2,~1 result.13)))
+ (proc@,3y :hostCwd.0.@5 . . .
+  (params@C)string.0.sysvq0asl@4 . .
+  (stmts@2,1
+   (result :result.14 . . string.0.sysvq0asl@8,~3I .)
+   (try
+    (stmts@5
+     (asgn@7 result.14~7
+      (call@F getCurrentDir.0.ospaexnw61~D)))
+    (except@,1 .
+     (stmts@8
+      (asgn@7 result.14~7 ""@2))))
+   (ret~2,~1 result.14)))
+ (proc@,42 :initPaths.0.@5 . . .
+  (params@E). . .
+  (stmts@2,1
+   (asgn@5 gCwd.0.~5
+    (call@9 hostCwd.0.~7))
+   (try@,1
+    (stmts@5
+     (asgn@6 gHome.0.~6
+      (call@8 getEnv.0.envto7w6l1~6 "HOME"@1 ""@c,2c,../../../../../../home/savant/nimony/lib/std/envvars.nim)))
+    (except@,1 .
+     (stmts@8
+      (asgn@6 gHome.0.~6 ""@2))))))
+ (proc@,47 :argvJoin.0.@5 . . .
+  (params@D
+   (param@1 :a.0 . . seq.0.Ixdx2fh1.@6 .))string.0.sysvq0asl@I . .
+  (stmts@2,1
+   (result@7 :result.15 . . string.0.sysvq0asl@1,~3R .)
+   (asgn@7 result.15~7 ""@2)
+   (var@4,1 :i.12 . .
+    (i 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.12~2
+     (call@3 len.3.Ixq6taz.@1 a.0~1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (lt@2,1
+         (i 32)0@B,4C,../../aowli/src/aowli/journal.nim i.12@7,4C,../../aowli/src/aowli/journal.nim))
+       (stmts@7
+        (asgn@7 result.15~7
+         (infix@9 &.0.sysvq0asl result.15~7 " "@2)))))
+     (asgn@7,1 result.15~7
+      (infix@9 &.0.sysvq0asl result.15~7
+       (call@6 jEsc.0.~4
+        (hderef@1
+         (call \5B\5D.7.Ir6d0tw. a.0 i.12@2)))))
+     (cmd@,2 inc.1.I6wjjge.
+      (haddr@4 i.12))))
+   (ret~2,~1 result.15)))
+ (proc@,4F :startRecord.0.@5 x . .
+  (params@H
+   (param@1 :path.0 . . string.0.sysvq0asl@F .)
+   (param@7 :program.0 . . string.0.sysvq0asl@9 .)
+   (param@O :argv.0 . . seq.0.Ixdx2fh1.@9 .)). . .
+  (stmts@2,1
+   (call@9,3 initPaths.0.~9)
+   (asgn@6,4 gMode.0.~6 1@2)
+   (asgn@6,5 gPath.0.~6 path.0@2)
+   (asgn@9,6 gProgram.0.~9 program.0@2)
+   (asgn@6,7 gArgv.0.~6 argv.0@2)
+   (asgn@8,8 gRecCwd.0.~8 gCwd.0.@2)
+   (asgn@8,9 gEvents.0.~8
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1 newSeqUninit.0.Iuueuci.~F 0@1)))
+   (asgn@5,A gPos.0.~5 0@2)))
+ (proc@,4S :startReplay.0.@5 x . .
+  (params@H
+   (param@1 :path.1 . . string.0.sysvq0asl@F .)
+   (param@7 :program.1 . . string.0.sysvq0asl@9 .)
+   (param@O :argv.1 . . seq.0.Ixdx2fh1.@9 .)). . .
+  (stmts@2,1
+   (call@9,1 initPaths.0.~9)
+   (asgn@6,2 gPath.0.~6 path.1@2)
+   (asgn@9,3 gProgram.0.~9 program.1@2)
+   (asgn@6,4 gArgv.0.~6 argv.1@2)
+   (let@4,5 :text.1 . . string.0.sysvq0asl@4,~3r
+    (call@D jSlurp.0.~6 path.1@1))
+   (if@,6
+    (elif@3
+     (eq@9
+      (i 32)
+      (call~5 len.4.sysvq0asl@1 text.1~4)0@3)
+     (stmts~1,1
+      (call@D journalRefuse.0.~D
+       (infix@Y &.0.sysvq0asl
+        (infix~7 &.0.sysvq0asl "  cannot read journal \27"~Q path.1@2)"\27 \28missing or empty\29.\0A"@2))
+      (ret@,1 .))))
+   (asgn@8,9 gEvents.0.~8
+    (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+     (call@F,1 newSeqUninit.0.Iuueuci.~F 0@1)))
+   (asgn@5,A gPos.0.~5 0@2)
+   (var@4,B :sawMagic.0 . .
+    (bool@C,h,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@B))
+   (var@4,C :hdrProgram.0 . . string.0.sysvq0asl ""@D)
+   (var@4,D :hdrArgv.0 . . string.0.sysvq0asl ""@A)
+   (let@4,E :lines.0 . . seq.0.Ixdx2fh1.@9,~3y
+    (call@J splitLines2.0.~B text.1@1))
+   (var@4,F :li.0 . .
+    (i 32)0@5)
+   (while@,G
+    (lt@9
+     (i 32)li.0~3
+     (call@7 len.3.Ixq6taz.@1 lines.0~5))
+    (stmts@2,1
+     (let@4 :f.2 . . seq.0.Ixdx2fh1.@7,~41
+      (call@D splitTabs.0.~9
+       (hderef@1
+        (call \5B\5D.7.Ir6d0tw. lines.0 li.0@6))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 li.0))
+     (if@,2
+      (elif@3
+       (eq@6
+        (i 32)
+        (call~5 len.3.Ixq6taz.@1 f.2~1)0@3)
+       (stmts@C
+        (continue .))))
+     (if@,3
+      (elif@3
+       (infix@5 ==.20.sysvq0asl
+        (hderef~5
+         (call \5B\5D.7.Ir6d0tw. f.2 0@2))journalMagic.0.@3)
+       (stmts~1,1
+        (if
+         (elif@3
+          (or@A
+           (lt~4
+            (i 32)
+            (call~5 len.3.Ixq6taz.@1 f.2~1)2@2)
+           (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (not@,1
+             (infix@7 ==.20.sysvq0asl
+              (hderef@M,4p,../../aowli/src/aowli/journal.nim
+               (call \5B\5D.7.Ir6d0tw. f.2 1@2))journalVersion.0.@U,4p,../../aowli/src/aowli/journal.nim))))
+          (stmts~1,1
+           (call@D journalRefuse.0.~D
+            (infix@h,1 &.0.sysvq0asl
+             (infix~H &.0.sysvq0asl
+              (infix@J,~1 &.0.sysvq0asl
+               (infix~F &.0.sysvq0asl "  journal format version \27"~T
+                (call@8 jField.0.~6 f.2@1 1@4))"\27, this build speaks \27"~i,1)journalVersion.0.@2)"\27.\0A"@2))
+           (ret@,2 .))))
+        (asgn@9,4 sawMagic.0~9
+         (true@2))))
+      (elif@5,6
+       (infix@5 ==.20.sysvq0asl
+        (hderef~5
+         (call \5B\5D.7.Ir6d0tw. f.2 0@2))"header"@3)
+       (stmts~3,1
+        (if
+         (elif@3
+          (infix@D ==.20.sysvq0asl
+           (call~7 jField.0.~6 f.2@1 1@4)"program"@3)
+          (stmts@R
+           (asgn@B hdrProgram.0~B
+            (call@8 jUnesc.0.~6
+             (call@7 jField.0.~6 f.2@1 2@4)))))
+         (elif@5,1
+          (infix@D ==.20.sysvq0asl
+           (call~7 jField.0.~6 f.2@1 1@4)"argv"@3)
+          (stmts@O
+           (asgn@8 hdrArgv.0~8
+            (call@8 jField.0.~6 f.2@1 2@4))))
+         (elif@5,2
+          (infix@D ==.20.sysvq0asl
+           (call~7 jField.0.~6 f.2@1 1@4)"cwd"@3)
+          (stmts@N
+           (asgn@8 gRecCwd.0.~8
+            (call@8 jUnesc.0.~6
+             (call@7 jField.0.~6 f.2@1 2@4))))))))
+      (elif@5,A
+       (or@C
+        (infix~7 ==.20.sysvq0asl
+         (hderef~5
+          (call \5B\5D.7.Ir6d0tw. f.2 0@2))"\23"@3)
+        (infix@8 ==.20.sysvq0asl
+         (hderef~5
+          (call \5B\5D.7.Ir6d0tw. f.2 0@2))""@3))
+       (stmts~3,1
+        (discard .)))
+      (else@,C
+       (stmts@2,1
+        (var@4 :e.1 . . JEvent.0.@,~2I
+         (oconstr@A JEvent.0.~A,~2I
+          (kv@5 kind.0~4
+           (hderef@2
+            (call \5B\5D.7.Ir6d0tw. f.2 0@2)))
+          (kv@G key.0~3
+           (call@8 jUnesc.0.~6
+            (call@7 jField.0.~6 f.2@1 1@4)))
+          (kv@k fields.0~6
+           (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+            (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))))
+        (var@4,1 :i.13 . .
+         (i 32)2@4)
+        (while@,2
+         (lt@8
+          (i 32)i.13~2
+          (call@3 len.3.Ixq6taz.@1 f.2~1))
+         (stmts@2,1
+          (cmd@8 add.0.Ig6072n.@1
+           (haddr~7
+            (dot e.1~1 fields.0 0 "x"))
+           (call@B jUnesc.0.~6
+            (hderef@1
+             (call \5B\5D.7.Ir6d0tw. f.2 i.13@2))))
+          (cmd@,1 inc.1.I6wjjge.
+           (haddr@4 i.13))))
+        (cmd@7,5 add.0.Ixpq8s01.@1
+         (haddr~7 gEvents.0.)e.1@5))))))
+   (if@,d
+    (elif@3
+     (not sawMagic.0@4)
+     (stmts~1,1
+      (call@D journalRefuse.0.~D
+       (infix@13 &.0.sysvq0asl
+        (infix~F &.0.sysvq0asl
+         (infix~a &.0.sysvq0asl
+          (infix~7 &.0.sysvq0asl "  \27"~6 path.1@2)"\27 is not an aowli journal \28no \27"@2)journalMagic.0.@2)"\27 header\29.\0A"@2))
+      (ret@,1 .))))
+   (if@,g
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (infix@7 ==.20.sysvq0asl hdrProgram.0@5,5A,../../aowli/src/aowli/journal.nim program.1@J,5A,../../aowli/src/aowli/journal.nim)))
+     (stmts~1,1
+      (call@D journalRefuse.0.~D
+       (infix@U,1 &.0.sysvq0asl
+        (infix~A &.0.sysvq0asl
+         (infix@Y,~1 &.0.sysvq0asl
+          (infix~D &.0.sysvq0asl "  journal was recorded from program \27"~e hdrProgram.0@2)"\27, this run is \27"~r,1)program.1@2)"\27.\0A"@2))
+      (ret@,2 .))))
+   (let@4,k :nowArgv.0 . . string.0.sysvq0asl@4,~4W
+    (call@I argvJoin.0.~8 argv.1@1))
+   (if@,l
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (infix@7 ==.20.sysvq0asl hdrArgv.0@5,5F,../../aowli/src/aowli/journal.nim nowArgv.0@G,5F,../../aowli/src/aowli/journal.nim)))
+     (stmts~1,1
+      (call@D journalRefuse.0.~D
+       (infix@V,1 &.0.sysvq0asl
+        (infix~A &.0.sysvq0asl
+         (infix@R,~1 &.0.sysvq0asl
+          (infix~A &.0.sysvq0asl "  journal was recorded with argv \5B"~b hdrArgv.0@2)"\5D, this run has \5B"~l,1)nowArgv.0@2)"\5D.\0A"@2))
+      (ret@,2 .))))
+   (asgn@6,p gMode.0.~6 2@2)))
+ (proc@,5K :journalFinish.0.@5 x . .
+  (params@J). . .
+  (stmts@2,1
+   (if@,3
+    (elif@3
+     (eq@6
+      (i 32)gMode.0.~6 1@3)
+     (stmts~1,1
+      (var@4 :text.2 . . string.0.sysvq0asl@2,~4i
+       (infix@i &.0.sysvq0asl
+        (infix~H &.0.sysvq0asl
+         (infix~7 &.0.sysvq0asl journalMagic.0.~D "\09"@2)journalVersion.0.@2)"\0A"@2))
+      (asgn@5,1 text.2~5
+       (infix@7 &.0.sysvq0asl text.2~5 "header\09engine\09aowli-interp\0A"@2))
+      (asgn@5,2 text.2~5
+       (infix@k &.0.sysvq0asl
+        (infix~H &.0.sysvq0asl
+         (infix~M &.0.sysvq0asl text.2~5 "header\09program\09"@2)
+         (call@6 jEsc.0.~4 gProgram.0.@1))"\0A"@2))
+      (asgn@5,3 text.2~5
+       (infix@i &.0.sysvq0asl
+        (infix~I &.0.sysvq0asl
+         (infix~J &.0.sysvq0asl text.2~5 "header\09argv\09"@2)
+         (call@A argvJoin.0.~8 gArgv.0.@1))"\0A"@2))
+      (asgn@5,4 text.2~5
+       (infix@f &.0.sysvq0asl
+        (infix~G &.0.sysvq0asl
+         (infix~I &.0.sysvq0asl text.2~5 "header\09cwd\09"@2)
+         (call@6 jEsc.0.~4 gRecCwd.0.@1))"\0A"@2))
+      (asgn@5,5 text.2~5
+       (infix@h &.0.sysvq0asl
+        (infix~F &.0.sysvq0asl
+         (infix~L &.0.sysvq0asl text.2~5 "header\09events\09"@2)
+         (prefix@2 $.2.sysvq0asl
+          (call@8 len.3.Ijmyd9p1.@1 gEvents.0.~7)))"\0A"@2))
+      (var@4,6 :i.14 . .
+       (i 32)0@4)
+      (while@,7
+       (lt@8
+        (i 32)i.14~2
+        (call@9 len.3.Ijmyd9p1.@1 gEvents.0.~7))
+       (stmts@2,1
+        (asgn@5 text.2~5
+         (infix@W &.0.sysvq0asl
+          (infix~7 &.0.sysvq0asl
+           (infix~I &.0.sysvq0asl text.2~5
+            (dot@C
+             (hderef~A
+              (call \5B\5D.7.Ilovtk3. gEvents.0. i.14@8))kind.0 0 "x"))"\09"@2)
+          (call@6 jEsc.0.~4
+           (dot@B
+            (hderef~A
+             (call \5B\5D.7.Ilovtk3. gEvents.0. i.14@8))key.0 0 "x"))))
+        (var@4,1 :k.0 . .
+         (i 32)0@4)
+        (while@,2
+         (lt@8
+          (i 32)k.0~2
+          (call@J len.3.Ixq6taz.@1
+           (dot~7
+            (hderef~A
+             (call \5B\5D.7.Ilovtk3. gEvents.0. i.14@8))fields.0 0 "x")))
+         (stmts@2,1
+          (asgn@5 text.2~5
+           (infix@E &.0.sysvq0asl
+            (infix~7 &.0.sysvq0asl text.2~5 "\09"@2)
+            (call@6 jEsc.0.~4
+             (hderef@B
+              (call \5B\5D.7.Ir6d0tw.
+               (dot
+                (hderef~A
+                 (call \5B\5D.7.Ilovtk3. gEvents.0. i.14@8))fields.0 0 "x")k.0@8)))))
+          (cmd@,1 inc.1.I6wjjge.
+           (haddr@4 k.0))))
+        (asgn@5,5 text.2~5
+         (infix@7 &.0.sysvq0asl text.2~5 "\0A"@2))
+        (cmd@,6 inc.1.I6wjjge.
+         (haddr@4 i.14))))
+      (var@4,F :f.3 . .
+       (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+        (unchecked)).)
+      (if@,G
+       (elif@3
+        (call@4 open.0.syn1lfpjv~4
+         (haddr@1 f.3)gPath.0.@4 fmWrite.0.syn1lfpjv@B -1@Q,65,../../../../../../home/savant/nimony/lib/std/syncio.nim)
+        (stmts~1,1
+         (call@5 write.0.syn1lfpjv~5 f.3@1 text.2@4)
+         (call@5,1 close.0.syn1lfpjv~5 f.3@1)))
+       (else@,3
+        (stmts@2,1
+         (cmd write.0.syn1lfpjv stderr.0.syn1lfpjv@6
+          (infix@s &.0.sysvq0asl
+           (infix~8 &.0.sysvq0asl "aowli\3A cannot write journal \27"~W gPath.0.@2)"\27\0A"@2)))))))
+    (elif@5,M
+     (eq@6
+      (i 32)gMode.0.~6 2@3)
+     (stmts~3,1
+      (if
+       (elif@3
+        (lt@5
+         (i 32)gPos.0.~5
+         (call@9 len.3.Ijmyd9p1.@1 gEvents.0.~7))
+        (stmts~1,1
+         (cmd write.0.syn1lfpjv stderr.0.syn1lfpjv@6
+          (infix@1F,2 &.0.sysvq0asl
+           (infix~K &.0.sysvq0asl
+            (infix~7 &.0.sysvq0asl
+             (infix~L &.0.sysvq0asl
+              (infix@c,~1 &.0.sysvq0asl
+               (infix~Z &.0.sysvq0asl
+                (infix~F &.0.sysvq0asl
+                 (infix~9 &.0.sysvq0asl
+                  (infix@17,~1 &.0.sysvq0asl "aowli\3A REPLAY DIVERGENCE — the replayed run stopped after "~11
+                   (prefix~1D,1 $.2.sysvq0asl gPos.0.@1))" of "@2)
+                 (prefix@2 $.2.sysvq0asl
+                  (call@8 len.3.Ijmyd9p1.@1 gEvents.0.~7)))" recorded boundary event\28s\29.\0A"@2)"       next unconsumed\3A "~13,1)
+              (dot@F
+               (hderef~D
+                (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))kind.0 0 "x"))"  "@2)
+            (dot@F
+             (hderef~D
+              (call \5B\5D.7.Ilovtk3. gEvents.0. gPos.0.@8))key.0 0 "x"))"\0A"@2))
+         (cmd@,3 quit.0.syn1lfpjv journalExitCode.0.@5)))))))))
+ (proc@,60 :jEnvSeed.0.@5 x . .
+  (params@E
+   (param@1 :keys.0 . .
+    (mut@6 seq.0.Ixdx2fh1.@7).)
+   (param@O :vals.0 . .
+    (mut@6 seq.0.Ixdx2fh1.@7).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (eq@6
+      (i 32)gMode.0.~6 1@3)
+     (stmts~1,1
+      (var@4 :fs.0 . . seq.0.Ixdx2fh1.@7,~5J
+       (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+      (var@4,1 :i.15 . .
+       (i 32)0@4)
+      (while@,2
+       (lt@8
+        (i 32)i.15~2
+        (call@6 len.3.Ixq6taz.@1
+         (hderef~4 keys.0)))
+       (stmts@2,1
+        (cmd@2 add.0.Ig6072n.@1
+         (haddr~2 fs.0)
+         (hderef@5
+          (call \5B\5D.7.Ir6d0tw.
+           (hderef keys.0)i.15@5)))
+        (cmd@2,1 add.0.Ig6072n.@1
+         (haddr~2 fs.0)
+         (expr
+          (stmts@5)
+          (if@1
+           (elif@3
+            (lt@2
+             (i 32)i.15~2
+             (call@6 len.3.Ixq6taz.@1
+              (hderef~4 vals.0)))
+            (hderef@E
+             (call \5B\5D.7.Ir6d0tw.
+              (hderef vals.0)i.15@5)))
+           (else@P ""@6))))
+        (cmd@,2 inc.1.I6wjjge.
+         (haddr@4 i.15))))
+      (call@7,6 jRecord.0.~7 "envseed"@1 ""@C fs.0@G)))
+    (elif@5,8
+     (eq@6
+      (i 32)gMode.0.~6 2@3)
+     (stmts~3,1
+      (let@4 :fs.1 . . seq.0.Ixdx2fh1.@7,~5R
+       (call@B jServe.0.~6 "envseed"@1 ""@C))
+      (asgn@5,1
+       (hderef~5 keys.0)
+       (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+      (asgn@5,2
+       (hderef~5 vals.0)
+       (expr@2,32,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (call@F,1 newSeqUninit.0.Im3cqd9.~F 0@1)))
+      (var@4,3 :i.16 . .
+       (i 32)0@4)
+      (while@,4
+       (lt@C
+        (i 32)
+        (add~4
+         (i 32)i.16~2 1@2)
+        (call@4 len.3.Ixq6taz.@1 fs.1~2))
+       (stmts@2,1
+        (cmd@4 add.0.Ig6072n.@1 keys.0~4
+         (hderef@5
+          (call \5B\5D.7.Ir6d0tw. fs.1 i.16@3)))
+        (cmd@4,1 add.0.Ig6072n.@1 vals.0~4
+         (hderef@5
+          (call \5B\5D.7.Ir6d0tw. fs.1
+           (add@4
+            (i 32)i.16~1 1@1))))
+        (asgn@2,2 i.16~2
+         (add@4
+          (i 32)i.16~2 2@2)))))))))
+ (comment@4,w bool.0.sysvq0asl bool.0.sysvq0asl@,1 bool.0.sysvq0asl@,2 char.0.sysvq0asl@B,P int.0.sysvq0asl@7,P int.0.sysvq0asl@9,p bool.0.sysvq0asl@C,19 int.0.sysvq0asl@S,2C \40.1.sysvq0asl@L,~9 \40.1.sysvq0asl@J,~2 int.0.sysvq0asl@8,D uint8.0.sysvq0asl@C,D >.0.sysvq0asl@H,I >=.0.sysvq0asl@3,Q int.0.sysvq0asl@O,Q int.0.sysvq0asl@X,Q >=.0.sysvq0asl@5,R int.0.sysvq0asl@V,R int.0.sysvq0asl@e,R >=.0.sysvq0asl@5,S int.0.sysvq0asl@V,S int.0.sysvq0asl@e,S char.0.sysvq0asl@F,g uint8.0.sysvq0asl@K,g false.0.sysvq0asl@8,t true.0.sysvq0asl@Y,u >=.0.sysvq0asl@N,v int.0.sysvq0asl@O,w int.0.sysvq0asl@a,w >.0.sysvq0asl@L,1A false.0.sysvq0asl@b,1A !=.0.sysvq0asl@8,1D false.0.sysvq0asl@O,1D true.0.sysvq0asl@7,1F >.0.sysvq0asl@A,1K >.0.sysvq0asl@B,1N \40.1.sysvq0asl@h,1m \40.1.sysvq0asl@7,1w >=.0.sysvq0asl@6,1x !=.0.sysvq0asl@K,21 !=.0.sysvq0asl@n,21 array.0.sysvq0asl@7,2Q char.0.sysvq0asl@K,2Q array.0.sysvq0asl@a,2Q array.0.sysvq0asl@a,2Q char.0.sysvq0asl@n,2Q true.0.sysvq0asl@4,2R len.1.sysvq0asl@c,2S \40.1.sysvq0asl@7,2e \40.1.sysvq0asl@7,2q !=.0.sysvq0asl@D,2y >.0.sysvq0asl@9,30 >.0.sysvq0asl@5,3F \40.1.sysvq0asl@8,3T \40.1.sysvq0asl@8,3g false.0.sysvq0asl@D,3i !=.0.sysvq0asl@N,3s true.0.sysvq0asl@D,3w \40.1.sysvq0asl@12,44 !=.0.sysvq0asl@C,4D !=.0.sysvq0asl@9,4I \40.1.sysvq0asl@M,56 \40.1.sysvq0asl@7,5F \40.1.sysvq0asl@7,5G)
+ (func@H,33,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :newSeqUninit.0.Iuueuci. . .~H,~1z
+  (at newSeqUninit.0.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@4,~1z
+   (param@1 :size.2 . .
+    (i@6 32).))seq.0.I467rk41.~1,~1z
+  (pragmas@O,~1z
+   (nodestroy@2)
+   (inline@D)).~H,~1z
+  (stmts~F,~1y
+   (result :result.16 . . seq.0.I467rk41.@E,~1 .)
+   (if@,1
+    (elif@3
+     (eq@5
+      (i 32)size.2~5 0@3)
+     (stmts~1,1
+      (asgn@7 result.16~7
+       (oconstr@8 seq.0.I467rk41.@E,o,../../aowli/src/aowli/journal.nim
+        (kv@4 len.0~3 size.2@2)
+        (kv@G data.0~4
+         (nil@2))))))
+    (else@,2
+     (stmts@2,1
+      (let@4 :memSize.0 . .
+       (i@1,~12 32)
+       (call@R memSizeInBytes.0.I6i476p1.~H size.2@1))
+      (asgn@7,1 result.16~7
+       (oconstr@8 seq.0.I467rk41.@E,o,../../aowli/src/aowli/journal.nim
+        (kv@4 len.0~3 size.2@2)
+        (kv@G data.0~4
+         (cast@2
+          (ptr@5
+           (uarray@I JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+           (unchecked))
+          (call@X alloc.1.sysvq0asl~5 memSize.0@1)))))
+      (if@,2
+       (elif@3
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ptr
+            (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+            (unchecked))
+           (dot@D,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim result.16~6 data.0 0 "x")
+           (nil@M,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+        (stmts~1,1
+         (discard "leave uninitialized"@8)))
+       (else@,2
+        (stmts@2,1
+         (asgn@B
+          (dot~5 result.16~6 len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.0@B)))))))))
+   (ret~2,~1 result.16)))
+ (func@H,33,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :newSeqUninit.0.Im3cqd9. . .~H,~1z
+  (at newSeqUninit.0.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@4,~1z
+   (param@1 :size.4 . .
+    (i@6 32).))seq.0.Ixdx2fh1.~1,~1z
+  (pragmas@O,~1z
+   (nodestroy@2)
+   (inline@D)).~H,~1z
+  (stmts~F,~1y
+   (result :result.17 . . seq.0.Ixdx2fh1.@E,~1 .)
+   (if@,1
+    (elif@3
+     (eq@5
+      (i 32)size.4~5 0@3)
+     (stmts~1,1
+      (asgn@7 result.17~7
+       (oconstr@8 seq.0.Ixdx2fh1.@F,k,../../aowli/src/aowli/journal.nim
+        (kv@4 len.0~3 size.4@2)
+        (kv@G data.0~4
+         (nil@2))))))
+    (else@,2
+     (stmts@2,1
+      (let@4 :memSize.1 . .
+       (i@1,~12 32)
+       (call@R memSizeInBytes.0.I7me00i.~H size.4@1))
+      (asgn@7,1 result.17~7
+       (oconstr@8 seq.0.Ixdx2fh1.@F,k,../../aowli/src/aowli/journal.nim
+        (kv@4 len.0~3 size.4@2)
+        (kv@G data.0~4
+         (cast@2
+          (ptr@5
+           (uarray@I string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+           (unchecked))
+          (call@X alloc.1.sysvq0asl~5 memSize.1@1)))))
+      (if@,2
+       (elif@3
+        (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (not@,1
+          (eq@7
+           (ptr
+            (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+            (unchecked))
+           (dot@D,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim result.17~6 data.0 0 "x")
+           (nil@M,1B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+        (stmts~1,1
+         (discard "leave uninitialized"@8)))
+       (else@,2
+        (stmts@2,1
+         (asgn@B
+          (dot~5 result.17~6 len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.1@B)))))))))
+   (ret~2,~1 result.17)))
+ (func@4,1J :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.2 . .
+    (mut@3
+     (i 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.2)
+    (add@6
+     (i 32)
+     (hderef@1 x.2)
+     (conv@U,~F
+      (i 32)1@1)))))
+ (func@I,2k :len.3.Ixq6taz. . .@,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at len.3.sysvq0asl string.0.sysvq0asl~2,~21)
+  (params@C,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.10 . . seq.0.Ixdx2fh1.@6 .))
+  (i@D,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32)
+  (pragmas@T,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (inline@2)).@,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@2,2a,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (result :result.18 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1,1 result.18
+    (dot s.10~1 len.0 0 "x"))
+   (ret~2,~1 result.18)))
+ (func@H,2l :\5B\5D.7.Ir6d0tw. . .@,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at \5B\5D.7.sysvq0asl string.0.sysvq0asl~1,~22)
+  (params@D,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.11 . . seq.0.Ixdx2fh1.@6 .)
+   (param@C :i.17 . .
+    (i@3 32).))
+  (mut@L,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (pragmas@e,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (requires@2
+    (and@L
+     (lt~8
+      (i 32)i.17~2
+      (dot@3 s.11~1 len.0 0 "x"))
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1A,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim i.17@15,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+   (inline@a)).@,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@1P,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (result@6 :result.19 . .
+    (mut~1A string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim).)
+   (asgn@6 result.19
+    (haddr~5
+     (pat
+      (dot s.11~1 data.0 0 "x")i.17@6)))
+   (ret~1P result.19)))
+ (func@C,2l :add.0.Ig6072n. . .@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at add.0.sysvq0asl string.0.sysvq0asl@4,~22)
+  (params@C,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.12 . .
+    (mut@3 seq.0.Ixdx2fh1.@7).)
+   (param@G :elem.2 . .
+    (sink@6 string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim).)).@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (pragmas@g,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (inline@2)
+   (nodestroy@A)).@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@2,2O,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (let@4,1 :L.0 . .
+    (i@3,~2I 32)
+    (dot@5
+     (hderef~1 s.12)len.0 0 "x"))
+   (if@,2
+    (elif@3
+     (lt@D
+      (i 32)
+      (call~C capInBytes.0.Ih2sbn01.@1
+       (hderef~1 s.12))
+      (add@I
+       (i 32)
+       (mul~D
+        (i 32)L.0~2
+        (sizeof@8 string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim))
+       (sizeof@8 string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (not
+         (call@A resize.0.I4buliy.~6 s.12@1 1@4))
+        (stmts~1,3
+         (destroy@A elem.2@1)
+         (ret@,1 .)))))))
+   (cmd@,8 inc.1.I6wjjge.
+    (haddr@5
+     (dot
+      (hderef~1 s.12)len.0 0 "x")))
+   (asgn@C,9
+    (pat~A
+     (dot
+      (hderef~1 s.12)data.0 0 "x")L.0@6)elem.2@2)))
+ (func@9,2n :add.0.Ixpq8s01. . .@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at add.0.sysvq0asl JEvent.0.@6,~20)
+  (params@C,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.14 . .
+    (mut@3 seq.0.I467rk41.@7).)
+   (param@G :elem.3 . .
+    (sink@6 JEvent.0.@F,o,../../aowli/src/aowli/journal.nim).)).@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (pragmas@g,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (inline@2)
+   (nodestroy@A)).@,2N,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@2,2O,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (let@4,1 :L.1 . .
+    (i@3,~2I 32)
+    (dot@5
+     (hderef~1 s.14)len.0 0 "x"))
+   (if@,2
+    (elif@3
+     (lt@D
+      (i 32)
+      (call~C capInBytes.0.I8iriqw.@1
+       (hderef~1 s.14))
+      (add@I
+       (i 32)
+       (mul~D
+        (i 32)L.1~2
+        (sizeof@8 JEvent.0.@F,o,../../aowli/src/aowli/journal.nim))
+       (sizeof@8 JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (not
+         (call@A resize.0.Ikutmw21.~6 s.14@1 1@4))
+        (stmts~1,3
+         (destroy@A elem.3@1)
+         (ret@,1 .)))))))
+   (cmd@,8 inc.1.I6wjjge.
+    (haddr@5
+     (dot
+      (hderef~1 s.14)len.0 0 "x")))
+   (asgn@C,9
+    (pat~A
+     (dot
+      (hderef~1 s.14)data.0 0 "x")L.1@6)elem.3@2)))
+ (func@K,2t :len.3.Ijmyd9p1. . .@,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at len.3.sysvq0asl JEvent.0.~5,~26)
+  (params@C,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.16 . . seq.0.I467rk41.@6 .))
+  (i@D,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32)
+  (pragmas@T,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (inline@2)).@,2Z,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@2,2a,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (result :result.20 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1,1 result.20
+    (dot s.16~1 len.0 0 "x"))
+   (ret~2,~1 result.20)))
+ (func@5,2x :\5B\5D.7.Ilovtk3. . .@,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (at \5B\5D.7.sysvq0asl JEvent.0.@A,~2A)
+  (params@D,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (param@1 :s.17 . . seq.0.I467rk41.@6 .)
+   (param@C :i.18 . .
+    (i@3 32).))
+  (mut@L,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (pragmas@e,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (requires@2
+    (and@L
+     (lt~8
+      (i 32)i.18~2
+      (dot@3 s.17~1 len.0 0 "x"))
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1A,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim i.18@15,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+   (inline@a)).@,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+  (stmts@1P,2h,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (result@6 :result.21 . .
+    (mut~1A JEvent.0.@F,o,../../aowli/src/aowli/journal.nim).)
+   (asgn@6 result.21
+    (haddr~5
+     (pat
+      (dot s.17~1 data.0 0 "x")i.18@6)))
+   (ret~1P result.21)))
+ (func@d,3M :default.23.Isnz07p. . .@,V,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+  (at default.23.sysvq0asl
+   (rangetype~N
+    (i 32)0 65535)
+   (c~F 8))
+  (params@e,V,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+   (param@1 :x.3 . .
+    (typedesc@B
+     (array@6
+      (c@O,3N,../../aowli/src/aowli/journal.nim 8)
+      (rangetype@G,3N,../../aowli/src/aowli/journal.nim
+       (i 32)0 65535))).))
+  (array@X,V,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+   (c@O,3N,../../aowli/src/aowli/journal.nim 8)
+   (rangetype@G,3N,../../aowli/src/aowli/journal.nim
+    (i 32)0 65535))
+  (pragmas@1I,V,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+   (inline@2)
+   (noinit@A)
+   (nodestroy@I)).@,V,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+  (stmts@2,W,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+   (result@4 :result.22 .
+    (pragmas
+     (noinit))
+    (array@R,~1
+     (c@O,3N,../../aowli/src/aowli/journal.nim 8)
+     (rangetype@G,3N,../../aowli/src/aowli/journal.nim
+      (i 32)0 65535)).)
+   (for@4
+    (infix@M \2E..0.Ircp9lp.
+     (conv~E
+      (i 32)0@G,3N,../../aowli/src/aowli/journal.nim)
+     (conv@7
+      (i 32)65535@G,3N,../../aowli/src/aowli/journal.nim))
+    (unpackflat
+     (let :i.19 . .
+      (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32).))
+    (stmts~2,1
+     (stmts@2,U,../../../../../../home/savant/nimony/lib/std/system.nim
+      (asgn@7
+       (arrat~6 result.22@4,X,../../../../../../home/savant/nimony/lib/std/system/defaults.nim i.19@B,X,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 65535@G,3N,../../aowli/src/aowli/journal.nim)
+       (expr@j,5,../../../../../../home/savant/nimony/lib/std/system/defaults.nim '\00')))))
+   (ret~2,~1 result.22)))
+ (func@Z,19,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :memSizeInBytes.0.I6i476p1. . .~Z,~k
+  (at memSizeInBytes.0.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params~D,~k
+   (param@1 :size.6 . .
+    (i@6 32).))
+  (i~M,~k 32)
+  (pragmas@4,~k
+   (inline@2)).~Z,~k
+  (stmts~X,~j
+   (result :result.23 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (pragmax
+    (pragmas
+     (keepOverflowFlag@2))
+    (stmts@2,1
+     (asgn@7 result.23~7
+      (mul@7
+       (i 32)size.6~5
+       (sizeof@8 JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)))
+     (if@,1
+      (elif@3
+       (ovf@C)
+       (stmts~1,2
+        (asgn@7 result.23~7
+         (suf@6 2147483647 "i32")))))))
+   (ret~2,~1 result.23)))
+ (func@Z,19,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :memSizeInBytes.0.I7me00i. . .~Z,~k
+  (at memSizeInBytes.0.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params~D,~k
+   (param@1 :size.7 . .
+    (i@6 32).))
+  (i~M,~k 32)
+  (pragmas@4,~k
+   (inline@2)).~Z,~k
+  (stmts~X,~j
+   (result :result.24 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (pragmax
+    (pragmas
+     (keepOverflowFlag@2))
+    (stmts@2,1
+     (asgn@7 result.24~7
+      (mul@7
+       (i 32)size.7~5
+       (sizeof@8 string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)))
+     (if@,1
+      (elif@3
+       (ovf@C)
+       (stmts~1,2
+        (asgn@7 result.24~7
+         (suf@6 2147483647 "i32")))))))
+   (ret~2,~1 result.24)))
+ (func@6,2Q,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :capInBytes.0.Ih2sbn01. . .~6,~2G
+  (at capInBytes.0.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@C,~2G
+   (param@1 :s.18 . . seq.0.Ixdx2fh1.@6 .))
+  (i@7,~2G 32)
+  (pragmas@T,~2G
+   (inline@2)).~6,~2G
+  (stmts~4,~2F
+   (result@7 :result.25 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@7 result.25~7
+    (if@2
+     (elif@3
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (ptr
+          (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+          (unchecked))
+         (dot@F,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.18~1 data.0 0 "x")
+         (nil@O,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+      (expr@F
+       (call@D allocatedSize.0.sysvq0asl~D
+        (hconv@2
+         (pointer@P,2j,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (hconv
+          (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (dot s.18~1 data.0 0 "x"))))))
+     (else@e
+      (expr@6 0))))
+   (ret~2,~1 result.25)))
+ (func@H,2R,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :resize.0.I4buliy. . .~H,~e
+  (at resize.0.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params~3,~e
+   (param@1 :dest.2 . .
+    (mut@6 seq.0.Ixdx2fh1.@7).)
+   (param@J :addedElements.2 . .
+    (i@F 32).))
+  (bool@N,~e)
+  (pragmas@g,~e
+   (nodestroy@2)).~H,~e
+  (stmts~F,~d
+   (result@4 :result.26 . .
+    (bool@2,g,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (let@4 :oldCap.0 . .
+    (i@3,~1h 32)
+    (div@P
+     (i 32)
+     (call~C capInBytes.0.Ih2sbn01.@1
+      (hderef~4 dest.2))
+     (sizeof@A string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)))
+   (let@4,1 :newCap.0 . .
+    (i@3,~1i 32)
+    (call@I recalcCap.0.sysvq0asl~9 oldCap.0@1 addedElements.2@9))
+   (let@4,2 :memSize.2 . .
+    (i@3,~1j 32)
+    (call@R memSizeInBytes.0.I7me00i.~H newCap.0@1))
+   (asgn@A,3
+    (dot~6
+     (hderef~4 dest.2)data.0 0 "x")
+    (cast@2
+     (ptr@5
+      (uarray@I string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+      (unchecked))
+     (call@Z realloc.1.sysvq0asl~7
+      (hconv@5
+       (pointer@J,2Z,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+        (unchecked))
+       (hconv
+        (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (dot
+         (hderef~4 dest.2)data.0 0 "x")))memSize.2@C)))
+   (if@,4
+    (elif@3
+     (eq@A
+      (ptr
+       (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+       (unchecked))
+      (dot~6
+       (hderef~4 dest.2)data.0 0 "x")
+      (nil@3))
+     (stmts~1,1
+      (asgn@9
+       (dot~5
+        (hderef~4 dest.2)len.0 0 "x")0@2)
+      (pragmax@,1
+       (pragmas
+        (cast@2
+         (pragmas
+          (noSideEffect@5))))
+       (stmts@2,1
+        (cmd oomHandler.0.sysvq0asl memSize.2@B)))
+      (asgn@7,3 result.26~7
+       (false@2))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result.26~7
+       (true@2)))))
+   (ret~2,~1 result.26)))
+ (func@6,2Q,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :capInBytes.0.I8iriqw. . .~6,~2G
+  (at capInBytes.0.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@C,~2G
+   (param@1 :s.19 . . seq.0.I467rk41.@6 .))
+  (i@7,~2G 32)
+  (pragmas@T,~2G
+   (inline@2)).~6,~2G
+  (stmts~4,~2F
+   (result@7 :result.27 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@7 result.27~7
+    (if@2
+     (elif@3
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (ptr
+          (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+          (unchecked))
+         (dot@F,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.19~1 data.0 0 "x")
+         (nil@O,B,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+      (expr@F
+       (call@D allocatedSize.0.sysvq0asl~D
+        (hconv@2
+         (pointer@P,2j,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (hconv
+          (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (dot s.19~1 data.0 0 "x"))))))
+     (else@e
+      (expr@6 0))))
+   (ret~2,~1 result.27)))
+ (func@H,2R,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :resize.0.Ikutmw21. . .~H,~e
+  (at resize.0.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params~3,~e
+   (param@1 :dest.3 . .
+    (mut@6 seq.0.I467rk41.@7).)
+   (param@J :addedElements.3 . .
+    (i@F 32).))
+  (bool@N,~e)
+  (pragmas@g,~e
+   (nodestroy@2)).~H,~e
+  (stmts~F,~d
+   (result@4 :result.28 . .
+    (bool@2,g,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (let@4 :oldCap.1 . .
+    (i@3,~1h 32)
+    (div@P
+     (i 32)
+     (call~C capInBytes.0.I8iriqw.@1
+      (hderef~4 dest.3))
+     (sizeof@A JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)))
+   (let@4,1 :newCap.1 . .
+    (i@3,~1i 32)
+    (call@I recalcCap.0.sysvq0asl~9 oldCap.1@1 addedElements.3@9))
+   (let@4,2 :memSize.3 . .
+    (i@3,~1j 32)
+    (call@R memSizeInBytes.0.I6i476p1.~H newCap.1@1))
+   (asgn@A,3
+    (dot~6
+     (hderef~4 dest.3)data.0 0 "x")
+    (cast@2
+     (ptr@5
+      (uarray@I JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+      (unchecked))
+     (call@Z realloc.1.sysvq0asl~7
+      (hconv@5
+       (pointer@J,2Z,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+        (unchecked))
+       (hconv
+        (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (dot
+         (hderef~4 dest.3)data.0 0 "x")))memSize.3@C)))
+   (if@,4
+    (elif@3
+     (eq@A
+      (ptr
+       (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+       (unchecked))
+      (dot~6
+       (hderef~4 dest.3)data.0 0 "x")
+      (nil@3))
+     (stmts~1,1
+      (asgn@9
+       (dot~5
+        (hderef~4 dest.3)len.0 0 "x")0@2)
+      (pragmax@,1
+       (pragmas
+        (cast@2
+         (pragmas
+          (noSideEffect@5))))
+       (stmts@2,1
+        (cmd oomHandler.0.sysvq0asl memSize.3@B)))
+      (asgn@7,3 result.28~7
+       (false@2))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result.28~7
+       (true@2)))))
+   (ret~2,~1 result.28)))
+ (iterator@S,W,../../../../../../home/savant/nimony/lib/std/system/defaults.nim :\2E..0.Ircp9lp. . .@,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (at \2E..0.sysvq0asl
+   (i 32))
+  (params@Q,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (param@1 :a.2 . .
+    (i 32).)
+   (param@4 :b.2 . .
+    (i 32).))
+  (i 32)
+  (pragmas@d,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (inline@2)).@,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (stmts@2,8,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (var@4 :i.20 . .
+    (i@9,7,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim 32)a.2@4)
+   (while@,1
+    (le@8
+     (i 32)i.20~2 b.2@3)
+    (stmts@2,1
+     (yld i.20@6)
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.20))))))
+ (type@F,j :seq.0.Ixdx2fh1. .
+  (at seq.0.sysvq0asl string.0.sysvq0asl@1)
+  (pragmas@A,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (destroy =destroy.1.Ivioh0a.)
+   (wasmoved =wasMoved.1.I5vdnla.)
+   (dup =dup.1.Imq0s4c.)
+   (copy =copy.1.Iiwrt4i1.))
+  (object@C,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim .
+   (fld~8,1 :len.0 . .
+    (i@5 32).)
+   (fld~8,2 :data.0 . .
+    (ptr@6
+     (uarray@I string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+     (unchecked)).)))
+ (type@E,n :seq.0.I467rk41. .
+  (at seq.0.sysvq0asl JEvent.0.@1)
+  (pragmas@A,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+   (destroy =destroy.1.Ipetoad.)
+   (wasmoved =wasMoved.1.Ixm7yuc.)
+   (dup =dup.1.Ibx65qz.)
+   (copy =copy.1.Irioqk41.))
+  (object@C,6,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim .
+   (fld~8,1 :len.0 . .
+    (i@5 32).)
+   (fld~8,2 :data.0 . .
+    (ptr@6
+     (uarray@I JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+     (unchecked)).)))
+ (func@,D,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=destroy.1.Ivioh0a. . .
+  (at =destroy.1.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@J
+   (param@1 :s.24 . . seq.0.Ixdx2fh1.@6 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (ptr
+         (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+         (unchecked))
+        (dot@6,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.24~1 data.0 0 "x")
+        (nil@F,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+     (stmts~1,1
+      (var@4 :i.21 . .
+       (i@1,~8 32)0@4)
+      (while@,1
+       (lt@8
+        (i 32)i.21~2
+        (dot@3 s.24~1 len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@2
+          (dot s.24~1 data.0 0 "x")i.21@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.21))))
+      (cmd@,4 dealloc.1.sysvq0asl
+       (hconv@9
+        (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (hconv
+         (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (dot s.24~1 data.0 0 "x")))))))))
+ (func@,L,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=wasMoved.1.I5vdnla. . .
+  (at =wasMoved.1.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@K
+   (param@1 :s.25 . .
+    (mut@3 seq.0.Ixdx2fh1.@7).)).
+  (pragmas@a
+   (inline@2)).
+  (stmts@2,1
+   (asgn@6
+    (dot~5
+     (hderef~1 s.25)len.0 0 "x")0@2)
+   (asgn@7,1
+    (dot~6
+     (hderef~1 s.25)data.0 0 "x")
+    (nil@2))))
+ (func@,1U,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=dup.1.Imq0s4c. . .
+  (at =dup.1.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@F
+   (param@1 :a.5 . . seq.0.Ixdx2fh1.@6 .))seq.0.Ixdx2fh1.@G
+  (pragmas@Z
+   (nodestroy@2)).
+  (stmts@2,1
+   (result@7 :result.29 . . seq.0.Ixdx2fh1.@D,~1 .)
+   (asgn@7 result.29~7
+    (call@H newSeqUninit.0.Im3cqd9.~F
+     (dot@2 a.5~1 len.0 0 "x")))
+   (var@4,1 :i.22 . .
+    (i@3,~1P 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.22~2
+     (dot@3 a.5~1 len.0 0 "x"))
+    (stmts@2,1
+     (asgn@H
+      (pat~A
+       (dot result.29~6 data.0 0 "x")i.22@6)
+      (dup@8
+       (pat@2
+        (dot a.5~1 data.0 0 "x")i.22@6)))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.22))))
+   (ret~2,~1 result.29)))
+ (func@,20,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=copy.1.Iiwrt4i1. . .
+  (at =copy.1.sysvq0asl string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+  (params@G
+   (param@1 :dest.6 . .
+    (mut@6 seq.0.Ixdx2fh1.@7).)
+   (param@J :src.2 . . seq.0.Ixdx2fh1.@8 .)).
+  (pragmas@m
+   (nodestroy@2)).
+  (stmts@2,1
+   (if
+    (elif@3
+     (eq@A
+      (ptr
+       (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+       (unchecked))
+      (dot~6
+       (hderef~4 dest.6)data.0 0 "x")
+      (dot@6 src.2~3 data.0 0 "x"))
+     (stmts@N
+      (ret .))))
+   (if@,1
+    (elif@3
+     (lt@8
+      (i 32)
+      (dot~5 src.2~3 len.0 0 "x")
+      (dot@6
+       (hderef~4 dest.6)len.0 0 "x"))
+     (stmts~1,1
+      (var@4 :i.23 . .
+       (i@1,~1w 32)
+       (dot@7 src.2~3 len.0 0 "x"))
+      (while@,1
+       (lt@8
+        (i 32)i.23~2
+        (dot@6
+         (hderef~4 dest.6)len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@5
+          (dot
+           (hderef~4 dest.6)data.0 0 "x")i.23@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.23))))))
+    (elif@5,5
+     (lt@G
+      (i 32)
+      (call~C capInBytes.0.Ih2sbn01.@1
+       (hderef~4 dest.6))
+      (mul@A
+       (i 32)
+       (dot~5 src.2~3 len.0 0 "x")
+       (sizeof@8 string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)))
+     (stmts~3,1
+      (let@4 :oldCap.2 . .
+       (i@1,~21 32)
+       (div@P
+        (i 32)
+        (call~C capInBytes.0.Ih2sbn01.@1
+         (hderef~4 dest.6))
+        (sizeof@A string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)))
+      (let@4,1 :newCap.2 . .
+       (i@1,~22 32)
+       (call@I recalcCap.0.sysvq0asl~9 oldCap.2@1
+        (sub@H
+         (i 32)
+         (dot~5 src.2~3 len.0 0 "x")oldCap.2@2)))
+      (let@4,2 :memSize.4 . .
+       (i@1,~23 32)
+       (call@R memSizeInBytes.0.I7me00i.~H newCap.2@1))
+      (asgn@A,3
+       (dot~6
+        (hderef~4 dest.6)data.0 0 "x")
+       (cast@2
+        (ptr@5
+         (uarray@I string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+         (unchecked))
+        (call@Z realloc.1.sysvq0asl~7
+         (hconv@5
+          (pointer@J,2Z,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (hconv
+           (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+            (unchecked))
+           (dot
+            (hderef~4 dest.6)data.0 0 "x")))memSize.4@C)))
+      (if@,4
+       (elif@3
+        (eq@A
+         (ptr
+          (uarray string.0.sysvq0asl@G,k,../../aowli/src/aowli/journal.nim)
+          (unchecked))
+         (dot~6
+          (hderef~4 dest.6)data.0 0 "x")
+         (nil@3))
+        (stmts~1,1
+         (asgn@9
+          (dot~5
+           (hderef~4 dest.6)len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.4@B)))
+         (ret@,3 .)))))))
+   (asgn@9,G
+    (dot~5
+     (hderef~4 dest.6)len.0 0 "x")
+    (dot@5 src.2~3 len.0 0 "x"))
+   (var@4,H :i.24 . .
+    (i@3,~2B 32)0@4)
+   (while@,I
+    (lt@8
+     (i 32)i.24~2
+     (dot@6
+      (hderef~4 dest.6)len.0 0 "x"))
+    (stmts@2,1
+     (stmts@2,Y,../../../../../../home/savant/nimony/lib/std/system.nim
+      (asgn@7
+       (pat~6
+        (dot@8,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+         (hderef~4 dest.6)data.0 0 "x")i.24@E,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim)
+       (dup@P,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (pat@4
+         (dot src.2~3 data.0 0 "x")i.24@6))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.24))))))
+ (func@,D,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=destroy.1.Ipetoad. . .
+  (at =destroy.1.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@J
+   (param@1 :s.26 . . seq.0.I467rk41.@6 .)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (ptr
+         (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+         (unchecked))
+        (dot@6,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim s.26~1 data.0 0 "x")
+        (nil@F,E,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim))))
+     (stmts~1,1
+      (var@4 :i.25 . .
+       (i@1,~8 32)0@4)
+      (while@,1
+       (lt@8
+        (i 32)i.25~2
+        (dot@3 s.26~1 len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@2
+          (dot s.26~1 data.0 0 "x")i.25@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.25))))
+      (cmd@,4 dealloc.1.sysvq0asl
+       (hconv@9
+        (pointer@J,2e,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+         (unchecked))
+        (hconv
+         (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+          (unchecked))
+         (dot s.26~1 data.0 0 "x")))))))))
+ (func@,L,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=wasMoved.1.Ixm7yuc. . .
+  (at =wasMoved.1.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@K
+   (param@1 :s.27 . .
+    (mut@3 seq.0.I467rk41.@7).)).
+  (pragmas@a
+   (inline@2)).
+  (stmts@2,1
+   (asgn@6
+    (dot~5
+     (hderef~1 s.27)len.0 0 "x")0@2)
+   (asgn@7,1
+    (dot~6
+     (hderef~1 s.27)data.0 0 "x")
+    (nil@2))))
+ (func@,1U,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=dup.1.Ibx65qz. . .
+  (at =dup.1.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@F
+   (param@1 :a.6 . . seq.0.I467rk41.@6 .))seq.0.I467rk41.@G
+  (pragmas@Z
+   (nodestroy@2)).
+  (stmts@2,1
+   (result@7 :result.30 . . seq.0.I467rk41.@D,~1 .)
+   (asgn@7 result.30~7
+    (call@H newSeqUninit.0.Iuueuci.~F
+     (dot@2 a.6~1 len.0 0 "x")))
+   (var@4,1 :i.26 . .
+    (i@3,~1P 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.26~2
+     (dot@3 a.6~1 len.0 0 "x"))
+    (stmts@2,1
+     (asgn@H
+      (pat~A
+       (dot result.30~6 data.0 0 "x")i.26@6)
+      (dup@8
+       (pat@2
+        (dot a.6~1 data.0 0 "x")i.26@6)))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.26))))
+   (ret~2,~1 result.30)))
+ (func@,20,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim :=copy.1.Irioqk41. . .
+  (at =copy.1.sysvq0asl JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+  (params@G
+   (param@1 :dest.7 . .
+    (mut@6 seq.0.I467rk41.@7).)
+   (param@J :src.3 . . seq.0.I467rk41.@8 .)).
+  (pragmas@m
+   (nodestroy@2)).
+  (stmts@2,1
+   (if
+    (elif@3
+     (eq@A
+      (ptr
+       (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+       (unchecked))
+      (dot~6
+       (hderef~4 dest.7)data.0 0 "x")
+      (dot@6 src.3~3 data.0 0 "x"))
+     (stmts@N
+      (ret .))))
+   (if@,1
+    (elif@3
+     (lt@8
+      (i 32)
+      (dot~5 src.3~3 len.0 0 "x")
+      (dot@6
+       (hderef~4 dest.7)len.0 0 "x"))
+     (stmts~1,1
+      (var@4 :i.27 . .
+       (i@1,~1w 32)
+       (dot@7 src.3~3 len.0 0 "x"))
+      (while@,1
+       (lt@8
+        (i 32)i.27~2
+        (dot@6
+         (hderef~4 dest.7)len.0 0 "x"))
+       (stmts@2,1
+        (destroy@A
+         (pat@5
+          (dot
+           (hderef~4 dest.7)data.0 0 "x")i.27@6))
+        (cmd@,1 inc.1.I6wjjge.
+         (haddr@4 i.27))))))
+    (elif@5,5
+     (lt@G
+      (i 32)
+      (call~C capInBytes.0.I8iriqw.@1
+       (hderef~4 dest.7))
+      (mul@A
+       (i 32)
+       (dot~5 src.3~3 len.0 0 "x")
+       (sizeof@8 JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)))
+     (stmts~3,1
+      (let@4 :oldCap.3 . .
+       (i@1,~21 32)
+       (div@P
+        (i 32)
+        (call~C capInBytes.0.I8iriqw.@1
+         (hderef~4 dest.7))
+        (sizeof@A JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)))
+      (let@4,1 :newCap.3 . .
+       (i@1,~22 32)
+       (call@I recalcCap.0.sysvq0asl~9 oldCap.3@1
+        (sub@H
+         (i 32)
+         (dot~5 src.3~3 len.0 0 "x")oldCap.3@2)))
+      (let@4,2 :memSize.5 . .
+       (i@1,~23 32)
+       (call@R memSizeInBytes.0.I6i476p1.~H newCap.3@1))
+      (asgn@A,3
+       (dot~6
+        (hderef~4 dest.7)data.0 0 "x")
+       (cast@2
+        (ptr@5
+         (uarray@I JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+         (unchecked))
+        (call@Z realloc.1.sysvq0asl~7
+         (hconv@5
+          (pointer@J,2Z,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+           (unchecked))
+          (hconv
+           (pointer@F,2P,../../../../../../home/savant/nimony/lib/std/system/memory.nim
+            (unchecked))
+           (dot
+            (hderef~4 dest.7)data.0 0 "x")))memSize.5@C)))
+      (if@,4
+       (elif@3
+        (eq@A
+         (ptr
+          (uarray JEvent.0.@F,o,../../aowli/src/aowli/journal.nim)
+          (unchecked))
+         (dot~6
+          (hderef~4 dest.7)data.0 0 "x")
+         (nil@3))
+        (stmts~1,1
+         (asgn@9
+          (dot~5
+           (hderef~4 dest.7)len.0 0 "x")0@2)
+         (pragmax@,1
+          (pragmas
+           (cast@2
+            (pragmas
+             (noSideEffect@5))))
+          (stmts@2,1
+           (cmd oomHandler.0.sysvq0asl memSize.5@B)))
+         (ret@,3 .)))))))
+   (asgn@9,G
+    (dot~5
+     (hderef~4 dest.7)len.0 0 "x")
+    (dot@5 src.3~3 len.0 0 "x"))
+   (var@4,H :i.28 . .
+    (i@3,~2B 32)0@4)
+   (while@,I
+    (lt@8
+     (i 32)i.28~2
+     (dot@6
+      (hderef~4 dest.7)len.0 0 "x"))
+    (stmts@2,1
+     (stmts@2,Y,../../../../../../home/savant/nimony/lib/std/system.nim
+      (asgn@7
+       (pat~6
+        (dot@8,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+         (hderef~4 dest.7)data.0 0 "x")i.28@E,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim)
+       (dup@P,2K,../../../../../../home/savant/nimony/lib/std/system/seqimpl.nim
+        (pat@4
+         (dot src.3~3 data.0 0 "x")i.28@6))))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.28))))))
+ (proc@9,g :=destroy_SX4aX45vent0jou8favxh1.0. . . .
+  (params
+   (param :dest.0 . . JEvent.0. .)).
+  (pragmas
+   (nodestroy)).
+  (stmts
+   (call =destroy.1.Ivioh0a.
+    (dot dest.0 fields.0 0))
+   (call =destroy.2.sysvq0asl
+    (dot dest.0 key.0 0))
+   (call =destroy.2.sysvq0asl
+    (dot dest.0 kind.0 0))))
+ (proc@9,g :=wasmoved_SX4aX45vent0jou8favxh1.0. . . .
+  (params
+   (param :dest.0 . .
+    (mut JEvent.0.).)).
+  (pragmas
+   (nodestroy)).
+  (stmts
+   (call =wasMoved.2.sysvq0asl
+    (haddr
+     (dot
+      (hderef dest.0)kind.0 0)))
+   (call =wasMoved.2.sysvq0asl
+    (haddr
+     (dot
+      (hderef dest.0)key.0 0)))
+   (call =wasMoved.1.I5vdnla.
+    (haddr
+     (dot
+      (hderef dest.0)fields.0 0)))))
+ (proc@9,g :=dup_SX4aX45vent0jou8favxh1.0. . . .
+  (params
+   (param :src.0 . . JEvent.0. .))JEvent.0.
+  (pragmas
+   (nodestroy)).
+  (stmts
+   (result :dest.0 .
+    (pragmas
+     (noinit))JEvent.0. .)
+   (asgn
+    (dot dest.0 kind.0 0)
+    (call =dup.2.sysvq0asl
+     (dot src.0 kind.0 0)))
+   (asgn
+    (dot dest.0 key.0 0)
+    (call =dup.2.sysvq0asl
+     (dot src.0 key.0 0)))
+   (asgn
+    (dot dest.0 fields.0 0)
+    (call =dup.1.Imq0s4c.
+     (dot src.0 fields.0 0)))
+   (ret dest.0)))
+ (proc@9,g :=copy_SX4aX45vent0jou8favxh1.0. . . .
+  (params
+   (param :dest.0 . .
+    (mut JEvent.0.).)
+   (param :src.0 . . JEvent.0. .)).
+  (pragmas
+   (nodestroy)).
+  (stmts
+   (call =copy.2.sysvq0asl
+    (dot
+     (hderef dest.0)kind.0 0)
+    (dot src.0 kind.0 0))
+   (call =copy.2.sysvq0asl
+    (dot
+     (hderef dest.0)key.0 0)
+    (dot src.0 key.0 0))
+   (call =copy.1.Iiwrt4i1.
+    (dot
+     (hderef dest.0)fields.0 0)
+    (dot src.0 fields.0 0)))))(.index@,1,../../aowli/src/aowli/journal.nim
+ (x journalExitCode.0. 821)
+ (h journalMagic.0. 135)
+ (h journalVersion.0. 75)
+ (h hexDigits.0. 65)
+ (h JEvent.0. 75)
+ (h gMode.0. 378)
+ (h gEvents.0. 38)
+ (h gPos.0. 168)
+ (h gPath.0. 37)
+ (h gCwd.0. 50)
+ (h gHome.0. 49)
+ (h gRecCwd.0. 50)
+ (h gProgram.0. 52)
+ (h gArgv.0. 53)
+ (x journalOff.0. 169)
+ (x journalRecording.0. 191)
+ (x journalReplaying.0. 200)
+ (x jEsc.0. 200)
+ (h hexVal.0. 2189)
+ (x jUnesc.0. 1582)
+ (x jInt.0. 2985)
+ (h startsWithStr.0. 1576)
+ (x portPath.0. 1256)
+ (h journalFail.0. 2014)
+ (h journalRefuse.0. 624)
+ (x jRecord.0. 355)
+ (x jServe.0. 869)
+ (x jField.0. 3611)
+ (x jSlurp.0. 461)
+ (h splitTabs.0. 2096)
+ (h splitLines2.0. 1074)
+ (h hostCwd.0. 1658)
+ (h initPaths.0. 319)
+ (h argvJoin.0. 340)
+ (x startRecord.0. 904)
+ (x startReplay.0. 596)
+ (x journalFinish.0. 6399)
+ (x jEnvSeed.0. 4549)
+ (h newSeqUninit.0.Iuueuci. 3599)
+ (h newSeqUninit.0.Im3cqd9. 1949)
+ (h inc.1.I6wjjge. 1975)
+ (h len.3.Ixq6taz. 701)
+ (h \5B\5D.7.Ir6d0tw. 781)
+ (h add.0.Ig6072n. 1252)
+ (h add.0.Ixpq8s01. 1463)
+ (h len.3.Ijmyd9p1. 1428)
+ (h \5B\5D.7.Ilovtk3. 773)
+ (h default.23.Isnz07p. 1225)
+ (h memSizeInBytes.0.I6i476p1. 1848)
+ (h memSizeInBytes.0.I7me00i. 774)
+ (h capInBytes.0.Ih2sbn01. 791)
+ (h resize.0.I4buliy. 1311)
+ (h capInBytes.0.I8iriqw. 2024)
+ (h resize.0.Ikutmw21. 1292)
+ (h \2E..0.Ircp9lp. 1989)
+ (h seq.0.Ixdx2fh1. 847)
+ (h seq.0.I467rk41. 523)
+ (h =destroy.1.Ivioh0a. 505)
+ (h =wasMoved.1.I5vdnla. 1312)
+ (h =dup.1.Imq0s4c. 428)
+ (h =copy.1.Iiwrt4i1. 789)
+ (h =destroy.1.Ipetoad. 3711)
+ (h =wasMoved.1.Ixm7yuc. 1294)
+ (h =dup.1.Ibx65qz. 419)
+ (h =copy.1.Irioqk41. 780)
+ (h =destroy_SX4aX45vent0jou8favxh1.0. 3656)
+ (h =wasmoved_SX4aX45vent0jou8favxh1.0. 310)
+ (h =dup_SX4aX45vent0jou8favxh1.0. 404)
+ (h =copy_SX4aX45vent0jou8favxh1.0. 490))

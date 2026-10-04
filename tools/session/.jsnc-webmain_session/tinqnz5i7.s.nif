@@ -1,0 +1,191 @@
+(.nif27)
+(.indexat 5493             )
+(stmts@,6,../../../../../../home/savant/nimony/src/lib/tinyhashes.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@9,1 :UHash.0.~7 x . .
+  (u@2 32))
+ (proc@,3 :!&.0.@5 . . .
+  (params@9
+   (param@1 :h.0 . .
+    (u@1,~2 32).)
+   (param@B :val.0 . .
+    (u@5 32).))
+  (u@B,~2 32)
+  (pragmas@e
+   (inline@2)).
+  (stmts@2,1
+   (result :result.0 . .
+    (u@9,~3 32).)
+   (asgn@7,1 result.0~7
+    (add@4
+     (u 32)h.0~2 val.0@2))
+   (asgn@7,2 result.0~7
+    (add@9
+     (u 32)result.0~7
+     (shl@A
+      (u 32)result.0~7
+      (suf@4 10u "u32"))))
+   (asgn@7,3 result.0~7
+    (bitxor@9
+     (u 32)result.0~7
+     (shr@C
+      (u 32)result.0~7
+      (suf@4 6u "u32"))))
+   (ret~2,~1 result.0)))
+ (proc@,9 :!$.0.@5 . . .
+  (params@9
+   (param@1 :h.1 . .
+    (u@1,~8 32).))
+  (u@B,~8 32)
+  (pragmas@R
+   (inline@2)).
+  (stmts@2,1
+   (result :result.1 . .
+    (u@9,~9 32).)
+   (asgn@7,1 result.1~7
+    (add@4
+     (u 32)h.1~2
+     (shl@4
+      (u 32)h.1~2
+      (suf@4 3u "u32"))))
+   (asgn@7,2 result.1~7
+    (bitxor@9
+     (u 32)result.1~7
+     (shr@C
+      (u 32)result.1~7
+      (suf@4 11u "u32"))))
+   (asgn@7,3 result.1~7
+    (add@9
+     (u 32)result.1~7
+     (shl@9
+      (u 32)result.1~7
+      (suf@4 15u "u32"))))
+   (ret~2,~1 result.1)))
+ (proc@,F :uhash.0.@5 x . .
+  (params@B
+   (param@1 :s.0 . . string.0.sysvq0asl@3 .))
+  (u@B,~E 32). .
+  (stmts@2,1
+   (result@7 :result.2 . .
+    (u@2,~F 32).)
+   (asgn@7 result.2~7
+    (suf@2 0u "u32"))
+   (for@4,1
+    (hderef@A
+     (call items.1.I4py2pf1.~5
+      (hcall@1 toOpenArray.2.sysvq0asl s.0)))
+    (unpackflat
+     (let :c.0 . .
+      (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+       (c@E,~L 8)).))
+    (stmts@F
+     (asgn@7 result.2~7
+      (infix@9 !&.0. result.2~7
+       (conv@9
+        (u~6 32)
+        (hderef@1 c.0))))))
+   (asgn@7,2 result.2~7
+    (prefix@2 !$.0. result.2@2))
+   (ret~2,~1 result.2)))
+ (comment@B,1 uint32.0.sysvq0asl uint32.0.sysvq0asl@E,2 uint32.0.sysvq0asl@T,G)
+ (iterator@G,H :items.1.I4py2pf1. . .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (at items.1.sysvq0asl
+   (c@X,Q,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 8))
+  (params@I,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (param@1 :a.1 . . openArray.0.Ijk0jkw1.@C .))
+  (mut@J,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (c@E,~L 8)). .@,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+  (stmts@2,m,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+   (var@4 :i.0 . .
+    (i@3,~e 32)0@4)
+   (while@,1
+    (lt@8
+     (i 32)i.0~2
+     (call@5 len.6.Iroq7kd1.~3 a.1@1))
+    (stmts@2,1
+     (yld
+      (call@6 \5B\5D.10.I5nt6we. a.1 i.0@2))
+     (cmd@,1 inc.1.I6wjjge.
+      (haddr@4 i.0))))))
+ (func@F,n,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :len.6.Iroq7kd1. . .~F,~I
+  (at len.6.sysvq0asl
+   (c@I,~N 8))
+  (params~3,~I
+   (param@1 :a.3 . . openArray.0.Ijk0jkw1.@C .))
+  (i@4,~I 32)
+  (pragmas@K,~I
+   (inline@2)).~F,~I
+  (stmts@X,~I
+   (result@1 :result.3 . .
+    (i@D,V,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim 32).)
+   (asgn@1 result.3
+    (dot a.3~1 len.0 0 "x"))
+   (ret~m result.3)))
+ (func@A,o,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :\5B\5D.10.I5nt6we. . .~A,~e
+  (at \5B\5D.10.sysvq0asl
+   (c@N,~O 8))
+  (params@3,~e
+   (param@1 :x.2 . . openArray.0.Ijk0jkw1.@C .)
+   (param@I :idx.1 . .
+    (i@5 32).))
+  (mut@J,~e
+   (c@4,G 8))
+  (pragmas@c,~e
+   (inline@2)
+   (requires@A
+    (and@J
+     (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (le@2,1
+       (i 32)0@1D,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim idx.1@16,A,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim))
+     (lt@8
+      (i 32)idx.1~4
+      (dot@3 x.2~1 len.0 0 "x"))))).~A,~e
+  (stmts@1P,~e
+   (result@3 :result.4 . .
+    (mut~19
+     (c@4,G 8)).)
+   (asgn@3 result.4
+    (haddr~2
+     (pat
+      (dot x.2~1 a.0 0 "x")idx.1@3)))
+   (ret~1Z result.4)))
+ (func@4,p,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i@5,~h 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.3 . .
+    (mut@3
+     (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.3)
+    (add@6
+     (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)
+     (hderef@1 x.3)
+     (conv@U,~F
+      (i@9,8,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim 32)1@1)))))
+ (type@V,l,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim :openArray.0.Ijk0jkw1. .
+  (at openArray.0.sysvq0asl
+   (c@2,~L 8))
+  (pragmas~F,~f
+   (view@2))
+  (object~4,~f .
+   (fld~N,1 :a.0 . .
+    (ptr@3
+     (uarray@I
+      (c@8,J 8))
+     (unchecked)).)
+   (fld~N,2 :len.0 . .
+    (i@5 32).))))(.index@,6,../../../../../../home/savant/nimony/src/lib/tinyhashes.nim
+ (x UHash.0. 192)
+ (h !&.0. 41)
+ (h !$.0. 541)
+ (x uhash.0. 550)
+ (h items.1.I4py2pf1. 738)
+ (h len.6.Iroq7kd1. 830)
+ (h \5B\5D.10.I5nt6we. 453)
+ (h inc.1.I6wjjge. 846)
+ (h openArray.0.Ijk0jkw1. 985))

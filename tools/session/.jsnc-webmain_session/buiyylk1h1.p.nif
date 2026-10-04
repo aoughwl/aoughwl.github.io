@@ -1,0 +1,434 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/builtintypes.nim
+ (include
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (import@,1 nimony_model@7)
+ (type@G,4 BuiltinTypes~E x . .
+  (object@2 .
+   (fld~E,1 mem . . TokenBuf@5 .)
+   (fld~6,2 autoType~8 x . Cursor@19 .)
+   (fld@7,2 stringType~A x . Cursor@w .)
+   (fld@H,2 intType~7 x . Cursor@m .)
+   (fld@S,2 uintType~8 x . Cursor@b .)
+   (fld@e,2 floatType~9 x . Cursor@P .)
+   (fld@p,2 boolType~8 x . Cursor@E .)
+   (fld@10,2 charType~8 x . Cursor@3 .)
+   (fld~6,3 voidType~8 x . Cursor@D .)
+   (fld@4,3 nilType~7 x . Cursor@3 .)
+   (fld~6,4 int8Type~8 x . Cursor@d .)
+   (fld@6,4 int16Type~9 x . Cursor@R .)
+   (fld@I,4 int32Type~9 x . Cursor@F .)
+   (fld@U,4 int64Type~9 x . Cursor@3 .)
+   (fld~5,5 uint8Type~9 x . Cursor@g .)
+   (fld@8,5 uint16Type~A x . Cursor@T .)
+   (fld@L,5 uint32Type~A x . Cursor@G .)
+   (fld@Y,5 uint64Type~A x . Cursor@3 .)
+   (fld~3,6 float32Type~B x . Cursor@H .)
+   (fld@B,6 float64Type~B x . Cursor@3 .)
+   (fld@,7 emptyTupleType~E x . Cursor@3 .)
+   (fld~3,8 untypedType~B x . Cursor@3 .)
+   (fld~3,9 cstringType~B x . Cursor@3 .)
+   (fld~4,A vtableType~A x . Cursor@3 .)
+   (fld@2,B continuationType~G x . Cursor@3 .)))
+ (proc@,H tagToken@5 . . .
+  (params@D
+   (param@1 tag . . string@5 .)
+   (param@E info . . PackedLineInfo@6 NoLineInfo@N))PackedToken@o
+  (pragmas@1D inline@2).
+  (stmts@2,1
+   (call@A parLeToken~A
+    (call@K
+     (dot~A
+      (dot~5 pool~4 tags@1)getOrIncl@1)tag@1)info@R)))
+ (const@5,L sso~3 x . . true@4)
+ (const@K,O SystemModuleSuffix~I x . . "sysvq0asl"@4)
+ (const@C,P StringName~A x . .
+  (infix@G & "string.0."~C SystemModuleSuffix@2))
+ (when@,R
+  (elif@5 sso
+   (stmts~3,1
+    (const@G,1 LongStringName~E x . .
+     (infix@K & "LongString.0."~G SystemModuleSuffix@2))
+    (const@I,2 StringBytesField~G x . . "bytes.0"@4)
+    (const@H,3 StringMoreField~F x . . "more.0"@4)
+    (const@O,4 LongStringFullLenField~M x . . "fullLen.0"@4)
+    (const@J,5 LongStringRcField~H x . . "rc.0"@4)
+    (const@O,6 LongStringCapImplField~M x . . "capImpl.0"@4)
+    (const@L,7 LongStringDataField~J x . . "data.0"@4)))
+  (else@,9
+   (stmts@2,1
+    (const@E,1 StringAField~C x . . "a.0"@4)
+    (const@E,2 StringIField~C x . . "i.0"@4))))
+ (const@F,g ErrorCodeName~D x . .
+  (infix@J & "ErrorCode.0."~F SystemModuleSuffix@2))
+ (const@D,h SuccessName~B x . .
+  (infix@H & "Success.0."~D SystemModuleSuffix@2))
+ (const@D,i FailureName~B x . .
+  (infix@H & "Failure.0."~D SystemModuleSuffix@2))
+ (const@F,j ExceptionName~D x . .
+  (infix@J & "Exception.0."~F SystemModuleSuffix@2))
+ (const@I,k ExcThreadVarName~G x . .
+  (infix@D & "exc.0."~9 SystemModuleSuffix@2))
+ (const@I,l ContinuationName~G x . .
+  (infix@M & "Continuation.0."~I SystemModuleSuffix@2))
+ (const@J,m OpenArrayHeadName~H x . .
+  (infix@J & "openArray.0."~F SystemModuleSuffix@2))
+ (proc@,o createBuiltinTypes@5 x . .
+  (params@O
+   (param@1 bits . . int@6 .))BuiltinTypes@D . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (oconstr@E BuiltinTypes~C
+     (kv@4 mem~3
+      (call@G createTokenBuf~E 30@1))))
+   (cmd@A,2
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "auto" "R")))
+   (call@J,3
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (when@,5
+    (elif@5 true
+     (stmts~3,1
+      (cmd@A
+       (dot
+        (dot~4 result~6 mem@1)add@1)
+       (call@D symToken~8
+        (call@K
+         (dot~A
+          (dot~5 pool~4 syms@1)getOrIncl@1)StringName@1)NoLineInfo@Y))
+      (call@M,1
+       (dot~C
+        (dot~4 result~6 mem@1)addDotToken@1))))
+    (else@,3
+     (stmts@2,1
+      (cmd@A
+       (dot
+        (dot~4 result~6 mem@1)add@1)
+       (callstrlit@D tagToken~8
+        (suf "string" "R")))
+      (call@J,1
+       (dot~9
+        (dot~4 result~6 mem@1)addParRi@1)))))
+   (cmd@A,C
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "bool" "R")))
+   (call@J,D
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (let@4,F configBits . . .
+    (call@a
+     (dot~A
+      (dot~9 pool~4 integers@1)getOrIncl@1)bits@1))
+   (cmd@A,G
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "i" "R")))
+   (cmd@A,H
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D intToken~8 configBits@1 NoLineInfo@D))
+   (call@J,I
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,K
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "u" "R")))
+   (cmd@A,L
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D intToken~8 configBits@1 NoLineInfo@D))
+   (call@J,M
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,O
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "f" "R")))
+   (cmd@A,P
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D intToken~8
+     (call@O
+      (dot~A
+       (dot~9 pool~4 integers@1)getOrIncl@1)64@1)NoLineInfo@U))
+   (call@J,Q
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,S
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "c" "R")))
+   (cmd@A,T
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D intToken~8
+     (call@O
+      (dot~A
+       (dot~9 pool~4 integers@1)getOrIncl@1)8@1)NoLineInfo@T))
+   (call@J,U
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,W
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D dotToken~8 NoLineInfo@1))
+   (cmd@A,Y
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "nilt" "R")))
+   (call@J,Z
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (template@,b addBitsType@9 . . .
+    (params@K
+     (param@1 tag . . string@5 .)
+     (param@E bits . . int@6 .)). . .
+    (stmts@2,2
+     (cmd@A
+      (dot
+       (dot~4 result~6 mem@1)add@1)
+      (call@D tagToken~8 tag@1))
+     (cmd@A,1
+      (dot
+       (dot~4 result~6 mem@1)add@1)
+      (call@D intToken~8
+       (call@O
+        (dot~A
+         (dot~9 pool~4 integers@1)getOrIncl@1)bits@1)NoLineInfo@W))
+     (call@J,2
+      (dot~9
+       (dot~4 result~6 mem@1)addParRi@1))))
+   (cmd@,h addBitsType "i"@C 8@H)
+   (cmd@,i addBitsType "i"@C 16@H)
+   (cmd@,j addBitsType "i"@C 32@H)
+   (cmd@,k addBitsType "i"@C 64@H)
+   (cmd@,m addBitsType "u"@C 8@H)
+   (cmd@,n addBitsType "u"@C 16@H)
+   (cmd@,o addBitsType "u"@C 32@H)
+   (cmd@,p addBitsType "u"@C 64@H)
+   (cmd@,r addBitsType "f"@C 32@H)
+   (cmd@,s addBitsType "f"@C 64@H)
+   (cmd@A,u
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "tuple" "R")))
+   (call@J,v
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,x
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "untyped" "R")))
+   (call@J,y
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,10
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "cstring" "R")))
+   (cmd@A,11
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "notnil" "R")))
+   (call@J,12
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (call@J,13
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,16
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "uarray" "R")))
+   (cmd@A,17
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "ptr" "R")))
+   (cmd@A,18
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (callstrlit@D tagToken~8
+     (suf "void" "R")))
+   (call@J,19
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (call@J,1A
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (call@J,1B
+    (dot~9
+     (dot~4 result~6 mem@1)addParRi@1))
+   (cmd@A,1D
+    (dot
+     (dot~4 result~6 mem@1)add@1)
+    (call@D symToken~8
+     (call@K
+      (dot~A
+       (dot~5 pool~4 syms@1)getOrIncl@1)ContinuationName@1)NoLineInfo@e))
+   (call@H,1F
+    (dot~7
+     (dot~4 result~6 mem@1)freeze@1))
+   (asgn@G,1H
+    (dot~A result~6 autoType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)0@1))
+   (asgn@I,1I
+    (dot~C result~6 stringType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)2@1))
+   (asgn@G,1J
+    (dot~A result~6 boolType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)4@1))
+   (asgn@F,1K
+    (dot~9 result~6 intType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)6@1))
+   (asgn@G,1L
+    (dot~A result~6 uintType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)9@1))
+   (asgn@H,1M
+    (dot~B result~6 floatType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)12@1))
+   (asgn@G,1N
+    (dot~A result~6 charType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)15@1))
+   (asgn@G,1O
+    (dot~A result~6 voidType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)18@1))
+   (asgn@F,1P
+    (dot~9 result~6 nilType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)19@1))
+   (asgn@G,1Q
+    (dot~A result~6 int8Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)21@1))
+   (asgn@H,1R
+    (dot~B result~6 int16Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)24@1))
+   (asgn@H,1S
+    (dot~B result~6 int32Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)27@1))
+   (asgn@H,1T
+    (dot~B result~6 int64Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)30@1))
+   (asgn@H,1U
+    (dot~B result~6 uint8Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)33@1))
+   (asgn@I,1V
+    (dot~C result~6 uint16Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)36@1))
+   (asgn@I,1W
+    (dot~C result~6 uint32Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)39@1))
+   (asgn@I,1X
+    (dot~C result~6 uint64Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)42@1))
+   (asgn@J,1Y
+    (dot~D result~6 float32Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)45@1))
+   (asgn@J,1Z
+    (dot~D result~6 float64Type@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)48@1))
+   (asgn@M,1a
+    (dot~G result~6 emptyTupleType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)51@1))
+   (asgn@J,1b
+    (dot~D result~6 untypedType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)53@1))
+   (asgn@J,1c
+    (dot~D result~6 cstringType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)55@1))
+   (asgn@I,1d
+    (dot~C result~6 vtableType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)59@1))
+   (asgn@O,1e
+    (dot~I result~6 continuationType@1)
+    (call@L
+     (dot~9
+      (dot~4 result~6 mem@1)cursorAt@1)65@1))))
+ (proc@,2V isStringType@5 x . .
+  (params@I
+   (param@1 a . . Cursor@3 .))bool@D
+  (pragmas@a inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@J and
+     (infix~A ==
+      (dot~6 a~1 kind@1)Symbol@3)
+     (infix@C ==
+      (dot~7 a~1 symId@1)
+      (call@M
+       (dot~A
+        (dot~5 pool~4 syms@1)getOrIncl@1)StringName@1))))))
+ (proc@,2Z isSomeStringType@5 x . .
+  (params@M
+   (param@1 a . . Cursor@3 .))bool@D
+  (pragmas@e inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@P or
+     (infix~C ==
+      (dot~A a~1 typeKind@1)CstringT@3)
+     (call@F isStringType~C a@1))))))

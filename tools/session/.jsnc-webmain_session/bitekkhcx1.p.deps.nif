@@ -1,0 +1,24 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (when
+   (call defined nimony))
+  (infix / std
+   (bracket hashes assertions)))
+ (import
+  (when
+   (prefix not
+    (call defined nimony)))
+  (infix / std hashes))
+ (import
+  (when
+   (prefix not
+    (call defined nimony))
+   (call defined nimPreviewSlimSystem))
+  (infix / std assertions))
+ (import
+  (when isMainModule
+   (call defined nimony))
+  (infix / std syncio)))

@@ -1,0 +1,267 @@
+(.nif27)
+(.indexat 5142             )
+(stmts@,1,enumeq.nim
+ (const@T,6 :strlit.0.I264955606659562444. . LongString.0.sysvq0asl
+  (oconstr LongString.0.sysvq0asl
+   (kv fullLen.0 9)
+   (kv rc.0 0)
+   (kv capImpl.0 0)
+   (kv data.0 "ActDelete")))
+ (type@D,6 :Action.0.~8 .
+  (enum@2
+   (u 8)
+   (efld@5 :ActNone.0. 0)
+   (efld@E :ActDelete.0. 1)
+   (efld@P :ActEdit.0. 2)
+   (efld@Y :ActCopy.0. 3)))
+ (proc@5,6 :dollar`.Action.0.
+  (params
+   (param :e.0 . Action.0.))string.0.sysvq0asl
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)))
+  (stmts
+   (var@A :result.0 . string.0.sysvq0asl .)
+   (call@A =wasMoved.2.sysvq0asl
+    (addr result.0))
+   (case@A e.0
+    (of@5
+     (ranges 0)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 7308901628019687687u)
+        (kv more.0
+         (nil))))))
+    (of@E
+     (ranges 1)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 7308327640000315902u)
+        (kv more.0
+         (addr strlit.0.I264955606659562444.))))))
+    (of@P
+     (ranges 2)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 8388346030422442247u)
+        (kv more.0
+         (nil))))))
+    (of@Y
+     (ranges 3)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 8750616411487027463u)
+        (kv more.0
+         (nil)))))))
+   (ret result.0)))
+ (proc@,8 :decide.0.@5
+  (params@B)Action.0.@4
+  (pragmas
+   (smry))
+  (stmts@O
+   (var :result.1 . Action.0.~J,~2 .)
+   (asgn result.1 0~4,~2)
+   (ret~O result.1)))
+ (proc@,A :isNone.0.@5
+  (params@B)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@M
+   (var@9 :result.2 .
+    (bool~R).)
+   (var@6 :`x.0 . Action.0.~O,~2
+    (call decide.0.~6))
+   (asgn@9 result.2
+    (eq `x.0~3 0~B,~4))
+   (ret~M result.2)))
+ (proc@,B :isDelete.0.@5
+  (params@D)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@O
+   (var@9 :result.3 .
+    (bool~T,~1).)
+   (var@6 :`x.1 . Action.0.~Q,~3
+    (call decide.0.~6))
+   (asgn@9 result.3
+    (eq `x.1~3 1~4,~5))
+   (ret~O result.3)))
+ (proc@,C :isEdit.0.@5
+  (params@B)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@M
+   (var@9 :result.4 .
+    (bool~R,~2).)
+   (var@6 :`x.2 . Action.0.~O,~4
+    (call decide.0.~6))
+   (asgn@9 result.4
+    (eq `x.2~3 2@9,~6))
+   (ret~M result.4)))
+ (proc@,D :notNone.0.@5
+  (params@C)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@N
+   (var@9 :result.5 .
+    (bool~S,~3).)
+   (var@6 :`x.3 . Action.0.~P,~5
+    (call decide.0.~6))
+   (asgn@9 result.5
+    (not@2,1m,../../../../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+     (eq@7 `x.3@T,E,enumeq.nim 0@K,7,enumeq.nim)))
+   (ret~N result.5)))
+ (proc@,G :localIsDelete.0.@5
+  (params@I)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.6 .
+    (bool~2,~7).)
+   (var@4 :a.0 . Action.0.~1,~B
+    (call@A decide.0.~6))
+   (asgn@7,1 result.6~7
+    (eq@4 a.0~2 1@G,~C))
+   (ret~2,~1 result.6)))
+ (proc@,K :localNotNone.0.@5
+  (params@H)
+  (bool@4)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.7 .
+    (bool~2,~B).)
+   (var@4 :a.1 . Action.0.~1,~F
+    (call@A decide.0.~6))
+   (asgn@7,1 result.7~7
+    (not@2,1m,../../../../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+     (eq@7 a.1@B,N,enumeq.nim 0@K,7,enumeq.nim)))
+   (ret~2,~1 result.7)))
+ (proc@,P :ordValue.0.@5
+  (params@D)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@N
+   (var@3 :result.8 .
+    (i~M 64).)
+   (var@A :`x.4 . Action.0.~T,~H
+    (call decide.0.~6))
+   (asgn@3 result.8
+    (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+     (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)`x.4@X,Q,enumeq.nim))
+   (ret~N result.8)))
+ (proc@,Q :ordDelete.0.@5
+  (params@E)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@O
+   (var@3 :result.9 .
+    (i~N,~1 64).)
+   (asgn@3 result.9
+    (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+     (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)1@T,7,enumeq.nim))
+   (ret~O result.9)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)))
+ (type :`cchar.0.
+  (pragmas
+   (importc "char")
+   (nodecl))
+  (i 8))
+ (gvar :`cmdCount.0.
+  (pragmas
+   (exportc "cmdCount"))
+  (i 32).)
+ (gvar :`cmdLine.0.
+  (pragmas
+   (exportc "cmdLine"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (gvar :`nimEnviron.0.
+  (pragmas
+   (exportc "nimEnviron"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (proc :`main.0.
+  (params
+   (param :`argc.0. .
+    (i 32))
+   (param :`argv.0. .
+    (ptr
+     (ptr `cchar.0.)))
+   (param :`envp.0. .
+    (ptr
+     (ptr `cchar.0.))))
+  (i 32)
+  (pragmas
+   (exportc "main")
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads)
+    (param 2 2 reads)))
+  (stmts
+   (asgn `cmdCount.0. `argc.0.)
+   (asgn `cmdLine.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`argv.0.))
+   (asgn `nimEnviron.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`envp.0.))
+   (call `ini.0.)
+   (call nimFlushStdStreams.0.sysvq0asl)
+   (ret 0))))(.index@,1,enumeq.nim
+ (h strlit.0.I264955606659562444. 58)
+ (h Action.0. 186)
+ (x@F,6 ActNone.0. 45)
+ (x@F,6 ActDelete.0. 26)
+ (x@F,6 ActEdit.0. 28)
+ (x@F,6 ActCopy.0. 26)
+ (x dollar`.Action.0. 28)
+ (x decide.0. 978)
+ (x isNone.0. 166)
+ (x isDelete.0. 240)
+ (x isEdit.0. 245)
+ (x notNone.0. 243)
+ (x localIsDelete.0. 362)
+ (x localNotNone.0. 261)
+ (x ordValue.0. 376)
+ (x ordDelete.0. 409)
+ (h `iniGuard.0. 353)
+ (x `ini.0. 34)
+ (x `cchar.0. 194)
+ (x `cmdCount.0. 71)
+ (x `cmdLine.0. 68)
+ (x `nimEnviron.0. 84)
+ (x `main.0. 90)
+ (h `argc.0. 27)
+ (h `argv.0. 34)
+ (h `envp.0. 54))

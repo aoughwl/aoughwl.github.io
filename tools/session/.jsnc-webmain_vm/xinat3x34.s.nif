@@ -1,0 +1,1290 @@
+(.nif27)
+(.indexat 38064            )
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/xints.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@8,5 :xint.0.~6 x .
+  (pragmas)
+  (object@2 .
+   (fld~6,1 :nan.0 . .
+    (bool@5).)
+   (fld~6,2 :neg.0 . .
+    (bool@5).)
+   (fld~6,3 :val.0 . .
+    (u@5 64).)))
+ (proc@,A :zero.0.@5 x . .
+  (params@A)xint.0.@4 . .
+  (stmts@L
+   (result@4 :result.0 . . xint.0.~L .)
+   (asgn@4 result.0
+    (oconstr xint.0.~L
+     (kv nan.0
+      (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+       (false)))
+     (kv neg.0
+      (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+       (false)))
+     (kv@4 val.0~3
+      (hconv@2
+       (u~M,~2 64)0))))
+   (ret~L result.0)))
+ (proc@,C :createNaN.0.@5 x . .
+  (params@F)xint.0.@4 . .
+  (stmts@Q
+   (result@4 :result.1 . . xint.0.~Q,~2 .)
+   (asgn@4 result.1
+    (oconstr xint.0.~Q,~2
+     (kv@4 nan.0~3
+      (true@2))
+     (kv neg.0
+      (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+       (false)))
+     (kv val.0
+      (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+       (suf 0u "u64")))))
+   (ret~Q result.1)))
+ (proc@,E :isNaN.0.@5 x . .
+  (params@B
+   (param@1 :x.0 . . xint.0.@3 .))
+  (bool@B)
+  (pragmas@R
+   (inline@2)).
+  (stmts@e
+   (result@1 :result.2 . .
+    (bool~W,~8).)
+   (asgn@1 result.2
+    (dot x.0~1 nan.0 0 "x"))
+   (ret~e result.2)))
+ (proc@,F :isNegative.0.@5 x . .
+  (params@G
+   (param@1 :x.1 . . xint.0.@3 .))
+  (bool@B)
+  (pragmas@W
+   (inline@2)).
+  (stmts@j
+   (result@1 :result.3 . .
+    (bool~b,~9).)
+   (asgn@1 result.3
+    (dot x.1~1 neg.0 0 "x"))
+   (ret~j result.3)))
+ (proc@,H :asSigned.0.@5 x . .
+  (params@E
+   (param@1 :x.2 . . xint.0.@3 .)
+   (param@A :err.0 . .
+    (mut@5
+     (bool@4)).))
+  (i@Q 64). .
+  (stmts@2,1
+   (result@7 :result.4 . .
+    (i@H,~1 64).)
+   (asgn@7 result.4~7
+    (hconv@2
+     (i@F,~1 64)0))
+   (if@,1
+    (elif@3
+     (dot@1 x.2~1 nan.0 0 "x")
+     (stmts~1,1
+      (asgn@4
+       (hderef~4 err.0)
+       (true@2))))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (dot@1 x.2~1 neg.0 0 "x")
+        (stmts~1,1
+         (if
+          (elif@3
+           (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (lt@2,1
+             (u 64)
+             (add@a,U,../../../../../../home/savant/nimony/src/nimony/xints.nim
+              (u 64)
+              (conv~D
+               (u~E,~F 64)
+               (suf@5 9223372036854775807 "i64"))
+              (hconv@1
+               (u@G,2S,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1))
+             (dot@A,U,../../../../../../home/savant/nimony/src/nimony/xints.nim x.2~1 val.0 0 "x")))
+           (stmts~1,1
+            (asgn@4
+             (hderef~4 err.0)
+             (true@2))))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result.4~7
+             (neg@2
+              (i 64)
+              (conv@6
+               (i@6,~3 64)
+               (dot@2 x.2~1 val.0 0 "x")))))))))
+       (else@,5
+        (stmts@2,1
+         (if
+          (elif@3
+           (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+            (lt@2,1
+             (u 64)
+             (conv@N,Z,../../../../../../home/savant/nimony/src/nimony/xints.nim
+              (u~E,~K 64)
+              (suf@5 9223372036854775807 "i64"))
+             (dot@A,Z,../../../../../../home/savant/nimony/src/nimony/xints.nim x.2~1 val.0 0 "x")))
+           (stmts~1,1
+            (asgn@4
+             (hderef~4 err.0)
+             (true@2))))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result.4~7
+             (conv@7
+              (i@7,~8 64)
+              (dot@2 x.2~1 val.0 0 "x"))))))))))))
+   (ret~2,~1 result.4)))
+ (proc@,X :asUnsigned.0.@5 x . .
+  (params@G
+   (param@1 :x.3 . . xint.0.@3 .)
+   (param@A :err.1 . .
+    (mut@5
+     (bool@4)).))
+  (u@Q 64). .
+  (stmts@2,1
+   (result@7 :result.5 . .
+    (u@,~Q 64).)
+   (asgn@7 result.5~7
+    (suf@2 0u "u64"))
+   (if@,1
+    (elif@3
+     (dot@1 x.3~1 nan.0 0 "x")
+     (stmts~1,1
+      (asgn@4
+       (hderef~4 err.1)
+       (true@2))))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (and@6
+         (dot~5 x.3~1 neg.0 0 "x")
+         (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+          (not@,1
+           (eq@7
+            (u 64)
+            (dot@I,j,../../../../../../home/savant/nimony/src/nimony/xints.nim x.3~1 val.0 0 "x")
+            (suf@Q,j,../../../../../../home/savant/nimony/src/nimony/xints.nim 0u "u64")))))
+        (stmts~1,1
+         (asgn@4
+          (hderef~4 err.1)
+          (true@2))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result.5~7
+          (dot@3 x.3~1 val.0 0 "x"))))))))
+   (ret~2,~1 result.5)))
+ (proc@,h :\2D.0.@5 x . .
+  (params@9
+   (param@1 :a.0 . . xint.0.@3 .))xint.0.@B . .
+  (stmts@2,1
+   (result@4 :result.6 . . xint.0.~2,~Y .)
+   (asgn@4 result.6
+    (oconstr xint.0.~2,~Y
+     (kv@4 nan.0~3
+      (dot@3 a.0~1 nan.0 0 "x"))
+     (kv@G neg.0~3
+      (not@2
+       (dot@5 a.0~1 neg.0 0 "x")))
+     (kv@W val.0~3
+      (dot@3 a.0~1 val.0 0 "x"))))
+   (ret~2,~1 result.6)))
+ (proc@,k :negate.0.@5 x . .
+  (params@C
+   (param@1 :a.1 . .
+    (mut@3 xint.0.@4).)).
+  (pragmas@Q
+   (inline@2)).
+  (stmts@d
+   (asgn@6
+    (dot~5
+     (hderef~1 a.1)neg.0 0 "x")
+    (not@2
+     (dot@5
+      (hderef~1 a.1)neg.0 0 "x")))))
+ (proc@,m :\2B.0.@5 x . .
+  (params@9
+   (param@1 :a.2 . . xint.0.@6 .)
+   (param@4 :b.0 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result :result.7 . . xint.0.@2,~d .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.2~1 nan.0 0 "x")
+      (dot@4 b.0~1 nan.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~e
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (if@,4
+    (elif@3
+     (and@A
+      (not~A
+       (dot@5 a.2~1 neg.0 0 "x"))
+      (not@4
+       (dot@5 b.0~1 neg.0 0 "x")))
+     (stmts~1,1
+      (asgn@7 result.7~7
+       (oconstr@6 xint.0.~D,~i
+        (kv nan.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (add@8
+          (u 64)
+          (dot~5 a.2~1 val.0 0 "x")
+          (dot@3 b.0~1 val.0 0 "x")))))
+      (if@,1
+       (elif@3
+        (lt@B
+         (u 64)
+         (dot~5 result.7~6 val.0 0 "x")
+         (dot@3 a.2~1 val.0 0 "x"))
+        (stmts~1,1
+         (asgn@B
+          (dot~5 result.7~6 nan.0 0 "x")
+          (true@2)))))
+      (ret@,3 result.7@7))))
+   (if@,B
+    (elif@3
+     (and@6
+      (dot~5 a.2~1 neg.0 0 "x")
+      (dot@5 b.0~1 neg.0 0 "x"))
+     (stmts~1,1
+      (asgn@7 result.7~7
+       (oconstr@6 xint.0.~D,~p
+        (kv nan.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv@4 neg.0~3
+         (true@2))
+        (kv@F val.0~3
+         (add@8
+          (u 64)
+          (dot~5 a.2~1 val.0 0 "x")
+          (dot@3 b.0~1 val.0 0 "x")))))
+      (if@,1
+       (elif@3
+        (lt@B
+         (u 64)
+         (dot~5 result.7~6 val.0 0 "x")
+         (dot@3 a.2~1 val.0 0 "x"))
+        (stmts~1,1
+         (asgn@B
+          (dot~5 result.7~6 nan.0 0 "x")
+          (true@2)))))
+      (ret@,3 result.7@7))))
+   (if@,I
+    (elif@3
+     (dot@1 a.2~1 neg.0 0 "x")
+     (stmts~1,2
+      (if
+       (elif@3
+        (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (lt@2,1
+          (u 64)
+          (dot@G,1E,../../../../../../home/savant/nimony/src/nimony/xints.nim b.0~1 val.0 0 "x")
+          (dot@8,1E,../../../../../../home/savant/nimony/src/nimony/xints.nim a.2~1 val.0 0 "x")))
+        (stmts~1,1
+         (asgn@7 result.7~7
+          (oconstr@6 xint.0.~F,~y
+           (kv nan.0
+            (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+             (false)))
+           (kv@4 neg.0~3
+            (true@2))
+           (kv@F val.0~3
+            (sub@8
+             (u 64)
+             (dot~5 a.2~1 val.0 0 "x")
+             (dot@3 b.0~1 val.0 0 "x")))))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result.7~7
+          (oconstr@6 xint.0.~F,~10
+           (kv nan.0
+            (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+             (false)))
+           (kv@4 neg.0~3
+            (false@2))
+           (kv@G val.0~3
+            (sub@8
+             (u 64)
+             (dot~5 b.0~1 val.0 0 "x")
+             (dot@3 a.2~1 val.0 0 "x"))))))))))
+    (else@,6
+     (stmts@2,2
+      (if
+       (elif@3
+        (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+         (lt@2,1
+          (u 64)
+          (dot@G,1K,../../../../../../home/savant/nimony/src/nimony/xints.nim a.2~1 val.0 0 "x")
+          (dot@8,1K,../../../../../../home/savant/nimony/src/nimony/xints.nim b.0~1 val.0 0 "x")))
+        (stmts~1,1
+         (asgn@7 result.7~7
+          (oconstr@6 xint.0.~F,~14
+           (kv nan.0
+            (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+             (false)))
+           (kv@4 neg.0~3
+            (true@2))
+           (kv@F val.0~3
+            (sub@8
+             (u 64)
+             (dot~5 b.0~1 val.0 0 "x")
+             (dot@3 a.2~1 val.0 0 "x")))))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result.7~7
+          (oconstr@6 xint.0.~F,~16
+           (kv nan.0
+            (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+             (false)))
+           (kv@4 neg.0~3
+            (false@2))
+           (kv@G val.0~3
+            (sub@8
+             (u 64)
+             (dot~5 a.2~1 val.0 0 "x")
+             (dot@3 b.0~1 val.0 0 "x")))))))))))
+   (ret~2,~1 result.7)))
+ (proc@,1I :\2D.1.@5 x . .
+  (params@9
+   (param@1 :a.3 . . xint.0.@6 .)
+   (param@4 :b.1 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,2
+   (result@7 :result.8 . . xint.0.~5,~1A .)
+   (asgn@7 result.8~7
+    (infix@4 \2B.0. a.3~2
+     (prefix@3 \2D.0. b.1@1)))
+   (ret~2,~2 result.8)))
+ (proc@,1M :*.0.@5 x . .
+  (params@9
+   (param@1 :a.4 . . xint.0.@6 .)
+   (param@4 :b.2 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result :result.9 . . xint.0.@2,~1D .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.4~1 nan.0 0 "x")
+      (dot@4 b.2~1 nan.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~1E
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@7,3 result.9~7
+    (oconstr@6 xint.0.~B,~1G
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,2 neg.0~3
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (bool)
+         (dot@A,1Z,../../../../../../home/savant/nimony/src/nimony/xints.nim a.4~1 neg.0 0 "x")
+         (dot@J,1Z,../../../../../../home/savant/nimony/src/nimony/xints.nim b.2~1 neg.0 0 "x")))))
+     (kv~8,3 val.0~3
+      (mul@8
+       (u 64)
+       (dot~5 a.4~1 val.0 0 "x")
+       (dot@3 b.2~1 val.0 0 "x")))))
+   (if@,A
+    (elif@3
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (u 64)
+        (div@G,1e,../../../../../../home/savant/nimony/src/nimony/xints.nim
+         (u 64)
+         (dot~5 result.9~6 val.0 0 "x")
+         (dot@5 a.4~1 val.0 0 "x"))
+        (dot@U,1e,../../../../../../home/savant/nimony/src/nimony/xints.nim b.2~1 val.0 0 "x"))))
+     (stmts~1,1
+      (asgn@B
+       (dot~5 result.9~6 nan.0 0 "x")
+       (true@2)))))
+   (ret~2,~1 result.9)))
+ (proc@,1a :div.0.@5 x . .
+  (params@B
+   (param@1 :a.5 . . xint.0.@6 .)
+   (param@4 :b.3 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result :result.10 . . xint.0.@2,~1R .)
+   (if
+    (elif@3
+     (or@F
+      (or~9
+       (dot~5 a.5~1 nan.0 0 "x")
+       (dot@4 b.3~1 nan.0 0 "x"))
+      (eq@9
+       (u 64)
+       (dot~5 b.3~1 val.0 0 "x")
+       (hconv@3
+        (u@H,1W,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~1S
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@7,3 result.10~7
+    (oconstr@6 xint.0.~B,~1U
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,2 neg.0~3
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (bool)
+         (dot@A,1n,../../../../../../home/savant/nimony/src/nimony/xints.nim a.5~1 neg.0 0 "x")
+         (dot@J,1n,../../../../../../home/savant/nimony/src/nimony/xints.nim b.3~1 neg.0 0 "x")))))
+     (kv~8,3 val.0~3
+      (div@8
+       (u 64)
+       (dot~5 a.5~1 val.0 0 "x")
+       (dot@5 b.3~1 val.0 0 "x")))))
+   (ret~2,~1 result.10)))
+ (proc@,1k :$.0.@5 x . .
+  (params@9
+   (param@1 :a.6 . . xint.0.@3 .))string.0.sysvq0asl@B . .
+  (stmts@2,1
+   (result :result.11 . . string.0.sysvq0asl@9,~1 .)
+   (asgn result.11
+    (if
+     (elif@3
+      (dot@1 a.6~1 nan.0 0 "x")
+      (expr@7 "nan"))
+     (elif@5,1
+      (dot@1 a.6~1 neg.0 0 "x")
+      (expr@7
+       (infix@4 &.0.sysvq0asl "-"~4
+        (prefix@2 $.0.sysvq0asl
+         (dot@2 a.6~1 val.0 0 "x")))))
+     (else@,2
+      (expr@6
+       (prefix $.0.sysvq0asl
+        (dot@2 a.6~1 val.0 0 "x"))))))
+   (ret~2,~1 result.11)))
+ (proc@,1p :createXint.0.@5 x . .
+  (params@G
+   (param@1 :x.4 . .
+    (i@3 64).))xint.0.@C . .
+  (stmts@2,1
+   (result :result.12 . . xint.0.@2,~1g .)
+   (asgn result.12
+    (if
+     (elif@3
+      (eq@2
+       (i 64)x.4~2
+       (suf@6 -9223372036854775808 "i64"))
+      (expr~1,1
+       (oconstr@4 xint.0.~4,~1h
+        (kv nan.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv@4 neg.0~3
+         (true@2))
+        (kv@F val.0~3
+         (add@M
+          (u 64)
+          (conv~E
+           (u~M,~1j 64)
+           (suf@5 9223372036854775807 "i64"))
+          (suf@2 1u "u64"))))))
+     (elif@5,2
+      (lt@2
+       (i 64)x.4~2
+       (hconv@2
+        (i@G,1H,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0))
+      (expr~3,1
+       (oconstr@4 xint.0.~4,~1j
+        (kv nan.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv@4 neg.0~3
+         (true@2))
+        (kv@F val.0~3
+         (conv@8
+          (u~M,~1l 64)
+          (neg@1
+           (i 64)x.4@1))))))
+     (else@,4
+      (expr@2,1
+       (oconstr@4 xint.0.~4,~1l
+        (kv nan.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv@4 neg.0~3
+         (false@2))
+        (kv@G val.0~3
+         (conv@8
+          (u~N,~1n 64)x.4@1)))))))
+   (ret~2,~1 result.12)))
+ (template@,1x :createXint.1.@9 x . .
+  (params@K
+   (param@1 :x.5 . .
+    (u@3 64).))xint.0.@D . .
+  (stmts@2,1
+   (oconstr@4,3 xint.0.~2,~1r
+    (kv nan.0
+     (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+      (false)))
+    (kv@4 neg.0~3
+     (false@2))
+    (kv@G val.0~3
+     (conv@8
+      (u~L,~1t 64)x.5@1)))))
+ (proc@,23 :shl.0.@5 x . .
+  (params@B
+   (param@1 :a.7 . . xint.0.@3 .)
+   (param@A :b.4 . .
+    (i@3 32).))xint.0.@J . .
+  (stmts@2,1
+   (result :result.13 . . xint.0.@2,~1u .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.7~1 nan.0 0 "x")
+      (lt@5
+       (i 32)b.4~2 0@2))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~1v
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@7,3 result.13~7
+    (oconstr@6 xint.0.~B,~1x
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,2 neg.0~3
+      (dot@3 a.7~1 neg.0 0 "x"))
+     (kv~8,3 val.0~3
+      (shl@8
+       (u 64)
+       (dot~5 a.7~1 val.0 0 "x")b.4@4))))
+   (if@,A
+    (elif@3
+     (or@8
+      (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (le@2,1
+        (i 32)64@A,2L,../../../../../../home/savant/nimony/src/nimony/xints.nim b.4@5,2L,../../../../../../home/savant/nimony/src/nimony/xints.nim))
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (u 64)
+         (shr@U,2L,../../../../../../home/savant/nimony/src/nimony/xints.nim
+          (u 64)
+          (shl~7
+           (u 64)
+           (dot~5 a.7~1 val.0 0 "x")b.4@4)b.4@4)
+         (dot@e,2L,../../../../../../home/savant/nimony/src/nimony/xints.nim a.7~1 val.0 0 "x")))))
+     (stmts~1,1
+      (asgn@B
+       (dot~5 result.13~6 nan.0 0 "x")
+       (true@2)))))
+   (ret~2,~1 result.13)))
+ (proc@,2H :shr.0.@5 x . .
+  (params@B
+   (param@1 :a.8 . . xint.0.@3 .)
+   (param@A :b.5 . .
+    (i@3 32).))xint.0.@J . .
+  (stmts@2,2
+   (result :result.14 . . xint.0.@2,~29 .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.8~1 nan.0 0 "x")
+      (lt@5
+       (i 32)b.5~2 0@2))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~2A
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@7,3 result.14~7
+    (oconstr@6 xint.0.~B,~2C
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,2 neg.0~3
+      (dot@3 a.8~1 neg.0 0 "x"))
+     (kv~8,3 val.0~3
+      (shr@8
+       (u 64)
+       (dot~5 a.8~1 val.0 0 "x")b.5@4))))
+   (ret~2,~2 result.14)))
+ (proc@,2S :and.0.@5 x . .
+  (params@B
+   (param@1 :a.9 . . xint.0.@6 .)
+   (param@4 :b.6 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result@4 :result.15 . . xint.0.~2,~2J .)
+   (asgn@4 result.15
+    (oconstr xint.0.~2,~2J
+     (kv@1,1 nan.0~3
+      (or@8
+       (dot~5 a.9~1 nan.0 0 "x")
+       (dot@4 b.6~1 nan.0 0 "x")))
+     (kv@1,2 neg.0~3
+      (and@8
+       (dot~5 a.9~1 neg.0 0 "x")
+       (dot@5 b.6~1 neg.0 0 "x")))
+     (kv@1,3 val.0~3
+      (bitand@8
+       (u 64)
+       (dot~5 a.9~1 val.0 0 "x")
+       (dot@5 b.6~1 val.0 0 "x")))))
+   (ret~2,~1 result.15)))
+ (proc@,2Z :or.0.@5 x . .
+  (params@A
+   (param@1 :a.10 . . xint.0.@6 .)
+   (param@4 :b.7 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result@4 :result.16 . . xint.0.~2,~2Q .)
+   (asgn@4 result.16
+    (oconstr xint.0.~2,~2Q
+     (kv@1,1 nan.0~3
+      (or@8
+       (dot~5 a.10~1 nan.0 0 "x")
+       (dot@4 b.7~1 nan.0 0 "x")))
+     (kv@1,2 neg.0~3
+      (or@8
+       (dot~5 a.10~1 neg.0 0 "x")
+       (dot@4 b.7~1 neg.0 0 "x")))
+     (kv@1,3 val.0~3
+      (bitor@8
+       (u 64)
+       (dot~5 a.10~1 val.0 0 "x")
+       (dot@4 b.7~1 val.0 0 "x")))))
+   (ret~2,~1 result.16)))
+ (proc@,2g :xor.0.@5 x . .
+  (params@B
+   (param@1 :a.11 . . xint.0.@6 .)
+   (param@4 :b.8 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result@4 :result.17 . . xint.0.~2,~2X .)
+   (asgn@4 result.17
+    (oconstr xint.0.~2,~2X
+     (kv@1,1 nan.0~3
+      (or@8
+       (dot~5 a.11~1 nan.0 0 "x")
+       (dot@4 b.8~1 nan.0 0 "x")))
+     (kv@1,2 neg.0~3
+      (xor@8
+       (dot~5 a.11~1 neg.0 0 "x")
+       (dot@5 b.8~1 neg.0 0 "x")))
+     (kv@1,3 val.0~3
+      (bitxor@8
+       (u 64)
+       (dot~5 a.11~1 val.0 0 "x")
+       (dot@5 b.8~1 val.0 0 "x")))))
+   (ret~2,~1 result.17)))
+ (proc@,2n :not.0.@5 x . .
+  (params@B
+   (param@1 :a.12 . . xint.0.@3 .))xint.0.@B . .
+  (stmts@2,1
+   (result@4 :result.18 . . xint.0.~2,~2e .)
+   (asgn@4 result.18
+    (oconstr xint.0.~2,~2e
+     (kv@1,1 nan.0~3
+      (dot@3 a.12~1 nan.0 0 "x"))
+     (kv@1,2 neg.0~3
+      (dot@3 a.12~1 neg.0 0 "x"))
+     (kv@1,3 val.0~3
+      (bitnot@2
+       (u 64)
+       (dot@5 a.12~1 val.0 0 "x")))))
+   (ret~2,~1 result.18)))
+ (proc@,2u :mod.0.@5 x . .
+  (params@B
+   (param@1 :a.13 . . xint.0.@6 .)
+   (param@4 :b.9 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,2
+   (result :result.19 . . xint.0.@2,~2m .)
+   (if
+    (elif@3
+     (or@F
+      (or~9
+       (dot~5 a.13~1 nan.0 0 "x")
+       (dot@4 b.9~1 nan.0 0 "x"))
+      (eq@9
+       (u 64)
+       (dot~5 b.9~1 val.0 0 "x")
+       (hconv@3
+        (u@H,1W,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~2n
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@7,3 result.19~7
+    (oconstr@6 xint.0.~B,~2p
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,3 neg.0~3
+      (dot@3 a.13~1 neg.0 0 "x"))
+     (kv~8,4 val.0~3
+      (mod@8
+       (u 64)
+       (dot~5 a.13~1 val.0 0 "x")
+       (dot@5 b.9~1 val.0 0 "x")))))
+   (ret~2,~2 result.19)))
+ (proc@,37 :mask.0.@5 x . .
+  (params@A
+   (param@1 :a.14 . . xint.0.@3 .)
+   (param@A :bits.0 . .
+    (i@6 32).)
+   (param@L :signed.0 . .
+    (bool~M,~31)
+    (false@F)))xint.0.@i . .
+  (stmts@2,2
+   (result :result.20 . . xint.0.@2,~2z .)
+   (if
+    (elif@3
+     (or@I
+      (or~C
+       (dot~5 a.14~1 nan.0 0 "x")
+       (lt@8
+        (i 32)bits.0~5 0@2))
+      (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (lt@2,1
+        (i 32)64@X,3G,../../../../../../home/savant/nimony/src/nimony/xints.nim bits.0@Q,3G,../../../../../../home/savant/nimony/src/nimony/xints.nim)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~30
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (let@4,3 :mask.0 . .
+    (u@3,~34 64)
+    (if@7
+     (elif@3
+      (eq@5
+       (i 32)bits.0~5 64@3)
+      (expr@C
+       (suf@4 18446744073709551615u "u64")))
+     (else@S
+      (expr@6
+       (sub@I
+        (u 64)
+        (shl~A
+         (u 64)
+         (suf~6 1u "u64")bits.0@4)
+        (hconv@2
+         (u@G,2X,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1))))))
+   (asgn@7,4 result.20~7
+    (oconstr@6 xint.0.~B,~33
+     (kv~8,1 nan.0~3
+      (false@2))
+     (kv~8,2 neg.0~3
+      (dot@3 a.14~1 neg.0 0 "x"))
+     (kv~8,3 val.0~3
+      (bitand@8
+       (u 64)
+       (dot~5 a.14~1 val.0 0 "x")mask.0@4))))
+   (if@,9
+    (elif@3
+     (and@7 signed.0~7
+      (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (not@,1
+        (eq@7
+         (u 64)
+         (shr@R,3P,../../../../../../home/savant/nimony/src/nimony/xints.nim
+          (u 64)
+          (dot~5 result.20~6 val.0 0 "x")
+          (sub@A
+           (i 32)bits.0~5 1@2))
+         (hconv@j,3P,../../../../../../home/savant/nimony/src/nimony/xints.nim
+          (u@H,1W,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim 64)0)))))
+     (stmts~1,2
+      (asgn@B
+       (dot~5 result.20~6 val.0 0 "x")
+       (add@S
+        (u 64)
+        (bitand~A
+         (u 64)
+         (bitnot~F
+          (u 64)
+          (dot@A result.20~6 val.0 0 "x"))mask.0@4)
+        (hconv@2
+         (u@G,2S,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1)))
+      (asgn@B,1
+       (dot~5 result.20~6 neg.0 0 "x")
+       (not@2
+        (dot@A result.20~6 neg.0 0 "x"))))))
+   (ret~2,~2 result.20)))
+ (proc@,3O :getBit.0.@5 x . .
+  (params@C
+   (param@1 :a.15 . . xint.0.@3 .)
+   (param@A :pos.0 . .
+    (i@5 32).))xint.0.@L . .
+  (stmts@2,2
+   (result :result.21 . . xint.0.@2,~3G .)
+   (if
+    (elif@3
+     (or@H
+      (or~B
+       (dot~5 a.15~1 nan.0 0 "x")
+       (lt@7
+        (i 32)pos.0~4 0@2))
+      (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (le@2,1
+        (i 32)64@W,3X,../../../../../../home/savant/nimony/src/nimony/xints.nim pos.0@P,3X,../../../../../../home/savant/nimony/src/nimony/xints.nim)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~3H
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@4,3 result.21
+    (oconstr xint.0.~2,~3J
+     (kv@1,1 nan.0~3
+      (false@2))
+     (kv@1,2 neg.0~3
+      (false@2))
+     (kv@1,3 val.0~3
+      (conv@8
+       (u~6,~3O 64)
+       (bitand@H
+        (u 64)
+        (shr~9
+         (u 64)
+         (dot~5 a.15~1 val.0 0 "x")pos.0@4)
+        (hconv@4
+         (u@I,2A,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1))))))
+   (ret~2,~2 result.21)))
+ (proc@,3Z :setBit.0.@5 x . .
+  (params@C
+   (param@1 :a.16 . . xint.0.@3 .)
+   (param@A :pos.1 . .
+    (i@5 32).))xint.0.@L . .
+  (stmts@2,2
+   (result :result.22 . . xint.0.@2,~3R .)
+   (if
+    (elif@3
+     (or@H
+      (or~B
+       (dot~5 a.16~1 nan.0 0 "x")
+       (lt@7
+        (i 32)pos.1~4 0@2))
+      (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (le@2,1
+        (i 32)64@W,3i,../../../../../../home/savant/nimony/src/nimony/xints.nim pos.1@P,3i,../../../../../../home/savant/nimony/src/nimony/xints.nim)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~3S
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@4,3 result.22
+    (oconstr xint.0.~2,~3U
+     (kv@1,1 nan.0~3
+      (false@2))
+     (kv@1,2 neg.0~3
+      (dot@3 a.16~1 neg.0 0 "x"))
+     (kv@1,3 val.0~3
+      (bitor@8
+       (u 64)
+       (dot~5 a.16~1 val.0 0 "x")
+       (shl@A
+        (u 64)
+        (suf~6 1u "u64")pos.1@4)))))
+   (ret~2,~2 result.22)))
+ (proc@,3k :clearBit.0.@5 x . .
+  (params@E
+   (param@1 :a.17 . . xint.0.@3 .)
+   (param@A :pos.2 . .
+    (i@5 32).))xint.0.@L . .
+  (stmts@2,2
+   (result :result.23 . . xint.0.@2,~3c .)
+   (if
+    (elif@3
+     (or@H
+      (or~B
+       (dot~5 a.17~1 nan.0 0 "x")
+       (lt@7
+        (i 32)pos.2~4 0@2))
+      (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (le@2,1
+        (i 32)64@W,3t,../../../../../../home/savant/nimony/src/nimony/xints.nim pos.2@P,3t,../../../../../../home/savant/nimony/src/nimony/xints.nim)))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~3d
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@4,3 result.23
+    (oconstr xint.0.~2,~3f
+     (kv@1,1 nan.0~3
+      (false@2))
+     (kv@1,2 neg.0~3
+      (dot@3 a.17~1 neg.0 0 "x"))
+     (kv@1,3 val.0~3
+      (bitand@8
+       (u 64)
+       (dot~5 a.17~1 val.0 0 "x")
+       (bitnot@4
+        (u 64)
+        (shl@A
+         (u 64)
+         (suf~6 1u "u64")pos.2@4))))))
+   (ret~2,~2 result.23)))
+ (proc@,3w :==.0.@5 x . .
+  (params@A
+   (param@1 :a.18 . . xint.0.@6 .)
+   (param@4 :b.10 . . xint.0.@3 .))
+  (bool@E). .
+  (stmts@2,1
+   (result :result.24 . .
+    (bool@7,~3r).)
+   (if
+    (elif@3
+     (dot@1 a.18~1 nan.0 0 "x")
+     (stmts~1,1
+      (ret
+       (dot@8 b.10~1 nan.0 0 "x"))))
+    (elif@5,2
+     (dot@1 b.10~1 nan.0 0 "x")
+     (stmts~3,1
+      (ret
+       (false@7)))))
+   (asgn@F,6 result.24
+    (and
+     (eq~9
+      (bool)
+      (dot~5 a.18~1 neg.0 0 "x")
+      (dot@4 b.10~1 neg.0 0 "x"))
+     (eq@A
+      (u 64)
+      (dot~5 a.18~1 val.0 0 "x")
+      (dot@4 b.10~1 val.0 0 "x"))))
+   (ret~2,~1 result.24)))
+ (proc@,45 :<.0.@5 x . .
+  (params@9
+   (param@1 :a.19 . . xint.0.@6 .)
+   (param@4 :b.11 . . xint.0.@3 .))
+  (bool@E). .
+  (stmts@2,1
+   (result :result.25 . .
+    (bool@7,~40).)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.19~1 nan.0 0 "x")
+      (dot@4 b.11~1 nan.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (false@7)))))
+   (if@,4
+    (elif@3
+     (and@6
+      (dot~5 a.19~1 neg.0 0 "x")
+      (not@4
+       (dot@5 b.11~1 neg.0 0 "x")))
+     (stmts~1,1
+      (ret
+       (true@7)))))
+   (if@,6
+    (elif@3
+     (and@A
+      (not~A
+       (dot@5 a.19~1 neg.0 0 "x"))
+      (dot@5 b.11~1 neg.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (false@7)))))
+   (asgn@,A result.25
+    (if
+     (elif@3
+      (dot@1 a.19~1 neg.0 0 "x")
+      (expr~1,2
+       (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+        (lt@2,1
+         (u 64)
+         (dot@D,4P,../../../../../../home/savant/nimony/src/nimony/xints.nim b.11~1 val.0 0 "x")
+         (dot@5,4P,../../../../../../home/savant/nimony/src/nimony/xints.nim a.19~1 val.0 0 "x")))))
+     (else@,3
+      (expr@2,2
+       (lt@6
+        (u 64)
+        (dot~5 a.19~1 val.0 0 "x")
+        (dot@3 b.11~1 val.0 0 "x"))))))
+   (ret~2,~1 result.25)))
+ (proc@,4N :<=.0.@5 x . .
+  (params@A
+   (param@1 :a.20 . . xint.0.@6 .)
+   (param@4 :b.12 . . xint.0.@3 .))
+  (bool@E). .
+  (stmts@2,1
+   (result@6 :result.26 . .
+    (bool@1,~4I).)
+   (asgn@6 result.26
+    (or
+     (infix~4 <.0. a.20~2 b.12@2)
+     (infix@5 ==.0. a.20~2 b.12@3)))
+   (ret~2,~1 result.26)))
+ (proc@,4Q :abs.0.@5 x . .
+  (params@9
+   (param@1 :a.21 . . xint.0.@3 .))xint.0.@B . .
+  (stmts@2,1
+   (result@4 :result.27 . . xint.0.~2,~4H .)
+   (asgn@4 result.27
+    (oconstr xint.0.~2,~4H
+     (kv@1,1 nan.0~3
+      (dot@3 a.21~1 nan.0 0 "x"))
+     (kv@1,2 neg.0~3
+      (false@2))
+     (kv@1,3 val.0~3
+      (dot@3 a.21~1 val.0 0 "x"))))
+   (ret~2,~1 result.27)))
+ (proc@,4X :min.0.@5 x . .
+  (params@9
+   (param@1 :a.22 . . xint.0.@6 .)
+   (param@4 :b.13 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result :result.28 . . xint.0.@2,~4O .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.22~1 nan.0 0 "x")
+      (dot@4 b.13~1 nan.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~4P
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@,3 result.28
+    (if
+     (elif@3
+      (infix@2 <.0. a.22~2 b.13@2)
+      (expr@7 a.22))
+     (else@C
+      (expr@6 b.13))))
+   (ret~2,~1 result.28)))
+ (proc@,4d :max.0.@5 x . .
+  (params@9
+   (param@1 :a.23 . . xint.0.@6 .)
+   (param@4 :b.14 . . xint.0.@3 .))xint.0.@E . .
+  (stmts@2,1
+   (result :result.29 . . xint.0.@2,~4U .)
+   (if
+    (elif@3
+     (or@6
+      (dot~5 a.23~1 nan.0 0 "x")
+      (dot@4 b.14~1 nan.0 0 "x"))
+     (stmts~1,1
+      (ret
+       (oconstr@B xint.0.~B,~4V
+        (kv@4 nan.0~3
+         (true@2))
+        (kv neg.0
+         (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (false)))
+        (kv val.0
+         (expr@n,F,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+          (suf 0u "u64"))))))))
+   (asgn@,3 result.29
+    (if
+     (elif@3
+      (expr@2,1t,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+       (infix@2,1 <.0. b.14@9,4o,../../../../../../home/savant/nimony/src/nimony/xints.nim a.23@5,4o,../../../../../../home/savant/nimony/src/nimony/xints.nim))
+      (expr@7 a.23))
+     (else@C
+      (expr@6 b.14))))
+   (ret~2,~1 result.29)))
+ (proc@,4j :succ.0.@5 x . .
+  (params@A
+   (param@1 :a.24 . . xint.0.@3 .))xint.0.@B . .
+  (stmts@S
+   (result@2 :result.30 . . xint.0.~Q,~4Z .)
+   (asgn@2 result.30
+    (infix \2B.0. a.24~2
+     (expr~S,~2l
+      (oconstr@4,3 xint.0.~2,~1r
+       (kv nan.0
+        (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+         (false)))
+       (kv@4 neg.0~3
+        (false@2))
+       (kv@G val.0~3
+        (conv@8
+         (u~L,~1t 64)
+         (suf@D,2i 1u "u64")))))))
+   (ret~S result.30)))
+ (proc@,4k :pred.0.@5 x . .
+  (params@A
+   (param@1 :a.25 . . xint.0.@3 .))xint.0.@B . .
+  (stmts@S
+   (result@2 :result.31 . . xint.0.~Q,~4a .)
+   (asgn@2 result.31
+    (infix \2D.1. a.25~2
+     (expr~S,~2m
+      (oconstr@4,3 xint.0.~2,~1r
+       (kv nan.0
+        (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+         (false)))
+       (kv@4 neg.0~3
+        (false@2))
+       (kv@G val.0~3
+        (conv@8
+         (u~L,~1t 64)
+         (suf@D,2j 1u "u64")))))))
+   (ret~S result.31)))
+ (proc@,4m :inc.0.@5 x . .
+  (params@9
+   (param@1 :x.6 . .
+    (mut@3 xint.0.@4).)). . .
+  (stmts@P
+   (asgn@2
+    (hderef~2 x.6)
+    (infix@4 \2B.0.
+     (hderef~2 x.6)
+     (expr~T,~2o
+      (oconstr@4,3 xint.0.~2,~1r
+       (kv nan.0
+        (expr@j,4,../../../../../../home/savant/nimony/lib/std/system/defaults.nim
+         (false)))
+       (kv@4 neg.0~3
+        (false@2))
+       (kv@G val.0~3
+        (conv@8
+         (u~L,~1t 64)
+         (suf@E,2l 1u "u64")))))))))
+ (proc@,4o :toFloat64.0.@5 x . .
+  (params@F
+   (param@1 :x.7 . . xint.0.@3 .))
+  (f@B 64). .
+  (stmts@2,1
+   (result :result.32 . .
+    (f@9,~1 64).)
+   (asgn result.32
+    (if
+     (elif@3
+      (dot@1 x.7~1 nan.0 0 "x")
+      (expr~1,1
+       (nan)))
+     (elif@5,2
+      (dot@1 x.7~1 neg.0 0 "x")
+      (expr~3,1
+       (neg
+        (f 64)
+        (conv@8
+         (f~7 64)
+         (dot@2 x.7~1 val.0 0 "x")))))
+     (else@,4
+      (expr@2,1
+       (conv@7
+        (f~6,~2 64)
+        (dot@2 x.7~1 val.0 0 "x"))))))
+   (ret~2,~1 result.32)))
+ (comment@9,6 bool.0.sysvq0asl bool.0.sysvq0asl@,1 uint64.0.sysvq0asl@,2 bool.0.sysvq0asl@2,8 bool.0.sysvq0asl@2,9 bool.0.sysvq0asl@O,B int64.0.sysvq0asl@H,B bool.0.sysvq0asl@Q,R uint64.0.sysvq0asl@H,R int64.0.sysvq0asl@B,1j uint64.0.sysvq0asl@F,1r int.0.sysvq0asl@F,1x int.0.sysvq0asl@F,2B int.0.sysvq0asl@H,31 bool.0.sysvq0asl@U,31 false.0.sysvq0asl@b,31 int.0.sysvq0asl@I,3I int.0.sysvq0asl@I,3T int.0.sysvq0asl@K,3e bool.0.sysvq0asl@5,3q bool.0.sysvq0asl@5,3z bool.0.sysvq0asl@5,4H float64.0.sysvq0asl@2,4i isMainModule.0.sysvq0asl~4,4q default.1.sysvq0asl@G,4 default.1.sysvq0asl@G,4 true.0.sysvq0asl@R,6 default.1.sysvq0asl@L,6 default.10.sysvq0asl@L,6 true.0.sysvq0asl@1,E uint64.0.sysvq0asl@8,H int64.0.sysvq0asl@K,H int64.0.sysvq0asl@K,H >.0.sysvq0asl@6,H uint64.0.sysvq0asl@8,H int64.0.sysvq0asl@K,H int64.0.sysvq0asl@K,H true.0.sysvq0asl@5,I int64.0.sysvq0asl@9,K uint64.0.sysvq0asl@8,M int64.0.sysvq0asl@K,M int64.0.sysvq0asl@K,M >.0.sysvq0asl@6,M uint64.0.sysvq0asl@8,M int64.0.sysvq0asl@K,M int64.0.sysvq0asl@K,M true.0.sysvq0asl@5,N int64.0.sysvq0asl@8,P true.0.sysvq0asl@1,U !=.0.sysvq0asl@E,W true.0.sysvq0asl@3,X true.0.sysvq0asl@C,i default.1.sysvq0asl@6,i default.10.sysvq0asl@6,i false.0.sysvq0asl@E,m default.1.sysvq0asl@8,m true.0.sysvq0asl@A,o true.0.sysvq0asl@E,t default.1.sysvq0asl@8,t true.0.sysvq0asl@A,v >.0.sysvq0asl@4,11 true.0.sysvq0asl@G,12 default.1.sysvq0asl@A,12 false.0.sysvq0asl@G,14 default.1.sysvq0asl@A,14 >.0.sysvq0asl@4,17 true.0.sysvq0asl@G,18 default.1.sysvq0asl@A,18 false.0.sysvq0asl@G,1A default.1.sysvq0asl@A,1A true.0.sysvq0asl@C,1I default.1.sysvq0asl@6,1I default.10.sysvq0asl@6,1I false.0.sysvq0asl@,1L !=.0.sysvq0asl@6,1M !=.0.sysvq0asl@H,1R true.0.sysvq0asl@8,1S true.0.sysvq0asl@C,1W default.1.sysvq0asl@6,1W default.10.sysvq0asl@6,1W false.0.sysvq0asl@,1Z !=.0.sysvq0asl@6,1a int64.0.sysvq0asl@5,1k int64.0.sysvq0asl@5,1k true.0.sysvq0asl@5,1l uint64.0.sysvq0asl@G,1l int64.0.sysvq0asl@S,1l int64.0.sysvq0asl@S,1l default.1.sysvq0asl~1,1l true.0.sysvq0asl@5,1n uint64.0.sysvq0asl@G,1n default.1.sysvq0asl~1,1n false.0.sysvq0asl@5,1p uint64.0.sysvq0asl@H,1p default.1.sysvq0asl~1,1p false.0.sysvq0asl@3,1v uint64.0.sysvq0asl@F,1v default.1.sysvq0asl~3,1v true.0.sysvq0asl@C,1z default.1.sysvq0asl@6,1z default.10.sysvq0asl@6,1z false.0.sysvq0asl@,22 >=.0.sysvq0asl~2,28 !=.0.sysvq0asl@R,28 true.0.sysvq0asl@8,29 true.0.sysvq0asl@C,2E default.1.sysvq0asl@6,2E default.10.sysvq0asl@6,2E false.0.sysvq0asl@,2H true.0.sysvq0asl@C,2r default.1.sysvq0asl@6,2r default.10.sysvq0asl@6,2r false.0.sysvq0asl@,2u >.0.sysvq0asl@M,33 true.0.sysvq0asl@C,34 default.1.sysvq0asl@6,34 default.10.sysvq0asl@6,34 uint64.0.sysvq0asl@O,36 uint64.0.sysvq0asl@O,36 false.0.sysvq0asl@,38 !=.0.sysvq0asl@X,3C >=.0.sysvq0asl@K,3K true.0.sysvq0asl@C,3L default.1.sysvq0asl@6,3L default.10.sysvq0asl@6,3L false.0.sysvq0asl@,3O false.0.sysvq0asl@,3P uint64.0.sysvq0asl@,3Q >=.0.sysvq0asl@K,3V true.0.sysvq0asl@C,3W default.1.sysvq0asl@6,3W default.10.sysvq0asl@6,3W false.0.sysvq0asl@,3Z >=.0.sysvq0asl@K,3g true.0.sysvq0asl@C,3h default.1.sysvq0asl@6,3h default.10.sysvq0asl@6,3h false.0.sysvq0asl@,3k false.0.sysvq0asl@2,3u false.0.sysvq0asl@2,41 true.0.sysvq0asl@2,45 false.0.sysvq0asl@2,47 >.0.sysvq0asl@1,4C false.0.sysvq0asl@,4N true.0.sysvq0asl@C,4T default.1.sysvq0asl@6,4T default.10.sysvq0asl@6,4T true.0.sysvq0asl@C,4Z default.1.sysvq0asl@6,4Z default.10.sysvq0asl@6,4Z >.0.sysvq0asl~2,4b createXint.1.@Y,4d createXint.1.@Y,4e createXint.1.@Z,4g NaN.0.sysvq0asl~5,4k float64.0.sysvq0asl~4,4m float64.0.sysvq0asl~5,4o))(.index@,7,../../../../../../home/savant/nimony/src/nimony/xints.nim
+ (x xint.0. 190)
+ (x zero.0. 168)
+ (x createNaN.0. 453)
+ (x isNaN.0. 450)
+ (x isNegative.0. 242)
+ (x asSigned.0. 247)
+ (x asUnsigned.0. 2125)
+ (x \2D.0. 1025)
+ (x negate.0. 386)
+ (x \2B.0. 242)
+ (x \2D.1. 4590)
+ (x *.0. 282)
+ (x div.0. 1708)
+ (x $.0. 1392)
+ (x createXint.0. 546)
+ (x createXint.1. 1450)
+ (x shl.0. 347)
+ (x shr.0. 1675)
+ (x and.0. 896)
+ (x or.0. 577)
+ (x xor.0. 578)
+ (x not.0. 581)
+ (x mod.0. 419)
+ (x mask.0. 1103)
+ (x getBit.0. 2616)
+ (x setBit.0. 1337)
+ (x clearBit.0. 1229)
+ (x ==.0. 1268)
+ (x <.0. 632)
+ (x <=.0. 1219)
+ (x abs.0. 309)
+ (x min.0. 370)
+ (x max.0. 793)
+ (x succ.0. 1004)
+ (x pred.0. 517)
+ (x inc.0. 517)
+ (x toFloat64.0. 476))

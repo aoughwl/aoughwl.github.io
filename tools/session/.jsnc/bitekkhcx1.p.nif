@@ -1,0 +1,608 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/bitabs.nim
+ (comment)
+ (when@,3
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "untyped"@2))
+    (import@,1
+     (infix@A / std~3
+      (bracket@1 hashes@1 assertions@9)))))
+  (else@,3
+   (stmts@2,1
+    (import
+     (infix@A / std~3 hashes@1))
+    (when@,2
+     (elif@5
+      (call@7 defined~7 nimPreviewSlimSystem@1)
+      (stmts~3,1
+       (import
+        (infix@A / std~3 assertions@1))))))))
+ (type@I,D BiTable~G x
+  (typevars~8
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .)).
+  (object@2 .
+   (fld~G,2 vals . .
+    (at@9 seq~3 T@1).)
+   (fld~G,3 keys . .
+    (at@9 seq~3 Id@1).)))
+ (proc@,I initBiTable@5 x .
+  (typevars@H
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@O)
+  (at@B BiTable~7 Id@1 T@5). .
+  (stmts@j
+   (oconstr@E
+    (at~7 BiTable~7 Id@1 T@5)
+    (kv@5 vals~4
+     (prefix@2 \40
+      (bracket@1)))
+    (kv@G keys~4
+     (prefix@2 \40
+      (bracket@1))))))
+ (proc@,K nextTry@5 . . .
+  (params@C
+   (param@1 h . . Hash@C .)
+   (param@4 maxHash . . Hash@9 .))Hash@K
+  (pragmas@b inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@A and
+     (par~8
+      (infix@3 \2B h~2 1@2))maxHash@4))))
+ (template@,N maxHash@9 . . .
+  (params@G
+   (param@1 t . . . .))untyped@5 . .
+  (stmts@V
+   (dot@C
+    (call~8 high~4
+     (dot@2 t~1 keys@1))Hash@1)))
+ (template@,O isFilled@9 . . .
+  (params@H
+   (param@1 x . . untyped@3 .))bool@E . .
+  (stmts@c
+   (infix@9 >
+    (dot~8 x~1 uint32@1)
+    (suf@2 0u "u32"))))
+ (proc@,Q len@5 x .
+  (typevars@9
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@G
+   (param@1 t . .
+    (at@A BiTable~7 Id@1 T@5).))int@L . .
+  (stmts@h
+   (dot@6
+    (dot~5 t~1 vals@1)len@1)))
+ (proc@,S mustRehash@5 . . .
+  (params@F
+   (param@1 length . . int@H .)
+   (param@9 counter . . int@9 .))bool@O
+  (pragmas@i inline@2).
+  (stmts@2,1
+   (call@6 assert~6
+    (infix@8 > length~7 counter@2))
+   (asgn@7,1 result~7
+    (infix@b or
+     (par~Z
+      (infix@8 < length~7
+       (infix@G \2B
+        (infix~6 div counter~8 2@4)counter@2)))
+     (par@3
+      (infix@I <
+       (infix~A \2D length~7 counter@2)4@2))))))
+ (const@2,X idStart . . . 1@A)
+ (template@,Z idToIdx@9 . . .
+  (params@G
+   (param@1 x . . untyped@3 .))int@E . .
+  (stmts@a
+   (infix@6 \2D
+    (dot~5 x~1 int@1)idStart@2)))
+ (proc@,b hasId@5 x .
+  (typevars@B
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@I
+   (param@1 t . .
+    (at@A BiTable~7 Id@1 T@5).)
+   (param@K x . . Id@3 .))bool@S
+  (pragmas@p inline@2).
+  (stmts@2,1
+   (let@4 idx . . .
+    (call@D idToIdx~7 x@1))
+   (asgn@7,1 result~7
+    (infix@B and
+     (infix~5 >= idx~4 0@3)
+     (infix@8 < idx~4
+      (dot@8
+       (dot~5 t~1 vals@1)len@1))))))
+ (proc@,f enlarge@5 . .
+  (typevars@C
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@J
+   (param@1 t . .
+    (mut@3
+     (at@B BiTable~7 Id@1 T@5)).)). . .
+  (stmts@2,1
+   (var@4 n . .
+    (at@6 seq~3 Id@1).)
+   (call@6,1 newSeq~6 n@1
+    (infix@G *
+     (call~9 len~3
+      (dot@2 t~1 keys@1))2@2))
+   (call@4,2 swap~4
+    (dot@2 t~1 keys@1)n@9)
+   (for@4,3
+    (infix@6 \2E\2E 0~1
+     (call@6 high~4 n@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (let@4 eh . . .
+      (at@6 n~1 i@1))
+     (if@,1
+      (elif@3
+       (call@8 isFilled~8 eh@1)
+       (stmts~1,1
+        (var@4 j . . .
+         (infix@T and
+          (call~L hash~4
+           (at@7
+            (dot~5 t~1 vals@1)
+            (cmd@9 idToIdx~8 eh)))
+          (call@B maxHash~7 t@1)))
+        (while@,1
+         (call@E isFilled~8
+          (at@7
+           (dot~5 t~1 keys@1)j@1))
+         (stmts@2,1
+          (asgn@2 j~2
+           (call@9 nextTry~7 j@1
+            (call@B maxHash~7 t@1)))))
+        (asgn@A,3
+         (at~4
+          (dot~5 t~1 keys@1)j@1)
+         (cmd@7 move~5
+          (at@1 n~1 i@1))))))))))
+ (proc@,r getKeyId@5 x .
+  (typevars@E
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@L
+   (param@1 t . .
+    (at@A BiTable~7 Id@1 T@5).)
+   (param@K v . . T@3 .))Id@R . .
+  (stmts@2,1
+   (let@4 origH . . .
+    (call@C hash~4 v@1))
+   (var@4,1 h . . .
+    (infix@A and origH~6
+     (call@B maxHash~7 t@1)))
+   (if@,2
+    (elif@3
+     (infix@B !=
+      (dot~5
+       (dot~5 t~1 keys@1)len@1)0@3)
+     (stmts~1,1
+      (while true@6
+       (stmts@2,1
+        (let@4 litId . . .
+         (at@E
+          (dot~5 t~1 keys@1)h@1))
+        (if@,1
+         (elif@3
+          (prefix not
+           (call@C isFilled~8 litId@1))
+          (stmts@L
+           (break .))))
+        (if@,2
+         (elif@3
+          (infix@2 == v~2
+           (at@9
+            (dot~5 t~1 vals@1)
+            (cmd@9 idToIdx~8
+             (at@6
+              (dot~5 t~1 keys@1)h@1))))
+          (stmts@W
+           (ret litId@7))))
+        (asgn@2,3 h~2
+         (call@9 nextTry~7 h@1
+          (call@B maxHash~7 t@1))))))))
+   (ret@,8
+    (call@9 Id~2 0@1))))
+ (pragmas@,12
+  (kv@8 pragma~6 maybeDirty@2)dirty@M)
+ (template@,14 getOrInclImpl@9 . . .
+  (params@M).
+  (pragmas@P maybeDirty@2).
+  (stmts@2,1
+   (let@4 origH . . .
+    (call@C hash~4 v@1))
+   (var@4,1 h . . .
+    (infix@A and origH~6
+     (call@B maxHash~7 t@1)))
+   (if@,2
+    (elif@3
+     (infix@B !=
+      (dot~5
+       (dot~5 t~1 keys@1)len@1)0@3)
+     (stmts~1,1
+      (while true@6
+       (stmts@2,1
+        (let@4 litId . . .
+         (at@E
+          (dot~5 t~1 keys@1)h@1))
+        (if@,1
+         (elif@3
+          (prefix not
+           (call@C isFilled~8 litId@1))
+          (stmts@L
+           (break .))))
+        (if@,2
+         (elif@3
+          (infix@2 == v~2
+           (at@9
+            (dot~5 t~1 vals@1)
+            (cmd@9 idToIdx~8
+             (at@6
+              (dot~5 t~1 keys@1)h@1))))
+          (stmts@W
+           (ret litId@7))))
+        (asgn@2,3 h~2
+         (call@9 nextTry~7 h@1
+          (call@B maxHash~7 t@1)))))
+      (if@,6
+       (elif@3
+        (call@A mustRehash~A
+         (dot@7
+          (dot~5 t~1 keys@1)len@1)
+         (dot@J
+          (dot~5 t~1 vals@1)len@1))
+        (stmts~1,1
+         (call@7 enlarge~7 t@1)
+         (asgn@2,2 h~2
+          (infix@8 and origH~6
+           (call@B maxHash~7 t@1)))
+         (while@,3 true@6
+          (stmts@2,1
+           (let@4 litId . . .
+            (at@E
+             (dot~5 t~1 keys@1)h@1))
+           (if@,1
+            (elif@3
+             (prefix not
+              (call@C isFilled~8 litId@1))
+             (stmts@L
+              (break .))))
+           (asgn@2,2 h~2
+            (call@9 nextTry~7 h@1
+             (call@B maxHash~7 t@1))))))))))
+    (else@,F
+     (stmts@2,1
+      (call@6 setLen~6
+       (dot@2 t~1 keys@1)16@9)
+      (asgn@2,1 h~2
+       (infix@8 and origH~6
+        (call@B maxHash~7 t@1))))))))
+ (proc@,1Q getOrIncl@5 x .
+  (typevars@F
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@M
+   (param@1 t . .
+    (mut@3
+     (at@B BiTable~7 Id@1 T@5)).)
+   (param@O v . . T@3 .))Id@V . .
+  (stmts@2,1
+   (call@D getOrInclImpl~D)
+   (asgn@7,1 result~7
+    (call@4 Id~2
+     (infix@C \2B
+      (dot~5
+       (dot~5 t~1 vals@1)len@1)idStart@2)))
+   (asgn@A,2
+    (at~4
+     (dot~5 t~1 keys@1)h@1)result@2)
+   (cmd@6,3
+    (dot
+     (dot~5 t~1 vals@1)add@1)v@5)))
+ (proc@,1W getOrInclFromView@5 x .
+  (typevars@N
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .)
+   (typevar@8 View . . . .))
+  (params@a
+   (param@1 t . .
+    (mut@3
+     (at@B BiTable~7 Id@1 T@5)).)
+   (param@O v . . View@3 .))Id@Y . .
+  (stmts@2,1
+   (comment)
+   (call@D,2 getOrInclImpl~D)
+   (asgn@7,3 result~7
+    (call@4 Id~2
+     (infix@C \2B
+      (dot~5
+       (dot~5 t~1 vals@1)len@1)idStart@2)))
+   (asgn@A,4
+    (at~4
+     (dot~5 t~1 keys@1)h@1)result@2)
+   (cmd@6,5
+    (dot
+     (dot~5 t~1 vals@1)add@1)
+    (prefix@5 $ v@1))))
+ (when@,1e
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (proc
+     (quoted@5 \5B\5D@1) x .
+     (typevars@A
+      (typevar@1 Id . . . .)
+      (typevar@5 T . . . .))
+     (params@H
+      (param@1 t . .
+       (at@A BiTable~7 Id@1 T@5).)
+      (param@K litId . . Id@7 .))
+     (mut@W T@4)
+     (pragmas@t inline@2).
+     (stmts@2,1
+      (let@4 idx . . .
+       (cmd@E idToIdx~8 litId))
+      (cmd@,1 assert
+       (infix@B < idx~4
+        (dot@8
+         (dot~5 t~1 vals@1)len@1)))
+      (asgn@7,2 result~7
+       (at@8
+        (dot~5 t~1 vals@1)idx@1))))))
+  (else@,5
+   (stmts@2,1
+    (proc
+     (quoted@5 \5B\5D@1) x .
+     (typevars@A
+      (typevar@1 Id . . . .)
+      (typevar@5 T . . . .))
+     (params@H
+      (param@1 t . .
+       (mut@3
+        (at@B BiTable~7 Id@1 T@5)).)
+      (param@O litId . . Id@7 .))
+     (mut@a T@4)
+     (pragmas@x inline@2).
+     (stmts@2,1
+      (let@4 idx . . .
+       (cmd@E idToIdx~8 litId))
+      (cmd@,1 assert
+       (infix@B < idx~4
+        (dot@8
+         (dot~5 t~1 vals@1)len@1)))
+      (asgn@7,2 result~7
+       (at@8
+        (dot~5 t~1 vals@1)idx@1))))
+    (proc@,5
+     (quoted@5 \5B\5D@1) x .
+     (typevars@A
+      (typevar@1 Id . . . .)
+      (typevar@5 T . . . .))
+     (params@H
+      (param@1 t . .
+       (at@A BiTable~7 Id@1 T@5).)
+      (param@K litId . . Id@7 .))
+     (cmd@b lent~5 T)
+     (pragmas@u inline@2).
+     (stmts@2,1
+      (let@4 idx . . .
+       (cmd@E idToIdx~8 litId))
+      (cmd@,1 assert
+       (infix@B < idx~4
+        (dot@8
+         (dot~5 t~1 vals@1)len@1)))
+      (asgn@7,2 result~7
+       (at@8
+        (dot~5 t~1 vals@1)idx@1)))))))
+ (proc@,1u hash@5 x .
+  (typevars@A
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@H
+   (param@1 t . .
+    (at@A BiTable~7 Id@1 T@5).))Hash@L . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 h . . Hash@3 0@A)
+   (for@4,2
+    (cmd@E pairs~6
+     (dot@1 t~1 keys@1))
+    (unpackflat
+     (let i . . ..)
+     (let n@3 . . ..))
+    (stmts~2,1
+     (asgn@2 h~2
+      (infix@4 !& h~2
+       (call@7 hash~4
+        (tup@1 i@1 n@4))))))
+   (asgn@7,4 result~7
+    (prefix@2 !$ h@2))))
+ (proc@,21 memSize@5 x .
+  (typevars@D
+   (typevar@1 Id . . . .)
+   (typevar@5 T . . . .))
+  (params@K
+   (param@1 t . .
+    (at@A BiTable~7 Id@1 T@5).))int@L . .
+  (stmts@2,1
+   (when
+    (elif@5
+     (infix@2 is T~2 string@3)
+     (stmts~3,1
+      (var@4 shorts . . . 0@9)
+      (asgn@7,1 result~7 0@2)
+      (for@4,2
+       (call@A items~5
+        (dot@2 t~1 vals@1))
+       (unpackflat
+        (let x . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@6 <=
+           (dot~5 x~1 len@1)3@3)
+          (stmts@C
+           (infix@7 \2B= shorts~7 1@3))))
+        (infix@7,1 \2B= result~7
+         (dot@4 x~1 len@1))))
+      (cmd@,5 inc result@4
+       (infix@Z \2B
+        (infix~C *
+         (dot~5
+          (dot~5 t~1 vals@1)len@1)
+         (call@8 sizeof~6 T@1))
+        (infix@D *
+         (dot~5
+          (dot~5 t~1 keys@1)len@1)
+         (call@8 sizeof~6 Id@1))))
+      (cmd@,6 echo "SHORT STRINGS "@5 shorts@N)))
+    (else@,8
+     (stmts@2,1
+      (infix@N \2B
+       (infix~C *
+        (dot~5
+         (dot~5 t~1 vals@1)len@1)
+        (call@8 sizeof~6 T@1))
+       (infix@D *
+        (dot~5
+         (dot~5 t~1 keys@1)len@1)
+        (call@8 sizeof~6 Id@1))))))))
+ (type@K,2G BiTableFloat~I x
+  (typevars~5
+   (typevar@1 Id . . . .)).
+  (distinct@2
+   (at@G BiTable~7 Id@1 uint64@5)))
+ (proc@,2I getOrIncl@5 x .
+  (typevars@F
+   (typevar@1 Id . . . .))
+  (params@J
+   (param@1 t . .
+    (mut@3
+     (at@G BiTableFloat~C Id@1)).)
+   (param@Q v . . float64@3 .))Id@d
+  (pragmas@z inline@2).
+  (stmts@2,1
+   (call@W
+    (dot~A
+     (call~3
+      (at~C BiTable~7 Id@1 uint64@5)t@1)getOrIncl@1)
+    (cast@1 uint64@5 v@D))))
+ (proc@,2L
+  (quoted@5 \5B\5D@1) x .
+  (typevars@A
+   (typevar@1 Id . . . .))
+  (params@E
+   (param@1 t . .
+    (at@F BiTableFloat~C Id@1).)
+   (param@M litId . . Id@7 .))float64@Y
+  (pragmas@u inline@2).
+  (stmts@2,1
+   (cast float64@5
+    (at@a
+     (call~3
+      (at~C BiTable~7 Id@1 uint64@5)t@1)litId@1))))
+ (when@,2O
+  (elif@5 isMainModule
+   (stmts~3,1
+    (when
+     (elif@5
+      (call@7 defined~7 nimony@1)
+      (stmts~3,1
+       (import
+        (infix@B / std~4 syncio@2)))))
+    (var@4,2 t . . .
+     (call@V
+      (at~G initBiTable~B uint32@1 string@9)))
+    (cmd@,4 assert
+     (infix@T ==
+      (call~D getOrIncl~9 t@1 "hello"@4)1@3))
+    (cmd@,6 assert
+     (infix@T ==
+      (call~D getOrIncl~9 t@1 "hello"@4)1@3))
+    (cmd@,7 assert
+     (infix@U ==
+      (call~E getOrIncl~9 t@1 "hello3"@4)2@3))
+    (cmd@,8 assert
+     (infix@U ==
+      (call~E getOrIncl~9 t@1 "hello4"@4)3@3))
+    (cmd@,9 assert
+     (infix@d ==
+      (call~N getOrIncl~9 t@1 "helloasfasdfdsa"@4)4@3))
+    (cmd@,A assert
+     (infix@T ==
+      (call~D getOrIncl~9 t@1 "hello"@4)1@3))
+    (cmd@,B assert
+     (infix@S ==
+      (call~D getKeyId~8 t@1 "hello"@4)1@3))
+    (cmd@,C assert
+     (infix@R ==
+      (call~C getKeyId~8 t@1 "none"@4)0@3))
+    (for@4,E
+     (infix@7 \2E\2E< 0~2 100000@4)
+     (unpackflat
+      (let i . . ..))
+     (stmts~2,1
+      (discard
+       (call@J
+        (dot~A t~1 getOrIncl@1)
+        (infix@C &
+         (infix~8 &
+          (prefix~3 $ i@1)"___"@2)
+         (prefix@2 $ i@1))))))
+    (for@4,H
+     (infix@7 \2E\2E< 0~2 100000@4)
+     (unpackflat
+      (let i . . ..))
+     (stmts~2,1
+      (cmd assert
+       (infix@i ==
+        (dot~9
+         (call~H
+          (dot~A t~1 getOrIncl@1)
+          (infix@C &
+           (infix~8 &
+            (prefix~3 $ i@1)"___"@2)
+           (prefix@2 $ i@1)))idToIdx@1)
+        (infix@5 \2B i~2 4@2)))))
+    (cmd@,J assert
+     (infix@I ==
+      (dot~5
+       (dot~5 t~1 vals@1)len@1)100004@3))
+    (cmd@,L assert
+     (infix@H ==
+      (at~4
+       (dot~5 t~1 vals@1)0@1)"hello"@3))
+    (cmd@,M assert
+     (infix@K ==
+      (at~7
+       (dot~5 t~1 vals@1)1004@1)"1000___1000"@3))
+    (var@4,O tf . . .
+     (call@V
+      (at~F initBiTable~B uint32@1 float@9)))
+    (discard@,Q
+     (call@K
+      (dot~A tf~2 getOrIncl@1)0.4@1))
+    (discard@,R
+     (call@K
+      (dot~A tf~2 getOrIncl@1)16.4@1))
+    (discard@,S
+     (call@K
+      (dot~A tf~2 getOrIncl@1)32.4@1))
+    (cmd@,T assert
+     (infix@Q ==
+      (call~B getKeyId~8 tf@1 32.4@5)3@3))
+    (cmd@,V echo "success"@5)))))

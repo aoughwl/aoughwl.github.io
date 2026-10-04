@@ -1,0 +1,17 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket formatfloat)))
+ (import bitabs nifreader nifstreams nifcursors)
+ (import
+  (when
+   (call defined nimony))
+  (infix / std sha1))
+ (import
+  (when
+   (prefix not
+    (call defined nimony)))
+  (infix / std sha1)))

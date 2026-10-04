@@ -1,0 +1,58 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,twomod.nim
+ (import dep@7)
+ (type@C,2 Scaled~7 . . .
+  (enum@2 .
+   (efld@5 SA . . . .)
+   (efld@9 SB . . . .)
+   (efld@D SC . . . .)
+   (efld@H SD . . . .)))
+ (proc@,4 ords@5 . . .
+  (params@9)int@4 . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@f \2B
+     (infix~G \2B
+      (infix~F \2B
+       (call~5 ord~3 SA@1)
+       (infix@A *
+        (call~5 ord~3 SB@1)10@2))
+      (infix@A *
+       (call~5 ord~3 SC@1)100@2))
+     (infix@A *
+      (call~5 ord~3 SD@1)1000@2)))))
+ (proc@,7 eqMask@5 . . .
+  (params@B)int@4 . .
+  (stmts@2,1
+   (let@4 a . . . SA@4)
+   (asgn@7,1 result~7 0@2)
+   (if@,2
+    (elif@3
+     (infix@2 == a~2 SA@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 1@2)))))
+   (if@,3
+    (elif@3
+     (infix@2 == a~2 SB@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 2@2)))))
+   (if@,4
+    (elif@3
+     (infix@2 == a~2 SC@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 4@2)))))
+   (if@,5
+    (elif@3
+     (infix@2 == a~2 SD@3)
+     (stmts@9
+      (asgn@7 result~7
+       (infix@9 \2B result~7 8@2)))))))
+ (proc@,F useDep@5 . . .
+  (params@B)int@4 . .
+  (stmts@L
+   (call@6 depAdd~6 1@1 2@4))))

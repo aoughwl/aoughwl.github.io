@@ -1,0 +1,832 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-wt-1790178183/src/aowli/jitglobals.nim
+ (comment)
+ (pragmas@,1Q
+  (kv@9 feature~7 "lenientnils"@2))
+ (import@,1S nifcursors@7 nifstreams@J nimony_model@V decls@j programs@q)
+ (import@,1T modload@7)
+ (import@,1U
+  (infix@D / aowlhl~6 hlclassify@1))
+ (import@,1V
+  (infix@A / std~3 tables@1))
+ (const@6,1X MaxDepth . . . 8@B)
+ (type@D,1c GlobalUse~B x . .
+  (object@2 .
+   (fld~5,4 unsafe~6 x . bool@3 .)
+   (fld~7,5 what~4 x . string@3 .)))
+ (proc@,1j nodeTag@5 . . .
+  (params@C
+   (param@1 n . . Cursor@3 .))string@D . .
+  (stmts@Y
+   (at@9
+    (dot~5 pool~4 tags@1)
+    (dot@2 n~1 tagId@1))))
+ (proc@,1l baseOf@5 . . .
+  (params@B
+   (param@1 s . . SymId@3 .))string@C . .
+  (stmts@2,1
+   (comment)
+   (let@4,1 full . . .
+    (at@G
+     (dot~5 pool~4 syms@1)s@1))
+   (var@4,2 i . . . 0@4)
+   (while@,3
+    (infix@J and
+     (infix~B < i~2
+      (dot@6 full~4 len@1))
+     (infix@C !=
+      (at~4 full~4 i@1)'.'@3))
+    (stmts@d
+     (cmd inc i@4)))
+   (asgn@7,4 result~7
+    (at@6 full~4
+     (infix@3 \2E\2E< 0~2 i@4)))))
+ (proc@,1s isTopLevelSym@5 . . .
+  (params@I
+   (param@1 s . . SymId@3 .))bool@C . .
+  (stmts@2,1
+   (comment)
+   (let@4,5 full . . .
+    (at@G
+     (dot~5 pool~4 syms@1)s@1))
+   (var@4,6 dots . . . 0@7)
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@8 < i~2
+     (dot@6 full~4 len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@8 ==
+        (at~4 full~4 i@1)'.'@3)
+       (stmts@G
+        (cmd inc dots@4))))
+     (cmd@,1 inc i@4)))
+   (asgn@7,B result~7
+    (infix@7 >= dots~5 2@3))))
+ (proc@,26 classifyGlobal@5 . . .
+  (params@J
+   (param@1 s . . SymId@3 .))GlobalUse@C . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (oconstr@B GlobalUse~9
+     (kv@7 unsafe~6 false@2)
+     (kv@K what~4 ""@2)))
+   (if@,3
+    (elif@3
+     (prefix not
+      (call@H isTopLevelSym~D s@1))
+     (stmts@M
+      (ret .))))
+   (let@4,4 res . . .
+    (call@K tryLoadSymSafe~E s@1))
+   (if@,5
+    (elif@3
+     (infix@R or
+      (infix~G !=
+       (dot~8 res~3 status@1)LacksNothing@3)
+      (infix@H !=
+       (dot~6
+        (dot~5 res~3 decl@1)kind@1)ParLe@3))
+     (stmts@s
+      (ret .))))
+   (let@4,6 t . . .
+    (call@B nodeTag~7
+     (dot@4 res~3 decl@1)))
+   (if@,7
+    (elif@3
+     (infix@C and
+      (infix~A != t~2 "gvar"@3)
+      (infix@6 != t~2 "tvar"@3))
+     (stmts@T
+      (ret .))))
+   (let@4,8 loc . . .
+    (call@D asLocal~7
+     (dot@4 res~3 decl@1)))
+   (if@,B
+    (elif@3
+     (infix@T >
+      (dot~5
+       (call~D importcName~B
+        (dot@4 loc~3 pragmas@1))len@1)0@2)
+     (stmts@Y
+      (ret .))))
+   (asgn@7,F result~7
+    (oconstr@B GlobalUse~9
+     (kv@7 unsafe~6 true@2)
+     (kv@J what~4
+      (infix@I &
+       (infix~C & "`"~4
+        (call@8 baseOf~6 s@1))"`"@2))))))
+ (var@4,2O useCache . . .
+  (call@c
+   (at~I initTable~9 SymId@1 GlobalUse@8)))
+ (var@4,2P inFlight . . .
+  (call@X
+   (at~D initTable~9 SymId@1 bool@8)))
+ (proc@,2R routineGlobalUse@5 x . .
+  (params@M
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 0@D))GlobalUse@U . . .)
+ (proc@,2T walkTree@5 . . .
+  (params@D
+   (param@1 root . . Cursor@6 .)
+   (param@F depth . . int@7 .)
+   (param@R acc . .
+    (mut@5 GlobalUse@4).)
+   (param@l tainted . .
+    (mut@9 bool@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (dot@3 acc~3 unsafe@1)
+     (stmts@C
+      (ret .))))
+   (var@4,1 c . . . root@4)
+   (if@,2
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (let@4 g . . .
+       (call@I classifyGlobal~E
+        (dot@2 c~1 symId@1)))
+      (if@,1
+       (elif@3
+        (dot@1 g~1 unsafe@1)
+        (stmts@A
+         (asgn@4 acc~4 g@2))))
+      (ret@,2 .))))
+   (if@,6
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (let@4,7 tag . . .
+    (call@D nodeTag~7 c@1))
+   (if@,8
+    (elif@3
+     (infix@D or
+      (infix~9 == tag~4 "dot"@3)
+      (infix@7 == tag~4 "ddot"@3))
+     (stmts~1,3
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (call@8,2 walkTree~8 f@1 depth@4 acc@B tainted@G)
+      (cmd@,3 skip f@5)
+      (cmd@,4 skip f@5)
+      (while@,5
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@8 walkTree~8 f@1 depth@4 acc@B tainted@G)
+        (cmd@,1 skip f@5)))
+      (ret@,8 .))))
+   (if@,K
+    (elif@3
+     (infix@Y,1 or
+      (infix~J or
+       (infix@u,~1 or
+        (infix~I or
+         (infix~N or
+          (infix~G or
+           (infix~A == tag~4 "call"@3)
+           (infix@7 == tag~4 "cmd"@3))
+          (infix@7 == tag~4 "callstrlit"@3))
+         (infix@7 == tag~4 "hcall"@3))
+        (infix~15,1 == tag~4 "infix"@3))
+       (infix@7 == tag~4 "prefix"@3))
+      (infix@7 == tag~4 "proccall"@3))
+     (stmts~1,2
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (if@,2
+       (elif@3
+        (infix@7 ==
+         (dot~6 f~1 kind@1)Symbol@3)
+        (stmts~1,4
+         (if
+          (elif@3
+           (infix@A >
+            (infix~4 \2B depth~6 1@2)MaxDepth@2)
+           (stmts~1,1
+            (asgn@4 acc~4
+             (oconstr@B GlobalUse~9
+              (kv@7 unsafe~6 true@2)
+              (kv@5,1 what~4
+               (infix@U &
+                (infix~C & "call depth > "~G
+                 (prefix@2 $ MaxDepth@1))" — the analysis stopped looking"~S,1))))
+            (ret@,3 .))))
+         (if@,5
+          (elif@3
+           (call@L
+            (dot~D inFlight~8 getOrDefault@1)
+            (dot@2 f~1 symId@1)false@A)
+           (stmts~1,1
+            (asgn@8 tainted~8 true@2)))
+          (else@,2
+           (stmts@2,1
+            (let@4 sub . . .
+             (call@M routineGlobalUse~G
+              (dot@2 f~1 symId@1)
+              (infix@G \2B depth~6 1@2)))
+            (if@,1
+             (elif@3
+              (dot@3 sub~3 unsafe@1)
+              (stmts~1,1
+               (asgn@4 acc~4
+                (oconstr@B GlobalUse~9
+                 (kv@7 unsafe~6 true@2)
+                 (kv@J what~4
+                  (infix~2,1 &
+                   (infix@O,~1 &
+                    (infix~B &
+                     (dot~6 sub~3 what@1)" \28via "@2)
+                    (call~Y,1 baseOf~6
+                     (dot@2 f~1 symId@1)))"\29"@2))))
+               (ret@,2 .)))))))))
+       (else@,H
+        (stmts@2,1
+         (call@8 walkTree~8 f@1 depth@4 acc@B tainted@G))))
+      (cmd@,L skip f@5)
+      (while@,M
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@8 walkTree~8 f@1 depth@4 acc@B tainted@G)
+        (cmd@,1 skip f@5)))
+      (ret@,P .))))
+   (var@4,m f . . . c@4)
+   (cmd@,n inc f@4)
+   (while@,o
+    (infix@D !=
+     (dot~6 f~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (call@8 walkTree~8 f@1 depth@4 acc@B tainted@G)
+     (if@,1
+      (elif@3
+       (dot@3 acc~3 unsafe@1)
+       (stmts@C
+        (ret .))))
+     (cmd@,2 skip f@5)))))
+ (proc@,3N routineGlobalUse@5 x . .
+  (params@M
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 0@D))GlobalUse@U . .
+  (stmts@2,1
+   (comment)
+   (if@,6
+    (elif@3
+     (call@F
+      (dot~7 useCache~8 hasKey@1)sym@1)
+     (stmts~1,1
+      (ret
+       (call@S
+        (dot~D useCache~8 getOrDefault@1)sym@1
+        (oconstr@F GlobalUse~9
+         (kv@7 unsafe~6 false@2)
+         (kv@K what~4 ""@2)))))))
+   (if@,8
+    (elif@3
+     (infix@6 > depth~6 MaxDepth@2)
+     (stmts~1,1
+      (ret
+       (oconstr@G GlobalUse~9
+        (kv@7 unsafe~6 true@2)
+        (kv@J what~4
+         (infix@D & "depth > "~B
+          (prefix@2 $ MaxDepth@1))))))))
+   (let@4,A res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,B
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (prefix~r,1 not
+       (call@D isRoutine~9
+        (dot@9
+         (dot~5 res~3 decl@1)symKind@1))))
+     (stmts~1,2
+      (ret
+       (oconstr@G GlobalUse~9
+        (kv@7 unsafe~6 false@2)
+        (kv@K what~4 ""@2))))))
+   (if@,E
+    (elif@3
+     (infix@I ==
+      (call~B nodeTag~7
+       (dot@4 res~3 decl@1))"method"@3)
+     (stmts~1,1
+      (ret
+       (oconstr@G GlobalUse~9
+        (kv@7 unsafe~6 false@2)
+        (kv@K what~4 ""@2))))))
+   (let@4,G r . . .
+    (call@D asRoutine~9
+     (dot@4 res~3 decl@1)SkipInclBody@B))
+   (if@,H
+    (elif@3
+     (infix@C !=
+      (dot~6
+       (dot~5 r~1 body@1)kind@1)ParLe@3)
+     (stmts~1,2
+      (ret
+       (oconstr@G GlobalUse~9
+        (kv@7 unsafe~6 false@2)
+        (kv@K what~4 ""@2))))))
+   (var@4,K acc . . .
+    (oconstr@F GlobalUse~9
+     (kv@7 unsafe~6 false@2)
+     (kv@K what~4 ""@2)))
+   (var@4,L tainted . . . false@A)
+   (asgn@E,M
+    (at~6 inFlight~8 sym@1)true@2)
+   (call@8,N walkTree~8
+    (dot@2 r~1 body@1)depth@9 acc@G tainted@L)
+   (asgn@E,O
+    (at~6 inFlight~8 sym@1)false@2)
+   (if@,P
+    (elif@3
+     (prefix not tainted@4)
+     (stmts@D
+      (asgn@E
+       (at~6 useCache~8 sym@1)acc@2))))
+   (asgn@7,Q result~7 acc@2)))
+ (proc@,45 collectGlobals@5 . . .
+  (params@J
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 .)
+   (param@P acc . .
+    (mut@5
+     (at@7 seq~3 string@1)).)
+   (param@1,1 seen . .
+    (mut@6
+     (at@9 Table~5 SymId@1 bool@8)).)). . . .)
+ (proc@,48 walkAll@5 . . .
+  (params@C
+   (param@1 root . . Cursor@6 .)
+   (param@F depth . . int@7 .)
+   (param@R acc . .
+    (mut@5
+     (at@7 seq~3 string@1)).)
+   (param@1,1 seen . .
+    (mut@6
+     (at@9 Table~5 SymId@1 bool@8)).)). . .
+  (stmts@2,2
+   (var@4 c . . . root@4)
+   (if@,1
+    (elif@3
+     (infix@7 ==
+      (dot~6 c~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (let@4 g . . .
+       (call@I classifyGlobal~E
+        (dot@2 c~1 symId@1)))
+      (if@,1
+       (elif@3
+        (dot@1 g~1 unsafe@1)
+        (stmts~1,1
+         (var@4 dup . . . false@6)
+         (for@4,1 acc@5
+          (unpackflat
+           (let a . . ..))
+          (stmts~2,1
+           (if
+            (elif@3
+             (infix@2 == a~2
+              (dot@4 g~1 what@1))
+             (stmts@D
+              (asgn@4 dup~4 true@2)
+              (break@C .))))))
+         (if@,3
+          (elif@3
+           (prefix not dup@4)
+           (stmts@9
+            (cmd@3
+             (dot acc~3 add@1)
+             (dot@6 g~1 what@1))))))))
+      (ret@,6 .))))
+   (if@,9
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (let@4,A tag . . .
+    (call@D nodeTag~7 c@1))
+   (if@,B
+    (elif@3
+     (infix@D or
+      (infix~9 == tag~4 "dot"@3)
+      (infix@7 == tag~4 "ddot"@3))
+     (stmts~1,1
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (call@7,2 walkAll~7 f@1 depth@4 acc@B seen@G)
+      (cmd@,3 skip f@5)
+      (cmd@,4 skip f@5)
+      (while@,5
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@7 walkAll~7 f@1 depth@4 acc@B seen@G)
+        (cmd@,1 skip f@5)))
+      (ret@,8 .))))
+   (if@,L
+    (elif@3
+     (infix@Y,1 or
+      (infix~J or
+       (infix@u,~1 or
+        (infix~I or
+         (infix~N or
+          (infix~G or
+           (infix~A == tag~4 "call"@3)
+           (infix@7 == tag~4 "cmd"@3))
+          (infix@7 == tag~4 "callstrlit"@3))
+         (infix@7 == tag~4 "hcall"@3))
+        (infix~15,1 == tag~4 "infix"@3))
+       (infix@7 == tag~4 "prefix"@3))
+      (infix@7 == tag~4 "proccall"@3))
+     (stmts~1,2
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (if@,2
+       (elif@3
+        (infix@7 ==
+         (dot~6 f~1 kind@1)Symbol@3)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@M and
+            (infix~C <=
+             (infix~4 \2B depth~6 1@2)MaxDepth@3)
+            (prefix@4 not
+             (call@L
+              (dot~D seen~4 getOrDefault@1)
+              (dot@2 f~1 symId@1)false@A)))
+           (stmts~1,1
+            (call@E collectGlobals~E
+             (dot@2 f~1 symId@1)
+             (infix@G \2B depth~6 1@2)acc@L seen@Q))))))
+       (else@,3
+        (stmts@2,1
+         (call@7 walkAll~7 f@1 depth@4 acc@B seen@G))))
+      (cmd@,7 skip f@5)
+      (while@,8
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@7 walkAll~7 f@1 depth@4 acc@B seen@G)
+        (cmd@,1 skip f@5)))
+      (ret@,B .))))
+   (var@4,Z f . . . c@4)
+   (cmd@,a inc f@4)
+   (while@,b
+    (infix@D !=
+     (dot~6 f~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (call@7 walkAll~7 f@1 depth@4 acc@B seen@G)
+     (cmd@,1 skip f@5)))))
+ (proc@,4p collectGlobals@5 . . .
+  (params@J
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 .)
+   (param@P acc . .
+    (mut@5
+     (at@7 seq~3 string@1)).)
+   (param@1,1 seen . .
+    (mut@6
+     (at@9 Table~5 SymId@1 bool@8)).)). . .
+  (stmts@2,2
+   (if
+    (elif@3
+     (call@H
+      (dot~D seen~4 getOrDefault@1)sym@1 false@6)
+     (stmts@V
+      (ret .))))
+   (asgn@A,1
+    (at~6 seen~4 sym@1)true@2)
+   (if@,2
+    (elif@3
+     (infix@6 > depth~6 MaxDepth@2)
+     (stmts@I
+      (ret .))))
+   (let@4,3 res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,4
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (prefix~r,1 not
+       (call@D isRoutine~9
+        (dot@9
+         (dot~5 res~3 decl@1)symKind@1))))
+     (stmts@X,1
+      (ret .))))
+   (if@,6
+    (elif@3
+     (infix@I ==
+      (call~B nodeTag~7
+       (dot@4 res~3 decl@1))"method"@3)
+     (stmts@V
+      (ret .))))
+   (let@4,7 r . . .
+    (call@D asRoutine~9
+     (dot@4 res~3 decl@1)SkipInclBody@B))
+   (if@,8
+    (elif@3
+     (infix@C !=
+      (dot~6
+       (dot~5 r~1 body@1)kind@1)ParLe@3)
+     (stmts@M
+      (ret .))))
+   (call@7,9 walkAll~7
+    (dot@2 r~1 body@1)depth@9 acc@G seen@L)))
+ (proc@,52 jitGlobalsTouched@5 x . .
+  (params@N
+   (param@1 sym . . SymId@5 .))
+  (at@H seq~3 string@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,3 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,4 seen . . .
+    (call@T
+     (at~D initTable~9 SymId@1 bool@8)))
+   (call@E,5 collectGlobals~E sym@1 0@6 result@9 seen@H)))
+ (var@4,5d reachCache . . .
+  (call@b
+   (at~F initTable~9 SymId@1 string@8)))
+ (var@4,5e reachFlight . . .
+  (call@a
+   (at~D initTable~9 SymId@1 bool@8)))
+ (var@4,5g gUndefinedNames . .
+  (at@K seq~3 string@1)
+  (prefix@V \40
+   (bracket@1)))
+ (proc@,5i setUndefinedSymbols@5 x . .
+  (params@P
+   (param@1 names . .
+    (at@A seq~3 string@1).)). . .
+  (stmts@2,1
+   (comment)
+   (asgn@G,5 gUndefinedNames~G names@2)
+   (asgn@B,6 reachCache~B
+    (call@Q
+     (at~F initTable~9 SymId@1 string@8)))))
+ (proc@,5s routineHostReach@5 x . .
+  (params@M
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 0@D))string@U . . .)
+ (proc@,5u walkReach@5 . . .
+  (params@E
+   (param@1 root . . Cursor@6 .)
+   (param@F depth . . int@7 .)
+   (param@R acc . .
+    (mut@5 string@4).)
+   (param@i tainted . .
+    (mut@9 bool@4).)). . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@8 >
+      (dot~5 acc~3 len@1)0@2)
+     (stmts@D
+      (ret .))))
+   (var@4,1 c . . . root@4)
+   (if@,2
+    (elif@3
+     (infix@7 !=
+      (dot~6 c~1 kind@1)ParLe@3)
+     (stmts@H
+      (ret .))))
+   (let@4,3 tag . . .
+    (call@D nodeTag~7 c@1))
+   (if@,4
+    (elif@3
+     (infix@Y,1 or
+      (infix~J or
+       (infix@u,~1 or
+        (infix~I or
+         (infix~N or
+          (infix~G or
+           (infix~A == tag~4 "call"@3)
+           (infix@7 == tag~4 "cmd"@3))
+          (infix@7 == tag~4 "callstrlit"@3))
+         (infix@7 == tag~4 "hcall"@3))
+        (infix~15,1 == tag~4 "infix"@3))
+       (infix@7 == tag~4 "prefix"@3))
+      (infix@7 == tag~4 "proccall"@3))
+     (stmts~1,2
+      (var@4 f . . . c@4)
+      (cmd@,1 inc f@4)
+      (if@,2
+       (elif@3
+        (infix@7 ==
+         (dot~6 f~1 kind@1)Symbol@3)
+        (stmts~1,1
+         (if
+          (elif@3
+           (infix@A >
+            (infix~4 \2B depth~6 1@2)MaxDepth@2)
+           (stmts~1,1
+            (asgn@4 acc~4
+             (infix@U &
+              (infix~C & "call depth > "~G
+               (prefix@2 $ MaxDepth@1))" — the analysis stopped looking"@2))
+            (ret@,1 .))))
+         (if@,3
+          (elif@3
+           (call@O
+            (dot~D reachFlight~B getOrDefault@1)
+            (dot@2 f~1 symId@1)false@A)
+           (stmts~1,1
+            (asgn@8 tainted~8 true@2)))
+          (else@,2
+           (stmts@2,1
+            (let@4 sub . . .
+             (call@M routineHostReach~G
+              (dot@2 f~1 symId@1)
+              (infix@G \2B depth~6 1@2)))
+            (if@,1
+             (elif@3
+              (infix@8 >
+               (dot~5 sub~3 len@1)0@2)
+              (stmts~1,1
+               (asgn@4 acc~4
+                (infix@Z &
+                 (infix~I &
+                  (infix~B & sub~4 " \28via "@2)
+                  (call@8 baseOf~6
+                   (dot@2 f~1 symId@1)))"\29"@2))
+               (ret@,1 .)))))))))
+       (else@,B
+        (stmts@2,1
+         (call@9 walkReach~9 f@1 depth@4 acc@B tainted@G))))
+      (cmd@,F skip f@5)
+      (while@,G
+       (infix@D !=
+        (dot~6 f~1 kind@1)ParRi@3)
+       (stmts@2,1
+        (call@9 walkReach~9 f@1 depth@4 acc@B tainted@G)
+        (cmd@,1 skip f@5)))
+      (ret@,J .))))
+   (var@4,Q f . . . c@4)
+   (cmd@,R inc f@4)
+   (while@,S
+    (infix@D !=
+     (dot~6 f~1 kind@1)ParRi@3)
+    (stmts@2,1
+     (call@9 walkReach~9 f@1 depth@4 acc@B tainted@G)
+     (if@,1
+      (elif@3
+       (infix@8 >
+        (dot~5 acc~3 len@1)0@2)
+       (stmts@D
+        (ret .))))
+     (cmd@,2 skip f@5)))))
+ (proc@,6S routineHostReach@5 x . .
+  (params@M
+   (param@1 sym . . SymId@5 .)
+   (param@D depth . . int@7 0@D))string@U . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (call@H
+      (dot~7 reachCache~A hasKey@1)sym@1)
+     (stmts~1,1
+      (ret
+       (call@U
+        (dot~D reachCache~A getOrDefault@1)sym@1 ""@6)))))
+   (if@,4
+    (elif@3
+     (infix@6 > depth~6 MaxDepth@2)
+     (stmts~1,1
+      (ret
+       (infix@I & "depth > "~B
+        (prefix@2 $ MaxDepth@1))))))
+   (let@4,6 res . . .
+    (call@K tryLoadSymSafe~E sym@1))
+   (if@,7
+    (elif@3
+     (infix@r or
+      (infix~Q or
+       (infix~G !=
+        (dot~8 res~3 status@1)LacksNothing@3)
+       (infix@H !=
+        (dot~6
+         (dot~5 res~3 decl@1)kind@1)ParLe@3))
+      (prefix~r,1 not
+       (call@D isRoutine~9
+        (dot@9
+         (dot~5 res~3 decl@1)symKind@1))))
+     (stmts~1,7
+      (ret ""@7))))
+   (let@4,F r . . .
+    (call@D asRoutine~9
+     (dot@4 res~3 decl@1)SkipInclBody@B))
+   (if@,G
+    (elif@3
+     (infix@C !=
+      (dot~6
+       (dot~5 r~1 body@1)kind@1)ParLe@3)
+     (stmts~1,4
+      (let@4 icn . . .
+       (call@H importcName~B
+        (dot@2 r~1 pragmas@1)))
+      (if@,1
+       (elif@3
+        (infix@f and
+         (infix~T and
+          (infix~4 >
+           (dot~5 icn~3 len@1)0@2)
+          (prefix@4 not
+           (call@D hasHeader~9
+            (dot@2 r~1 pragmas@1))))
+         (infix@O >
+          (dot~5 gUndefinedNames~F len@1)0@2))
+        (stmts~1,9
+         (for@4 gUndefinedNames@5
+          (unpackflat
+           (let u . . ..))
+          (stmts~2,1
+           (if
+            (elif@3
+             (infix@2 == u~2 icn@3)
+             (stmts~1,1
+              (ret
+               (infix@19,1 &
+                (infix~6,~1 &
+                 (infix~e &
+                  (infix~6 & "reaches `"~C icn@2)"`, which the linker reports has no "@2)"definition — the emitted library carries an abort stub for "~w,1)"it, so this proc must interpret"~12,1))))))))))
+      (ret@,F ""@7))))
+   (var@4,a acc . . . ""@6)
+   (var@4,b tainted . . . false@A)
+   (asgn@H,c
+    (at~6 reachFlight~B sym@1)true@2)
+   (call@9,d walkReach~9
+    (dot@2 r~1 body@1)depth@9 acc@G tainted@L)
+   (asgn@H,e
+    (at~6 reachFlight~B sym@1)false@2)
+   (if@,f
+    (elif@3
+     (prefix not tainted@4)
+     (stmts@D
+      (asgn@G
+       (at~6 reachCache~A sym@1)acc@2))))
+   (asgn@7,g result~7 acc@2)))
+ (proc@,7B resetHostReachCache@5 x . .
+  (params@P). . .
+  (stmts@2,1
+   (asgn@B reachCache~B
+    (call@Q
+     (at~F initTable~9 SymId@1 string@8)))
+   (asgn@C,1 reachFlight~C
+    (call@O
+     (at~D initTable~9 SymId@1 bool@8)))))
+ (proc@,7F jitGlobalDeclineReason@5 x . .
+  (params@S
+   (param@1 sym . . SymId@5 .))string@E . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 g . . .
+    (call@K routineGlobalUse~G sym@1 0@6))
+   (if@,3
+    (elif@3
+     (prefix not
+      (dot@5 g~1 unsafe@1))
+     (stmts@E
+      (ret ""@7))))
+   (asgn@7,4 result~7
+    (infix@18,2 &
+     (infix@2,~1 &
+      (infix~A,~1 &
+       (infix~9 & "reads or writes the mutable module-level global "~p
+        (dot@3 g~1 what@1))" — the JIT\27s shared library gets its OWN copy of it, so a native "~y,1)"call would answer from storage the interpreter never wrote \28same "~18,1)"two-storages reason importcglob.nim halts on a write\29"~16,1))))
+ (proc@,7P resetJitGlobalCache@5 x . .
+  (params@P). . .
+  (stmts@2,1
+   (comment)
+   (asgn@9,2 useCache~9
+    (call@T
+     (at~I initTable~9 SymId@1 GlobalUse@8)))
+   (asgn@9,3 inFlight~9
+    (call@O
+     (at~D initTable~9 SymId@1 bool@8))))))

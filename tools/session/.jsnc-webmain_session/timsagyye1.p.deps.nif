@@ -1,0 +1,13 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import strutils)
+ (import
+  (when
+   (call defined posix))
+  (infix / posix posix))
+ (import
+  (when
+   (call defined windows))
+  (infix / windows winlean)))

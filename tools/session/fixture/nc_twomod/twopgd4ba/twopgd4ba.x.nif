@@ -1,0 +1,223 @@
+(.nif27)
+(.indexat 4359             )
+(stmts@,1,twomod.nim
+ (type@C,2 :Scaled.0.~7 .
+  (enum@2
+   (u 8)
+   (efld@5 :SA.0. 0)
+   (efld@9 :SB.0. 1)
+   (efld@D :SC.0. 2)
+   (efld@H :SD.0. 3)))
+ (proc@5,2 :dollar`.Scaled.0.
+  (params
+   (param :e.0 . Scaled.0.))string.0.sysvq0asl
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads)))
+  (stmts
+   (var@9 :result.0 . string.0.sysvq0asl .)
+   (call@9 =wasMoved.2.sysvq0asl
+    (addr result.0))
+   (case@9 e.0
+    (of@5
+     (ranges 0)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 4281090u)
+        (kv more.0
+         (nil))))))
+    (of@9
+     (ranges 1)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 4346626u)
+        (kv more.0
+         (nil))))))
+    (of@D
+     (ranges 2)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 4412162u)
+        (kv more.0
+         (nil))))))
+    (of@H
+     (ranges 3)
+     (stmts
+      (ret
+       (oconstr string.0.sysvq0asl
+        (kv bytes.0 4477698u)
+        (kv more.0
+         (nil)))))))
+   (ret result.0)))
+ (proc@,4 :ords.0.@5
+  (params@9)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@7 :result.1 .
+    (i~5,~1 64).)
+   (asgn@7 result.1~7
+    (add@f
+     (i 64)
+     (add~G
+      (i 64)
+      (add~F
+       (i 64)
+       (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+        (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)0@J,3,twomod.nim)
+       (mul@A
+        (i 64)
+        (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+         (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)1@N,3,twomod.nim)10@2))
+      (mul@A
+       (i 64)
+       (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+        (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)2@R,3,twomod.nim)100@2))
+     (mul@A
+      (i 64)
+      (conv@5,3U,../../../../../../../../../home/savant/nimony/lib/std/system.nim
+       (i@U,E,../../../../../../../../../home/savant/nimony/lib/std/system/defaults.nim 64)3@V,3,twomod.nim)1000@2)))
+   (ret~2,~1 result.1)))
+ (proc@,7 :eqMask.0.@5
+  (params@B)
+  (i@4 64)
+  (pragmas
+   (smry))
+  (stmts@2,1
+   (var@4 :result.2 .
+    (i~2,~4 64).)
+   (var@4 :a.0 . Scaled.0.@D,~6 0@D,~6)
+   (asgn@7,1 result.2~7 0@2)
+   (if@,2
+    (elif@3
+     (eq@2 a.0~2 0@C,~8)
+     (stmts@9
+      (asgn@7 result.2~7
+       (add@9
+        (i 64)result.2~7 1@2)))))
+   (if@,3
+    (elif@3
+     (eq@2 a.0~2 1@G,~9)
+     (stmts@9
+      (asgn@7 result.2~7
+       (add@9
+        (i 64)result.2~7 2@2)))))
+   (if@,4
+    (elif@3
+     (eq@2 a.0~2 2@K,~A)
+     (stmts@9
+      (asgn@7 result.2~7
+       (add@9
+        (i 64)result.2~7 4@2)))))
+   (if@,5
+    (elif@3
+     (eq@2 a.0~2 3@O,~B)
+     (stmts@9
+      (asgn@7 result.2~7
+       (add@9
+        (i 64)result.2~7 8@2)))))
+   (ret~2,~1 result.2)))
+ (proc@,F :useDep.0.@5
+  (params@B)
+  (i@4 64)
+  (pragmas
+   (smry callsUnknown))
+  (stmts@L
+   (var@6 :result.3 .
+    (i~N,~B 64).)
+   (var@6 :`x.0 .
+    (i@D,4,dep.nim 64)
+    (call depAdd.0.depu5ylde~6 1@1 2@4))
+   (asgn@6 result.3 `x.0)
+   (ret~L result.3)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.depu5ylde)))
+ (type :`cchar.0.
+  (pragmas
+   (importc "char")
+   (nodecl))
+  (i 8))
+ (gvar :`cmdCount.0.
+  (pragmas
+   (exportc "cmdCount"))
+  (i 32).)
+ (gvar :`cmdLine.0.
+  (pragmas
+   (exportc "cmdLine"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (gvar :`nimEnviron.0.
+  (pragmas
+   (exportc "nimEnviron"))
+  (ptr
+   (ptr
+    (c 8))).)
+ (proc :`main.0.
+  (params
+   (param :`argc.0. .
+    (i 32))
+   (param :`argv.0. .
+    (ptr
+     (ptr `cchar.0.)))
+   (param :`envp.0. .
+    (ptr
+     (ptr `cchar.0.))))
+  (i 32)
+  (pragmas
+   (exportc "main")
+   (smry callsUnknown
+    (param 0 0 reads)
+    (param 1 1 reads)
+    (param 2 2 reads)))
+  (stmts
+   (asgn `cmdCount.0. `argc.0.)
+   (asgn `cmdLine.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`argv.0.))
+   (asgn `nimEnviron.0.
+    (cast
+     (ptr
+      (ptr
+       (c 8)))`envp.0.))
+   (call `ini.0.)
+   (call nimFlushStdStreams.0.sysvq0asl)
+   (ret 0))))(.index@,1,twomod.nim
+ (h Scaled.0. 58)
+ (x@E,2 SA.0. 45)
+ (x@E,2 SB.0. 21)
+ (x@E,2 SC.0. 21)
+ (x@E,2 SD.0. 21)
+ (x dollar`.Scaled.0. 23)
+ (x ords.0. 899)
+ (x eqMask.0. 1117)
+ (x useDep.0. 752)
+ (h `iniGuard.0. 263)
+ (x `ini.0. 34)
+ (x `cchar.0. 221)
+ (x `cmdCount.0. 71)
+ (x `cmdLine.0. 68)
+ (x `nimEnviron.0. 84)
+ (x `main.0. 90)
+ (h `argc.0. 27)
+ (h `argv.0. 34)
+ (h `envp.0. 54))

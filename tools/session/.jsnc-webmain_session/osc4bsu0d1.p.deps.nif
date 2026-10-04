@@ -1,0 +1,20 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-deps")
+(stmts
+ (import
+  (infix / std
+   (bracket oserrors)))
+ (import
+  (infix / std
+   (bracket syncio assertions widestrs)))
+ (import
+  (when
+   (call defined windows))
+  (infix /
+   (prefix \2E\2E/ windows)winlean))
+ (import
+  (when
+   (call defined posix))
+  (infix /
+   (prefix \2E\2E/ posix)posix)))

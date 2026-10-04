@@ -1,0 +1,1000 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/hostsock.nim
+ (comment)
+ (when@,e
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "lenientnils"@2)))))
+ (import@,h iopolicy@7)
+ (proc@,p cSocket@5 . . .
+  (params@C
+   (param@1 domain . . cint@N .)
+   (param@9 typ . . cint@F .)
+   (param@E protocol . . cint@A .))cint@V
+  (pragmas@m
+   (kv~d,1 importc~7 "socket"@2)
+   (kv~L,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,r cClose@5 . . .
+  (params@B
+   (param@1 fd . . cint@4 .))cint@C
+  (pragmas@S
+   (kv~J,1 importc~7 "close"@2)
+   (kv~2,1 header~6 "<unistd.h>"@2)). .)
+ (proc@,t cBind@5 . . .
+  (params@A
+   (param@1 fd . . cint@4 .)
+   (param@B sa . . pointer@4 .)
+   (param@O slen . . cuint@6 .))cint@c
+  (pragmas@r
+   (kv~i,1 importc~7 "bind"@2)
+   (kv~S,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,v cConnect@5 . . .
+  (params@D
+   (param@1 fd . . cint@4 .)
+   (param@B sa . . pointer@4 .)
+   (param@O slen . . cuint@6 .))cint@c
+  (pragmas@u
+   (kv~l,1 importc~7 "connect"@2)
+   (kv~S,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,x cListen@5 . . .
+  (params@C
+   (param@1 fd . . cint@4 .)
+   (param@B backlog . . cint@9 .))cint@R
+  (pragmas@i
+   (kv~Z,1 importc~7 "listen"@2)
+   (kv~H,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,z cAccept@5 . . .
+  (params@C
+   (param@1 fd . . cint@4 .)
+   (param@B sa . . pointer@4 .)
+   (param@O slen . .
+    (ptr@6 cuint@4).))cint@g
+  (pragmas@x
+   (kv~o,1 importc~7 "accept"@2)
+   (kv~W,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,11 cGetsockname@5 . . .
+  (params@H
+   (param@1 fd . . cint@4 .)
+   (param@B sa . . pointer@4 .)
+   (param@O slen . .
+    (ptr@6 cuint@4).))cint@g
+  (pragmas@12
+   (kv~t,1 importc~7 "getsockname"@2)
+   (kv~W,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,13 cGetpeername@5 . . .
+  (params@H
+   (param@1 fd . . cint@4 .)
+   (param@B sa . . pointer@4 .)
+   (param@O slen . .
+    (ptr@6 cuint@4).))cint@g
+  (pragmas@12
+   (kv~t,1 importc~7 "getpeername"@2)
+   (kv~W,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,15 cSetsockopt@5 . . .
+  (params@G
+   (param@1 fd . . cint@4 .)
+   (param@B level . . cint@C .)
+   (param@I opt . . cint@5 .)
+   (param@T val . . pointer@5 .)
+   (param@h vlen . . cuint@6 .))cint@v
+  (pragmas@1G
+   (kv~17,1 importc~7 "setsockopt"@2)
+   (kv~l,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,17 cGetsockopt@5 . . .
+  (params@G
+   (param@1 fd . . cint@4 .)
+   (param@B level . . cint@C .)
+   (param@I opt . . cint@5 .)
+   (param@T val . . pointer@5 .)
+   (param@h vlen . .
+    (ptr@6 cuint@4).))cint@z
+  (pragmas@1K
+   (kv~1B,1 importc~7 "getsockopt"@2)
+   (kv~p,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,19 cSend@5 . . .
+  (params@A
+   (param@1 fd . . cint@4 .)
+   (param@B buf . . pointer@5 .)
+   (param@P n . . csize_t@3 .)
+   (param@b flags . . cint@7 .))int@p
+  (pragmas@13
+   (kv~u,1 importc~7 "send"@2)
+   (kv~e,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,1B cRecv@5 . . .
+  (params@A
+   (param@1 fd . . cint@4 .)
+   (param@B buf . . pointer@5 .)
+   (param@P n . . csize_t@3 .)
+   (param@b flags . . cint@7 .))int@p
+  (pragmas@13
+   (kv~u,1 importc~7 "recv"@2)
+   (kv~e,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,1D cShutdown@5 . . .
+  (params@E
+   (param@1 fd . . cint@4 .)
+   (param@B how . . cint@5 .))cint@N
+  (pragmas@g
+   (kv~X,1 importc~7 "shutdown"@2)
+   (kv~D,1 header~6 "<sys/socket.h>"@2)). .)
+ (proc@,1F cFcntl2@5 . . .
+  (params@C
+   (param@1 fd . . cint@4 .)
+   (param@B cmd . . cint@5 .))cint@N
+  (pragmas@e
+   (kv~V,1 importc~7 "fcntl"@2)
+   (kv~E,1 header~6 "<fcntl.h>"@2)). .)
+ (proc@,1H cFcntl3@5 . . .
+  (params@C
+   (param@1 fd . . cint@4 .)
+   (param@B cmd . . cint@5 .)
+   (param@M arg . . cint@5 .))cint@Y
+  (pragmas@p
+   (kv~g,1 importc~7 "fcntl"@2)
+   (kv~P,1 header~6 "<fcntl.h>"@2)). .)
+ (proc@,1J cErrnoLocation@5 . . .
+  (params@J)
+  (ptr@4 cint@4)
+  (pragmas@W
+   (kv~N,1 importc~7 "__errno_location"@2)
+   (kv@5,1 header~6 "<errno.h>"@2)). .)
+ (proc@,1L cHtons@5 . . .
+  (params@B
+   (param@1 x . . cushort@3 .))cushort@E
+  (pragmas@X
+   (kv@9 importc~7 "htons"@2)
+   (kv@Q header~6 "<arpa/inet.h>"@2)). .)
+ (proc@,1M cHtonl@5 . . .
+  (params@B
+   (param@1 x . . uint32@3 .))uint32@D
+  (pragmas@V
+   (kv@9 importc~7 "htonl"@2)
+   (kv@Q header~6 "<arpa/inet.h>"@2)). .)
+ (proc@,1N cNtohs@5 . . .
+  (params@B
+   (param@1 x . . cushort@3 .))cushort@E
+  (pragmas@X
+   (kv@9 importc~7 "ntohs"@2)
+   (kv@Q header~6 "<arpa/inet.h>"@2)). .)
+ (proc@,1O cNtohl@5 . . .
+  (params@B
+   (param@1 x . . uint32@3 .))uint32@D
+  (pragmas@V
+   (kv@9 importc~7 "ntohl"@2)
+   (kv@Q header~6 "<arpa/inet.h>"@2)). .)
+ (type@10,1Q PollFdC~v . .
+  (pragmas~n
+   (kv@9 importc~7 "struct pollfd"@2)
+   (kv@Y header~6 "<poll.h>"@2))
+  (object@2 .
+   (fld~10,1 fd . . cint@4 .)
+   (fld~10,2 events . . cshort@8 .)
+   (fld~10,3 revents . . cshort@9 .)))
+ (proc@,1V cPoll@5 . . .
+  (params@A
+   (param@1 fds . . pointer@5 .)
+   (param@F nfds . . culong@6 .)
+   (param@T timeout . . cint@9 .))cint@j
+  (pragmas@y
+   (kv~p,1 importc~7 "poll"@2)
+   (kv~Z,1 header~6 "<poll.h>"@2)). .)
+ (var@4,1a gSockErrno . . . 0@D)
+ (proc@,1c hostSockErrno@5 x . .
+  (params@J)int@4 . .
+  (stmts@2,1
+   (comment)gSockErrno@,5))
+ (proc@,1k capture@5 . . .
+  (params@C). . .
+  (stmts@2,1
+   (let@4 p . . .
+    (call@I cErrnoLocation~E))
+   (asgn@B,1 gSockErrno~B
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@2 != p~2
+        (nil@3))
+       (call@D int~3
+        (at@2 p~1)))
+      (else@M 0@6))))))
+ (proc@,1o denied@5 . . .
+  (params@B
+   (param@1 name . . string@6 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (call@C capsDeniedOn~C capNet@1 ""@9)
+     (stmts~1,1
+      (call@F recordViolation~F name@1 capNet@7)
+      (asgn@B,1 gSockErrno~B 1@2)
+      (asgn@7,2 result~7 true@2)))
+    (else@,4
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (const@K,21 SockHandleBase~E x . . 1000000@4)
+ (var@4,25 gSockReal . .
+  (at@E seq~3 cint@1)
+  (prefix@N \40
+   (bracket@1)))
+ (proc@,2A isSockHandle@5 x . .
+  (params@I
+   (param@1 h . . int@3 .))bool@A . .
+  (stmts@2,1
+   (comment)
+   (infix@z,2 and
+    (infix~f and
+     (infix~I >= h~2 SockHandleBase@3)
+     (infix@P <
+      (par~L
+       (infix@3 \2D h~2 SockHandleBase@2))
+      (dot@B gSockReal~9 len@1)))
+    (infix~T,1 >=
+     (at~L gSockReal~9
+      (infix@3 \2D h~2 SockHandleBase@2))
+     (dot@4 0~1 cint@1)))))
+ (proc@,2G realOf@5 . . .
+  (params@B
+   (param@1 h . . int@3 .))cint@A . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@C isSockHandle~C h@1)
+     (stmts@H
+      (at@9 gSockReal~9
+       (infix@3 \2D h~2 SockHandleBase@2))))
+    (else@o
+     (stmts@6
+      (dot@2 -1~2 cint@1))))))
+ (proc@,2J publish@5 . . .
+  (params@C
+   (param@1 fd . . cint@4 .))int@C . .
+  (stmts@2,1
+   (cmd@9
+    (dot gSockReal~9 add@1)fd@5)
+   (asgn@7,1 result~7
+    (infix@X \2D
+     (infix~G \2B SockHandleBase~F
+      (dot@B gSockReal~9 len@1))1@2))))
+ (proc@,2P hostSocket@5 x . .
+  (params@G
+   (param@1 domain . . int@N .)
+   (param@9 typ . . int@F .)
+   (param@E protocol . . int@A .))int@U . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@6 denied~6 "socket\282\29"@1)
+     (stmts@L
+      (ret -1@7))))
+   (let@4,2 fd . . .
+    (call@C cSocket~7
+     (call@5 cint~4 domain@1)
+     (call@J cint~4 typ@1)
+     (call@U cint~4 protocol@1)))
+   (call@7,3 capture~7)
+   (asgn@7,4 result~7
+    (expr
+     (stmts@2)
+     (if@1
+      (elif@3
+       (infix@3 < fd~3
+        (dot@3 0~1 cint@1))-1@D)
+      (else@J
+       (call@D publish~7 fd@1)))))))
+ (proc@,2W hostSockClose@5 x . .
+  (params@J
+   (param@1 h . . int@3 .))int@A . .
+  (stmts@2,1
+   (comment)
+   (let@4,2 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,3
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (let@4,4 rc . . .
+    (call@B cClose~6 fd@1))
+   (call@7,5 capture~7)
+   (asgn@U,6
+    (at~L gSockReal~9
+     (infix@3 \2D h~2 SockHandleBase@2))
+    (dot@4 -1~2 cint@1))
+   (asgn@7,7 result~7
+    (call@5 int~3 rc@1))))
+ (proc@,2g hostBind@5 x . .
+  (params@E
+   (param@1 h . . int@3 .)
+   (param@9 sa . . string@4 .))int@M . .
+  (stmts@2,1
+   (comment)
+   (if@,1
+    (elif@3
+     (call@6 denied~6 "bind\282\29"@1)
+     (stmts@J
+      (ret -1@7))))
+   (let@4,2 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,3
+    (elif@3
+     (infix@C or
+      (infix~9 < fd~3
+       (dot@3 0~1 cint@1))
+      (infix@A ==
+       (dot~5 sa~2 len@1)0@3))
+     (stmts@S
+      (ret -1@7))))
+   (var@4,4 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,5 i . . . 0@4)
+   (while@,6
+    (infix@H and
+     (infix~9 < i~2
+      (dot@4 sa~2 len@1))
+     (infix@6 < i~2 128@2))
+    (stmts@2,1
+     (asgn@7
+      (at~4 buf~3 i@1)
+      (call@6 byte~4
+       (call@6 uint8~5
+        (at@3 sa~2 i@1))))
+     (cmd@,1 inc i@4)))
+   (let@4,9 rc . . .
+    (call@A cBind~5 fd@1
+     (cast@5 pointer@5
+      (cmd@J addr~5
+       (at@3 buf~3 0@1)))
+     (call@c cuint~5
+      (dot@3 sa~2 len@1))))
+   (call@7,A capture~7)
+   (asgn@7,B result~7
+    (call@5 int~3 rc@1))))
+ (proc@,2u hostConnect@5 x . .
+  (params@H
+   (param@1 h . . int@3 .)
+   (param@9 sa . . string@4 .))int@M . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (call@6 denied~6 "connect\282\29"@1)
+     (stmts@M
+      (ret -1@7))))
+   (let@4,4 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,5
+    (elif@3
+     (infix@C or
+      (infix~9 < fd~3
+       (dot@3 0~1 cint@1))
+      (infix@A ==
+       (dot~5 sa~2 len@1)0@3))
+     (stmts@S
+      (ret -1@7))))
+   (var@4,6 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@H and
+     (infix~9 < i~2
+      (dot@4 sa~2 len@1))
+     (infix@6 < i~2 128@2))
+    (stmts@2,1
+     (asgn@7
+      (at~4 buf~3 i@1)
+      (call@6 byte~4
+       (call@6 uint8~5
+        (at@3 sa~2 i@1))))
+     (cmd@,1 inc i@4)))
+   (let@4,B rc . . .
+    (call@D cConnect~8 fd@1
+     (cast@5 pointer@5
+      (cmd@J addr~5
+       (at@3 buf~3 0@1)))
+     (call@c cuint~5
+      (dot@3 sa~2 len@1))))
+   (call@7,C capture~7)
+   (asgn@7,D result~7
+    (call@5 int~3 rc@1))))
+ (proc@,3A hostListen@5 x . .
+  (params@G
+   (param@1 h . . int@C .)
+   (param@4 backlog . . int@9 .))int@J . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@6 denied~6 "listen\282\29"@1)
+     (stmts@L
+      (ret -1@7))))
+   (let@4,1 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,2
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (let@4,3 rc . . .
+    (call@C cListen~7 fd@1
+     (call@9 cint~4 backlog@1)))
+   (call@7,4 capture~7)
+   (asgn@7,5 result~7
+    (call@5 int~3 rc@1))))
+ (proc@,3I hostAccept@5 x . .
+  (params@G
+   (param@1 h . . int@3 .)
+   (param@9 peer . .
+    (mut@6 string@4).))int@S . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (call@6 denied~6 "accept\282\29"@1)
+     (stmts@L
+      (ret -1@7))))
+   (let@4,4 fd . . .
+    (call@B realOf~6 h@1))
+   (asgn@5,5 peer~5 ""@2)
+   (if@,6
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,7 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,8 slen . . .
+    (call@C cuint~5 128@1))
+   (let@4,9 nfd . . .
+    (call@D cAccept~7 fd@1
+     (cast@5 pointer@5
+      (cmd@J addr~5
+       (at@3 buf~3 0@1)))
+     (cmd@c addr~5 slen)))
+   (call@7,A capture~7)
+   (if@,B
+    (elif@3
+     (infix@4 < nfd~4
+      (dot@3 0~1 cint@1))
+     (stmts@E
+      (ret -1@7))))
+   (var@4,C i . . . 0@4)
+   (let@4,D n . . .
+    (expr
+     (stmts@4)
+     (if@1
+      (elif@3
+       (infix@A <
+        (call~7 int~3 slen@1)128@2)
+       (call@K int~3 slen@1))
+      (else@U 128@6))))
+   (while@,E
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (cmd@4
+      (dot peer~4 add@1)
+      (call@9 char~4
+       (at@4 buf~3 i@1)))
+     (cmd@,1 inc i@4)))
+   (asgn@7,H result~7
+    (call@9 publish~7 nfd@1))))
+ (proc@,3c sockNameInto@5 . . .
+  (params@H
+   (param@1 fd . . cint@4 .)
+   (param@B peerSide . . bool@A .)
+   (param@R sa . .
+    (mut@4 string@4).))int@i . .
+  (stmts@2,1
+   (var@4 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,1 slen . . .
+    (call@C cuint~5 128@1))
+   (let@4,2 rc . . .
+    (if~2,1
+     (elif@3 peerSide
+      (stmts@A
+       (call@C cGetpeername~C fd@1
+        (cast@5 pointer@5
+         (cmd@J addr~5
+          (at@3 buf~3 0@1)))
+        (cmd@c addr~5 slen))))
+     (else@,1
+      (stmts@6
+       (call@C cGetsockname~C fd@1
+        (cast@5 pointer@5
+         (cmd@J addr~5
+          (at@3 buf~3 0@1)))
+        (cmd@c addr~5 slen))))))
+   (call@7,5 capture~7)
+   (asgn@3,6 sa~3 ""@2)
+   (if@,7
+    (elif@3
+     (infix@3 < rc~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,8 i . . . 0@4)
+   (let@4,9 n . . .
+    (expr
+     (stmts@4)
+     (if@1
+      (elif@3
+       (infix@A <
+        (call~7 int~3 slen@1)128@2)
+       (call@K int~3 slen@1))
+      (else@U 128@6))))
+   (while@,A
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (cmd@2
+      (dot sa~2 add@1)
+      (call@9 char~4
+       (at@4 buf~3 i@1)))
+     (cmd@,1 inc i@4)))
+   (asgn@7,D result~7 0@2)))
+ (proc@,3s hostGetsockname@5 x . .
+  (params@L
+   (param@1 h . . int@3 .)
+   (param@9 sa . .
+    (mut@4 string@4).))int@Q . .
+  (stmts@2,1
+   (let@4 fd . . .
+    (call@B realOf~6 h@1))
+   (asgn@3,1 sa~3 ""@2)
+   (if@,2
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (asgn@7,3 result~7
+    (call@E sockNameInto~C fd@1 false@5 sa@C))))
+ (proc@,3y hostGetpeername@5 x . .
+  (params@L
+   (param@1 h . . int@3 .)
+   (param@9 sa . .
+    (mut@4 string@4).))int@Q . .
+  (stmts@2,1
+   (let@4 fd . . .
+    (call@B realOf~6 h@1))
+   (asgn@3,1 sa~3 ""@2)
+   (if@,2
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (asgn@7,3 result~7
+    (call@E sockNameInto~C fd@1 true@5 sa@B))))
+ (proc@,44 hostSetsockopt@5 x . .
+  (params@K
+   (param@1 h . . int@F .)
+   (param@4 level . . int@C .)
+   (param@B opt . . int@5 .)
+   (param@L val . . string@5 .))int@Z . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (call@6 denied~6 "setsockopt\282\29"@1)
+     (stmts@P
+      (ret -1@7))))
+   (let@4,4 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,5
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,6 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,7 i . . . 0@4)
+   (while@,8
+    (infix@I and
+     (infix~A < i~2
+      (dot@5 val~3 len@1))
+     (infix@6 < i~2 128@2))
+    (stmts@2,1
+     (asgn@7
+      (at~4 buf~3 i@1)
+      (call@6 byte~4
+       (call@6 uint8~5
+        (at@4 val~3 i@1))))
+     (cmd@,1 inc i@4)))
+   (let@4,B rc . . .
+    (call@G cSetsockopt~B fd@1
+     (call@9 cint~4 level@1)
+     (call@M cint~4 opt@1)
+     (cast@1,1 pointer@5
+      (cmd@J addr~5
+       (at@3 buf~3 0@1)))
+     (call@Y,1 cuint~5
+      (dot@4 val~3 len@1))))
+   (call@7,D capture~7)
+   (asgn@7,E result~7
+    (call@5 int~3 rc@1))))
+ (proc@,4L hostGetsockopt@5 x . .
+  (params@K
+   (param@1 h . . int@L .)
+   (param@4 level . . int@I .)
+   (param@B opt . . int@B .)
+   (param@G want . . int@6 .)
+   (param@R val . .
+    (mut@5 string@4).))int@j . .
+  (stmts@2,1
+   (comment)
+   (let@4,3 fd . . .
+    (call@B realOf~6 h@1))
+   (asgn@4,4 val~4 ""@2)
+   (if@,5
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,6 buf . . .
+    (call@D default~7
+     (at@6 array~5 128@1 byte@6)))
+   (var@4,7 slen . . .
+    (call@C cuint~5
+     (if@1
+      (elif@3
+       (infix@5 < want~5 128@2)
+       (stmts@C want))
+      (else@K
+       (stmts@6 128)))))
+   (let@4,8 rc . . .
+    (call@G cGetsockopt~B fd@1
+     (call@9 cint~4 level@1)
+     (call@M cint~4 opt@1)
+     (cast@1,1 pointer@5
+      (cmd@J addr~5
+       (at@3 buf~3 0@1)))
+     (cmd@Y,1 addr~5 slen)))
+   (call@7,A capture~7)
+   (if@,B
+    (elif@3
+     (infix@3 < rc~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,C i . . . 0@4)
+   (let@4,D n . . .
+    (expr
+     (stmts@4)
+     (if@1
+      (elif@3
+       (infix@A <
+        (call~7 int~3 slen@1)128@2)
+       (call@K int~3 slen@1))
+      (else@U 128@6))))
+   (while@,E
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (cmd@3
+      (dot val~3 add@1)
+      (call@9 char~4
+       (at@4 buf~3 i@1)))
+     (cmd@,1 inc i@4)))
+   (asgn@7,H result~7 0@2)))
+ (var@4,4f gIoBuf . .
+  (at@D array~5 65536@1 byte@8).)
+ (proc@,4l hostSend@5 x . .
+  (params@E
+   (param@1 h . . int@3 .)
+   (param@9 data . . string@6 .)
+   (param@N flags . . int@7 .))int@a . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (call@6 denied~6 "send\282\29"@1)
+     (stmts@J
+      (ret -1@7))))
+   (let@4,3 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,4
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,5 n . . .
+    (dot@8 data~4 len@1))
+   (if@,6
+    (elif@3
+     (infix@2 > n~2 65536@2)
+     (stmts@B
+      (asgn@2 n~2 65536@2))))
+   (if@,7
+    (elif@3
+     (infix@2 == n~2 0@3)
+     (stmts~1,1
+      (asgn@B gSockErrno~B 0@2)
+      (ret@,1 0@7))))
+   (var@4,A i . . . 0@4)
+   (while@,B
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (asgn@A
+      (at~4 gIoBuf~6 i@1)
+      (call@6 byte~4
+       (call@6 uint8~5
+        (at@5 data~4 i@1))))
+     (cmd@,1 inc i@4)))
+   (let@4,E rc . . .
+    (call@A cSend~5 fd@1
+     (cast@5 pointer@5
+      (cmd@J addr~5
+       (at@6 gIoBuf~6 0@1)))
+     (call@h csize_t~7 n@1)
+     (call@q cint~4 flags@1)))
+   (call@7,F capture~7)
+   (asgn@7,G result~7 rc@2)))
+ (proc@,54 hostRecv@5 x . .
+  (params@E
+   (param@1 h . . int@G .)
+   (param@4 want . . int@D .)
+   (param@A flags . . int@7 .)
+   (param@M data . .
+    (mut@6 string@4).))int@f . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (call@6 denied~6 "recv\282\29"@1)
+     (stmts@J
+      (ret -1@7))))
+   (let@4,5 fd . . .
+    (call@B realOf~6 h@1))
+   (asgn@5,6 data~5 ""@2)
+   (if@,7
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (var@4,8 n . . . want@4)
+   (if@,9
+    (elif@3
+     (infix@2 > n~2 65536@2)
+     (stmts@B
+      (asgn@2 n~2 65536@2))))
+   (if@,A
+    (elif@3
+     (infix@2 <= n~2 0@3)
+     (stmts~1,1
+      (asgn@B gSockErrno~B 0@2)
+      (ret@,1 0@7))))
+   (let@4,D rc . . .
+    (call@A cRecv~5 fd@1
+     (cast@5 pointer@5
+      (cmd@J addr~5
+       (at@6 gIoBuf~6 0@1)))
+     (call@h csize_t~7 n@1)
+     (call@q cint~4 flags@1)))
+   (call@7,E capture~7)
+   (if@,F
+    (elif@3
+     (infix@3 <= rc~3 0@3)
+     (stmts@9
+      (ret rc@7))))
+   (var@4,G i . . . 0@4)
+   (while@,H
+    (infix@8 < i~2 rc@2)
+    (stmts@2,1
+     (cmd@4
+      (dot data~4 add@1)
+      (call@9 char~4
+       (at@7 gIoBuf~6 i@1)))
+     (cmd@,1 inc i@4)))
+   (asgn@7,K result~7 rc@2)))
+ (proc@,5R hostShutdown@5 x . .
+  (params@I
+   (param@1 h . . int@8 .)
+   (param@4 how . . int@5 .))int@F . .
+  (stmts@2,1
+   (let@4 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,1
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (let@4,2 rc . . .
+    (call@E cShutdown~9 fd@1
+     (call@9 cint~4 how@1)))
+   (call@7,3 capture~7)
+   (asgn@7,4 result~7
+    (call@5 int~3 rc@1))))
+ (proc@,5Y hostSockFcntl@5 x . .
+  (params@J
+   (param@1 h . . int@8 .)
+   (param@4 cmd . . int@5 .)
+   (param@E arg . . int@5 .)
+   (param@O hasArg . . bool@8 .))int@d . .
+  (stmts@2,1
+   (comment)
+   (let@4,4 fd . . .
+    (call@B realOf~6 h@1))
+   (if@,5
+    (elif@3
+     (infix@3 < fd~3
+      (dot@3 0~1 cint@1))
+     (stmts@D
+      (ret -1@7))))
+   (let@4,6 rc . . .
+    (expr
+     (stmts@5)
+     (if@1
+      (elif@3 hasArg
+       (call@F cFcntl3~7 fd@1
+        (call@9 cint~4 cmd@1)
+        (call@K cint~4 arg@1)))
+      (else@j
+       (call@D cFcntl2~7 fd@1
+        (call@9 cint~4 cmd@1))))))
+   (call@7,7 capture~7)
+   (asgn@7,8 result~7
+    (call@5 int~3 rc@1))))
+ (proc@,5j hostPoll@5 x . .
+  (params@E
+   (param@1 handles . .
+    (at@C seq~3 int@1).)
+   (param@K events . .
+    (at@B seq~3 int@1).)
+   (param@c revents . .
+    (mut@9
+     (at@7 seq~3 int@1)).)
+   (param@1,1 timeout . . int@9 .))int@G,1 . .
+  (stmts@2,2
+   (comment)
+   (asgn@8,4 revents~8
+    (prefix@2 \40
+     (bracket@1)))
+   (let@4,5 n . . .
+    (dot@B handles~7 len@1))
+   (var@4,6 i . . . 0@4)
+   (while@,7
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (cmd@7
+      (dot revents~7 add@1)0@5)
+     (cmd@,1 inc i@4)))
+   (if@,A
+    (elif@3
+     (infix@2 == n~2 0@3)
+     (stmts@8
+      (ret 0@7))))
+   (if@,B
+    (elif@3
+     (infix@2 > n~2 256@2)
+     (stmts~1,1
+      (asgn@B gSockErrno~B 22@2)
+      (ret@,1 -1@7))))
+   (var@4,E pfds . . .
+    (call@E default~7
+     (at@6 array~5 256@1 PollFdC@6)))
+   (asgn@2,F i~2 0@2)
+   (var@4,G live . . . 0@7)
+   (while@,H
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (let@4 fd . . .
+      (call@B realOf~6
+       (at@8 handles~7 i@1)))
+     (asgn@B,1
+      (dot~4
+       (at~3 pfds~4 i@1)fd@1)fd@2)
+     (asgn@F,2
+      (dot~8
+       (at~3 pfds~4 i@1)events@1)
+      (call@8 cshort~6
+       (if@1
+        (elif@3
+         (infix@2 < i~2
+          (dot@8 events~6 len@1))
+         (stmts@G
+          (at@6 events~6 i@1)))
+        (else@T
+         (stmts@6 0)))))
+     (asgn@G,3
+      (dot~9
+       (at~3 pfds~4 i@1)revents@1)
+      (dot@3 0~1 cshort@1))
+     (if@,4
+      (elif@3
+       (infix@3 >= fd~3
+        (dot@4 0~1 cint@1))
+       (stmts@E
+        (cmd inc live@4))))
+     (cmd@,5 inc i@4)))
+   (if@,O
+    (elif@3
+     (infix@5 == live~5 0@3)
+     (stmts~1,1
+      (asgn@2 i~2 0@2)
+      (while@,1
+       (infix@8 < i~2 n@2)
+       (stmts@2,1
+        (asgn@B
+         (at~4 revents~7 i@1)32@2)
+        (cmd@,1 inc i@4)))
+      (ret@,4 n@7))))
+   (let@4,U rc . . .
+    (call@A cPoll~5
+     (cast@1 pointer@5
+      (cmd@J addr~5
+       (at@4 pfds~4 0@1)))
+     (call@a culong~6 n@1)
+     (call@j cint~4 timeout@1)))
+   (call@7,V capture~7)
+   (asgn@2,W i~2 0@2)
+   (while@,X
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (asgn@B
+      (at~4 revents~7 i@1)
+      (if~9,1
+       (elif@3
+        (infix@B <
+         (dot~4
+          (at~3 pfds~4 i@1)fd@1)
+         (dot@3 0~1 cint@1))
+        (stmts@L 32))
+       (else@,1
+        (stmts@6
+         (call@3 int~3
+          (dot@8
+           (at~3 pfds~4 i@1)revents@1))))))
+     (cmd@,3 inc i@4)))
+   (asgn@7,c result~7
+    (call@5 int~3 rc@1))))
+ (proc@,6P hostHtons@5 x . .
+  (params@F
+   (param@1 x . . int@3 .))int@A . .
+  (stmts@V
+   (call@3 int~3
+    (call@7 uint16~6
+     (call@7 cHtons~6
+      (call@8 cushort~7
+       (call@7 uint16~6 x@1)))))))
+ (proc@,6Q hostHtonl@5 x . .
+  (params@F
+   (param@1 x . . int@3 .))int@A . .
+  (stmts@V
+   (call@3 int~3
+    (call@7 uint32~6
+     (call@7 cHtonl~6
+      (call@7 uint32~6 x@1))))))
+ (proc@,6R hostNtohs@5 x . .
+  (params@F
+   (param@1 x . . int@3 .))int@A . .
+  (stmts@V
+   (call@3 int~3
+    (call@7 uint16~6
+     (call@7 cNtohs~6
+      (call@8 cushort~7
+       (call@7 uint16~6 x@1)))))))
+ (proc@,6S hostNtohl@5 x . .
+  (params@F
+   (param@1 x . . int@3 .))int@A . .
+  (stmts@V
+   (call@3 int~3
+    (call@7 uint32~6
+     (call@7 cNtohl~6
+      (call@7 uint32~6 x@1)))))))

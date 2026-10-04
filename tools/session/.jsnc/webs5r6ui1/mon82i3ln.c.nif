@@ -1,0 +1,83 @@
+(.nif27)
+(.indexat 2259             )
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/monotimes.nim
+ (type@C,W :MonoTime.0.~A .
+  (object@2 .
+   (fld~A,1 :ticks.0 .
+    (i@7 64))))
+ (proc@,1H :getMonoTime.0.@5
+  (params@H)MonoTime.0.@4
+  (pragmas
+   (smry callsUnknown))
+  (stmts@2,1
+   (var :result.0 . MonoTime.0.@2,~1 .)
+   (stmts@2,J
+    (var@4 :ts.0 . Timespec.0.pososrh1q1@4
+     (oconstr@M Timespec.0.pososrh1q1~I
+      (kv tv_sec.0
+       (suf@l,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 0 "i32"))
+      (kv tv_nsec.0
+       (suf@l,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 0 "i32"))))
+    (var@4,1 :monotonic.0 .
+     (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+      (importc "int"))
+     (suf@V,AU,../../../../../../home/savant/nimony/lib/std/posix/posix_other_consts.nim 1 "i32"))
+    (var :`x.1 .
+     (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+      (importc "int"))
+     (call@L,2 clock_gettime.0.pososrh1q1~D monotonic.0@1
+      (addr@C ts.0)))
+    (asgn@7,3 result.0~7
+     (oconstr@A MonoTime.0.~H,~N
+      (kv@6 ticks.0~5
+       (add@Y
+        (i 64)
+        (mul~G
+         (i 64)
+         (conv~7
+          (i@1 64)
+          (dot~7 ts.0~2 tv_sec.0 0))
+         (conv@2
+          (i@G,x,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim 64)1000000000))
+        (conv~j,1
+         (i@N,~1 64)
+         (dot~8 ts.0~2 tv_nsec.0 0)))))))
+   (ret~2,~1 result.0)))
+ (proc@,1p :ticks.0.@5
+  (params@B
+   (param@1 :t.0 . MonoTime.0.@3))
+  (i@F 64)
+  (pragmas
+   (smry
+    (param 0 0 reads)result 0))
+  (stmts@2,1
+   (var :result.1 .
+    (i@9,~1J 64).)
+   (asgn@1,2 result.1
+    (dot t.0~1 ticks.0 0))
+   (ret~2,~1 result.1)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.pososrh1q1)
+   (var :`x.0 . string.0.sysvq0asl
+    (oconstr@A,3N,../../../../../../home/savant/nimony/lib/std/system.nim string.0.sysvq0asl
+     (kv bytes.0 1852271102u)
+     (kv more.0
+      (addr strlit.0.I8031254106179394417.dir38pj6l)))))))(.index@,A,../../../../../../home/savant/nimony/lib/std/monotimes.nim
+ (h MonoTime.0. 106)
+ (x getMonoTime.0. 81)
+ (x ticks.0. 1326)
+ (h `iniGuard.0. 259)
+ (x `ini.0. 34))

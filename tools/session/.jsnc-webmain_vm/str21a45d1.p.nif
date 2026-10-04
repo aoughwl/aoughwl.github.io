@@ -1,0 +1,897 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/strtabs.nim
+ (comment)
+ (call@,4 runnableExamples
+  (stmts@2,1
+   (var@4 t . . .
+    (call@I newStringTable~E))
+   (asgn@A,1
+    (at~9 t~1 "name"@1)"John"@2)
+   (asgn@A,2
+    (at~9 t~1 "city"@1)"Monaco"@2)
+   (cmd@,3 doAssert
+    (infix@F ==
+     (dot~5 t~1 len@1)2@3))
+   (cmd@,4 doAssert
+    (cmd@I
+     (dot~8 t~1 hasKey@1)"name"))
+   (cmd@,5 doAssert
+    (infix@G in "name"~7 t@3))))
+ (comment@,C)
+ (call@,D runnableExamples
+  (stmts@2,1
+   (var@4 t . . .
+    (dot@c
+     (tabconstr~Y
+      (kv@7 "name"~6 "John"@2)
+      (kv@N "city"~6 "Monaco"@2))newStringTable@1))))
+ (comment@,G)
+ (call@,J runnableExamples
+  (stmts@2,1
+   (var@4 x . . .
+    (call@I newStringTable~E modeStyleInsensitive@1))
+   (asgn@G,1
+    (at~F x~1 "first_name"@1)"John"@2)
+   (asgn@E,2
+    (at~D x~1 "LastName"@1)"Doe"@2)
+   (cmd@,4 doAssert
+    (infix@O ==
+     (at~E x~1 "firstName"@1)"John"@3))
+   (cmd@,5 doAssert
+    (infix@O ==
+     (at~E x~1 "last_name"@1)"Doe"@3))))
+ (comment@,R)
+ (call@,U runnableExamples
+  (stmts@2,1
+   (var@4 t . . .
+    (dot@c
+     (tabconstr~Y
+      (kv@7 "name"~6 "John"@2)
+      (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+   (cmd@,1 doAssert
+    (infix@e ==
+     (infix~4 % "$\7Bname\7D lives in $\7Bcity\7D"~R t@2)"John lives in Monaco"@3))))
+ (comment@,Y)
+ (import@,h
+  (infix@5,1 / std~3
+   (bracket@1 hashes@1 strutils@9)))
+ (import@,k
+  (infix@A / std~3 assertions@1))
+ (import@,o
+  (infix@A / std~3 envvars@1))
+ (type@J,s StringTableMode~H x . .
+  (enum@2 .
+   (efld~H,1 modeCaseSensitive . . . .)
+   (efld~H,2 modeCaseInsensitive . . . .)
+   (efld~H,3 modeStyleInsensitive . . . .)))
+ (type@F,w KeyValuePair~D . . .
+  (tuple@2
+   (kv@8 key string@A)
+   (kv@D val string@5)
+   (kv@Q hasValue bool@A)))
+ (type@I,x KeyValuePairSeq~G . . .
+  (at@5 seq~3 KeyValuePair@1))
+ (type@I,y StringTableObj~G x . .
+  (object@2 RootObj@A
+   (fld~G,1 counter . . int@9 .)
+   (fld~G,2 data . . KeyValuePairSeq@6 .)
+   (fld~G,3 mode . . StringTableMode@6 .)))
+ (type@I,13 StringTableRef~G x . .
+  (ref@2 StringTableObj@4))
+ (type@E,15 FormatFlag~C x . .
+  (enum@2 .
+   (efld~C,1 useEnvironment . . . .)
+   (efld~C,4 useEmpty . . . .)
+   (efld~C,7 useKey . . . .)))
+ (const@2,1G growthFactor . . . 2@F)
+ (const@2,1H startSize . . . 64@C)
+ (proc@,1J mode@5 x . .
+  (params@A
+   (param@1 t . . StringTableRef@3 .))StringTableMode@L
+  (pragmas@l inline@2).
+  (stmts@y
+   (dot@1 t~1 mode@1)))
+ (iterator@,1L pairs@9 x . .
+  (params@F
+   (param@1 t . . StringTableRef@3 .))
+  (tuple@L
+   (kv@R key string@C)
+   (kv@W value string@7)). .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (infix@6 \2E\2E 0~1
+     (call@6 high~4
+      (dot@2 t~1 data@1)))
+    (unpackflat
+     (let h . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@9
+        (at~3
+         (dot~5 t~1 data@1)h@1)hasValue@1)
+       (stmts~1,1
+        (yld
+         (tup@6
+          (dot@A
+           (at~3
+            (dot~5 t~1 data@1)h@1)key@1)
+          (dot@P
+           (at~3
+            (dot~5 t~1 data@1)h@1)val@1))))))))))
+ (iterator@,1R keys@9 x . .
+  (params@E
+   (param@1 t . . StringTableRef@3 .))string@L . .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (infix@6 \2E\2E 0~1
+     (call@6 high~4
+      (dot@2 t~1 data@1)))
+    (unpackflat
+     (let h . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@9
+        (at~3
+         (dot~5 t~1 data@1)h@1)hasValue@1)
+       (stmts~1,1
+        (yld
+         (dot@F
+          (at~3
+           (dot~5 t~1 data@1)h@1)key@1)))))))))
+ (iterator@,1X values@9 x . .
+  (params@G
+   (param@1 t . . StringTableRef@3 .))string@L . .
+  (stmts@2,1
+   (comment)
+   (for@4,1
+    (infix@6 \2E\2E 0~1
+     (call@6 high~4
+      (dot@2 t~1 data@1)))
+    (unpackflat
+     (let h . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@9
+        (at~3
+         (dot~5 t~1 data@1)h@1)hasValue@1)
+       (stmts~1,1
+        (yld
+         (dot@F
+          (at~3
+           (dot~5 t~1 data@1)h@1)val@1)))))))))
+ (proc@,1e myhash@5 . . .
+  (params@B
+   (param@1 mode . . StringTableMode@6 .)
+   (param@O key . . string@5 .))Hash@c . .
+  (stmts@2,1
+   (case mode@5
+    (of@,1
+     (ranges modeCaseSensitive@3)
+     (stmts@M
+      (asgn@7 result~7
+       (call@D
+        (dot~5 hashes~6 hash@1)key@1))))
+    (of@,2
+     (ranges modeCaseInsensitive@3)
+     (stmts@O
+      (asgn@7 result~7
+       (call@N
+        (dot~F hashes~6 hashIgnoreCase@1)key@1))))
+    (of@,3
+     (ranges modeStyleInsensitive@3)
+     (stmts@P
+      (asgn@7 result~7
+       (call@O
+        (dot~G hashes~6 hashIgnoreStyle@1)key@1)))))))
+ (proc@,1k myhash@5 . . .
+  (params@B
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .))Hash@Y . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@8 myhash~6
+     (dot@2 t~1 mode@1)key@9))))
+ (proc@,1n myCmp@5 . . .
+  (params@A
+   (param@1 t . . StringTableRef@3 .)
+   (param@K a . . string@6 .)
+   (param@N b . . string@3 .))bool@Z . .
+  (stmts@2,1
+   (case
+    (dot@6 t~1 mode@1)
+    (of@,1
+     (ranges modeCaseSensitive@3)
+     (stmts@M
+      (asgn@7 result~7
+       (infix@C ==
+        (call~7 cmp~3 a@1 b@4)0@3))))
+    (of@,2
+     (ranges modeCaseInsensitive@3)
+     (stmts@O
+      (asgn@7 result~7
+       (infix@M ==
+        (call~7 cmpIgnoreCase~D a@1 b@4)0@3))))
+    (of@,3
+     (ranges modeStyleInsensitive@3)
+     (stmts@P
+      (asgn@7 result~7
+       (infix@N ==
+        (call~7 cmpIgnoreStyle~E a@1 b@4)0@3)))))))
+ (proc@,1t mustRehash@5 . . .
+  (params@F
+   (param@1 length . . int@H .)
+   (param@9 counter . . int@9 .))bool@O . .
+  (stmts@2,1
+   (call@6 assert~6
+    (infix@8 > length~7 counter@2))
+   (asgn@7,1 result~7
+    (infix@T or
+     (par~R
+      (infix@C <
+       (infix~4 * length~7 2@2)
+       (infix@A * counter~8 3@2)))
+     (par@3
+      (infix@I <
+       (infix~A \2D length~7 counter@2)4@2))))))
+ (proc@,1x nextTry@5 . . .
+  (params@C
+   (param@1 h . . Hash@C .)
+   (param@4 maxHash . . Hash@9 .))Hash@K
+  (pragmas@b inline@2).
+  (stmts@2,1
+   (asgn@7 result~7
+    (infix@A and
+     (par~8
+      (infix@3 \2B h~2 1@2))maxHash@4))))
+ (proc@,20 rawGet@5 . . .
+  (params@B
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .))
+  (tup@Y bool@1 Hash@7). .
+  (stmts@2,1
+   (var@4 h . . Hash@3
+    (infix@P and
+     (call~9 myhash~6 t@1 key@4)
+     (call@8 Hash~4
+      (call@5 high~4
+       (dot@2 t~1 data@1)))))
+   (while@,1
+    (dot@F
+     (at~3
+      (dot~5 t~1 data@1)h@1)hasValue@1)
+    (stmts@2,1
+     (if
+      (elif@3
+       (call@5 myCmp~5 t@1
+        (dot@D
+         (at~3
+          (dot~5 t~1 data@1)h@1)key@1)key@J)
+       (stmts~1,1
+        (ret
+         (tup@7 true@1 h@7)))))
+     (asgn@2,2 h~2
+      (call@9 nextTry~7 h@1
+       (call@8 high~4
+        (dot@2 t~1 data@1))))))
+   (asgn@7,5 result~7
+    (tup@2 false@1
+     (call@C Hash~4 0@1)))))
+ (template@,28 get@9 . . .
+  (params@C
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .)).
+  (pragmas@j untyped@2).
+  (stmts@2,1
+   (unpackdecl@4
+    (call@P rawGet~6 t@1 key@4)
+    (unpacktup
+     (var hasHash@1 . . ..)
+     (var index@A . . ..)))
+   (if@,1
+    (elif@3 hasHash
+     (stmts@9
+      (asgn@7 result~7
+       (dot@F
+        (at~7
+         (dot~5 t~1 data@1)index@1)val@1))))
+    (else@,1
+     (stmts@2,1
+      (raise KeyError@6))))))
+ (proc@,2F len@5 x . .
+  (params@9
+   (param@1 t . . StringTableRef@3 .))int@L . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,1 result~7
+    (dot@3 t~1 counter@1))))
+ (proc@,2J
+  (quoted@5 \5B\5D@1) x . .
+  (params@A
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .))
+  (mut@Y string@4)
+  (pragmas@t raises@2).
+  (stmts@2,1
+   (comment)
+   (call@,C runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (cmd@,1 doAssert
+      (infix@J ==
+       (at~9 t~1 "name"@1)"John"@3))
+     (call@E,2 doAssertRaises~E KeyError@1
+      (stmts~C,1
+       (cmd echo
+        (at@6 t~1 "occupation"@1))))))
+   (call@3,H get~3 t@1 key@4)))
+ (proc@,2d getOrDefault@5 x . .
+  (params@I
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .)
+   (param~E,1 default . . string@9 ""@I))string@9,1 . .
+  (stmts@2,2
+   (comment)
+   (call@,B runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (cmd@,1 doAssert
+      (infix@W ==
+       (call~9
+        (dot~D t~1 getOrDefault@1)"name"@1)"John"@3))
+     (cmd@,2 doAssert
+      (infix@c ==
+       (call~F
+        (dot~D t~1 getOrDefault@1)"occupation"@1)""@3))
+     (cmd@,3 doAssert
+      (infix@n ==
+       (call~Q
+        (dot~D t~1 getOrDefault@1)"occupation"@1 "teacher"@F)"teacher"@3))
+     (cmd@,4 doAssert
+      (infix@e ==
+       (call~H
+        (dot~D t~1 getOrDefault@1)"name"@1 "Paul"@9)"John"@3))))
+   (unpackdecl@4,I
+    (call@P rawGet~6 t@1 key@4)
+    (unpacktup
+     (var hasHash@1 . . ..)
+     (var index@A . . ..)))
+   (if@,J
+    (elif@3 hasHash
+     (stmts@9
+      (asgn@7 result~7
+       (dot@F
+        (at~7
+         (dot~5 t~1 data@1)index@1)val@1))))
+    (else@,1
+     (stmts@6
+      (asgn@7 result~7 default@2))))))
+ (proc@,31 hasKey@5 x . .
+  (params@C
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .))bool@Y . .
+  (stmts@2,1
+   (comment)
+   (call@,5 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (cmd@,1 doAssert
+      (call@H
+       (dot~7 t~1 hasKey@1)"name"@1))
+     (cmd@,2 doAssert
+      (prefix@9 not
+       (call@C
+        (dot~7 t~1 hasKey@1)"occupation"@1)))))
+   (asgn@7,9 result~7
+    (at@G
+     (call~8 rawGet~6 t@1 key@4)0@1))))
+ (proc@,3D contains@5 x . .
+  (params@E
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .))bool@Y . .
+  (stmts@2,1
+   (comment)
+   (call@,2 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (cmd@,1 doAssert
+      (infix@G in "name"~7 t@3))
+     (cmd@,2 doAssert
+      (infix@M notin "occupation"~D t@6))))
+   (ret@,6
+    (call@D hasKey~6 t@1 key@4))))
+ (proc@,3M rawInsert@5 . . .
+  (params@E
+   (param@1 mode . . StringTableMode@6 .)
+   (param@O data . .
+    (mut@6 KeyValuePairSeq@4).)
+   (param@p key . . string@A .)
+   (param@u val . . string@5 .)). . .
+  (stmts@2,1
+   (var@4 h . . Hash@3
+    (infix@S and
+     (call~C myhash~6 mode@1 key@7)
+     (call@8 Hash~4
+      (call@5 high~4 data@1))))
+   (while@,1
+    (dot@D
+     (at~3 data~4 h@1)hasValue@1)
+    (stmts@2,1
+     (asgn@2 h~2
+      (call@9 nextTry~7 h@1
+       (call@8 high~4 data@1)))))
+   (asgn@C,3
+    (dot~5
+     (at~3 data~4 h@1)key@1)key@2)
+   (asgn@C,4
+    (dot~5
+     (at~3 data~4 h@1)val@1)val@2)
+   (asgn@H,5
+    (dot~A
+     (at~3 data~4 h@1)hasValue@1)true@2)))
+ (proc@,3U enlarge@5 . . .
+  (params@C
+   (param@1 t . . StringTableRef@3 .)). . .
+  (stmts@2,1
+   (var@4 n . . KeyValuePairSeq@3
+    (call@f
+     (at~E newSeq~6 KeyValuePair@1)
+     (infix@D *
+      (call~9 len~3
+       (dot@2 t~1 data@1))growthFactor@2)))
+   (for@4,1
+    (infix@6 \2E\2E 0~1
+     (call@6 high~4
+      (dot@2 t~1 data@1)))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (dot@9
+        (at~3
+         (dot~5 t~1 data@1)i@1)hasValue@1)
+       (stmts@K
+        (call@9 rawInsert~9
+         (dot@2 t~1 mode@1)n@9
+         (cmd@H move~5
+          (dot@9
+           (at~3
+            (dot~5 t~1 data@1)i@1)key@1))
+         (cmd@b move~5
+          (dot@9
+           (at~3
+            (dot~5 t~1 data@1)i@1)val@1))))))))
+   (call@4,3 swap~4
+    (dot@2 t~1 data@1)n@9)))
+ (proc@,3a
+  (quoted@5 \5B\5D=@1) x . .
+  (params@B
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@A .)
+   (param@P val . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@,5 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (asgn@G,1
+      (at~F t~1 "occupation"@1)"teacher"@2)
+     (cmd@,2 doAssert
+      (call@H
+       (dot~7 t~1 hasKey@1)"occupation"@1))))
+   (unpackdecl@4,A
+    (call@P rawGet~6 t@1 key@4)
+    (unpacktup
+     (var hasHash@1 . . ..)
+     (var index@A . . ..)))
+   (if@,B
+    (elif@3 hasHash
+     (stmts~1,1
+      (asgn@I
+       (dot~5
+        (at~7
+         (dot~5 t~1 data@1)index@1)val@1)val@2)))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (call@A mustRehash~A
+         (call@4 len~3
+          (dot@2 t~1 data@1))
+         (dot@F t~1 counter@1))
+        (stmts@a
+         (call@7 enlarge~7 t@1))))
+      (call@9,1 rawInsert~9
+       (dot@2 t~1 mode@1)
+       (dot@A t~1 data@1)key@H val@M)
+      (call@3,2 inc~3
+       (dot@2 t~1 counter@1)))))))
+ (proc@,3t newStringTable@5 x . .
+  (params@K
+   (param@1 mode . . StringTableMode@6 .))StringTableRef@P
+  (pragmas@y noSideEffect@2).
+  (stmts@2,1
+   (comment)
+   (asgn@7,5 result~7
+    (oconstr@G StringTableRef~E
+     (kv@5 mode~4 mode@2)
+     (kv@K counter~7 0@2)
+     (kv@T data~4
+      (call@M
+       (at~E newSeq~6 KeyValuePair@1)startSize@1))))))
+ (proc@,4W raiseFormatException@5 . . .
+  (params@P
+   (param@1 s . . string@3 .)).
+  (pragmas@b raises@2).
+  (stmts@2,1
+   (raise ValueError@6)))
+ (proc@,4Z getValue@5 . . .
+  (params@D
+   (param@1 t . . StringTableRef@3 .)
+   (param@K flags . .
+    (at@A set~3 FormatFlag@1).)
+   (param@i key . . string@5 .))string@w
+  (pragmas@1G raises@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (call@6 hasKey~6 t@1 key@4)
+     (stmts@G
+      (ret
+       (call@L
+        (dot~D t~1 getOrDefault@1)key@1)))))
+   (when@,1
+    (elif@5
+     (infix@Y or
+      (infix~M or
+       (call~5 defined~7 js@1)
+       (call@A defined~7 nimscript@1))
+      (call@A defined~7 Standalone@1))
+     (stmts~3,1
+      (asgn@7 result~7 ""@2)))
+    (else@,2
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@F in useEnvironment~F flags@3)
+        (stmts@P
+         (asgn@7 result~7
+          (call@8 getEnv~6 key@1))))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7 ""@2)))))))
+   (if@,6
+    (elif@3
+     (infix@B ==
+      (dot~5 result~6 len@1)0@3)
+     (stmts~1,1
+      (if
+       (elif@3
+        (infix@7 in useKey~7 flags@3)
+        (stmts@H
+         (asgn@7 result~7
+          (infix@6 & '$'~4 key@2))))
+       (elif@5,1
+        (infix@9 notin useEmpty~9 flags@6)
+        (stmts@M
+         (call@K raiseFormatException~K key@1)))))))))
+ (proc@,4k clear@5 x . .
+  (params@B
+   (param@1 s . . StringTableRef@3 .)
+   (param@K mode . . StringTableMode@6 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@,4 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (call@5,1 clear~5 t@1 modeCaseSensitive@4)
+     (cmd@,2 doAssert
+      (infix@G ==
+       (call~4 len~3 t@1)0@3))
+     (cmd@,3 doAssert
+      (infix@G notin "name"~7 t@6))
+     (cmd@,4 doAssert
+      (infix@G notin "city"~7 t@6))))
+   (asgn@7,A
+    (dot~6 s~1 mode@1)mode@2)
+   (asgn@A,B
+    (dot~9 s~1 counter@1)0@2)
+   (call@D,C
+    (dot~7
+     (dot~5 s~1 data@1)shrink@1)startSize@1)
+   (for@4,D
+    (infix@6 \2E\2E< 0~1
+     (dot@9
+      (dot~5 s~1 data@1)len@1))
+    (unpackflat
+     (let i . . ..))
+    (stmts~2,1
+     (asgn@J
+      (dot~A
+       (at~3
+        (dot~5 s~1 data@1)i@1)hasValue@1)false@2)))))
+ (proc@,51 clear@5 x . .
+  (params@B
+   (param@1 s . . StringTableRef@3 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@7,1
+    (dot~6 s~1 clear@1)
+    (dot@2 s~1 mode@1))))
+ (proc@,55 del@5 x . .
+  (params@9
+   (param@1 t . . StringTableRef@3 .)
+   (param@K key . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (call@,7 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (call@5,1
+      (dot~4 t~1 del@1)"name"@1)
+     (cmd@,2 doAssert
+      (infix@G ==
+       (call~4 len~3 t@1)1@3))
+     (cmd@,3 doAssert
+      (infix@G notin "name"~7 t@6))
+     (cmd@,4 doAssert
+      (infix@G in "city"~7 t@3))))
+   (unpackdecl@4,F
+    (call@L rawGet~6 t@1 key@4)
+    (unpacktup
+     (var hasHash@1 . . ..)
+     (var i@A . . ..)))
+   (let@4,G msk . . .
+    (cmd@B Hash~5
+     (call@4 high~4
+      (dot@2 t~1 data@1))))
+   (if@,H
+    (elif@3 hasHash
+     (stmts~1,1
+      (call@3 dec~3
+       (dot@2 t~1 counter@1))
+      (block@,1 outer@6
+       (stmts@2,1
+        (while true@6
+         (stmts@2,1
+          (var@4 j . . . i@4)
+          (var@4,1 r . . . j@4)
+          (asgn@J,2
+           (dot~A
+            (at~3
+             (dot~5 t~1 data@1)i@1)hasValue@1)false@2)
+          (asgn@E,3
+           (dot~5
+            (at~3
+             (dot~5 t~1 data@1)i@1)key@1)""@2)
+          (asgn@E,4
+           (dot~5
+            (at~3
+             (dot~5 t~1 data@1)i@1)val@1)""@2)
+          (while@,5 true@6
+           (stmts@2,1
+            (asgn@2 i~2
+             (infix@A and
+              (par~8
+               (infix@3 \2B i~2 1@2))msk@4))
+            (if@,1
+             (elif@3
+              (prefix not
+               (dot@D
+                (at~3
+                 (dot~5 t~1 data@1)i@1)hasValue@1))
+              (stmts~1,1
+               (break outer@6))))
+            (asgn@2,3 r~2
+             (infix@Q and
+              (call~G
+               (dot~7 t~1 myhash@1)
+               (dot@A
+                (at~3
+                 (dot~5 t~1 data@1)i@1)key@1))msk@4))
+            (if@,4
+             (elif@3
+              (prefix not
+               (par@4
+                (infix@f or
+                 (infix~L or
+                  (par~J
+                   (infix@8 and
+                    (infix~5 >= i~2 r@3)
+                    (infix@6 > r~2 j@2)))
+                  (par@3
+                   (infix@7 and
+                    (infix~4 > r~2 j@2)
+                    (infix@6 > j~2 i@2))))
+                 (par@3
+                  (infix@7 and
+                   (infix~4 > j~2 i@2)
+                   (infix@6 >= i~2 r@3))))))
+              (stmts~1,1
+               (break .))))))
+          (when@,C
+           (elif@5
+            (call@7 defined~7 js@1)
+            (stmts~3,1
+             (asgn@A
+              (at~4
+               (dot~5 t~1 data@1)j@1)
+              (at@8
+               (dot~5 t~1 data@1)i@1))))
+           (else@,2
+            (stmts@2,1
+             (asgn@A
+              (at~4
+               (dot~5 t~1 data@1)j@1)
+              (cmd@7 move~5
+               (at@6
+                (dot~5 t~1 data@1)i@1)))))))))))))))
+ (proc@,5k
+  (quoted@5 $@1) x . .
+  (params@9
+   (param@1 t . . StringTableRef@3 .))string@L . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@6 ==
+      (dot~5 t~1 len@1)0@3)
+     (stmts~1,1
+      (asgn@7 result~7 "\7B\3A\7D"@2)))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7 "\7B"@2)
+      (for@4,1
+       (call@H pairs~5 t@1)
+       (unpackflat
+        (let key . . ..)
+        (let val@5 . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (infix@B >
+           (dot~5 result~6 len@1)1@2)
+          (stmts@G
+           (call@A
+            (dot~4 result~6 add@1)", "@1))))
+        (call@A,1
+         (dot~4 result~6 add@1)key@1)
+        (call@A,2
+         (dot~4 result~6 add@1)"\3A "@1)
+        (call@A,3
+         (dot~4 result~6 add@1)val@1)))
+      (call@A,6
+       (dot~4 result~6 add@1)"\7D"@1))))))
+ (proc@,5y
+  (quoted@5 %@1) x . .
+  (params@9
+   (param@1 f . . string@3 .)
+   (param@C t . . StringTableRef@3 .)
+   (param@V flags . .
+    (at@A set~3 FormatFlag@1)
+    (curly@P)))string@z
+  (pragmas@1F raises@2).
+  (stmts@2,1
+   (comment)
+   (call@,1 runnableExamples
+    (stmts@2,1
+     (var@4 t . . .
+      (dot@c
+       (tabconstr~Y
+        (kv@7 "name"~6 "John"@2)
+        (kv@N "city"~6 "Monaco"@2))newStringTable@1))
+     (cmd@,1 doAssert
+      (infix@e ==
+       (infix~4 % "$\7Bname\7D lives in $\7Bcity\7D"~R t@2)"John lives in Monaco"@3))))
+   (const@2,6 PatternChars . . .
+    (curly@F
+     (infix@4 \2E\2E 'a'~3 'z'@2)
+     (infix@E \2E\2E 'A'~3 'Z'@2)
+     (infix@O \2E\2E '0'~3 '9'@2)'_'@V
+     (infix@g \2E\2E '€'~6 'ÿ'@2)))
+   (asgn@7,7 result~7 ""@2)
+   (var@4,8 i . . . 0@4)
+   (while@,9
+    (infix@8 < i~2
+     (call@5 len~3 f@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 ==
+        (at~4 f~1 i@1)'$'@3)
+       (stmts~1,1
+        (case
+         (at@6 f~1
+          (infix@2 \2B i~1 1@1))
+         (of@,1
+          (ranges '$'@3)
+          (stmts@2,1
+           (call@3 add~3 result@1 '$'@9)
+           (call@3,1 inc~3 i@1 2@4)))
+         (of@,4
+          (ranges '\7B'@3)
+          (stmts@2,1
+           (var@4 j . . .
+            (infix@6 \2B i~2 1@2))
+           (while@,1
+            (infix@G and
+             (infix~8 < j~2
+              (dot@3 f~1 len@1))
+             (infix@9 !=
+              (at~4 f~1 j@1)'\7D'@3))
+            (stmts@X
+             (call@3 inc~3 j@1)))
+           (call@3,2 add~3 result@1
+            (call@H getValue~8 t@1 flags@4
+             (call@H substr~6 f@1
+              (infix@5 \2B i~1 2@1)
+              (infix@A \2D j~1 1@1))))
+           (asgn@2,3 i~2
+            (infix@4 \2B j~2 1@2))))
+         (of@,9
+          (ranges
+           (infix@6 \2E\2E 'a'~3 'z'@2)
+           (infix@G \2E\2E 'A'~3 'Z'@2)
+           (infix@T \2E\2E '€'~6 'ÿ'@2)'_'@d)
+          (stmts@2,1
+           (var@4 j . . .
+            (infix@6 \2B i~2 1@2))
+           (while@,1
+            (infix@G and
+             (infix~8 < j~2
+              (dot@3 f~1 len@1))
+             (infix@9 in
+              (at~4 f~1 j@1)PatternChars@3))
+            (stmts@g
+             (call@3 inc~3 j@1)))
+           (call@3,2 add~3 result@1
+            (call@H getValue~8 t@1 flags@4
+             (call@H substr~6 f@1
+              (infix@5 \2B i~1 1@1)
+              (infix@A \2D j~1 1@1))))
+           (asgn@2,3 i~2 j@2)))
+         (else@,E
+          (stmts@2,1
+           (call@3 add~3 result@1
+            (at@A f~1 i@1))
+           (call@3,1 inc~3 i@1))))))
+      (else@,I
+       (stmts@2,1
+        (call@3 add~3 result@1
+         (at@A f~1 i@1))
+        (call@3,1 inc~3 i@1)))))))))

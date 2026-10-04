@@ -1,0 +1,623 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/aowlabi/src/aowlabi/marshal.nim
+ (comment)
+ (import@,7
+  (prefix@7 \2E/ layout@2))
+ (type@G,A MarshalClass~E x . .
+  (enum@2 .
+   (efld~E,1 mcScalar . . . .)
+   (efld~E,2 mcPod . . . .)
+   (efld~E,3 mcString . . . .)
+   (efld~E,4 mcSeq . . . .)
+   (efld~E,5 mcRef . . . .)
+   (efld~E,6 mcClosure . . . .)
+   (efld~E,7 mcUnsafe . . . .)))
+ (proc@,J setIsSized@5 . . .
+  (params@F
+   (param@1 t . . TypeDesc@3 .))bool@F
+  (pragmas@Z inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@N,8 >
+    (call~9 setSizeInBytes~E
+     (dot@2 t~1 elem@1))0@2)))
+ (proc@,U isPodAggregate@5 . . .
+  (params@J
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (case@,2
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A akFloat@I akChar@R akBool@Z akEnum@h)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (of@,3
+     (ranges akSet@3)
+     (stmts@2,3
+      (asgn@7 result~7
+       (call@C setIsSized~A t@1))))
+    (of@,7
+     (ranges akRange@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@I isPodAggregate~E
+         (dot@2 t~1 elem@1))))))
+    (of@,9
+     (ranges akPtr@3)
+     (stmts@2,E
+      (asgn@7 result~7 false@2)))
+    (of@,O
+     (ranges akDistinct@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@I isPodAggregate~E
+         (dot@2 t~1 elem@1))))))
+    (of@,Q
+     (ranges akArray@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@I isPodAggregate~E
+         (dot@2 t~1 elem@1))))))
+    (of@,S
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@J and
+         (infix~C ==
+          (dot~6 t~1 kind@1)akObject@3)
+         (dot@5 t~1 incomplete@1))
+        (stmts~1,3
+         (ret false@7))))
+      (if@,4
+       (elif@3
+        (infix@J and
+         (infix~C ==
+          (dot~6 t~1 kind@1)akObject@3)
+         (dot@5 t~1 union@1))
+        (stmts~1,4
+         (ret false@7))))
+      (if@,9
+       (elif@3
+        (infix@b and
+         (infix~I and
+          (infix~C ==
+           (dot~6 t~1 kind@1)akObject@3)
+          (infix@B !=
+           (dot~6 t~1 base@1)
+           (nil@3)))
+         (prefix@4 not
+          (call@I isPodAggregate~E
+           (dot@2 t~1 base@1))))
+        (stmts~1,1
+         (ret false@7))))
+      (asgn@7,B result~7 true@2)
+      (for@4,C
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (prefix not
+           (call@I isPodAggregate~E f@1))
+          (stmts~1,1
+           (ret false@7))))))))
+    (of@,i
+     (ranges akVariant@3)
+     (stmts@2,3
+      (asgn@7 result~7 false@2)))
+    (of@,m
+     (ranges akString@3 akSeq@D)
+     (stmts@2,1
+      (asgn@7 result~7 false@2)))
+    (of@,o
+     (ranges akUnchecked@3)
+     (stmts@2,3
+      (asgn@7 result~7 false@2)))
+    (of@,s
+     (ranges akRef@3 akClosure@A)
+     (stmts@2,2
+      (asgn@7 result~7 false@2))))))
+ (proc@,1T hasPtrLeaf@5 . . .
+  (params@F
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (case
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akPtr@3)
+     (stmts@A
+      (asgn@7 result~7 true@2)))
+    (of@,2
+     (ranges akDistinct@3 akArray@F akRange@O)
+     (stmts@X
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@E hasPtrLeaf~A
+         (dot@2 t~1 elem@1))))))
+    (of@,3
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@b and
+         (infix~I and
+          (infix~C ==
+           (dot~6 t~1 kind@1)akObject@3)
+          (infix@B !=
+           (dot~6 t~1 base@1)
+           (nil@3)))
+         (call@E hasPtrLeaf~A
+          (dot@2 t~1 base@1)))
+        (stmts@z
+         (ret true@7))))
+      (asgn@7,1 result~7 false@2)
+      (for@4,2
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@A hasPtrLeaf~A f@1)
+          (stmts@F
+           (ret true@7))))))))
+    (else@,8
+     (stmts@6
+      (asgn@7 result~7 false@2))))))
+ (proc@,1e podOrPtrAggregate@5 . . .
+  (params@M
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (case@,1
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A akFloat@I akChar@R akBool@Z akEnum@h akPtr@p)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (of@,3
+     (ranges akSet@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@C setIsSized~A t@1))))
+    (of@,5
+     (ranges akDistinct@3 akArray@F akRange@O)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@L podOrPtrAggregate~H
+         (dot@2 t~1 elem@1))))))
+    (of@,7
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@J and
+         (infix~C ==
+          (dot~6 t~1 kind@1)akObject@3)
+         (par@4
+          (infix@9 or
+           (dot~7 t~1 union@1)
+           (dot@4 t~1 incomplete@1))))
+        (stmts@o
+         (ret false@7))))
+      (if@,1
+       (elif@3
+        (infix@b and
+         (infix~I and
+          (infix~C ==
+           (dot~6 t~1 kind@1)akObject@3)
+          (infix@B !=
+           (dot~6 t~1 base@1)
+           (nil@3)))
+         (prefix@4 not
+          (call@L podOrPtrAggregate~H
+           (dot@2 t~1 base@1))))
+        (stmts~1,1
+         (ret false@7))))
+      (asgn@7,3 result~7 true@2)
+      (for@4,4
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (prefix not
+           (call@L podOrPtrAggregate~H f@1))
+          (stmts@Q
+           (ret false@7))))))))
+    (else@,E
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,1x hasSeqLeaf@5 . . .
+  (params@F
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (case
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akSeq@3)
+     (stmts@A
+      (asgn@7 result~7 true@2)))
+    (of@,2
+     (ranges akDistinct@3 akArray@F akRange@O)
+     (stmts@X
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@E hasSeqLeaf~A
+         (dot@2 t~1 elem@1))))))
+    (of@,3
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@b and
+         (infix~I and
+          (infix~C ==
+           (dot~6 t~1 kind@1)akObject@3)
+          (infix@B !=
+           (dot~6 t~1 base@1)
+           (nil@3)))
+         (call@E hasSeqLeaf~A
+          (dot@2 t~1 base@1)))
+        (stmts@z
+         (ret true@7))))
+      (asgn@7,1 result~7 false@2)
+      (for@4,2
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (call@A hasSeqLeaf~A f@1)
+          (stmts@F
+           (ret true@7))))))))
+    (else@,8
+     (stmts@6
+      (asgn@7 result~7 false@2))))))
+ (proc@,28 podPtrOrSeqAggregate@5 . . .
+  (params@P
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (case@,5
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A akFloat@I akChar@R akBool@Z akEnum@h akPtr@p)
+     (stmts@2,1
+      (asgn@7 result~7 true@2)))
+    (of@,3
+     (ranges akSet@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@C setIsSized~A t@1))))
+    (of@,5
+     (ranges akSeq@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@L podOrPtrAggregate~H
+         (dot@2 t~1 elem@1))))))
+    (of@,7
+     (ranges akDistinct@3 akArray@F akRange@O)
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@G and
+        (infix~7 !=
+         (dot~6 t~1 elem@1)
+         (nil@3))
+        (call@O podPtrOrSeqAggregate~K
+         (dot@2 t~1 elem@1))))))
+    (of@,9
+     (ranges akObject@3 akTuple@D)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@J and
+         (infix~C ==
+          (dot~6 t~1 kind@1)akObject@3)
+         (par@4
+          (infix@9 or
+           (dot~7 t~1 union@1)
+           (dot@4 t~1 incomplete@1))))
+        (stmts@o
+         (ret false@7))))
+      (if@,1
+       (elif@3
+        (infix@b and
+         (infix~I and
+          (infix~C ==
+           (dot~6 t~1 kind@1)akObject@3)
+          (infix@B !=
+           (dot~6 t~1 base@1)
+           (nil@3)))
+         (prefix@4 not
+          (call@O podPtrOrSeqAggregate~K
+           (dot@2 t~1 base@1))))
+        (stmts~1,1
+         (ret false@7))))
+      (asgn@7,3 result~7 true@2)
+      (for@4,4
+       (dot@6 t~1 fields@1)
+       (unpackflat
+        (let f . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (prefix not
+           (call@O podPtrOrSeqAggregate~K f@1))
+          (stmts@T
+           (ret false@7))))))))
+    (else@,G
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,2X isArenaAggregate@5 x . .
+  (params@M
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (infix@Q,B and
+    (infix@e,~1 and
+     (par~14
+      (infix@f or
+       (infix~L or
+        (infix~C ==
+         (dot~6 t~1 kind@1)akObject@3)
+        (infix@A ==
+         (dot~6 t~1 kind@1)akTuple@3))
+       (infix@A ==
+        (dot~6 t~1 kind@1)akDistinct@3)))
+     (call~i,1 podPtrOrSeqAggregate~K t@1))
+    (par@4
+     (infix@F or
+      (call~4 hasPtrLeaf~A t@1)
+      (call@D hasSeqLeaf~A t@1))))))
+ (proc@,2l isArenaPtrAggregate@5 x . .
+  (params@P
+   (param@1 t . . TypeDesc@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (infix@N,7 and
+    (infix@h,~1 and
+     (par~14
+      (infix@f or
+       (infix~L or
+        (infix~C ==
+         (dot~6 t~1 kind@1)akObject@3)
+        (infix@A ==
+         (dot~6 t~1 kind@1)akTuple@3))
+       (infix@A ==
+        (dot~6 t~1 kind@1)akDistinct@3)))
+     (call~l,1 podOrPtrAggregate~H t@1))
+    (call@E hasPtrLeaf~A t@1))))
+ (proc@,2v marshalClass@5 x . .
+  (params@I
+   (param@1 t . . TypeDesc@3 .))MarshalClass@F . .
+  (stmts@2,1
+   (comment)
+   (case@,1
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A akFloat@I akChar@R akBool@Z akEnum@h)
+     (stmts@2,1
+      (asgn@7 result~7 mcScalar@2)))
+    (of@,3
+     (ranges akRange@3)
+     (stmts@2,2
+      (asgn@7 result~7
+       (if@2
+        (elif@3
+         (infix@7 !=
+          (dot~6 t~1 elem@1)
+          (nil@3))
+         (stmts@F
+          (call@C marshalClass~C
+           (dot@2 t~1 elem@1))))
+        (else@d
+         (stmts@6 mcUnsafe))))))
+    (of@,6
+     (ranges akSet@3)
+     (stmts@2,3
+      (asgn@7 result~7
+       (if@2
+        (elif@3
+         (infix@N >
+          (call~9 setSizeInBytes~E
+           (dot@2 t~1 elem@1))0@2)
+         (stmts@S mcPod))
+        (else@b
+         (stmts@6 mcUnsafe))))))
+    (of@,A
+     (ranges akUnchecked@3)
+     (stmts@2,2
+      (asgn@7 result~7 mcUnsafe@2)))
+    (of@,D
+     (ranges akPtr@3)
+     (stmts@2,3
+      (asgn@7 result~7 mcScalar@2)))
+    (of@,H
+     (ranges akRef@3)
+     (stmts@2,2
+      (asgn@7 result~7 mcRef@2)))
+    (of@,K
+     (ranges akClosure@3)
+     (stmts@2,2
+      (asgn@7 result~7 mcClosure@2)))
+    (of@,N
+     (ranges akDistinct@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (if@2
+        (elif@3
+         (infix@7 !=
+          (dot~6 t~1 elem@1)
+          (nil@3))
+         (stmts@F
+          (call@C marshalClass~C
+           (dot@2 t~1 elem@1))))
+        (else@d
+         (stmts@6 mcUnsafe))))))
+    (of@,P
+     (ranges akString@3)
+     (stmts@2,1
+      (asgn@7 result~7 mcString@2)))
+    (of@,R
+     (ranges akSeq@3)
+     (stmts@2,1
+      (asgn@7 result~7 mcSeq@2)))
+    (of@,T
+     (ranges akArray@3 akTuple@C akObject@L)
+     (stmts@2,1
+      (asgn@7 result~7
+       (if@2
+        (elif@3
+         (call@E isPodAggregate~E t@1)
+         (stmts@J mcPod))
+        (else@S
+         (stmts@6 mcUnsafe))))))
+    (of@,V
+     (ranges akVariant@3)
+     (stmts@2,1
+      (asgn@7 result~7 mcUnsafe@2))))))
+ (proc@,3V isByValueSafe@5 x . .
+  (params@J
+   (param@1 c . . MarshalClass@3 .))bool@J
+  (pragmas@h inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@E,1 or
+    (infix~C == c~2 mcScalar@3)
+    (infix@5 == c~2 mcPod@3))))
+ (proc@,3Z needsHeaderSynthesis@5 x . .
+  (params@Q
+   (param@1 c . . MarshalClass@3 .))bool@J
+  (pragmas@o inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@E,1 or
+    (infix~C == c~2 mcString@3)
+    (infix@5 == c~2 mcSeq@3))))
+ (proc@,3d isInterpretFallback@5 x . .
+  (params@P
+   (param@1 c . . MarshalClass@3 .))bool@J
+  (pragmas@n inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@T,1 or
+    (infix~I or
+     (infix~9 == c~2 mcRef@3)
+     (infix@5 == c~2 mcClosure@3))
+    (infix@5 == c~2 mcUnsafe@3))))
+ (type@A,46 JsRepr~8 x . .
+  (enum@2 .
+   (efld~8,1 jsNumber . . . .)
+   (efld~8,2 jsBigInt . . . .)
+   (efld~8,3 jsBoolean . . . .)
+   (efld~8,4 jsCharString . . . .)
+   (efld~8,5 jsString . . . .)
+   (efld~8,6 jsArray . . . .)
+   (efld~8,7 jsObject . . . .)
+   (efld~8,8 jsRefBox . . . .)
+   (efld~8,9 jsSet . . . .)))
+ (proc@,4H jsRepr@5 x . .
+  (params@C
+   (param@1 t . . TypeDesc@3 .)
+   (param@E faithful . . . false@B))JsRepr@X . .
+  (stmts@2,1
+   (comment)
+   (case@,2
+    (dot@6 t~1 kind@1)
+    (of@,1
+     (ranges akInt@3 akUInt@A)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@9 and faithful~9
+         (par@4
+          (infix@D or
+           (infix~5 ==
+            (dot~6 t~1 bits@1)0@3)
+           (infix@A ==
+            (dot~6 t~1 bits@1)64@3))))
+        (stmts@i
+         (asgn@7 result~7 jsBigInt@2)))
+       (else@,1
+        (stmts@6
+         (asgn@7 result~7 jsNumber@2))))))
+    (of@,4
+     (ranges akFloat@3 akEnum@C)
+     (stmts@2,1
+      (asgn@7 result~7 jsNumber@2)))
+    (of@,6
+     (ranges akBool@3)
+     (stmts@2,1
+      (asgn@7 result~7 jsBoolean@2)))
+    (of@,8
+     (ranges akChar@3)
+     (stmts@2,1
+      (asgn@7 result~7 jsCharString@2)))
+    (of@,A
+     (ranges akString@3)
+     (stmts@2,1
+      (asgn@7 result~7 jsString@2)))
+    (of@,C
+     (ranges akSeq@3 akArray@A akTuple@J akUnchecked@S)
+     (stmts@2,1
+      (asgn@7 result~7 jsArray@2)))
+    (of@,E
+     (ranges akObject@3 akVariant@D)
+     (stmts@2,1
+      (asgn@7 result~7 jsObject@2)))
+    (of@,G
+     (ranges akPtr@3 akRef@A akClosure@H)
+     (stmts@2,1
+      (asgn@7 result~7 jsRefBox@2)))
+    (of@,I
+     (ranges akSet@3)
+     (stmts@2,2
+      (asgn@7 result~7 jsSet@2)))
+    (of@,L
+     (ranges akDistinct@3 akRange@F)
+     (stmts@2,1
+      (asgn@7 result~7
+       (if@2
+        (elif@3
+         (infix@7 !=
+          (dot~6 t~1 elem@1)
+          (nil@3))
+         (stmts@F
+          (call@6 jsRepr~6
+           (dot@2 t~1 elem@1)faithful@9)))
+        (else@h
+         (stmts@6 jsNumber))))))))))

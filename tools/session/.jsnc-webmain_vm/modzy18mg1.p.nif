@@ -1,0 +1,211 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/modload.nim
+ (comment)
+ (import@,E nifcursors@7 nifstreams@J programs@V symparser@f)
+ (import@,F vfs@7)
+ (import@,G
+  (infix@A / std~3 os@1))
+ (var@4,1A gModArtifactsOk . .
+  (at@K seq~3 string@1)
+  (prefix@V \40
+   (bracket@1)))
+ (var@4,1G gMissingModule . . . false@H)
+ (var@4,1H gMissingModuleNote . . . ""@L)
+ (proc@,1J indexNameFor@5 . . .
+  (params@H
+   (param@1 nifPath . . string@9 .))string@J . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,5 result~7 ""@2)
+   (const@6,6 SExt . . . ".s.nif"@7)
+   (const@6,7 ScExt . . . ".sc.nif"@8)
+   (if@,8
+    (elif@3
+     (infix@N and
+      (infix~B >
+       (dot~5 nifPath~7 len@1)
+       (dot@6 SExt~4 len@1))
+      (infix@H,1 ==
+       (call~Y substr~6 nifPath@1
+        (infix@M \2D
+         (dot~5 nifPath~7 len@1)
+         (dot@6 SExt~4 len@1)))SExt@3))
+     (stmts~1,2
+      (ret
+       (infix@s &
+        (call~f substr~6 nifPath@1 0@A
+         (infix@a \2D
+          (infix~B \2D
+           (dot~5 nifPath~7 len@1)
+           (dot@6 SExt~4 len@1))1@2))".s.idx.nif"@2)))))
+   (if@,B
+    (elif@3
+     (infix@O and
+      (infix~C >
+       (dot~5 nifPath~7 len@1)
+       (dot@7 ScExt~5 len@1))
+      (infix@H,1 ==
+       (call~Z substr~6 nifPath@1
+        (infix@M \2D
+         (dot~5 nifPath~7 len@1)
+         (dot@7 ScExt~5 len@1)))ScExt@3))
+     (stmts~1,2
+      (ret
+       (infix@t &
+        (call~g substr~6 nifPath@1 0@A
+         (infix@b \2D
+          (infix~C \2D
+           (dot~5 nifPath~7 len@1)
+           (dot@7 ScExt~5 len@1))1@2))".sc.idx.nif"@2)))))))
+ (proc@,1Z moduleArtifactsPresent@5 x . .
+  (params@S
+   (param@1 suffix . . string@8 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (if@,3
+    (elif@3
+     (infix@B ==
+      (dot~5 suffix~6 len@1)0@3)
+     (stmts@H
+      (ret false@7))))
+   (var@4,4 i . . . 0@4)
+   (while@,5
+    (infix@8 < i~2
+     (dot@H gModArtifactsOk~F len@1))
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@J ==
+        (at~4 gModArtifactsOk~F i@1)suffix@3)
+       (stmts@U
+        (ret true@7))))
+     (cmd@,1 inc i@4)))
+   (let@4,8 nif . . .
+    (call@H suffixToNif~B suffix@1))
+   (if@,9
+    (elif@3
+     (prefix not
+      (call@D vfsExists~9 nif@1))
+     (stmts@K
+      (ret false@7))))
+   (let@4,A idx . . .
+    (call@I indexNameFor~C nif@1))
+   (if@,B
+    (elif@3
+     (infix@C and
+      (infix~4 >
+       (dot~5 idx~3 len@1)0@2)
+      (prefix@4 not
+       (call@D vfsExists~9 idx@1)))
+     (stmts@a
+      (ret false@7))))
+   (cmd@F,C
+    (dot gModArtifactsOk~F add@1)suffix@5)
+   (asgn@7,D result~7 true@2)))
+ (proc@,1p moduleMissing@5 x . .
+  (params@J)bool@4
+  (pragmas@S inline@2).
+  (stmts@2,1
+   (comment)gMissingModule@,2))
+ (proc@,1u missingModuleNote@5 x . .
+  (params@N)string@4 . .
+  (stmts@2,1
+   (comment)gMissingModuleNote@,3))
+ (proc@,20 clearMissingModule@5 x . .
+  (params@O). . .
+  (stmts@2,1
+   (asgn@F gMissingModule~F false@2)
+   (asgn@J,1 gMissingModuleNote~J ""@2)))
+ (proc@,24 tryLoadSymSafe@5 x . .
+  (params@K
+   (param@1 s . . SymId@3 .))LoadResult@C . .
+  (stmts@2,1
+   (comment)
+   (if@,8
+    (elif@3
+     (call@F
+      (dot~7
+       (dot~4 prog~4 mem@1)hasKey@1)s@1)
+     (stmts@K
+      (ret
+       (call@H tryLoadSym~A s@1)))))
+   (let@4,9 nifName . . .
+    (at@J
+     (dot~5 pool~4 syms@1)s@1))
+   (let@4,A modname . . .
+    (call@N extractModule~D nifName@1))
+   (if@,B
+    (elif@3
+     (infix@G and
+      (infix~4 >
+       (dot~5 modname~7 len@1)0@2)
+      (prefix@4 not
+       (call@Q moduleArtifactsPresent~M modname@1)))
+     (stmts~1,1
+      (if
+       (elif@3
+        (prefix not gMissingModule@4)
+        (stmts~1,1
+         (asgn@F gMissingModule~F true@2)
+         (asgn@J,1 gMissingModuleNote~J
+          (infix@f,1 &
+           (infix~A &
+            (infix~R &
+             (infix@l,~1 &
+              (infix~S &
+               (infix~A & "module \27"~B modname@2)"\27 has no artifacts at \27"@2)
+              (call~v,1 suffixToNif~B modname@1))"\27 \28needed to resolve \27"@2)nifName@2)"\27\29"@2)))))
+      (ret@,8
+       (oconstr@H LoadResult~A
+        (kv@7 status~6 LacksModuleName@2))))))
+   (asgn@7,L result~7
+    (call@C tryLoadSym~A s@1))))
+ (var@4,2y gRootGen . . . 0@B)
+ (proc@,30 artifactReadable@5 x . .
+  (params@M
+   (param@1 path . . string@6 .))bool@G . .
+  (stmts@2,1
+   (comment)
+   (infix@D,8 and
+    (infix~4 >
+     (dot~5 path~4 len@1)0@2)
+    (call@D vfsExists~9 path@1))))
+ (proc@,3B rootOfArtifact@5 x . .
+  (params@K
+   (param@1 nifPath . . string@9 .))string@J . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7
+    (call@B parentDir~9 nifPath@1))))
+ (proc@,3I progRootGen@5 x . .
+  (params@H)int@4 . .
+  (stmts@2,1
+   (comment)gRootGen@,4))
+ (proc@,3P setProgRoot@5 x . .
+  (params@H
+   (param@1 dir . . string@5 .)). . .
+  (stmts@2,1
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@C and
+      (infix~4 >
+       (dot~5 dir~3 len@1)0@2)
+      (infix@I !=
+       (dot~5
+        (dot~5 prog~4 main@1)dir@1)dir@3))
+     (stmts~1,1
+      (asgn@E
+       (dot~5
+        (dot~5 prog~4 main@1)dir@1)dir@2)
+      (asgn@G,5 gModArtifactsOk~G
+       (prefix@2 \40
+        (bracket@1)))
+      (cmd@,6 inc gRootGen@4))))))
+ (proc@,3b progRoot@5 x . .
+  (params@E)string@4 . .
+  (stmts@2,1
+   (dot@9
+    (dot~5 prog~4 main@1)dir@1))))

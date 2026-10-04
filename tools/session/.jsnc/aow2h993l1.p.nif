@@ -1,0 +1,1183 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,1,../../aowli/src/aowli/aowlimagics.nim
+ (comment)
+ (import@,H values@7)
+ (import@,I xints@7)
+ (import@,J nimony_tags@7)
+ (proc@,Q toXint@5 . . .
+  (params@B
+   (param@1 v . . Value@3 .))xint@C . .
+  (stmts@2,1
+   (comment)
+   (case@,2
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkInt@3 vkUInt@A)
+     (stmts@2,1
+      (asgn@7 result~7
+       (dot@3 v~1 ival@1))))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@C createXint~A
+        (call@6 asInt~5 v@1))))))))
+ (proc@,Z u64bits@5 . . .
+  (params@C
+   (param@1 v . . Value@3 .))uint64@C . .
+  (stmts@2,1
+   (comment)
+   (let@4,5 x . . .
+    (call@A toXint~6 v@1))
+   (var@4,6 err . . . false@6)
+   (asgn@7,7 result~7
+    (call@C asUnsigned~A x@1 err@4))
+   (if@,8
+    (elif@3 err
+     (stmts~1,1
+      (asgn@4 err~4 false@2)
+      (asgn@7,1 result~7
+       (cast@2 uint64@5
+        (call@L asSigned~8 x@1 err@4))))))))
+ (proc@,m toFloat@5 . . .
+  (params@C
+   (param@1 v . . Value@3 .))float64@C . .
+  (stmts@2,1
+   (case
+    (dot@6 v~1 kind@1)
+    (of@,1
+     (ranges vkFloat@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (dot@3 v~1 fval@1))))
+    (of@,3
+     (ranges vkInt@3 vkUInt@A)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@B toFloat64~9
+        (dot@2 v~1 ival@1)))))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@9 float64~7
+        (call@6 asInt~5 v@1))))))))
+ (proc@,y strEq@5 . . .
+  (params@A
+   (param@1 a . . string@6 .)
+   (param@4 b . . string@3 .))bool@G . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@6 !=
+      (dot~5 a~1 len@1)
+      (dot@4 b~1 len@1))
+     (stmts~1,1
+      (asgn@7 result~7 false@2)))
+    (else@,2
+     (stmts@2,1
+      (var@4 i . . . 0@4)
+      (asgn@7,1 result~7 true@2)
+      (while@,2
+       (infix@8 < i~2
+        (dot@3 a~1 len@1))
+       (stmts@2,1
+        (if
+         (elif@3
+          (infix@5 !=
+           (at~4 a~1 i@1)
+           (at@4 b~1 i@1))
+          (stmts~1,1
+           (asgn@7 result~7 false@2)
+           (break@,1 .))))
+        (cmd@,3 inc i@4))))))))
+ (proc@,1A strLt@5 . . .
+  (params@A
+   (param@1 a . . string@6 .)
+   (param@4 b . . string@3 .))bool@G . .
+  (stmts@2,1
+   (var@4 n . . .
+    (dot@5 a~1 len@1))
+   (if@,1
+    (elif@3
+     (infix@6 <
+      (dot~5 b~1 len@1)n@2)
+     (stmts~1,1
+      (asgn@2 n~2
+       (dot@3 b~1 len@1)))))
+   (var@4,3 i . . . 0@4)
+   (asgn@7,4 result~7 false@2)
+   (var@4,5 decided . . . false@A)
+   (while@,6
+    (infix@8 < i~2 n@2)
+    (stmts@2,1
+     (if
+      (elif@3
+       (infix@5 !=
+        (at~4 a~1 i@1)
+        (at@4 b~1 i@1))
+       (stmts~1,1
+        (asgn@7 result~7
+         (infix@7 <
+          (at~4 a~1 i@1)
+          (at@3 b~1 i@1)))
+        (asgn@8,1 decided~8 true@2)
+        (break@,2 .))))
+     (cmd@,4 inc i@4)))
+   (if@,C
+    (elif@3
+     (prefix not decided@4)
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@8 <
+        (dot~5 a~1 len@1)
+        (dot@3 b~1 len@1))))))))
+ (proc@,1T sameRegionTarget@5 . . .
+  (params@L
+   (param@1 x . . FlatRegion@6 .)
+   (param@4 y . . FlatRegion@3 .))bool@K . .
+  (stmts@2,1
+   (comment)
+   (if@,9
+    (elif@3
+     (infix@2 == x~2 y@3)
+     (stmts@8
+      (ret true@7))))
+   (if@,A
+    (elif@3
+     (infix@9 or
+      (infix~7 == x~2
+       (nil@3))
+      (infix@5 == y~2
+       (nil@3)))
+     (stmts@M
+      (ret false@7))))
+   (if@,B
+    (elif@3
+     (infix@7 !=
+      (dot~6 x~1 kind@1)
+      (dot@4 y~1 kind@1))
+     (stmts@I
+      (ret false@7))))
+   (case@,C
+    (dot@6 x~1 kind@1)
+    (of@,1
+     (ranges rkBytes@3)
+     (stmts@C
+      (asgn@7 result~7 false@2)))
+    (of@,2
+     (ranges rkForeign@3)
+     (stmts@2,9
+      (asgn@7 result~7
+       (infix@A ==
+        (dot~7 x~1 haddr@1)
+        (dot@4 y~1 haddr@1)))))
+    (of@,C
+     (ranges rkSeq@3)
+     (stmts@A
+      (asgn@7 result~7
+       (infix@9 ==
+        (dot~6 x~1 sbox@1)
+        (dot@4 y~1 sbox@1)))))
+    (of@,D
+     (ranges rkArr@3)
+     (stmts@A
+      (asgn@7 result~7
+       (infix@9 ==
+        (dot~6 x~1 abox@1)
+        (dot@4 y~1 abox@1)))))
+    (of@,E
+     (ranges rkStr@3)
+     (stmts@A
+      (asgn@7 result~7
+       (infix@A ==
+        (dot~7 x~1 scell@1)
+        (dot@4 y~1 scell@1)))))
+    (of@,F
+     (ranges rkCell@3)
+     (stmts@B
+      (asgn@7 result~7
+       (infix@A ==
+        (dot~7 x~1 ccell@1)
+        (dot@4 y~1 ccell@1)))))
+    (of@,G
+     (ranges rkObj@3)
+     (stmts@A
+      (asgn@7 result~7
+       (infix@9 ==
+        (dot~6 x~1 obox@1)
+        (dot@4 y~1 obox@1))))))))
+ (proc@,1y cstringAddrVsValue@5 . . .
+  (params@N
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (asgn@7,4 result~7 false@2)))
+ (proc@,25 cmpEq@5 . . .
+  (params@A
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .))bool@F . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@f or
+      (par~f
+       (infix@H and
+        (infix~9 ==
+         (dot~6 a~1 kind@1)vkPtr@3)
+        (infix@B ==
+         (dot~6 b~1 kind@1)vkString@3)))
+      (par~f,1
+       (infix@K and
+        (infix~C ==
+         (dot~6 a~1 kind@1)vkString@3)
+        (infix@B ==
+         (dot~6 b~1 kind@1)vkPtr@3))))
+     (stmts~1,A
+      (asgn@7 result~7
+       (call@K cstringAddrVsValue~I a@1 b@4))))
+    (elif@5,B
+     (infix@J and
+      (infix~C ==
+       (dot~6 a~1 kind@1)vkString@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkString@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@7 strEq~5
+        (dot@2 a~1 sval@1)
+        (dot@A b~1 sval@1)))))
+    (elif@5,D
+     (infix@I or
+      (infix~B ==
+       (dot~6 a~1 kind@1)vkFloat@3)
+      (infix@A ==
+       (dot~6 b~1 kind@1)vkFloat@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@D ==
+        (call~4 toFloat~7 a@1)
+        (call@A toFloat~7 b@1)))))
+    (elif@5,F
+     (infix@G or
+      (infix~9 ==
+       (dot~6 a~1 kind@1)vkNil@3)
+      (infix@A ==
+       (dot~6 b~1 kind@1)vkNil@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@I and
+        (infix~9 ==
+         (dot~6 a~1 kind@1)vkNil@3)
+        (infix@B ==
+         (dot~6 b~1 kind@1)vkNil@3)))))
+    (elif@5,H
+     (infix@c and
+      (par~c
+       (infix@H or
+        (infix~9 ==
+         (dot~6 a~1 kind@1)vkInt@3)
+        (infix@A ==
+         (dot~6 a~1 kind@1)vkUInt@3)))
+      (par~c,1
+       (infix@H or
+        (infix~9 ==
+         (dot~6 b~1 kind@1)vkInt@3)
+        (infix@A ==
+         (dot~6 b~1 kind@1)vkUInt@3))))
+     (stmts~3,5
+      (asgn@7 result~7
+       (infix@D ==
+        (call~4 u64bits~7 a@1)
+        (call@A u64bits~7 b@1)))))
+    (elif@5,N
+     (infix@G and
+      (infix~9 ==
+       (dot~6 a~1 kind@1)vkPtr@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkPtr@3))
+     (stmts~3,5
+      (if
+       (elif@3
+        (infix@G or
+         (infix~7 !=
+          (dot~8 a~1 region@1)
+          (nil@3))
+         (infix@C !=
+          (dot~8 b~1 region@1)
+          (nil@3)))
+        (stmts~1,5
+         (asgn@7 result~7
+          (infix@d and
+           (call~L sameRegionTarget~G
+            (dot@2 a~1 region@1)
+            (dot@C b~1 region@1))
+           (infix@B ==
+            (dot~6 a~1 foff@1)
+            (dot@4 b~1 foff@1))))))
+       (elif@5,6
+        (infix@G or
+         (infix~7 !=
+          (dot~8 a~1 arrOwn@1)
+          (nil@3))
+         (infix@C !=
+          (dot~8 b~1 arrOwn@1)
+          (nil@3)))
+        (stmts~3,1
+         (asgn@7 result~7
+          (infix@N and
+           (infix~C ==
+            (dot~8 a~1 arrOwn@1)
+            (dot@4 b~1 arrOwn@1))
+           (infix@B ==
+            (dot~6 a~1 base@1)
+            (dot@4 b~1 base@1))))))
+       (elif@5,8
+        (infix@G or
+         (infix~7 !=
+          (dot~8 a~1 seqOwn@1)
+          (nil@3))
+         (infix@C !=
+          (dot~8 b~1 seqOwn@1)
+          (nil@3)))
+        (stmts~3,1
+         (asgn@7 result~7
+          (infix@N and
+           (infix~C ==
+            (dot~8 a~1 seqOwn@1)
+            (dot@4 b~1 seqOwn@1))
+           (infix@B ==
+            (dot~6 a~1 base@1)
+            (dot@4 b~1 base@1))))))
+       (else@,A
+        (stmts@2,3
+         (asgn@7 result~7
+          (infix@8 ==
+           (dot~5 a~1 loc@1)
+           (dot@4 b~1 loc@1))))))))
+    (elif@5,g
+     (infix@G and
+      (infix~9 ==
+       (dot~6 a~1 kind@1)vkRef@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkRef@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@7 ==
+        (dot~4 a~1 rf@1)
+        (dot@4 b~1 rf@1)))))
+    (else@,i
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@C ==
+        (call~4 toXint~6 a@1)
+        (call@9 toXint~6 b@1))))))))
+ (proc@,2r ptrOrdLt@5 . . .
+  (params@D
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .))bool@F . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@a and
+      (infix~K and
+       (infix~7 !=
+        (dot~8 a~1 region@1)
+        (nil@3))
+       (infix@D !=
+        (dot~8 b~1 region@1)
+        (nil@3)))
+      (infix@D ==
+       (dot~8 a~1 region@1)
+       (dot@4 b~1 region@1)))
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@D <
+        (dot~5
+         (dot~5 a~1 foff@1)int@1)
+        (dot@8
+         (dot~5 b~1 foff@1)int@1)))))
+    (elif@5,2
+     (infix@a and
+      (infix~K and
+       (infix~7 !=
+        (dot~8 a~1 arrOwn@1)
+        (nil@3))
+       (infix@D !=
+        (dot~8 b~1 arrOwn@1)
+        (nil@3)))
+      (infix@D ==
+       (dot~8 a~1 arrOwn@1)
+       (dot@4 b~1 arrOwn@1)))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@9 <
+        (dot~6 a~1 base@1)
+        (dot@3 b~1 base@1)))))
+    (elif@5,4
+     (infix@a and
+      (infix~K and
+       (infix~7 !=
+        (dot~8 a~1 seqOwn@1)
+        (nil@3))
+       (infix@D !=
+        (dot~8 b~1 seqOwn@1)
+        (nil@3)))
+      (infix@D ==
+       (dot~8 a~1 seqOwn@1)
+       (dot@4 b~1 seqOwn@1)))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@9 <
+        (dot~6 a~1 base@1)
+        (dot@3 b~1 base@1)))))
+    (else@,6
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@C <
+        (call~4 toXint~6 a@1)
+        (call@8 toXint~6 b@1))))))))
+ (proc@,36 cmpLt@5 . . .
+  (params@A
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .))bool@F . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@J and
+      (infix~C ==
+       (dot~6 a~1 kind@1)vkString@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkString@3))
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@7 strLt~5
+        (dot@2 a~1 sval@1)
+        (dot@A b~1 sval@1)))))
+    (elif@5,2
+     (infix@I or
+      (infix~B ==
+       (dot~6 a~1 kind@1)vkFloat@3)
+      (infix@A ==
+       (dot~6 b~1 kind@1)vkFloat@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@D <
+        (call~4 toFloat~7 a@1)
+        (call@9 toFloat~7 b@1)))))
+    (elif@5,4
+     (infix@G and
+      (infix~9 ==
+       (dot~6 a~1 kind@1)vkPtr@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkPtr@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (call@A ptrOrdLt~8 a@1 b@4))))
+    (else@,6
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@C <
+        (call~4 toXint~6 a@1)
+        (call@8 toXint~6 b@1))))))))
+ (proc@,3G cmpLe@5 . . .
+  (params@A
+   (param@1 a . . Value@6 .)
+   (param@4 b . . Value@3 .))bool@F . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@J and
+      (infix~C ==
+       (dot~6 a~1 kind@1)vkString@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkString@3))
+     (stmts~1,1
+      (asgn@7 result~7
+       (infix@O or
+        (call~H strLt~5
+         (dot@2 a~1 sval@1)
+         (dot@A b~1 sval@1))
+        (call@8 strEq~5
+         (dot@2 a~1 sval@1)
+         (dot@A b~1 sval@1))))))
+    (elif@5,2
+     (infix@I or
+      (infix~B ==
+       (dot~6 a~1 kind@1)vkFloat@3)
+      (infix@A ==
+       (dot~6 b~1 kind@1)vkFloat@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@D <=
+        (call~4 toFloat~7 a@1)
+        (call@A toFloat~7 b@1)))))
+    (elif@5,4
+     (infix@G and
+      (infix~9 ==
+       (dot~6 a~1 kind@1)vkPtr@3)
+      (infix@B ==
+       (dot~6 b~1 kind@1)vkPtr@3))
+     (stmts~3,1
+      (asgn@7 result~7
+       (infix@H or
+        (call~7 ptrOrdLt~8 a@1 b@4)
+        (call@8 cmpEq~5 a@1 b@4)))))
+    (else@,6
+     (stmts@2,1
+      (asgn@7 result~7
+       (infix@C <=
+        (call~4 toXint~6 a@1)
+        (call@9 toXint~6 b@1))))))))
+ (proc@,3T floatArith@5 . . .
+  (params@F
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .))Value@V . .
+  (stmts@2,1
+   (let@4 x . . .
+    (call@B toFloat~7 a@1))
+   (let@4,1 y . . .
+    (call@B toFloat~7 b@1))
+   (var@4,2 r . . . 0.0@4)
+   (case@,3 op@5
+    (of@,1
+     (ranges AddX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@4 \2B x~2 y@2))))
+    (of@,3
+     (ranges SubX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@4 \2D x~2 y@2))))
+    (of@,5
+     (ranges MulX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@4 * x~2 y@2))))
+    (of@,7
+     (ranges DivX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@4 / x~2 y@2))))
+    (of@,9
+     (ranges ModX@3)
+     (stmts@2,2
+      (let@4 q . . .
+       (infix@6 / x~2 y@2))
+      (let@4,1 t . . .
+       (call@B float64~7
+        (call@6 int64~5 q@1)))
+      (asgn@2,2 r~2
+       (infix@4 \2D x~2
+        (infix@4 * t~2 y@2)))))
+    (else@,E
+     (stmts@2,1
+      (asgn@2 r~2 0.0@2))))
+   (var@4,J fb . . . 64@5)
+   (if@,K
+    (elif@3
+     (infix@7 ==
+      (dot~6 a~1 kind@1)vkFloat@3)
+     (stmts~1,1
+      (asgn@3 fb~3
+       (dot@3 a~1 fbits@1))))
+    (elif@5,2
+     (infix@7 ==
+      (dot~6 b~1 kind@1)vkFloat@3)
+     (stmts~3,1
+      (asgn@3 fb~3
+       (dot@3 b~1 fbits@1)))))
+   (if@,R
+    (elif@3
+     (infix@3 == fb~3 32@3)
+     (stmts@A
+      (asgn@2 r~2
+       (call@9 float64~7
+        (call@8 float32~7 r@1))))))
+   (asgn@7,S result~7
+    (call@8 vFloat~6 r@1 fb@4))))
+ (proc@,3y intArith@5 . . .
+  (params@D
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .)
+   (param@U bits . . int@6 .)
+   (param@f signed . . bool@8 .))Value@u . .
+  (stmts@2,5
+   (var@4 r . . .
+    (call@8 zero~4))
+   (case@,1 op@5
+    (of@,1
+     (ranges AddX@3 SubX@9 MulX@F)
+     (stmts@2,4
+      (let@4 ua . . .
+       (call@C u64bits~7 a@1))
+      (let@4,1 ub . . .
+       (call@C u64bits~7 b@1))
+      (var@4,2 w . . uint64@3 0@C)
+      (case@,3 op@5
+       (of@,1
+        (ranges AddX@3)
+        (stmts@9
+         (asgn@2 w~2
+          (infix@5 \2B ua~3 ub@2))))
+       (of@,2
+        (ranges SubX@3)
+        (stmts@9
+         (asgn@2 w~2
+          (infix@5 \2D ua~3 ub@2))))
+       (else@,3
+        (stmts@A
+         (asgn@2 w~2
+          (infix@5 * ua~3 ub@2)))))
+      (asgn@2,7 r~2
+       (call@C createXint~A w@1))))
+    (of@,D
+     (ranges DivX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@C div
+        (call~4 toXint~6 a@1)
+        (call@A toXint~6 b@1)))))
+    (of@,F
+     (ranges ModX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (infix@C mod
+        (call~4 toXint~6 a@1)
+        (call@A toXint~6 b@1)))))
+    (else@,H
+     (stmts@2,1
+      (asgn@2 r~2
+       (call@6 zero~4)))))
+   (let@4,K m . . .
+    (call@8 mask~4 r@1 bits@4 signed@A))
+   (if@,L
+    (elif@3 signed
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@7 vIntX~5 m@1 bits@4))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@8 vUIntX~6 m@1 bits@4)))))
+   (if@,S
+    (elif@3
+     (infix@G ==
+      (call~9 u64bits~7 result@1)
+      (suf@3 0u "u64"))
+     (stmts~1,1
+      (asgn@7 result~7
+       (if@2
+        (elif@3 signed
+         (stmts@8
+          (call@4 vInt~4 0@1 bits@4)))
+        (else@P
+         (stmts@6
+          (call@5 vUInt~5 0@1 bits@4))))))))))
+ (proc@,4c bitOp@5 . . .
+  (params@A
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .)
+   (param@U bits . . int@6 .)
+   (param@f signed . . bool@8 .))Value@u . .
+  (stmts@2,1
+   (let@4 x . . .
+    (call@A toXint~6 a@1))
+   (var@4,1 r . . .
+    (call@8 zero~4))
+   (case@,2 op@5
+    (of@,1
+     (ranges BitandX@3)
+     (stmts@2,5
+      (asgn@2 r~2
+       (call@C createXint~A
+        (infix@C and
+         (call~4 u64bits~7 a@1)
+         (call@B u64bits~7 b@1))))))
+    (of@,7
+     (ranges BitorX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (call@C createXint~A
+        (infix@C or
+         (call~4 u64bits~7 a@1)
+         (call@A u64bits~7 b@1))))))
+    (of@,9
+     (ranges BitxorX@3)
+     (stmts@2,1
+      (asgn@2 r~2
+       (call@C createXint~A
+        (infix@C xor
+         (call~4 u64bits~7 a@1)
+         (call@B u64bits~7 b@1))))))
+    (of@,B
+     (ranges ShlX@3)
+     (stmts@2,3
+      (let@4 sh . . .
+       (call@8 int~3
+        (call@6 asInt~5 b@1)))
+      (if@,1
+       (elif@3
+        (infix@9 or
+         (infix~6 >= sh~3 64@3)
+         (infix@6 < sh~3 0@2))
+        (stmts@K
+         (asgn@2 r~2
+          (call@6 zero~4))))
+       (else@,1
+        (stmts@6
+         (asgn@2 r~2
+          (call@C createXint~A
+           (infix@C shl
+            (call~4 u64bits~7 a@1)sh@4))))))))
+    (of@,H
+     (ranges ShrX@3)
+     (stmts@2,3
+      (asgn@2 r~2
+       (infix@4 shr x~2
+        (call@7 int~3
+         (call@6 asInt~5 b@1))))))
+    (of@,L
+     (ranges AshrX@3)
+     (stmts@2,4
+      (let@4 sh . . .
+       (call@8 int~3
+        (call@6 asInt~5 b@1)))
+      (if@,1
+       (elif@3
+        (infix@3 <= sh~3 0@3)
+        (stmts~1,1
+         (asgn@2 r~2 x@2)))
+       (elif@5,2
+        (infix@3 >= sh~3 64@3)
+        (stmts~3,1
+         (asgn@2 r~2
+          (expr
+           (stmts@2)
+           (if@1
+            (elif@3
+             (infix@9 <
+              (call~4 asInt~5 a@1)0@2)
+             (call@O createXint~A
+              (suf@1 -1 "i64")))
+            (else@a
+             (call@A zero~4)))))))
+       (else@,4
+        (stmts@2,1
+         (let@4 av . . .
+          (call@A asInt~5 a@1))
+         (let@4,1 p . . .
+          (infix@A shl
+           (suf~6 1 "i64")sh@4))
+         (var@4,2 q . . .
+          (infix@7 div av~3 p@4))
+         (if@,3
+          (elif@3
+           (infix@7 and
+            (infix~4 < av~3 0@2)
+            (infix@A !=
+             (infix~4 * q~2 p@2)av@3))
+           (stmts@O
+            (cmd dec q@4))))
+         (asgn@2,4 r~2
+          (call@C createXint~A q@1)))))))
+    (else@,a
+     (stmts@2,1
+      (asgn@2 r~2
+       (call@6 zero~4)))))
+   (let@4,e m . . .
+    (call@8 mask~4 r@1 bits@4 signed@A))
+   (if@,f
+    (elif@3 signed
+     (stmts~1,1
+      (asgn@7 result~7
+       (call@7 vIntX~5 m@1 bits@4))))
+    (else@,2
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@8 vUIntX~6 m@1 bits@4)))))))
+ (proc@,5Q isBinMagicOp@5 x . .
+  (params@I
+   (param@1 ek . . NimonyExpr@4 .))bool@I . .
+  (stmts@2,1
+   (comment)
+   (case@,6 ek@5
+    (of@,1
+     (ranges AddX@3 SubX@9 MulX@F DivX@L ModX@R BitandX@3,1 BitorX@C,1 BitxorX@K,1 ShlX@T,1 ShrX@Z,1 AshrX@f,1 EqX@3,2 NeqX@8,2 LtX@E,2 LeX@J,2 AndX@O,2 OrX@U,2 XorX@Z,2)
+     (stmts@2,3
+      (asgn@7 result~7 true@2)))
+    (else@,5
+     (stmts@2,1
+      (asgn@7 result~7 false@2))))))
+ (proc@,5f isDivByZero@5 x . .
+  (params@H
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .))bool@V . .
+  (stmts@2,1
+   (comment)
+   (if@,A
+    (elif@3
+     (infix@B and
+      (infix~8 != op~3 DivX@3)
+      (infix@7 != op~3 ModX@3))
+     (stmts@R
+      (ret false@7))))
+   (if@,B
+    (elif@3
+     (infix@I or
+      (infix~B ==
+       (dot~6 a~1 kind@1)vkFloat@3)
+      (infix@A ==
+       (dot~6 b~1 kind@1)vkFloat@3))
+     (stmts@e
+      (ret false@7))))
+   (if@,E
+    (elif@3
+     (infix@G and
+      (infix~9 !=
+       (dot~6 b~1 kind@1)vkInt@3)
+      (infix@B !=
+       (dot~6 b~1 kind@1)vkUInt@3))
+     (stmts@c
+      (ret false@7))))
+   (asgn@7,F result~7
+    (infix@D ==
+     (call~4 u64bits~7 b@1)
+     (suf@3 0u "u64")))))
+ (proc@,5x binMagic@5 x . .
+  (params@E
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .)
+   (param@U bits . . int@6 .)
+   (param@f signed . . bool@8 .))Value@u . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@6 vNil~4))
+   (case@,1 op@5
+    (of@,1
+     (ranges AddX@3 SubX@9 MulX@F DivX@L ModX@R)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@I or
+         (infix~B ==
+          (dot~6 a~1 kind@1)vkFloat@3)
+         (infix@A ==
+          (dot~6 b~1 kind@1)vkFloat@3))
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@C floatArith~A op@1 a@5 b@8))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@A intArith~8 op@1 a@5 b@8 bits@B signed@H)))))))
+    (of@,6
+     (ranges BitandX@3 BitorX@C BitxorX@K ShlX@T ShrX@Z AshrX@f)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 bitOp~5 op@1 a@5 b@8 bits@B signed@H))))
+    (of@,8
+     (ranges EqX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (call@6 cmpEq~5 a@1 b@4)))))
+    (of@,A
+     (ranges NeqX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (prefix@1 not
+         (call@9 cmpEq~5 a@1 b@4))))))
+    (of@,C
+     (ranges LtX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (call@6 cmpLt~5 a@1 b@4)))))
+    (of@,E
+     (ranges LeX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (call@6 cmpLe~5 a@1 b@4)))))
+    (of@,G
+     (ranges AndX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@B and
+         (call~4 truthy~6 a@1)
+         (call@A truthy~6 b@1))))))
+    (of@,I
+     (ranges OrX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@B or
+         (call~4 truthy~6 a@1)
+         (call@9 truthy~6 b@1))))))
+    (of@,K
+     (ranges XorX@3)
+     (stmts@2,3
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (infix@B !=
+         (call~4 truthy~6 a@1)
+         (call@9 truthy~6 b@1))))))
+    (else@,O
+     (stmts@2,3
+      (asgn@7 result~7
+       (call@6 vNil~4)))))))
+ (proc@,6S unMagic@5 x . .
+  (params@D
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@3 .)
+   (param@R bits . . int@6 .)
+   (param@c signed . . bool@8 .))Value@r . .
+  (stmts@2,1
+   (asgn@7 result~7
+    (call@6 vNil~4))
+   (case@,1 op@5
+    (of@,1
+     (ranges NegX@3)
+     (stmts@2,1
+      (if
+       (elif@3
+        (infix@7 ==
+         (dot~6 a~1 kind@1)vkFloat@3)
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@8 vFloat~6
+           (prefix@1 \2D
+            (dot@2 a~1 fval@1))
+           (dot@B a~1 fbits@1)))))
+       (else@,2
+        (stmts@2,1
+         (let@4 m . . .
+          (call@8 mask~4
+           (prefix@1 \2D
+            (call@7 toXint~6 a@1))bits@D signed@J))
+         (if@,1
+          (elif@3 signed
+           (stmts~1,1
+            (asgn@7 result~7
+             (call@7 vIntX~5 m@1 bits@4))))
+          (else@,2
+           (stmts@2,1
+            (asgn@7 result~7
+             (call@8 vUIntX~6 m@1 bits@4))))))))))
+    (of@,A
+     (ranges NotX@3)
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@7 vBool~5
+        (prefix@1 not
+         (call@A truthy~6 a@1))))))
+    (of@,C
+     (ranges BitnotX@3)
+     (stmts@2,1
+      (let@4 m . . .
+       (call@8 mask~4
+        (prefix@1 not
+         (call@A toXint~6 a@1))bits@G signed@M))
+      (if@,1
+       (elif@3 signed
+        (stmts~1,1
+         (asgn@7 result~7
+          (call@7 vIntX~5 m@1 bits@4))))
+       (else@,2
+        (stmts@2,1
+         (asgn@7 result~7
+          (call@8 vUIntX~6 m@1 bits@4)))))))
+    (else@,I
+     (stmts@2,2
+      (asgn@7 result~7
+       (call@6 vNil~4)))))))
+ (proc@,6q fitsSigned@5 x . .
+  (params@G
+   (param@1 v . . int64@3 .)
+   (param@B bits . . int@6 .))bool@N . .
+  (stmts@2,1
+   (if
+    (elif@3
+     (infix@5 >= bits~5 64@3)
+     (stmts@C
+      (ret true@7))))
+   (let@4,1 hi . . .
+    (infix@S \2D
+     (par~N
+      (infix@7 shl
+       (suf~6 1 "i64")
+       (par@4
+        (infix@6 \2D bits~5 1@2))))1@2))
+   (let@4,2 lo . . .
+    (prefix@5 \2D
+     (par@1
+      (infix@7 shl
+       (suf~6 1 "i64")
+       (par@4
+        (infix@6 \2D bits~5 1@2))))))
+   (asgn@7,3 result~7
+    (infix@A and
+     (infix~6 >= v~2 lo@3)
+     (infix@6 <= v~2 hi@3)))))
+ (proc@,6w arithOverflows@5 x . .
+  (params@K
+   (param@1 op . . NimonyExpr@4 .)
+   (param@H a . . Value@6 .)
+   (param@K b . . Value@3 .)
+   (param@U bits . . int@6 .)
+   (param@f signed . . bool@8 .))bool@u . .
+  (stmts@2,1
+   (comment)
+   (if@,4
+    (elif@3
+     (infix@T or
+      (infix~M notin
+       (dot~6 a~1 kind@1)
+       (curly@6 vkInt@1 vkUInt@8))
+      (infix@A notin
+       (dot~6 b~1 kind@1)
+       (curly@6 vkInt@1 vkUInt@8)))
+     (stmts@10
+      (ret false@7))))
+   (let@4,5 x . . .
+    (call@9 asInt~5 a@1))
+   (let@4,6 y . . .
+    (call@9 asInt~5 b@1))
+   (if@,7
+    (elif@3 signed
+     (stmts~1,1
+      (case op@5
+       (of@,1
+        (ranges AddX@3)
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@5 < bits~5 64@2)
+           (stmts@B
+            (asgn@7 result~7
+             (prefix@2 not
+              (call@E fitsSigned~A
+               (infix@3 \2B x~2 y@2)bits@8)))))
+          (else@,1
+           (stmts@2,1
+            (let@4 s . . .
+             (cast@4 int64@5
+              (infix@S \2B
+               (cast~G uint64@5 x@D)
+               (cast@2 uint64@5 y@D))))
+            (asgn@7,1 result~7
+             (infix@S <
+              (par~Q
+               (infix@B and
+                (par~A
+                 (infix@3 xor x~2 s@4))
+                (par@4
+                 (infix@3 xor y~2 s@4))))0@2)))))))
+       (of@,6
+        (ranges SubX@3)
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@5 < bits~5 64@2)
+           (stmts@B
+            (asgn@7 result~7
+             (prefix@2 not
+              (call@E fitsSigned~A
+               (infix@3 \2D x~2 y@2)bits@8)))))
+          (else@,1
+           (stmts@2,1
+            (let@4 s . . .
+             (cast@4 int64@5
+              (infix@S \2D
+               (cast~G uint64@5 x@D)
+               (cast@2 uint64@5 y@D))))
+            (asgn@7,1 result~7
+             (infix@S <
+              (par~Q
+               (infix@B and
+                (par~A
+                 (infix@3 xor x~2 y@4))
+                (par@4
+                 (infix@3 xor x~2 s@4))))0@2)))))))
+       (of@,B
+        (ranges MulX@3)
+        (stmts@2,1
+         (if
+          (elif@3
+           (infix@7 or
+            (infix~5 == x~2 0@3)
+            (infix@5 == y~2 0@3))
+           (stmts@I
+            (asgn@7 result~7 false@2)))
+          (else@,1
+           (stmts@2,1
+            (let@4 p . . .
+             (infix@6 * x~2 y@2))
+            (asgn@7,1 result~7
+             (infix@H or
+              (par~F
+               (infix@9 !=
+                (infix~6 div p~2 y@4)x@3))
+              (prefix@3 not
+               (call@E fitsSigned~A p@1 bits@4)))))))))
+       (else@,G
+        (stmts@6
+         (asgn@7 result~7 false@2))))))
+    (else@,I
+     (stmts@2,1
+      (let@4 ux . . .
+       (cast@5 uint64@5 x@D))
+      (let@4,1 uy . . .
+       (cast@5 uint64@5 y@D))
+      (let@4,2 widthMax . . .
+       (if@B
+        (elif@3
+         (infix@5 >= bits~5 64@3)
+         (stmts@C
+          (call@4 high~4 uint64@1)))
+        (else@S
+         (stmts@6
+          (infix@H \2D
+           (par~H
+            (infix@7 shl
+             (suf~6 1u "u64")bits@4))1@2)))))
+      (case@,3 op@5
+       (of@,1
+        (ranges AddX@3)
+        (stmts@9
+         (asgn@7 result~7
+          (infix@5 > ux~3
+           (infix@B \2D widthMax~9 uy@2)))))
+       (of@,2
+        (ranges SubX@3)
+        (stmts@9
+         (asgn@7 result~7
+          (infix@5 < ux~3 uy@2))))
+       (of@,3
+        (ranges MulX@3)
+        (stmts@9
+         (asgn@7 result~7
+          (infix@f or
+           (par~d
+            (infix@D and
+             (infix~9 != ux~3
+              (suf@3 0u "u64"))
+             (infix@7 > uy~3
+              (infix@B div widthMax~9 ux@4))))
+           (infix@D >
+            (par~A
+             (infix@4 * ux~3 uy@2))widthMax@2)))))
+       (else@,4
+        (stmts@6
+         (asgn@7 result~7 false@2))))))))))

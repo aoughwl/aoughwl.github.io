@@ -1,0 +1,162 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/lib/filelinecache.nim
+ (comment)
+ (import@,2
+  (infix@B / std~4 syncio@2))
+ (import@,3
+  (infix@A / std~3
+   (bracket@1 tables@1 hashes@9 strutils@H)))
+ (include@,5 compat2@8)
+ (type@E,8 CachedFile~C x . .
+  (object@2 .
+   (fld~C,1 content . . string@9 .)
+   (fld~C,2 lineStarts . .
+    (at@F seq~3 int@1).)))
+ (type@G,C FilePosition~E x . .
+  (object@2 .
+   (fld~A,1 line~4 x . int@3 .)
+   (fld~B,2 col~3 x . int@3 .)))
+ (type@G,G FileLineCache~E . . .
+  (object@2 .
+   (fld~E,1 files . .
+    (at@C Table~5 string@1 CachedFile@9).)))
+ (var@2,K gFileLineCache . . FileLineCache@G .)
+ (proc@,M loadFile@5 x . .
+  (params@E
+   (param@1 filename . . string@A .)).
+  (pragmas@X canRaise@2).
+  (stmts@2,1
+   (var@4 entry . . .
+    (oconstr@I CachedFile~A
+     (kv@8 content~7
+      (call@A readFile~8 filename@1))
+     (kv@e lineStarts~A
+      (prefix@2 \40
+       (bracket@1 0@1)))))
+   (var@4,1 nl . . .
+    (call@9 find~4
+     (dot@6 entry~5 content@1)'\0A'@G))
+   (while@,2
+    (infix@9 > nl~3 0@2)
+    (stmts@2,1
+     (cmd@G
+      (dot
+       (dot~B entry~5 lineStarts@1)add@1)nl@5)
+     (asgn@3,1 nl~3
+      (call@6 find~4
+       (dot@6 entry~5 content@1)'\0A'@G
+       (infix@P \2B nl~3 1@2)))))
+   (asgn@V,5
+    (at~B
+     (dot~6 gFileLineCache~E files@1)filename@1)
+    (cmd@D ensureMove~B entry))))
+ (proc@,U extract@5 x . .
+  (params@D
+   (param@1 filename . . string@A .)
+   (param@J start . . FilePosition@F .)
+   (param@Q finish . . FilePosition@8 .))string@n
+  (pragmas@17 canRaise@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not
+      (call@V
+       (dot~7
+        (dot~6 gFileLineCache~E files@1)hasKey@1)filename@1))
+     (stmts~1,1
+      (call@8 loadFile~8 filename@1))))
+   (let@A,2 entry~6 .
+    (pragmas cursor@2).
+    (at@X
+     (dot~6 gFileLineCache~E files@1)filename@1))
+   (let@4,3 startIdx . . .
+    (infix@r \2D
+     (infix~B \2B
+      (at~F
+       (dot~B entry~5 lineStarts@1)
+       (infix@B \2D
+        (dot~5 start~5 line@1)1@1))
+      (dot@7 start~5 col@1))1@1))
+   (let@4,4 finishIdx . . .
+    (infix@u \2D
+     (infix~C \2B
+      (at~G
+       (dot~B entry~5 lineStarts@1)
+       (infix@C \2D
+        (dot~5 finish~6 line@1)1@1))
+      (dot@8 finish~6 col@1))1@1))
+   (asgn@7,5 result~7
+    (call@M
+     (dot~7
+      (dot~8 entry~5 content@1)substr@1)startIdx@1 finishIdx@B))))
+ (proc@,c extract@5 x . .
+  (params@D
+   (param@1 filename . . string@A .)
+   (param@J start . . FilePosition@7 .))string@f
+  (pragmas@z canRaise@2).
+  (stmts@2,1
+   (if
+    (elif@3
+     (prefix not
+      (call@V
+       (dot~7
+        (dot~6 gFileLineCache~E files@1)hasKey@1)filename@1))
+     (stmts~1,1
+      (call@8 loadFile~8 filename@1))))
+   (let@A,2 entry~6 .
+    (pragmas cursor@2).
+    (at@X
+     (dot~6 gFileLineCache~E files@1)filename@1))
+   (let@4,3 startIdx . . .
+    (infix@r \2D
+     (infix~B \2B
+      (at~F
+       (dot~B entry~5 lineStarts@1)
+       (infix@B \2D
+        (dot~5 start~5 line@1)1@1))
+      (dot@7 start~5 col@1))1@1))
+   (if@,4
+    (elif@3
+     (infix@B <
+      (dot~6 start~5 line@1)
+      (dot@I
+       (dot~B entry~5 lineStarts@1)len@1))
+     (stmts~1,1
+      (let@4 finishIdx . . .
+       (infix@e \2D
+        (at~C
+         (dot~B entry~5 lineStarts@1)
+         (dot@6 start~5 line@1))1@1))
+      (asgn@7,1 result~7
+       (call@M
+        (dot~7
+         (dot~8 entry~5 content@1)substr@1)startIdx@1 finishIdx@B))))
+    (else@,3
+     (stmts@2,1
+      (asgn@7 result~7
+       (call@M
+        (dot~7
+         (dot~8 entry~5 content@1)substr@1)startIdx@1)))))))
+ (when@,n
+  (elif@5 isMainModule
+   (stmts~3,1
+    (try
+     (stmts@2,1
+      (cmd echo
+       (call@C extract~7 "src/lib/filelinecache.nim"@1
+        (oconstr@g FilePosition~C
+         (kv@5 line~4 1@2)
+         (kv@D col~3 9@2))
+        (oconstr@1B FilePosition~C
+         (kv@5 line~4 3@2)
+         (kv@D col~3 2@2))))
+      (cmd@,1 echo
+       (call@C extract~7 "src/lib/filelinecache.nim"@1
+        (oconstr@g FilePosition~C
+         (kv@5 line~4 1@2)
+         (kv@D col~3 9@2)))))
+     (except@,3 .
+      (stmts@2,1
+       (cmd quit "failed to extract"@5))))))))

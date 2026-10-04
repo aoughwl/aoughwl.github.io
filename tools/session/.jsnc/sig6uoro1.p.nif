@@ -1,0 +1,541 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/sigconcepts.nim
+ (comment)
+ (import@,5
+  (infix@B / std~4
+   (bracket@2 sets@1 tables@7 assertions@F)))
+ (include@,7
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)nifprelude@2))
+ (include@,8
+  (infix@J /
+   (infix~6 / ".."~5 lib@2)compat2@2))
+ (import@,A nimony_model@7 decls@L programs@S semdata@c typeprops@l features@w symtabs@16)
+ (import@,B
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)symparser@2))
+ (proc@,D isConceptType@5 x . .
+  (params@J
+   (param@1 a . . Cursor@3 .))bool@D
+  (pragmas@b inline@2).
+  (stmts@2,1
+   (infix@H and
+    (infix~A ==
+     (dot~6 a~1 kind@1)Symbol@3)
+    (call@G isConceptSym~C
+     (dot@2 a~1 symId@1)))))
+ (proc@,G conceptTargetNeedsStrictCheck@5 x . .
+  (params@Z
+   (param@1 a . . Cursor@3 .))bool@D . .
+  (stmts@2,1
+   (comment)
+   (if@,5
+    (elif@3
+     (infix@7 ==
+      (dot~6 a~1 kind@1)DotToken@3)
+     (stmts~1,1
+      (ret false@7))))
+   (if@,7
+    (elif@3
+     (infix@7 ==
+      (dot~6 a~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (let@4 res . . .
+       (call@G tryLoadSym~A
+        (dot@2 a~1 symId@1)))
+      (if@,1
+       (elif@3
+        (infix@R and
+         (infix~G ==
+          (dot~8 res~3 status@1)LacksNothing@3)
+         (infix@L ==
+          (dot~9
+           (dot~5 res~3 decl@1)symKind@1)TypevarY@3))
+        (stmts~1,1
+         (ret false@7)))))))
+   (var@4,B t . . . a@4)
+   (if@,C
+    (elif@3
+     (infix@7 ==
+      (dot~6 t~1 kind@1)Symbol@3)
+     (stmts~1,1
+      (asgn@2 t~2
+       (call@A typeImpl~8
+        (dot@2 t~1 symId@1))))))
+   (infix@B,E ==
+    (dot~A t~1 typeKind@1)DistinctT@3)))
+ (proc@,X conceptRoutineBasename@5 x . .
+  (params@S
+   (param@1 routine . . Cursor@9 .))StrId@J . .
+  (stmts@2,1
+   (var@4 prc . . . routine@6)
+   (cmd@,1 assert
+    (infix@J in
+     (dot~9 prc~3 symKind@1)RoutineKinds@3))
+   (cmd@,2 inc prc@4)
+   (cmd@,3 assert
+    (infix@G ==
+     (dot~6 prc~3 kind@1)SymbolDef@3))
+   (var@4,4 name . . .
+    (at@G
+     (dot~5 pool~4 syms@1)
+     (dot@4 prc~3 symId@1)))
+   (call@F,5 extractBasename~F name@1)
+   (call@M,6
+    (dot~A
+     (dot~8 pool~4 strings@1)getOrIncl@1)name@1)))
+ (proc@,g collectSelfSymsInType@5 x . .
+  (params@R
+   (param@1 typ . . Cursor@5 .)
+   (param@E result . .
+    (mut@8
+     (at@7 seq~3 SymId@1)).)). . .
+  (stmts@2,1
+   (comment)
+   (var@4,1 typ . . . typ@6)
+   (var@4,2 nested . . . 0@9)
+   (while@,3
+    (infix@D >= nested~7 0@3)
+    (stmts@2,1
+     (case
+      (dot@8 typ~3 kind@1)
+      (of@,1
+       (ranges Symbol@3)
+       (stmts@2,1
+        (let@4 res . . .
+         (call@G tryLoadSym~A
+          (dot@4 typ~3 symId@1)))
+        (if@,1
+         (elif@3
+          (infix@R and
+           (infix~G ==
+            (dot~8 res~3 status@1)LacksNothing@3)
+           (infix@L ==
+            (dot~9
+             (dot~5 res~3 decl@1)symKind@1)TypevarY@3))
+          (stmts~1,1
+           (if
+            (elif@3
+             (infix@A notin
+              (dot~7 typ~3 symId@1)result@6)
+             (stmts~1,1
+              (cmd@6
+               (dot result~6 add@1)
+               (dot@8 typ~3 symId@1))))))))
+        (cmd@,4 inc typ@4)
+        (if@,5
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (ret .))))))
+      (of@,9
+       (ranges ParLe@3)
+       (stmts@2,1
+        (cmd inc nested@4)
+        (cmd@,1 inc typ@4)))
+      (of@,C
+       (ranges ParRi@3)
+       (stmts@2,1
+        (cmd dec nested@4)
+        (cmd@,1 inc typ@4)
+        (if@,2
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (ret .))))))
+      (else@,H
+       (stmts@2,1
+        (cmd inc typ@4)
+        (if@,1
+         (elif@3
+          (infix@7 == nested~7 0@3)
+          (stmts~1,1
+           (ret .)))))))))))
+ (proc@,17 conceptSelfSymFromSlot@5 x . .
+  (params@S
+   (param@1 body . . Cursor@6 .))SymId@G . .
+  (stmts@2,1
+   (let@4 selfSlot . . .
+    (call@Q conceptSelfSlot~F body@1))
+   (if@,1
+    (elif@3
+     (infix@H !=
+      (dot~9 selfSlot~8 symKind@1)TypevarY@3)
+     (stmts~1,1
+      (ret
+       (call@C SymId~5 0@1)))))
+   (var@4,3 s . . . selfSlot@4)
+   (cmd@,4 inc s@4)
+   (if@,5
+    (elif@3
+     (infix@7 ==
+      (dot~6 s~1 kind@1)SymbolDef@3)
+     (stmts~1,1
+      (dot@1 s~1 symId@1)))
+    (else@,2
+     (stmts@2,1
+      (call@5 SymId~5 0@1))))))
+ (proc@,1I conceptSelfSyms@5 x . .
+  (params@L
+   (param@1 body . . Cursor@6 .)
+   (param@F routine . . Cursor@9 .))
+  (at@a seq~3 SymId@1). .
+  (stmts@2,1
+   (comment)
+   (asgn@7,2 result~7
+    (prefix@2 \40
+     (bracket@1)))
+   (var@4,3 n . . . routine@4)
+   (cmd@,4 skipToParams n@D)
+   (if@,5
+    (elif@3
+     (infix@J ==
+      (dot~I n~1 substructureKind@1)ParamsU@3)
+     (stmts~1,2
+      (cmd@1
+       (dot n~1 into@1)ParamsU@6
+       (stmts@1,1
+        (while
+         (dot@7 n~1 hasMore@1)
+         (stmts@2,1
+          (let@4 param . . .
+           (call@H takeLocal~9 n@1 SkipFinalParRi@4))
+          (call@L,1 collectSelfSymsInType~L
+           (dot@6 param~5 typ@1)result@C)))))))
+    (else@,6
+     (stmts@2,1
+      (cmd skip n@5))))
+   (call@L,D collectSelfSymsInType~L n@1 result@4)
+   (let@4,E headerSelf . . .
+    (call@Z conceptSelfSymFromSlot~M body@1))
+   (if@,F
+    (elif@3
+     (infix@N and
+      (infix~C != headerSelf~B
+       (call@8 SymId~5 0@1))
+      (infix@F notin headerSelf~B result@6))
+     (stmts~1,1
+      (cmd@6
+       (dot result~6 add@1)headerSelf@5))))))
+ (iterator@,1b visibleNamedSyms@9 x . .
+  (params@Q
+   (param@1 c . .
+    (ptr@3 SemContext@4).)
+   (param@K basename . . StrId@A .))SymId@c
+  (pragmas@18 sideEffect@2).
+  (stmts@2,1
+   (let@4 ignoreStyle . . .
+    (infix@X in IgnoreStyleFeature~J
+     (dot@4 c~1 features@1)))
+   (var@4,1 it . . .
+    (dot@6 c~1 currentScope@1))
+   (while@,2
+    (infix@C !=
+     (dot~4 it~2 up@1)
+     (nil@3))
+    (stmts@2,1
+     (asgn@3 it~3
+      (dot@4 it~2 up@1))))
+   (for@4,4
+    (call@I stylesOfScope~D it@1 basename@5 ignoreStyle@F)
+    (unpackflat
+     (let k . . ..))
+    (stmts~2,1
+     (for@4
+      (call@Q
+       (dot~D
+        (dot~4 it~2 tab@1)getOrDefault@1)k@1)
+      (unpackflat
+       (let sym . . ..))
+      (stmts~2,1
+       (yld
+        (dot@9 sym~3 name@1))))))
+   (for@4,7
+    (call@Q stylesOfImport~E
+     (dot@2 c~1 importTab@1)basename@E ignoreStyle@O)
+    (unpackflat
+     (let realName . . ..))
+    (stmts~2,1
+     (for@4
+      (call@a
+       (dot~D
+        (dot~A c~1 importTab@1)getOrDefault@1)realName@1)
+      (unpackflat
+       (let moduleId . . ..))
+      (stmts~2,1
+       (let@4 m . . .
+        (cmd@9 addr~5
+         (call@R
+          (dot~A
+           (dot~G c~1 importedModules@1)getOrQuit@1)moduleId@1)))
+       (for@4,1
+        (call@I stylesOfIface~D
+         (dot@4
+          (at~2 m~1)iface@1)realName@C ignoreStyle@M)
+        (unpackflat
+         (let k . . ..))
+        (stmts~2,1
+         (for@4
+          (call@V
+           (dot~D
+            (dot~6
+             (at~2 m~1)iface@1)getOrDefault@1)k@1)
+          (unpackflat
+           (let defId . . ..))
+          (stmts~2,1
+           (yld defId@6)))))))))))
+ (iterator@,1q conceptRoutineCandidates@9 x . .
+  (params@Y
+   (param@1 c . .
+    (ptr@3 SemContext@4).)
+   (param@K conceptSym . . SymId@C .)
+   (param@d basename . . StrId@A .))SymId@v
+  (pragmas@1Z sideEffect@2).
+  (stmts@2,1
+   (comment)
+   (var@4,3 seen . . .
+    (call@P
+     (at~7 initHashSet~B SymId@1)))
+   (if@,4
+    (elif@3
+     (infix@2 != c~2
+      (nil@3))
+     (stmts~1,1
+      (let@4 ignoreStyle . . .
+       (infix@X in IgnoreStyleFeature~J
+        (dot@4 c~1 features@1)))
+      (if@,1
+       (elif@3
+        (infix@B != conceptSym~B
+         (call@8 SymId~5 0@1))
+        (stmts~1,1
+         (let@4 modSuffix . . .
+          (call@P extractModule~D
+           (at@A
+            (dot~5 pool~4 syms@1)conceptSym@1)))
+         (if@,1
+          (elif@3
+           (infix@A != modSuffix~A ""@3)
+           (stmts~1,1
+            (for@4
+             (call@G loadSyms~8 modSuffix@1 basename@C)
+             (unpackflat
+              (let cand . . ..))
+             (stmts~2,1
+              (if
+               (elif@3
+                (prefix not
+                 (call@N
+                  (dot~F seen~4 containsOrIncl@1)cand@1))
+                (stmts~1,1
+                 (yld cand@6)))))))))
+         (for@4,5
+          (dot@A c~1 importedModules@1)
+          (unpackflat
+           (let _ . . ..)
+           (let im@3 . . ..))
+          (stmts~2,1
+           (for@4
+            (call@I stylesOfIface~D
+             (dot@3 im~2 iface@1)basename@B ignoreStyle@L)
+            (unpackflat
+             (let k . . ..))
+            (stmts~2,1
+             (for@4
+              (call@U
+               (dot~D
+                (dot~6 im~2 iface@1)getOrDefault@1)k@1)
+              (unpackflat
+               (let defId . . ..))
+              (stmts~2,1
+               (if
+                (elif@3
+                 (prefix not
+                  (call@N
+                   (dot~F seen~4 containsOrIncl@1)defId@1))
+                 (stmts~1,1
+                  (yld defId@6)))))))))))))
+      (for@4,C
+       (call@O visibleNamedSyms~G c@1 basename@4)
+       (unpackflat
+        (let cand . . ..))
+       (stmts~2,1
+        (if
+         (elif@3
+          (prefix not
+           (call@N
+            (dot~F seen~4 containsOrIncl@1)cand@1))
+          (stmts~1,1
+           (yld cand@6)))))))))))
+ (proc@,2C routineHasNoSideEffect@5 x . .
+  (params@S
+   (param@1 routine . . Cursor@9 .))bool@J
+  (pragmas@q inline@2).
+  (stmts@2,1
+   (let@4 r . . .
+    (call@D asRoutine~9 routine@1))
+   (infix@f,1 ==
+    (call~U whichEffect~B
+     (dot@8 routine~7 stmtKind@1)
+     (dot@K r~1 pragmas@1))HasNoSideEffect@3)))
+ (proc@,2G conceptRoutineKindsCompatible@5 x . .
+  (params@Z
+   (param@1 requirement . . SymKind@T .)
+   (param@E implementation . . SymKind@G .)
+   (param@,1 implementationDecl . . Cursor@K
+    (call@a default~7 Cursor@1)))bool@l,1
+  (pragmas@1P,1 inline@2).
+  (stmts@2,2
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@C == requirement~C implementation@3)
+     (stmts~1,1
+      (ret true@7))))
+   (if@,4
+    (elif@3
+     (infix@L and
+      (infix~9 == requirement~C ProcY@3)
+      (infix@J in implementation~F
+       (curly@3 FuncY@1 TemplateY@8)))
+     (stmts~1,1
+      (ret true@7))))
+   (if@,6
+    (elif@3
+     (infix@L and
+      (infix~9 == requirement~C FuncY@3)
+      (infix@J == implementation~F ProcY@3))
+     (stmts~1,1
+      (if
+       (elif@3
+        (call@B cursorIsNil~B implementationDecl@1)
+        (stmts~1,1
+         (ret false@7))))
+      (ret@,2
+       (call@T routineHasNoSideEffect~M implementationDecl@1)))))false@,A))
+ (proc@,2U conceptRoutinesEquivalentKinds@5 x . .
+  (params@a
+   (param@1 a . . SymKind@6 .)
+   (param@4 b . . SymKind@3 .))bool@H
+  (pragmas@w inline@2).
+  (stmts@2,1
+   (comment)
+   (infix@a,1 or
+    (call~7 conceptRoutineKindsCompatible~T a@1 b@4)
+    (call@W conceptRoutineKindsCompatible~T b@1 a@4))))
+ (proc@,2Y sameConceptRoutineParamTypes@5 x . .
+  (params@Y
+   (param@1 aParams . . Cursor@I .)
+   (param@A bParams . . Cursor@9 .))bool@S . .
+  (stmts@2,1
+   (var@4 a . . . aParams@4)
+   (var@4,1 b . . . bParams@4)
+   (if@,2
+    (elif@3
+     (infix@U or
+      (infix~B !=
+       (dot~I a~1 substructureKind@1)ParamsU@3)
+      (infix@M !=
+       (dot~I b~1 substructureKind@1)ParamsU@3))
+     (stmts~1,1
+      (ret false@7))))
+   (cmd@1,4
+    (dot a~1 into@1)ParamsU@6
+    (stmts@1,1
+     (cmd@1
+      (dot b~1 into@1)ParamsU@6
+      (stmts@1,1
+       (while
+        (infix@G and
+         (dot~9 a~1 hasMore@1)
+         (dot@5 b~1 hasMore@1))
+        (stmts@2,1
+         (let@4 aTyp . . .
+          (dot@Z
+           (call~J takeLocal~9 a@1 SkipFinalParRi@4)typ@1))
+         (let@4,1 bTyp . . .
+          (dot@Z
+           (call~J takeLocal~9 b@1 SkipFinalParRi@4)typ@1))
+         (if@,2
+          (elif@3
+           (prefix not
+            (call@S sameTreesButIgnoreSymIds~O aTyp@1 bTyp@7))
+           (stmts~1,1
+            (ret false@7))))))
+       (ret@,5
+        (infix@L and
+         (prefix~E not
+          (dot@5 a~1 hasMore@1))
+         (prefix@4 not
+          (dot@5 b~1 hasMore@1))))))))false@,C))
+ (proc@,2n sameConceptRoutineTrees@5 x . .
+  (params@T
+   (param@1 requirement . . Cursor@O .)
+   (param@E candidate . . Cursor@B .)
+   (param@1,1 equivKinds . . . false@D))bool@M,1 . .
+  (stmts@2,2
+   (comment)
+   (if@,2
+    (elif@3
+     (infix@d or
+      (infix~J notin
+       (dot~9 requirement~B symKind@1)RoutineKinds@6)
+      (infix@L notin
+       (dot~9 candidate~9 symKind@1)RoutineKinds@6))
+     (stmts~1,1
+      (ret false@7))))
+   (let@4,4 kindsOk . . .
+    (if@A
+     (elif@3 equivKinds
+      (stmts~F,1
+       (call@U conceptRoutinesEquivalentKinds~U
+        (dot@C requirement~B symKind@1)
+        (dot@V candidate~9 symKind@1))))
+     (else~E,2
+      (stmts@2,1
+       (call@T conceptRoutineKindsCompatible~T
+        (dot@C requirement~B symKind@1)
+        (dot@V candidate~9 symKind@1)candidate@f)))))
+   (if@,8
+    (elif@3
+     (prefix not kindsOk@4)
+     (stmts~1,1
+      (ret false@7))))
+   (if@,A
+    (elif@3
+     (infix@a !=
+      (call~E conceptRoutineBasename~M requirement@1)
+      (call@P conceptRoutineBasename~M candidate@1))
+     (stmts~1,1
+      (ret false@7))))
+   (var@4,C rReq . . . requirement@7)
+   (var@4,D rCand . . . candidate@8)
+   (cmd@,E skipToParams rReq@D)
+   (cmd@,F skipToParams rCand@D)
+   (if@,I
+    (elif@3
+     (prefix not
+      (call@W sameConceptRoutineParamTypes~S rReq@1 rCand@7))
+     (stmts~1,1
+      (ret false@7))))
+   (cmd@,K skip rReq@5 AnyType@B)
+   (cmd@,L skip rCand@5 AnyType@C)
+   (call@O,M sameTreesButIgnoreSymIds~O rReq@1 rCand@7)))
+ (proc@,3D conceptRequirementInBody@5 x . .
+  (params@U
+   (param@1 routine . . Cursor@9 .)
+   (param@I actualBody . . Cursor@C .))bool@d . .
+  (stmts@2,1
+   (for@4
+    (call@Y conceptHierarchyRoutines~O actualBody@1)
+    (unpackflat
+     (let _ . . ..)
+     (let req@3 . . ..))
+    (stmts~2,1
+     (if
+      (elif@3
+       (call@N sameConceptRoutineTrees~N routine@1 req@A)
+       (stmts~1,1
+        (ret true@7))))))false@,3)))

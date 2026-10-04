@@ -1,0 +1,492 @@
+(.nif27)
+(.vendor "Nifler")
+(.dialect "nim-parsed")
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/magics.nim
+ (comment)
+ (import@,2
+  (infix@L /
+   (infix~9 / ".."~5 models@2)tags@2))
+ (import@,3
+  (infix@I /
+   (infix~6 / ".."~5 lib@2)
+   (bracket@2 nifcursors@1 nifstreams@D)))
+ (import@,4 nimony_model@7)
+ (when@,6
+  (elif@5
+   (call@7 defined~7 nimony@1)
+   (stmts~3,1
+    (pragmas
+     (kv@9 feature~7 "untyped"@2)))))
+ (template@,9 res@9 . . .
+  (params@C
+   (param@1 t . .
+    (infix@N |
+     (infix~B | ExprKind~9 StmtKind@2)TypeKind@2).)
+   (param@a bits . . . 0@7))
+  (tup@l string@1 int@9). .
+  (stmts@1D
+   (tup
+    (prefix@1 $ t@1)bits@5)))
+ (const@C,C TypedMagic~A x . . -3@4)
+ (proc@,E magicToTag@5 x . .
+  (params@G
+   (param@1 m . . string@3 .)
+   (param@C bits . . int@6 .))
+  (tup@O string@1 int@9). .
+  (stmts@2,1
+   (case m@5
+    (of@,1
+     (ranges "Defined"@3)
+     (stmts@E
+      (cmd res DefinedX@4)))
+    (of@,2
+     (ranges "Declared"@3)
+     (stmts@F
+      (cmd res DeclaredX@4)))
+    (of@,3
+     (ranges "AstToStr"@3)
+     (stmts@F
+      (cmd res AstToStrX@4)))
+    (of@,4
+     (ranges "IsMainModule"@3)
+     (stmts@J
+      (cmd res IsmainmoduleX@4)))
+    (of@,5
+     (ranges "Compiles"@3)
+     (stmts@F
+      (cmd res CompilesX@4)))
+    (of@,6
+     (ranges "ArrGet"@3)
+     (stmts@D
+      (cmd res AtX@4)))
+    (of@,7
+     (ranges "ArrAt"@3)
+     (stmts@C
+      (cmd res ArratX@4)))
+    (of@,8
+     (ranges "Pat"@3)
+     (stmts@A
+      (cmd res PatX@4)))
+    (of@,9
+     (ranges "TupAt"@3)
+     (stmts@C
+      (cmd res TupatX@4)))
+    (of@,A
+     (ranges "Asgn"@3)
+     (stmts@B
+      (cmd res AsgnS@4)))
+    (of@,B
+     (ranges "AddI"@3 "AddU"@B "AddF64"@J "Succ"@T)
+     (stmts@b
+      (cmd res AddX@4 TypedMagic@A)))
+    (of@,C
+     (ranges "SubI"@3 "SubU"@B "SubF64"@J "Pred"@T)
+     (stmts@b
+      (cmd res SubX@4 TypedMagic@A)))
+    (of@,D
+     (ranges "MulI"@3 "MulU"@B "MulF64"@J)
+     (stmts@T
+      (cmd res MulX@4 TypedMagic@A)))
+    (of@,E
+     (ranges "DivI"@3 "DivU"@B "DivF64"@J)
+     (stmts@T
+      (cmd res DivX@4 TypedMagic@A)))
+    (of@,F
+     (ranges "ModI"@3 "ModU"@B)
+     (stmts@J
+      (cmd res ModX@4 TypedMagic@A)))
+    (of@,G
+     (ranges "ShrI"@3)
+     (stmts@B
+      (cmd res ShrX@4 TypedMagic@A)))
+    (of@,H
+     (ranges "AshrI"@3)
+     (stmts@C
+      (cmd res AshrX@4 TypedMagic@B)))
+    (of@,I
+     (ranges "ShlI"@3)
+     (stmts@B
+      (cmd res ShlX@4 TypedMagic@A)))
+    (of@,J
+     (ranges "BitandI"@3)
+     (stmts@E
+      (cmd res BitandX@4 TypedMagic@D)))
+    (of@,K
+     (ranges "BitorI"@3)
+     (stmts@D
+      (cmd res BitorX@4 TypedMagic@C)))
+    (of@,L
+     (ranges "BitxorI"@3)
+     (stmts@E
+      (cmd res BitxorX@4 TypedMagic@D)))
+    (of@,M
+     (ranges "BitnotI"@3)
+     (stmts@E
+      (cmd res BitnotX@4 TypedMagic@D)))
+    (of@,N
+     (ranges "UnaryMinusI"@3 "UnaryMinusF64"@I)
+     (stmts@Z
+      (cmd res NegX@4 TypedMagic@A)))
+    (of@,O
+     (ranges "Delay"@3)
+     (stmts@C
+      (cmd res DelayX@4)))
+    (of@,P
+     (ranges "Suspend"@3)
+     (stmts@E
+      (cmd res SuspendX@4)))
+    (of@,Q
+     (ranges "And"@3)
+     (stmts@A
+      (cmd res AndX@4)))
+    (of@,R
+     (ranges "Or"@3)
+     (stmts@9
+      (cmd res OrX@4)))
+    (of@,S
+     (ranges "Not"@3)
+     (stmts@A
+      (cmd res NotX@4)))
+    (of@,T
+     (ranges "Xor"@3)
+     (stmts@A
+      (cmd res XorX@4)))
+    (of@,U
+     (ranges "SizeOf"@3)
+     (stmts@D
+      (cmd res SizeofX@4)))
+    (of@,V
+     (ranges "Type"@3 "TypeOf"@B)
+     (stmts@L
+      (cmd res TypeofX@4)))
+    (of@,W
+     (ranges "Addr"@3)
+     (stmts@B
+      (cmd res AddrX@4)))
+    (of@,X
+     (ranges "Deref"@3)
+     (stmts@C
+      (cmd res DerefX@4)))
+    (of@,Y
+     (ranges "EqI"@3 "EqB"@A "EqCh"@H "EqF64"@P "EqRef"@Y "EqEnum"@h)
+     (stmts@r
+      (cmd res EqX@4 TypedMagic@9)))
+    (of@,Z
+     (ranges "LeI"@3 "LeU"@A "LeB"@H "LeCh"@O "LeF64"@W "LePtr"@f "LeEnum"@o)
+     (stmts@y
+      (cmd res LeX@4 TypedMagic@9)))
+    (of@,a
+     (ranges "LtI"@3 "LtU"@A "LtB"@H "LtCh"@O "LtF64"@W "LtPtr"@f "LtEnum"@o)
+     (stmts@y
+      (cmd res LtX@4 TypedMagic@9)))
+    (of@,b
+     (ranges "Low"@3)
+     (stmts@A
+      (cmd res LowX@4)))
+    (of@,c
+     (ranges "High"@3)
+     (stmts@B
+      (cmd res HighX@4)))
+    (of@,d
+     (ranges "EnumToStr"@3)
+     (stmts@G
+      (cmd res EnumtostrX@4)))
+    (of@,e
+     (ranges "Array"@3)
+     (stmts@C
+      (cmd res ArrayT@4)))
+    (of@,f
+     (ranges "Range"@3)
+     (stmts@C
+      (cmd res RangetypeT@4)))
+    (of@,g
+     (ranges "Set"@3)
+     (stmts@A
+      (cmd res SetT@4)))
+    (of@,h
+     (ranges "Varargs"@3)
+     (stmts@E
+      (cmd res VarargsT@4)))
+    (of@,i
+     (ranges "Ref"@3)
+     (stmts@A
+      (cmd res RefT@4)))
+    (of@,j
+     (ranges "Ptr"@3)
+     (stmts@A
+      (cmd res PtrT@4)))
+    (of@,k
+     (ranges "Var"@3)
+     (stmts@A
+      (cmd res MutT@4)))
+    (of@,l
+     (ranges "Distinct"@3)
+     (stmts@F
+      (cmd res DistinctT@4)))
+    (of@,m
+     (ranges "Void"@3)
+     (stmts@B
+      (cmd res VoidT@4)))
+    (of@,n
+     (ranges "Tuple"@3)
+     (stmts@C
+      (cmd res TupleT@4)))
+    (of@,o
+     (ranges "Ordinal"@3)
+     (stmts@E
+      (cmd res OrdinalT@4)))
+    (of@,p
+     (ranges "IterableType"@3)
+     (stmts@J
+      (cmd res IteratorT@4)))
+    (of@,q
+     (ranges "Int"@3)
+     (stmts@A
+      (cmd res IntT@4 bits@A)))
+    (of@,r
+     (ranges "Int8"@3)
+     (stmts@B
+      (cmd res IntT@4 8@A)))
+    (of@,s
+     (ranges "Int16"@3)
+     (stmts@C
+      (cmd res IntT@4 16@A)))
+    (of@,t
+     (ranges "Int32"@3)
+     (stmts@C
+      (cmd res IntT@4 32@A)))
+    (of@,u
+     (ranges "Int64"@3)
+     (stmts@C
+      (cmd res IntT@4 64@A)))
+    (of@,v
+     (ranges "UInt"@3)
+     (stmts@B
+      (cmd res UIntT@4 bits@B)))
+    (of@,w
+     (ranges "UInt8"@3)
+     (stmts@C
+      (cmd res UIntT@4 8@B)))
+    (of@,x
+     (ranges "UInt16"@3)
+     (stmts@D
+      (cmd res UIntT@4 16@B)))
+    (of@,y
+     (ranges "UInt32"@3)
+     (stmts@D
+      (cmd res UIntT@4 32@B)))
+    (of@,z
+     (ranges "UInt64"@3)
+     (stmts@D
+      (cmd res UIntT@4 64@B)))
+    (of@,10
+     (ranges "Float"@3)
+     (stmts@C
+      (cmd res FloatT@4 64@C)))
+    (of@,11
+     (ranges "Float32"@3)
+     (stmts@E
+      (cmd res FloatT@4 32@C)))
+    (of@,12
+     (ranges "Float64"@3)
+     (stmts@E
+      (cmd res FloatT@4 64@C)))
+    (of@,13
+     (ranges "Float128"@3)
+     (stmts@F
+      (cmd res FloatT@4 128@C)))
+    (of@,14
+     (ranges "Bool"@3)
+     (stmts@B
+      (cmd res BoolT@4)))
+    (of@,15
+     (ranges "Char"@3)
+     (stmts@B
+      (cmd res CharT@4 8@B)))
+    (of@,16
+     (ranges "TypeDesc"@3)
+     (stmts@F
+      (cmd res TypedescT@4)))
+    (of@,17
+     (ranges "VoidType"@3)
+     (stmts@F
+      (cmd res VoidT@4)))
+    (of@,18
+     (ranges "Unpack"@3)
+     (stmts@D
+      (cmd res UnpackX@4)))
+    (of@,19
+     (ranges "Expr"@3)
+     (stmts@B
+      (cmd res UntypedT@4)))
+    (of@,1A
+     (ranges "Stmt"@3)
+     (stmts@B
+      (cmd res TypedT@4)))
+    (of@,1B
+     (ranges "Cstring"@3)
+     (stmts@E
+      (cmd res CstringT@4)))
+    (of@,1C
+     (ranges "Pointer"@3)
+     (stmts@E
+      (cmd res PointerT@4)))
+    (of@,1D
+     (ranges "DefaultObj"@3)
+     (stmts@H
+      (cmd res DefaultobjX@4)))
+    (of@,1E
+     (ranges "DefaultTup"@3)
+     (stmts@H
+      (cmd res DefaulttupX@4)))
+    (of@,1F
+     (ranges "DefaultDistinct"@3)
+     (stmts@M
+      (cmd res DefaultdistinctX@4)))
+    (of@,1G
+     (ranges "PlusSet"@3)
+     (stmts@E
+      (cmd res PlussetX@4 TypedMagic@E)))
+    (of@,1H
+     (ranges "MinusSet"@3)
+     (stmts@F
+      (cmd res MinussetX@4 TypedMagic@F)))
+    (of@,1I
+     (ranges "MulSet"@3)
+     (stmts@D
+      (cmd res MulsetX@4 TypedMagic@D)))
+    (of@,1J
+     (ranges "XorSet"@3)
+     (stmts@D
+      (cmd res XorsetX@4 TypedMagic@D)))
+    (of@,1K
+     (ranges "EqSet"@3)
+     (stmts@C
+      (cmd res EqsetX@4 TypedMagic@C)))
+    (of@,1L
+     (ranges "LeSet"@3)
+     (stmts@C
+      (cmd res LesetX@4 TypedMagic@C)))
+    (of@,1M
+     (ranges "LtSet"@3)
+     (stmts@C
+      (cmd res LtsetX@4 TypedMagic@C)))
+    (of@,1N
+     (ranges "InSet"@3)
+     (stmts@C
+      (cmd res InsetX@4 TypedMagic@C)))
+    (of@,1O
+     (ranges "Card"@3)
+     (stmts@B
+      (cmd res CardX@4 TypedMagic@B)))
+    (of@,1P
+     (ranges "Incl"@3)
+     (stmts@B
+      (cmd res InclS@4 TypedMagic@B)))
+    (of@,1Q
+     (ranges "Excl"@3)
+     (stmts@B
+      (cmd res ExclS@4 TypedMagic@B)))
+    (of@,1R
+     (ranges "EnsureMove"@3)
+     (stmts@H
+      (cmd res EmoveX@4)))
+    (of@,1S
+     (ranges "UncheckedArray"@3)
+     (stmts@L
+      (cmd res UarrayT@4)))
+    (of@,1T
+     (ranges "Sink"@3)
+     (stmts@B
+      (cmd res SinkT@4)))
+    (of@,1U
+     (ranges "Lent"@3)
+     (stmts@B
+      (cmd res LentT@4)))
+    (of@,1V
+     (ranges "Destroy"@3)
+     (stmts@E
+      (cmd res DestroyX@4)))
+    (of@,1W
+     (ranges "SinkHook"@3)
+     (stmts@F
+      (cmd res SinkhX@4)))
+    (of@,1X
+     (ranges "Dup"@3)
+     (stmts@A
+      (cmd res DupX@4)))
+    (of@,1Y
+     (ranges "Copy"@3)
+     (stmts@B
+      (cmd res CopyX@4)))
+    (of@,1Z
+     (ranges "WasMoved"@3)
+     (stmts@F
+      (cmd res WasmovedX@4)))
+    (of@,1a
+     (ranges "Trace"@3)
+     (stmts@C
+      (cmd res TraceX@4)))
+    (of@,1b
+     (ranges "NewRef"@3)
+     (stmts@D
+      (cmd res NewrefX@4 TypedMagic@D)))
+    (of@,1c
+     (ranges "OverflowFlag"@3)
+     (stmts@J
+      (cmd res OvfX@4)))
+    (of@,1d
+     (ranges "Fields"@3)
+     (stmts@D
+      (cmd res FieldsX@4 TypedMagic@D)))
+    (of@,1e
+     (ranges "FieldPairs"@3)
+     (stmts@H
+      (cmd res FieldpairsX@4 TypedMagic@H)))
+    (of@,1f
+     (ranges "Of"@3)
+     (stmts@9
+      (cmd res InstanceofX@4)))
+    (of@,1g
+     (ranges "ProcCall"@3)
+     (stmts@F
+      (cmd res ProccallX@4)))
+    (of@,1h
+     (ranges "InternalTypeName"@3)
+     (stmts@N
+      (cmd res InternalTypeNameX@4)))
+    (of@,1i
+     (ranges "InternalFieldPairs"@3)
+     (stmts@P
+      (cmd res InternalFieldPairsX@4 TypedMagic@P)))
+    (of@,1j
+     (ranges "OrdinalEnum"@3)
+     (stmts@I
+      (cmd res EnumT@4)))
+    (of@,1k
+     (ranges "HoleyEnum"@3)
+     (stmts@G
+      (cmd res HoleyEnumT@4)))
+    (of@,1l
+     (ranges "NaN"@3)
+     (stmts@A
+      (cmd res NanX@4)))
+    (of@,1m
+     (ranges "Inf"@3)
+     (stmts@A
+      (cmd res InfX@4)))
+    (of@,1n
+     (ranges "Is"@3)
+     (stmts@9
+      (cmd res IsX@4)))
+    (of@,1o
+     (ranges "BindSym"@3)
+     (stmts@E
+      (cmd res BindSymX@4)))
+    (of@,1p
+     (ranges "BindSymName"@3)
+     (stmts@I
+      (cmd res BindSymNameX@4)))
+    (else@,1q
+     (stmts@6
+      (tup ""@1 0@5)))))))

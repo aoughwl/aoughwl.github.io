@@ -1,0 +1,634 @@
+(.nif27)
+(.indexat 18970            )
+(stmts@,A,../../../../../../home/savant/nimony/lib/std/terminal.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim")
+  (kv syn1lfpjv "../../../../../../home/savant/nimony/lib/std/syncio.nim"))
+ (const@A,9 :fgPrefix.0.~8 x . string.0.sysvq0asl "\1B\5B38;2;"@4)
+ (const@A,A :bgPrefix.0.~8 x . string.0.sysvq0asl "\1B\5B48;2;"@4)
+ (const@F,B :ansiResetCode.0.~D x . string.0.sysvq0asl "\1B\5B0m"@4)
+ (const@D,C :stylePrefix.0.~B x . string.0.sysvq0asl "\1B\5B"@4)
+ (type@9,F :Style.0.~7 x . .
+  (onum@2
+   (u 8)
+   (efld@7,1 :styleBright.0.~E x . Style.0.
+    (tup 1 "styleBright"))
+   (efld~7,2 :styleDim.0. x . Style.0.
+    (tup 2 "styleDim"))
+   (efld~7,3 :styleItalic.0. x . Style.0.
+    (tup 3 "styleItalic"))
+   (efld~7,4 :styleUnderscore.0. x . Style.0.
+    (tup 4 "styleUnderscore"))
+   (efld~7,5 :styleBlink.0. x . Style.0.
+    (tup 5 "styleBlink"))
+   (efld~7,6 :styleBlinkRapid.0. x . Style.0.
+    (tup 6 "styleBlinkRapid"))
+   (efld~7,7 :styleReverse.0. x . Style.0.
+    (tup 7 "styleReverse"))
+   (efld~7,8 :styleHidden.0. x . Style.0.
+    (tup 8 "styleHidden"))
+   (efld~7,9 :styleStrikethrough.0. x . Style.0.
+    (tup 9 "styleStrikethrough"))))
+ (proc@2,F :dollar`.Style.0. x . .
+  (params
+   (param :e.0 . . Style.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@9 :result.0 . . string.0.sysvq0asl .)
+   (case@9 e.0
+    (of@7,1
+     (ranges styleBright.0.~E)
+     (stmts
+      (ret "styleBright")))
+    (of~7,2
+     (ranges styleDim.0.)
+     (stmts
+      (ret "styleDim")))
+    (of~7,3
+     (ranges styleItalic.0.)
+     (stmts
+      (ret "styleItalic")))
+    (of~7,4
+     (ranges styleUnderscore.0.)
+     (stmts
+      (ret "styleUnderscore")))
+    (of~7,5
+     (ranges styleBlink.0.)
+     (stmts
+      (ret "styleBlink")))
+    (of~7,6
+     (ranges styleBlinkRapid.0.)
+     (stmts
+      (ret "styleBlinkRapid")))
+    (of~7,7
+     (ranges styleReverse.0.)
+     (stmts
+      (ret "styleReverse")))
+    (of~7,8
+     (ranges styleHidden.0.)
+     (stmts
+      (ret "styleHidden")))
+    (of~7,9
+     (ranges styleStrikethrough.0.)
+     (stmts
+      (ret "styleStrikethrough"))))
+   (ret result.0)))
+ (type@J,Q :ForegroundColor.0.~H x . .
+  (onum@2
+   (u 8)
+   (efld~7,1 :fgBlack.0.~A x . ForegroundColor.0.
+    (tup 30 "fgBlack"))
+   (efld~H,2 :fgRed.0. x . ForegroundColor.0.
+    (tup 31 "fgRed"))
+   (efld~H,3 :fgGreen.0. x . ForegroundColor.0.
+    (tup 32 "fgGreen"))
+   (efld~H,4 :fgYellow.0. x . ForegroundColor.0.
+    (tup 33 "fgYellow"))
+   (efld~H,5 :fgBlue.0. x . ForegroundColor.0.
+    (tup 34 "fgBlue"))
+   (efld~H,6 :fgMagenta.0. x . ForegroundColor.0.
+    (tup 35 "fgMagenta"))
+   (efld~H,7 :fgCyan.0. x . ForegroundColor.0.
+    (tup 36 "fgCyan"))
+   (efld~H,8 :fgWhite.0. x . ForegroundColor.0.
+    (tup 37 "fgWhite"))
+   (efld~H,9 :fg8Bit.0. x . ForegroundColor.0.
+    (tup 38 "fg8Bit"))
+   (efld~H,A :fgDefault.0. x . ForegroundColor.0.
+    (tup 39 "fgDefault"))))
+ (proc@2,Q :dollar`.ForegroundColor.0. x . .
+  (params
+   (param :e.1 . . ForegroundColor.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@J :result.1 . . string.0.sysvq0asl .)
+   (case@J e.1
+    (of~7,1
+     (ranges fgBlack.0.~A)
+     (stmts
+      (ret "fgBlack")))
+    (of~H,2
+     (ranges fgRed.0.)
+     (stmts
+      (ret "fgRed")))
+    (of~H,3
+     (ranges fgGreen.0.)
+     (stmts
+      (ret "fgGreen")))
+    (of~H,4
+     (ranges fgYellow.0.)
+     (stmts
+      (ret "fgYellow")))
+    (of~H,5
+     (ranges fgBlue.0.)
+     (stmts
+      (ret "fgBlue")))
+    (of~H,6
+     (ranges fgMagenta.0.)
+     (stmts
+      (ret "fgMagenta")))
+    (of~H,7
+     (ranges fgCyan.0.)
+     (stmts
+      (ret "fgCyan")))
+    (of~H,8
+     (ranges fgWhite.0.)
+     (stmts
+      (ret "fgWhite")))
+    (of~H,9
+     (ranges fg8Bit.0.)
+     (stmts
+      (ret "fg8Bit")))
+    (of~H,A
+     (ranges fgDefault.0.)
+     (stmts
+      (ret "fgDefault"))))
+   (ret result.1)))
+ (type@J,c :BackgroundColor.0.~H x . .
+  (onum@2
+   (u 8)
+   (efld~7,1 :bgBlack.0.~A x . BackgroundColor.0.
+    (tup 40 "bgBlack"))
+   (efld~H,2 :bgRed.0. x . BackgroundColor.0.
+    (tup 41 "bgRed"))
+   (efld~H,3 :bgGreen.0. x . BackgroundColor.0.
+    (tup 42 "bgGreen"))
+   (efld~H,4 :bgYellow.0. x . BackgroundColor.0.
+    (tup 43 "bgYellow"))
+   (efld~H,5 :bgBlue.0. x . BackgroundColor.0.
+    (tup 44 "bgBlue"))
+   (efld~H,6 :bgMagenta.0. x . BackgroundColor.0.
+    (tup 45 "bgMagenta"))
+   (efld~H,7 :bgCyan.0. x . BackgroundColor.0.
+    (tup 46 "bgCyan"))
+   (efld~H,8 :bgWhite.0. x . BackgroundColor.0.
+    (tup 47 "bgWhite"))
+   (efld~H,9 :bg8Bit.0. x . BackgroundColor.0.
+    (tup 48 "bg8Bit"))
+   (efld~H,A :bgDefault.0. x . BackgroundColor.0.
+    (tup 49 "bgDefault"))))
+ (proc@2,c :dollar`.BackgroundColor.0. x . .
+  (params
+   (param :e.2 . . BackgroundColor.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@J :result.2 . . string.0.sysvq0asl .)
+   (case@J e.2
+    (of~7,1
+     (ranges bgBlack.0.~A)
+     (stmts
+      (ret "bgBlack")))
+    (of~H,2
+     (ranges bgRed.0.)
+     (stmts
+      (ret "bgRed")))
+    (of~H,3
+     (ranges bgGreen.0.)
+     (stmts
+      (ret "bgGreen")))
+    (of~H,4
+     (ranges bgYellow.0.)
+     (stmts
+      (ret "bgYellow")))
+    (of~H,5
+     (ranges bgBlue.0.)
+     (stmts
+      (ret "bgBlue")))
+    (of~H,6
+     (ranges bgMagenta.0.)
+     (stmts
+      (ret "bgMagenta")))
+    (of~H,7
+     (ranges bgCyan.0.)
+     (stmts
+      (ret "bgCyan")))
+    (of~H,8
+     (ranges bgWhite.0.)
+     (stmts
+      (ret "bgWhite")))
+    (of~H,9
+     (ranges bg8Bit.0.)
+     (stmts
+      (ret "bg8Bit")))
+    (of~H,A
+     (ranges bgDefault.0.)
+     (stmts
+      (ret "bgDefault"))))
+   (ret result.2)))
+ (type@F,o :TerminalCmd.0.~D x . .
+  (enum@2
+   (u 8)
+   (efld~D,1 :resetStyle.0. x . TerminalCmd.0.
+    (tup 0 "resetStyle"))
+   (efld~D,2 :fgColor.0. x . TerminalCmd.0.
+    (tup 1 "fgColor"))
+   (efld~D,3 :bgColor.0. x . TerminalCmd.0.
+    (tup 2 "bgColor"))))
+ (proc@2,o :dollar`.TerminalCmd.0. x . .
+  (params
+   (param :e.3 . . TerminalCmd.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@F :result.3 . . string.0.sysvq0asl .)
+   (case@F e.3
+    (of~D,1
+     (ranges resetStyle.0.)
+     (stmts
+      (ret "resetStyle")))
+    (of~D,2
+     (ranges fgColor.0.)
+     (stmts
+      (ret "fgColor")))
+    (of~D,3
+     (ranges bgColor.0.)
+     (stmts
+      (ret "bgColor"))))
+   (ret result.3)))
+ (proc@,t :ansiStyleCode.0.@5 x . .
+  (params@J
+   (param@1 :style.0 . .
+    (i@7 32).))string.0.sysvq0asl@E . .
+  (stmts@2,1
+   (result@7 :result.4 . . string.0.sysvq0asl .)
+   (asgn@7 result.4~7
+    (infix@N &.0.sysvq0asl
+     (infix~9 &.0.sysvq0asl stylePrefix.0.~C
+      (prefix@2 $.2.sysvq0asl style.0@1))"m"@2))
+   (ret~2,~1 result.4)))
+ (proc@,w :ansiStyleCode.1.@5 x . .
+  (params@J
+   (param@1 :style.1 . . Style.0.@7 .))string.0.sysvq0asl@G . .
+  (stmts@2,1
+   (result@D :result.5 . . string.0.sysvq0asl .)
+   (asgn@D result.5
+    (call ansiStyleCode.0.~D
+     (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+      (conv@3,2
+       (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)style.1@K,17,../../../../../../home/savant/nimony/lib/std/terminal.nim))))
+   (ret~2,~1 result.5)))
+ (proc@,z :ansiForegroundColorCode.0.@5 x . .
+  (params@T
+   (param@1 :fg.0 . . ForegroundColor.0.@4 .)
+   (param@M :bright.0 . .
+    (bool@E,1C,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@9)))string.0.sysvq0asl@d . .
+  (stmts@2,1
+   (result@4 :result.6 . . string.0.sysvq0asl .)
+   (var@4 :code.0 . .
+    (i@L,~7 32)
+    (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+     (conv@3,2
+      (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)fg.0@H,1A,../../../../../../home/savant/nimony/lib/std/terminal.nim)))
+   (if@,1
+    (elif@3 bright.0
+     (stmts@8
+      (asgn@5 code.0~5
+       (add@7
+        (i 32)code.0~5 60@2)))))
+   (asgn@D,2 result.6
+    (call ansiStyleCode.0.~D code.0@1))
+   (ret~2,~1 result.6)))
+ (proc@,14 :ansiBackgroundColorCode.0.@5 x . .
+  (params@T
+   (param@1 :bg.0 . . BackgroundColor.0.@4 .)
+   (param@M :bright.1 . .
+    (bool@E,1C,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@9)))string.0.sysvq0asl@d . .
+  (stmts@2,1
+   (result@4 :result.7 . . string.0.sysvq0asl .)
+   (var@4 :code.1 . .
+    (i@L,~C 32)
+    (expr@2,3S,../../../../../../home/savant/nimony/lib/std/system.nim
+     (conv@3,2
+      (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)bg.0@H,1F,../../../../../../home/savant/nimony/lib/std/terminal.nim)))
+   (if@,1
+    (elif@3 bright.1
+     (stmts@8
+      (asgn@5 code.1~5
+       (add@7
+        (i 32)code.1~5 60@2)))))
+   (asgn@D,2 result.7
+    (call ansiStyleCode.0.~D code.1@1))
+   (ret~2,~1 result.7)))
+ (proc@,19 :resetAttributes.0.@5 x . .
+  (params@L
+   (param@1 :f.0 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)). . .
+  (stmts@2,1
+   (cmd@,1 write.0.syn1lfpjv f.0@6 ansiResetCode.0.@9)))
+ (proc@,1D :setStyle.0.@5 x . .
+  (params@E
+   (param@1 :f.1 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :style.2 . . Style.0.@7 .)). . .
+  (stmts@2,1
+   (cmd@,1 write.0.syn1lfpjv f.1@6
+    (call@M ansiStyleCode.1.~D style.2@1))))
+ (proc@,1H :setStyle.1.@5 x . .
+  (params@E
+   (param@1 :f.2 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :style.3 . .
+    (set@A Style.0.@1).)). . .
+  (stmts@2,1
+   (for@4,1
+    (call@5 items.0.Iwt9hf21.~5 style.3)
+    (unpackflat
+     (let :s.1 . . Style.0.~4,~14 .))
+    (stmts~2,1
+     (cmd write.0.syn1lfpjv f.2@6
+      (call@M ansiStyleCode.1.~D s.1@1))))))
+ (proc@,1M :setForegroundColor.0.@5 x . .
+  (params@O
+   (param@1 :f.3 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :fg.1 . . ForegroundColor.0.@4 .)
+   (param@V :bright.2 . .
+    (bool@E,1C,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@9))). . .
+  (stmts@2,1
+   (cmd@,1 write.0.syn1lfpjv f.3@6
+    (call@W ansiForegroundColorCode.0.~N fg.1@1 bright.2@5))))
+ (proc@,1Q :setBackgroundColor.0.@5 x . .
+  (params@O
+   (param@1 :f.4 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :bg.1 . . BackgroundColor.0.@4 .)
+   (param@V :bright.3 . .
+    (bool@E,1C,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim)
+    (false@9))). . .
+  (stmts@2,1
+   (cmd@,1 write.0.syn1lfpjv f.4@6
+    (call@W ansiBackgroundColorCode.0.~N bg.1@1 bright.3@5))))
+ (stmts@2,1f
+  (proc :c_isatty.0.@5 . . .
+   (params@D
+    (param@1 :fildes.0 . .
+     (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+      (importc "int")).))
+   (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+    (importc "int"))
+   (pragmas@Y
+    (importc@2 "isatty"@9)
+    (header@L "<unistd.h>"@8)). .)
+  (proc@,1 :c_fileno.0.@5 . . .
+   (params@D
+    (param@1 :f.5 . .
+     (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+      (unchecked)).))
+   (i@b,e,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 32
+    (importc "int"))
+   (pragmas@T
+    (importc@2 "fileno"@9)
+    (header@L "<stdio.h>"@8)). .))
+ (proc@,1l :isatty.0.@5 x . .
+  (params@C
+   (param@1 :f.6 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).))
+  (bool@B). .
+  (stmts@2,1
+   (result :result.8 . .
+    (bool@E,1C,../../../../../../home/savant/nimony/lib/std/system/basic_types.nim).)
+   (stmts@2,2
+    (asgn@7 result.8~7
+     (expr@2,1l,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+      (not@,1
+       (eq@7
+        (i 32)
+        (call@L,1y,../../../../../../home/savant/nimony/lib/std/terminal.nim c_isatty.0.~8
+         (call@9 c_fileno.0.~8 f.6@1))
+        (suf@c,1y,../../../../../../home/savant/nimony/lib/std/terminal.nim 0 "i32"))))))
+   (ret~2,~1 result.8)))
+ (proc@,1v :styledEchoProcessArg.0.@5 x . .
+  (params@Q
+   (param@1 :f.7 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :s.0 . . string.0.sysvq0asl@3 .)). . .
+  (stmts@n
+   (cmd write.0.syn1lfpjv f.7@6 s.0@9)))
+ (proc@,1w :styledEchoProcessArg.1.@5 x . .
+  (params@Q
+   (param@1 :f.8 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :c.0 . .
+    (c@3 8).)). . .
+  (stmts@l
+   (cmd write.7.syn1lfpjv f.8@6 c.0@9)))
+ (proc@,1x :styledEchoProcessArg.2.@5 x . .
+  (params@Q
+   (param@1 :f.9 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :style.4 . . Style.0.@7 .)). . .
+  (stmts@q
+   (call@8 setStyle.0.~8 f.9@1 style.4@4)))
+ (proc@,1y :styledEchoProcessArg.3.@5 x . .
+  (params@Q
+   (param@1 :f.10 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :style.5 . .
+    (set@A Style.0.@1).)). . .
+  (stmts@v
+   (call@8 setStyle.1.~8 f.10@1 style.5@4)))
+ (proc@,1z :styledEchoProcessArg.4.@5 x . .
+  (params@Q
+   (param@1 :f.11 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :color.0 . . ForegroundColor.0.@7 .)). . .
+  (stmts@2,1
+   (call@I setForegroundColor.0.~I f.11@1 color.0@4
+    (false@i,~e))))
+ (proc@,21 :styledEchoProcessArg.5.@5 x . .
+  (params@Q
+   (param@1 :f.12 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :color.1 . . BackgroundColor.0.@7 .)). . .
+  (stmts@2,1
+   (call@I setBackgroundColor.0.~I f.12@1 color.1@4
+    (false@i,~c))))
+ (proc@,23 :styledEchoProcessArg.6.@5 x . .
+  (params@Q
+   (param@1 :f.13 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@A :cmd.0 . . TerminalCmd.0.@5 .)). . .
+  (stmts@2,1
+   (case cmd.0@5
+    (of@,1
+     (ranges resetStyle.0.@3)
+     (stmts@F
+      (call@F resetAttributes.0.~F f.13@1)))
+    (of@,2
+     (ranges fgColor.0.@3 bgColor.0.@C)
+     (stmts@L
+      (discard .))))))
+ (template@,28 :styledWrite.0.@9 x . .
+  (params@L
+   (param@1 :f.14 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@C :vanon.0 . .
+    (varargs).)).
+  (pragmas@V
+   (varargs@2)).
+  (stmts@2,1
+   (for@4,4
+    (unpack@B)
+    (unpackflat
+     (let :x.1 . .
+      (untyped@4,7,../../../../../../home/savant/nimony/lib/std/system.nim).))
+    (expr~2,1
+     (call@K
+      (ochoice~K styledEchoProcessArg.0. styledEchoProcessArg.1. styledEchoProcessArg.2. styledEchoProcessArg.3. styledEchoProcessArg.4. styledEchoProcessArg.5. styledEchoProcessArg.6.)f.14@1 x.1@4)))
+   (call@F,6 resetAttributes.0.~F f.14@1)))
+ (template@,2H :styledWriteLine.0.@9 x . .
+  (params@P
+   (param@1 :f.15 . .
+    (ptr@C,1G,../../../../../../home/savant/nimony/lib/std/syncio.nim CFile.0.syn1lfpjv@4
+     (unchecked)).)
+   (param@C :vanon.1 . .
+    (varargs).)).
+  (pragmas@Z
+   (varargs@2)).
+  (stmts@2,1
+   (for@4,1
+    (unpack@B)
+    (unpackflat
+     (let :x.2 . .
+      (untyped@4,7,../../../../../../home/savant/nimony/lib/std/system.nim).))
+    (expr~2,1
+     (call@K
+      (ochoice~K styledEchoProcessArg.0. styledEchoProcessArg.1. styledEchoProcessArg.2. styledEchoProcessArg.3. styledEchoProcessArg.4. styledEchoProcessArg.5. styledEchoProcessArg.6.)f.15@1 x.2@4)))
+   (cmd@,3 write.7.syn1lfpjv f.15@6 '\0A'@9)
+   (call@F,4 resetAttributes.0.~F f.15@1)))
+ (comment@R,t int.0.sysvq0asl false.0.sysvq0asl@X,6 false.0.sysvq0asl@X,B set.0.sysvq0asl@4,O false.0.sysvq0asl@b,T false.0.sysvq0asl@b,X bool.0.sysvq0asl~G,s char.0.sysvq0asl@C,13 set.0.sysvq0asl@G,15 ord.0.sysvq0asl~8,4 ord.0.sysvq0asl~B,7 ord.0.sysvq0asl~B,C !=.0.sysvq0asl@8,v)
+ (iterator@B,1J :items.0.Iwt9hf21. . .@,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+  (at items.0.sysvq0asl Style.0.@O,~2)
+  (params@W,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+   (param@1 :x.3 . .
+    (set@6 Style.0.@Z,1R,../../../../../../home/savant/nimony/lib/std/terminal.nim).))Style.0.@O,~2 . .@,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+  (stmts@2,j,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+   (var@4,3 :i.0 . .
+    (i@R,13,../../../../../../home/savant/nimony/lib/std/terminal.nim 32)
+    (conv@A
+     (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)styleBright.0.~3))
+   (if@,4
+    (elif@3
+     (le@2
+      (i 32)i.0~2
+      (conv@A
+       (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)styleStrikethrough.0.~3))
+     (stmts~1,1
+      (while
+       (true@6)
+       (stmts@2,1
+        (if
+         (elif@3
+          (inset@A
+           (set Style.0.@Z,1R,../../../../../../home/savant/nimony/lib/std/terminal.nim)x.3~A
+           (cast@1 Style.0.@Z,1R,../../../../../../home/savant/nimony/lib/std/terminal.nim i.0@8))
+          (stmts@O
+           (yld
+            (cast@6 Style.0.@Z,1R,../../../../../../home/savant/nimony/lib/std/terminal.nim i.0@8)))))
+        (if@,1
+         (elif@3
+          (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (le@2,1
+            (i 32)
+            (conv@L,q,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+             (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)styleStrikethrough.0.~3)i.0@9,q,../../../../../../home/savant/nimony/lib/std/system/setops.nim))
+          (stmts@I
+           (break .))))
+        (call@3,2 inc.1.I6wjjge.~3
+         (haddr@1 i.0)))))))))
+ (func@9,r,../../../../../../home/savant/nimony/lib/std/system/setops.nim :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i@R,13,../../../../../../home/savant/nimony/lib/std/terminal.nim 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.5 . .
+    (mut@3
+     (i@R,13,../../../../../../home/savant/nimony/lib/std/terminal.nim 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.5)
+    (add@6
+     (i@R,13,../../../../../../home/savant/nimony/lib/std/terminal.nim 32)
+     (hderef@1 x.5)
+     (conv@U,~F
+      (i@R,13,../../../../../../home/savant/nimony/lib/std/terminal.nim 32)1@1))))))(.index@,A,../../../../../../home/savant/nimony/lib/std/terminal.nim
+ (x fgPrefix.0. 265)
+ (x bgPrefix.0. 67)
+ (x ansiResetCode.0. 67)
+ (x stylePrefix.0. 69)
+ (x Style.0. 65)
+ (x@B,F styleBright.0. 48)
+ (x@B,F styleDim.0. 71)
+ (x@B,F styleItalic.0. 63)
+ (x@B,F styleUnderscore.0. 69)
+ (x@B,F styleBlink.0. 77)
+ (x@B,F styleBlinkRapid.0. 67)
+ (x@B,F styleReverse.0. 77)
+ (x@B,F styleHidden.0. 71)
+ (x@B,F styleStrikethrough.0. 69)
+ (x dollar`.Style.0. 85)
+ (x ForegroundColor.0. 948)
+ (x@L,Q fgBlack.0. 58)
+ (x@L,Q fgRed.0. 74)
+ (x@L,Q fgGreen.0. 68)
+ (x@L,Q fgYellow.0. 72)
+ (x@L,Q fgBlue.0. 74)
+ (x@L,Q fgMagenta.0. 70)
+ (x@L,Q fgCyan.0. 76)
+ (x@L,Q fgWhite.0. 70)
+ (x@L,Q fg8Bit.0. 72)
+ (x@L,Q fgDefault.0. 70)
+ (x dollar`.ForegroundColor.0. 78)
+ (x BackgroundColor.0. 945)
+ (x@L,c bgBlack.0. 58)
+ (x@L,c bgRed.0. 74)
+ (x@L,c bgGreen.0. 68)
+ (x@L,c bgYellow.0. 72)
+ (x@L,c bgBlue.0. 74)
+ (x@L,c bgMagenta.0. 70)
+ (x@L,c bgCyan.0. 76)
+ (x@L,c bgWhite.0. 70)
+ (x@L,c bg8Bit.0. 72)
+ (x@L,c bgDefault.0. 70)
+ (x dollar`.BackgroundColor.0. 78)
+ (x TerminalCmd.0. 945)
+ (x@H,o resetStyle.0. 54)
+ (x@H,o fgColor.0. 73)
+ (x@H,o bgColor.0. 67)
+ (x dollar`.TerminalCmd.0. 69)
+ (x ansiStyleCode.0. 430)
+ (x ansiStyleCode.1. 343)
+ (x ansiForegroundColorCode.0. 493)
+ (x ansiBackgroundColorCode.0. 794)
+ (x resetAttributes.0. 795)
+ (x setStyle.0. 258)
+ (x setStyle.1. 313)
+ (x setForegroundColor.0. 445)
+ (x setBackgroundColor.0. 473)
+ (h@2,1f c_isatty.0. 486)
+ (h@2,1f c_fileno.0. 346)
+ (x isatty.0. 353)
+ (x styledEchoProcessArg.0. 720)
+ (x styledEchoProcessArg.1. 290)
+ (x styledEchoProcessArg.2. 280)
+ (x styledEchoProcessArg.3. 287)
+ (x styledEchoProcessArg.4. 300)
+ (x styledEchoProcessArg.5. 328)
+ (x styledEchoProcessArg.6. 328)
+ (x styledWrite.0. 455)
+ (x styledWriteLine.0. 682)
+ (h items.0.Iwt9hf21. 1013)
+ (h inc.1.I6wjjge. 1847))

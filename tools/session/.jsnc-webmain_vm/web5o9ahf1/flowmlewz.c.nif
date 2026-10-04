@@ -1,0 +1,84 @@
+(.nif27)
+(.indexat 2664             )
+(stmts@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/floatfmt.nim
+ (proc@,E :fmtBigFloat.0.@5
+  (params@H
+   (param@1 :f.0 .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64))
+   (param@I :modeSel.0 .
+    (i@9 32))
+   (param@W :prec.0 .
+    (i@6 32))
+   (param@h :sep.0 .
+    (c@5 8)))string.0.sysvq0asl@t
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)
+    (param 1 1 reads)
+    (param 2 0 reads writes escapes)
+    (param 3 0 reads writes escapes)result 0))
+  (stmts@2,1
+   (var :result.0 . string.0.sysvq0asl@r,~1 .)
+   (call =wasMoved.2.sysvq0asl
+    (addr result.0))
+   (var@4,2 :mode.0 . FloatFormatMode.0.str7j0ifg@4,FE,../../../../../../home/savant/nimony/lib/std/strutils.nim 0@4,FE,../../../../../../home/savant/nimony/lib/std/strutils.nim)
+   (if@,3
+    (elif@3
+     (eq@8 modeSel.0~8 1@3)
+     (stmts@E
+      (asgn@5 mode.0~5 1@4,FF,../../../../../../home/savant/nimony/lib/std/strutils.nim)))
+    (else
+     (stmts
+      (stmts
+       (stmts
+        (if
+         (elif@5,1
+          (eq@8 modeSel.0~8 2@3)
+          (stmts@E
+           (asgn@5 mode.0~5 2@4,FG,../../../../../../home/savant/nimony/lib/std/strutils.nim)))))))))
+   (call@,5 =destroy.2.sysvq0asl result.0)
+   (var@R,5 :`x.0 . string.0.sysvq0asl@K,FK,../../../../../../home/savant/nimony/lib/std/strutils.nim
+    (call formatBiggestFloat.0.str7j0ifg~I f.0@1 mode.0@4 prec.0@A sep.0@G))
+   (asgn@7,5 result.0~7 `x.0@K)
+   (ret~2,~1 result.0)))
+ (proc@,M :parseBigFloat.0.@5
+  (params@J
+   (param@1 :s.0 . string.0.sysvq0asl@3))
+  (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64)
+  (pragmas
+   (smry callsUnknown
+    (param 0 0 reads writes escapes)))
+  (stmts@2,1
+   (var :result.1 .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64).)
+   (var@4,1 :f.1 .
+    (f@I,A,../../../../../../home/savant/nimony/lib/std/system/ctypes.nim 64)0.0@I)
+   (var@Q,2 :`x.1 . openArray.0.Ijk0jkw1.feaji4clb1@W,Q,../../../../../../home/savant/nimony/lib/std/system/openarrays.nim
+    (call toOpenArray.2.sysvq0asl
+     (addr s.0)))
+   (var :`x.2 .
+    (i@m,4F,../../../../../../home/savant/nimony/lib/std/parseutils.nim 32)
+    (call@P,2 parseBiggestFloat.0.party5a2l1~H `x.1@1
+     (addr@4 f.1)))
+   (asgn@7,3 result.1~7 f.1@2)
+   (ret~2,~1 result.1)))
+ (gvar :`iniGuard.0. .
+  (bool).)
+ (proc :`ini.0.
+  (params).
+  (pragmas
+   (smry callsUnknown))
+  (stmts
+   (if
+    (elif `iniGuard.0.
+     (stmts
+      (ret .))))
+   (asgn `iniGuard.0.
+    (true))
+   (call `ini.0.sysvq0asl)
+   (call `ini.0.str7j0ifg)
+   (call `ini.0.party5a2l1))))(.index@,1,../../../../../../home/savant/.cache/aowl-session/aowli-64510/src/aowli/floatfmt.nim
+ (x fmtBigFloat.0. 132)
+ (x parseBigFloat.0. 1403)
+ (h `iniGuard.0. 845)
+ (x `ini.0. 34))

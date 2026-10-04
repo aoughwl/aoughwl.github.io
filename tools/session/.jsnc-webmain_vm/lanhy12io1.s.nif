@@ -1,0 +1,222 @@
+(.nif27)
+(.indexat 7923             )
+(stmts@,7,../../../../../../home/savant/nimony/src/nimony/langmodes.nim
+ (import
+  (kv sysvq0asl "../../../../../../home/savant/nimony/lib/std/system.nim"))
+ (type@D,3 :CheckMode.0.~B x . .
+  (enum@2
+   (u 8)
+   (efld~B,1 :BoundCheck.0. x . CheckMode.0.
+    (tup 0 "BoundCheck"))
+   (efld~B,2 :RangeCheck.0. x . CheckMode.0.
+    (tup 1 "RangeCheck"))))
+ (proc@2,3 :dollar`.CheckMode.0. x . .
+  (params
+   (param :e.0 . . CheckMode.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@D :result.0 . . string.0.sysvq0asl .)
+   (case@D e.0
+    (of~B,1
+     (ranges BoundCheck.0.)
+     (stmts
+      (ret "BoundCheck")))
+    (of~B,2
+     (ranges RangeCheck.0.)
+     (stmts
+      (ret "RangeCheck"))))
+   (ret result.0)))
+ (type@E,7 :ModuleFlag.0.~C x . .
+  (enum@2
+   (u 8)
+   (efld~C,1 :IsSystem.0. x . ModuleFlag.0.
+    (tup 0 "IsSystem"))
+   (efld~2,1 :IsMain.0. x . ModuleFlag.0.
+    (tup 1 "IsMain"))
+   (efld@6,1 :SkipSystem.0. x . ModuleFlag.0.
+    (tup 2 "SkipSystem"))))
+ (proc@2,7 :dollar`.ModuleFlag.0. x . .
+  (params
+   (param :e.1 . . ModuleFlag.0. .))string.0.sysvq0asl . .
+  (stmts
+   (result@E :result.1 . . string.0.sysvq0asl .)
+   (case@E e.1
+    (of~C,1
+     (ranges IsSystem.0.)
+     (stmts
+      (ret "IsSystem")))
+    (of~2,1
+     (ranges IsMain.0.)
+     (stmts
+      (ret "IsMain")))
+    (of@6,1
+     (ranges SkipSystem.0.)
+     (stmts
+      (ret "SkipSystem"))))
+   (ret result.1)))
+ (const@H,B :DefaultSettings.0.~F x .
+  (set@4 CheckMode.0.~H,~7)
+  (setconstr@4
+   (set CheckMode.0.~H,~7)BoundCheck.0.~H,~7 RangeCheck.0.~H,~6))
+ (const@2,E :shortcuts.0. . .
+  (array@G
+   (c@C 8)
+   (rangetype@1 CheckMode.0. 0 1))
+  (aconstr@a
+   (array~K
+    (c@C 8)
+    (rangetype@1 CheckMode.0. 0 1))'b'~M,1 'r'~M,2))
+ (proc@,J :genFlags.0.@5 x . .
+  (params@E
+   (param@1 :s.0 . .
+    (set@6 CheckMode.0.@1).))string.0.sysvq0asl@L . .
+  (stmts@2,1
+   (result@7 :result.2 . . string.0.sysvq0asl .)
+   (asgn@7 result.2~7 ""@2)
+   (for@4,1
+    (call@5 items.0.Iirm3ye.~5 s.0)
+    (unpackflat
+     (let :e.2 . . CheckMode.0.~4,~I .))
+    (stmts~2,1
+     (cmd@6 add.1.sysvq0asl@1
+      (haddr~6 result.2)
+      (arrat@5 shortcuts.0. e.2@A 1@4,~8))))
+   (ret~2,~1 result.2)))
+ (proc@,O :parseFlags.0.@5 x . .
+  (params@G
+   (param@1 :s.1 . . string.0.sysvq0asl@3 .))
+  (set@G CheckMode.0.@1). .
+  (stmts@2,1
+   (result@7 :result.3 . .
+    (set@C,~E CheckMode.0.~H,~7).)
+   (asgn@7 result.3~7
+    (setconstr@2
+     (set@A,~E CheckMode.0.~H,~7)))
+   (var@4,1 :i.0 . .
+    (i 32)0@4)
+   (while@,2
+    (lt@8
+     (i 32)i.0~2
+     (call@3 len.4.sysvq0asl@1 s.1~1))
+    (stmts@2,1
+     (let@4 :c.0 . .
+      (c@L,6V,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 8)
+      (call@4 \5B\5D.9.sysvq0asl s.1 i.0@2))
+     (for@4,1
+      (infix@K \2E..0.I0dnoi61. BoundCheck.0.~C RangeCheck.0.@7)
+      (unpackflat
+       (let :m.0 . . CheckMode.0.~6,~Q .))
+      (stmts~2,1
+       (if
+        (elif@3
+         (eq@2
+          (c 8)c.0~2
+          (arrat@3 shortcuts.0. m.0@A 1@5,~G))
+         (stmts~1,1
+          (incl@6
+           (set CheckMode.0.)result.3~6 m.0@6)
+          (break@,1 .))))))
+     (cmd@,5 inc.1.I6wjjge.
+      (haddr@4 i.0))))
+   (ret~2,~1 result.3)))
+ (comment@D,E array.0.sysvq0asl char.0.sysvq0asl@H set.0.sysvq0asl@5,5 set.0.sysvq0asl@,A)
+ (iterator@B,L :items.0.Iirm3ye. . .@,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+  (at items.0.sysvq0asl CheckMode.0.@B,~2)
+  (params@W,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+   (param@1 :x.2 . .
+    (set@6 CheckMode.0.@M,Q,../../../../../../home/savant/nimony/src/nimony/langmodes.nim).))CheckMode.0.@B,~2 . .@,i,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+  (stmts@2,j,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+   (var@4,3 :i.1 . .
+    (i@D,1A,../../../../../../home/savant/nimony/lib/std/system/stringimpl.nim 32)
+    (conv@A
+     (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)BoundCheck.0.~3))
+   (if@,4
+    (elif@3
+     (le@2
+      (i 32)i.1~2
+      (conv@A
+       (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)RangeCheck.0.~3))
+     (stmts~1,1
+      (while
+       (true@6)
+       (stmts@2,1
+        (if
+         (elif@3
+          (inset@A
+           (set CheckMode.0.@M,Q,../../../../../../home/savant/nimony/src/nimony/langmodes.nim)x.2~A
+           (cast@1 CheckMode.0.@M,Q,../../../../../../home/savant/nimony/src/nimony/langmodes.nim i.1@8))
+          (stmts@O
+           (yld
+            (cast@6 CheckMode.0.@M,Q,../../../../../../home/savant/nimony/src/nimony/langmodes.nim i.1@8)))))
+        (if@,1
+         (elif@3
+          (expr@2,1p,../../../../../../home/savant/nimony/lib/std/system/comparisons.nim
+           (le@2,1
+            (i 32)
+            (conv@L,q,../../../../../../home/savant/nimony/lib/std/system/setops.nim
+             (i@U,C,../../../../../../home/savant/nimony/lib/std/system/defaults.nim 32)RangeCheck.0.~3)i.1@9,q,../../../../../../home/savant/nimony/lib/std/system/setops.nim))
+          (stmts@I
+           (break .))))
+        (call@3,2 inc.1.I6wjjge.~3
+         (haddr@1 i.1)))))))))
+ (iterator@S,T :\2E..0.I0dnoi61. . .@,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (at \2E..0.sysvq0asl CheckMode.0.~Q,~Q)
+  (params@Q,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (param@1 :a.1 . . CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim .)
+   (param@4 :b.1 . . CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim .))CheckMode.0.~Q,~Q
+  (pragmas@d,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (inline@2)).@,7,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+  (stmts@2,8,../../../../../../home/savant/nimony/lib/std/system/iterators.nim
+   (var@4 :i.2 . . CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim a.1@4)
+   (while@,1
+    (le@8 CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim i.2~2 b.1@3)
+    (stmts@2,1
+     (yld i.2@6)
+     (cmd@,1 inc.1.I0yjytv1.
+      (haddr@4 i.2))))))
+ (func@4,X :inc.1.I6wjjge. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl
+   (i 32))
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.4 . .
+    (mut@3
+     (i 32)).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.4)
+    (add@6
+     (i 32)
+     (hderef@1 x.4)
+     (conv@U,~F
+      (i 32)1@1)))))
+ (func@4,B,../../../../../../home/savant/nimony/lib/std/system/iterators.nim :inc.1.I0yjytv1. . .@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (at inc.1.sysvq0asl CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim)
+  (params@L,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (param@1 :x.5 . .
+    (mut@3 CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim).)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (pragmas@W,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (inline@2)).@,E,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+  (stmts@2,F,../../../../../../home/savant/nimony/lib/std/system/arithmetics.nim
+   (asgn@2,1
+    (hderef~2 x.5)
+    (add@6 CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim
+     (hderef@1 x.5)
+     (conv@U,~F CheckMode.0.@2,A,../../../../../../home/savant/nimony/src/nimony/langmodes.nim 1@1))))))(.index@,7,../../../../../../home/savant/nimony/src/nimony/langmodes.nim
+ (x CheckMode.0. 194)
+ (x@F,3 BoundCheck.0. 52)
+ (x@F,3 RangeCheck.0. 71)
+ (x dollar`.CheckMode.0. 73)
+ (x ModuleFlag.0. 359)
+ (x@G,7 IsSystem.0. 53)
+ (x@G,7 IsMain.0. 68)
+ (x@G,7 SkipSystem.0. 64)
+ (x dollar`.ModuleFlag.0. 74)
+ (x DefaultSettings.0. 428)
+ (h shortcuts.0. 147)
+ (x genFlags.0. 177)
+ (x parseFlags.0. 453)
+ (h items.0.Iirm3ye. 1096)
+ (h \2E..0.I0dnoi61. 1873)
+ (h inc.1.I6wjjge. 1003)
+ (h inc.1.I0yjytv1. 700))
