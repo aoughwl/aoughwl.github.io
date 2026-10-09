@@ -134,7 +134,7 @@ emits C, `gcc` compiles it, and the native binary returns the right answer:
 | float loop | `power(2.0, 10)` | `1024` |
 | `case` (values/lists/ranges/else) | `classify(15)` | `300` |
 
-`npm test` runs all 21 cases (18 harnessed procs + 3 whole-module builds).
+`npm test` runs all 24 cases (21 harnessed procs + 3 whole-module builds); on Linux it read **24/24** on 2026-10-08.
 
 ## Usage
 
