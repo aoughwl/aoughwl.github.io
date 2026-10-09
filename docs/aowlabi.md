@@ -17,7 +17,7 @@ invariants over a generated corpus — **1090 checks in about 25 seconds**. See
 [the gate](#the-gate) below for what that has caught.
 
 > **Status: landed** · private repo. Consumed today by the
-> [aowli](aowli) interpreter (`runtimelayer`, `hybridgen`, `arenamat`,
+> [aowli](/aowli) interpreter (`runtimelayer`, `hybridgen`, `arenamat`,
 > `aowlcjit`). The [aowlc](aowlc) C backend does not read it yet and
 > [aowljs](aowljs) does not exist yet — the JS representation row below is
 > written for a port that has not happened. Access via Discord
@@ -190,7 +190,7 @@ Writing it was not a formality:
   dropped and the tail round-up hid it whenever the aggregate was last. And a
   `{.closure.}` proc type in an object field was never lowered to its two-word
   `(fn, env)` shape, so such a type did not compile at all. Both are described in
-  [aoughwl compiler fixes](nimony-fork).
+  [aoughwl compiler fixes](https://github.com/aoughwl/nimony).
 
 ## When the answer would be a guess
 
@@ -206,12 +206,12 @@ range-less and inverted enums, zero-count arrays, missing element types,
 `packed` and `union` set together, a flexible array member that is not last, and
 `{.incompleteStruct.}`.
 
-This caught a live bug in [aowli](aowli), which was mapping every enum onto a
+This caught a live bug in [aowli](/aowli), which was mapping every enum onto a
 range-less descriptor; it now carries the range.
 
 ## Why it matters
 
-This is what makes [aowli](aowli)'s **hybrid mode** sound. In hybrid mode the
+This is what makes [aowli](/aowli)'s **hybrid mode** sound. In hybrid mode the
 interpreter marshals values across a live boundary into natively-compiled code —
 and the interpreter's marshaler and the C backend's codegen must agree on layout
 *byte-for-byte*, or a single hybrid native call corrupts memory. Because both
@@ -224,7 +224,7 @@ can be plausible and wrong for a long time without anything falling over.
 
 ## Consumed by
 
-[aowli](aowli) builds against it today, in `runtimelayer`, `hybridgen`,
+[aowli](/aowli) builds against it today, in `runtimelayer`, `hybridgen`,
 `arenamat` and `aowlcjit`:
 
 ```

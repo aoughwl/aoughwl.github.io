@@ -6,7 +6,7 @@ repo: aoughwl/obfuscate
 
 > ▶️ **[Try `aoughwl/obfuscate` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/obfuscate)** — clones the repo into the in-browser IDE, no install.
 
-An obfuscator for [Nimony](../nimony), built as a **test article**: a
+An obfuscator for [Nimony](https://github.com/nim-lang/nimony), built as a **test article**: a
 program-analysis that claims to understand code by its execution *structure*
 rather than its identifier *names* — or its source *shape* — should behave
 identically whether the input is readable or obfuscated. `obfnif` produces the

@@ -9,7 +9,7 @@
 The audit below was written first; the fixes it produced have since landed
 (`d939eda`). Two of its own recovery estimates did not survive further
 measurement and are corrected in place — see
-[§7](#7-ranked-work-list), which now records what shipped.
+[§7](#_7-ranked-work-list), which now records what shipped.
 
 | Landed | Effect |
 |---|---|

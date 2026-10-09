@@ -2,7 +2,14 @@
 repo: aoughwl/aowli
 ---
 
-# aowli — the nimony interpreter
+# aowli — the nimony interpreter (archived)
+
+::: warning Archived
+aowli is archived. Its interpreter and VM continue inside **[engine](/engine)**,
+the aoughwl runtime, where they share one heap and one garbage collector with
+our JavaScript engine. This page is kept as the record of aowli as it was; its
+figures are from September 2026 and are not updated.
+:::
 
 A standalone interpreter for **typed nimony**: it executes the compiler's
 post-semcheck typed AIF (`.s.nif`) — the exact artifact the native backend

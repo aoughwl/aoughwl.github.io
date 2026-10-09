@@ -2,7 +2,7 @@
 
 > ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
 
-An **idiomatic Python** backend for [nimony](../nimony): Nim types become real
+An **idiomatic Python** backend for [nimony](https://github.com/nim-lang/nimony): Nim types become real
 Python objects, not byte offsets.
 
 > **Status: working core** · private repo. The emitter reads a sem'd `.s.nif` and

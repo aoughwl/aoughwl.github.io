@@ -7,7 +7,7 @@ repo: aoughwl/aowlweb
 > ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
 
 Two backends that take Nim to the web: one emits JavaScript, the other emits
-WebAssembly. Both are plugins for [nimony](../nimony) — they read the lowered IR
+WebAssembly. Both are plugins for [nimony](https://github.com/nim-lang/nimony) — they read the lowered IR
 nimony hands its C backend and produce a `.js` or `.wasm` file instead of C. They
 share almost all of their code.
 
@@ -125,7 +125,7 @@ mutation, `mmap`, exceptions on the non-raising path, and everything above work.
 
 aowlweb also ships the cooperative-async runtime built on nimony's
 `{.passive.}` coroutines — **46/46 under Node**. The compiler-side enablers are
-recorded on the [nimony](../nimony) page.
+recorded on the [nimony](https://github.com/nim-lang/nimony) page.
 
 | Piece | What it gives you | Where |
 |---|---|---|

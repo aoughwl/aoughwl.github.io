@@ -2,7 +2,7 @@
 
 > ▶️ **[Try it live in the Playground](https://aoughwl.github.io/playground/)** — write and run `.nim` / `.aowl` in your browser, no install.
 
-An **idiomatic TypeScript** backend for [nimony](../nimony): Nim types become real
+An **idiomatic TypeScript** backend for [nimony](https://github.com/nim-lang/nimony): Nim types become real
 TypeScript types, not byte offsets.
 
 > **Status: working core.** The emitter transpiles the computational core of the

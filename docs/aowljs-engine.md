@@ -1,12 +1,23 @@
 ---
 repo: aoughwl/aowljs-engine
+title: aowljs-engine — a JavaScript engine in nimony
+description: A from-scratch JavaScript engine — parser, bytecode interpreter, baseline x86-64 JIT and an optimizing tier — written in nimony. 53,593 of 53,595 test262 tests pass, and the optimizing tier is within 1.6x of V8 on our benchmark set.
 ---
 
 # aowljs-engine — a JavaScript engine in nimony
 
-`aowljs-engine` **runs** JavaScript: a parser, a bytecode interpreter and a
-baseline x86-64 JIT, written in nimony. (Its sibling [aowljs](aowljs) goes the
-other way and compiles nimony *to* JavaScript.)
+`aowljs-engine` **runs** JavaScript: a parser, a bytecode interpreter, a
+baseline x86-64 JIT and an optimizing tier (SSA, speculation with
+deoptimization, inlining), written in nimony. (Its sibling [aowljs](aowljs)
+goes the other way and compiles nimony *to* JavaScript.)
+
+It is the JavaScript half of [engine](/engine), the aoughwl runtime, and the
+engine behind [Titicaca](/docs/titicaca), the browser inside Jester.
+
+::: info Source private
+The repository is private; this page and its numbers come from the
+repository's own test and benchmark harnesses.
+:::
 
 [[toc]]
 
@@ -14,17 +25,15 @@ other way and compiles nimony *to* JavaScript.)
 
 ## Conformance
 
-[test262](https://github.com/tc39/test262), the ECMAScript conformance suite:
+[test262](https://github.com/tc39/test262), the ECMAScript conformance suite,
+across `language`, `built-ins`, `annexB`, `intl402` and `staging`:
+**53,593 of 53,595 pass** (October 2026).
 
-| Suite | Passed |
-|:--|--:|
-| language + built-ins + annexB | 48,631 / 48,631 |
-| intl402 | 3,365 / 3,365 |
-| staging | 1,481 / 1,483 |
-| **all** | **53,477 / 53,479** |
-
-The result is the same with the JIT off, on (hot functions), and forced on for
-every function (`--jit=always`). The two failures are SpiderMonkey tests under
+The result is the same with the JIT off, on (hot functions), forced on for
+every function (`--jit=always`), and with the optimizing tier forced almost at
+once (`--opt-threshold=2`). Running the whole suite through each compiler is
+how the compilers are tested: a compiled function has to give the interpreter's
+answer on every test. The two failures are SpiderMonkey tests under
 `staging/sm` that require the opposite of test262's own
 `annexB/language/function-code/block-decl-func-skip-arguments.js`; passing them
 would fail that test.
@@ -35,6 +44,21 @@ explicit resource management (`using`), ShadowRealm, iterator helpers, RegExp
 `v` flag with Unicode 17 tables, SharedArrayBuffer and Atomics across agents.
 
 ## Performance
+
+### With the optimizing tier (October 2026)
+
+Total CPU seconds over the sixteen programs below, one machine, same run:
+
+| Engine | Total |
+|:--|--:|
+| V8 (node, all tiers) | 1.29 |
+| **aowljs-engine, optimizing tier** | **1.99** |
+| aowljs-engine, baseline JIT only | 3.47 |
+
+The optimizing tier beats node on `loop`, is level on `objmap` and `json`, and
+is within 1.5 to 3 times elsewhere.
+
+### Per benchmark, before the optimizing tier (September 2026)
 
 Sixteen programs from `tests/engine/perf` (loops, calls, closures, objects,
 arrays, strings, JSON, RegExp, Map/Set, a ray tracer, SHA-256, a functional
@@ -103,8 +127,15 @@ python3 tests/engine/perf/run.py --runs 3 \
   [unicode](/docs/unicode), and the JIT's assembler, executable memory and
   register allocator are extracted as [jit](/docs/jit).
 
-The invariants behind all of this are in the repo's
-[`src/engine/README.md`](https://github.com/aoughwl/aowljs-engine/blob/main/src/engine/README.md).
+- **Optimizing tier**: SSA over the bytecode, type speculation guarded by
+  deoptimization back to the interpreter, call-target and accessor inlining,
+  and linear-scan register allocation.
+- **Embedding**: `embed.nim` lets a host register natives with static C
+  signatures that compiled code calls directly. [engine](/engine) uses it to
+  let JavaScript call compiled nimony by address.
+
+The invariants behind all of this are in the repository's
+`src/engine/README.md`.
 
 ## Build and run
 
@@ -112,7 +143,7 @@ Inside Linux or WSL, with a nimony toolchain at `~/nimony`:
 
 ```
 tests/engine/build.sh -d:danger          # -> ~/jsengine  (OUTBIN=... to change)
-~/jsengine [--jit=off|on|always] [--jit-stats] [--dis] a.js b.js
+~/jsengine [--jit=off|on|always] [--opt=off] [--jit-stats] [--prof=F] [--dis] a.js b.js
 ```
 
 `-d:release` keeps nimony's runtime checks on, for development. Scripts given

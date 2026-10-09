@@ -20,6 +20,7 @@ const sidebar = [
     text: 'OVERVIEW',
     items: [
       { text: 'Welcome', link: '/' },
+      { text: 'Get started in 5 minutes', link: '/start' },
       { text: 'Parity', link: '/docs/parity' },
       { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
     ],
@@ -31,6 +32,28 @@ const sidebar = [
       { text: 'aowli — $9.99/mo', link: '/store/aowli' },
       { text: 'jester — $19.99/mo (upcoming)', link: '/store/jester' },
       { text: 'Your licence', link: '/store/license' },
+    ],
+  },
+  {
+    text: 'GAMES',
+    items: [
+      {
+        text: 'Modding engine — Jester',
+        link: '/jester',
+        collapsed: true,
+        items: [
+          { text: 'Overview, and the live demo', link: '/jester' },
+          { text: 'Documentation', link: '/docs/jester' },
+          { text: 'Getting started', link: '/docs/jester/getting-started' },
+          { text: 'The mod API', link: '/docs/jester/mod-api' },
+          { text: 'Catalogs', link: '/docs/jester/catalogs' },
+          { text: 'The UI library', link: '/docs/jester/ui' },
+          { text: 'Importers', link: '/docs/jester/importers' },
+          { text: 'Networking', link: '/docs/jester/networking' },
+          { text: 'The host surface', link: '/docs/jester/host-surface' },
+          { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
+        ],
+      },
     ],
   },
   {
@@ -143,26 +166,18 @@ const sidebar = [
     ],
   },
   {
-    text: 'JAVASCRIPT ENGINE',
-    items: [
-      { text: 'Interpreter + JIT — aowljs-engine', link: '/docs/aowljs-engine' },
-    ],
-  },
-  {
     text: 'RUNTIME',
     items: [
       {
-        text: 'Interpreter — aowli',
-        link: '/aowli',
-        collapsed: true,
+        text: 'Runtime — engine',
+        link: '/engine',
+        collapsed: false,
         items: [
-          { text: 'Engines', link: '/aowli/engines' },
-          { text: 'Debugging', link: '/aowli/debugging' },
-          { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
-          { text: 'Get a licence — $9.99/mo', link: '/store/aowli' },
+          { text: 'JavaScript engine — aowljs-engine', link: '/docs/aowljs-engine' },
+          { text: 'Nimony interpreter (was aowli)', link: '/aowli' },
         ],
       },
-      { text: 'Runtime — aowlrt', link: '/docs/aowlrt' },
+      { text: 'Native runtime — aowlrt', link: '/docs/aowlrt' },
       { text: 'Plugin host — aowlhost', link: '/docs/aowlhost' },
       { text: 'Value layout & ABI — aowlabi', link: '/docs/aowlabi' },
     ],
@@ -251,30 +266,18 @@ const sidebar = [
     ],
   },
   {
-    text: 'GAMES',
-    items: [
-      {
-        text: 'Modding engine — Jester',
-        link: '/jester',
-        collapsed: true,
-        items: [
-          { text: 'Overview, and the live demo', link: '/jester' },
-          { text: 'Documentation', link: '/docs/jester' },
-          { text: 'Getting started', link: '/docs/jester/getting-started' },
-          { text: 'The mod API', link: '/docs/jester/mod-api' },
-          { text: 'Catalogs', link: '/docs/jester/catalogs' },
-          { text: 'The UI library', link: '/docs/jester/ui' },
-          { text: 'Importers', link: '/docs/jester/importers' },
-          { text: 'Networking', link: '/docs/jester/networking' },
-          { text: 'The host surface', link: '/docs/jester/host-surface' },
-          { text: 'The browser build’s memory', link: '/docs/jester/browser-memory' },
-        ],
-      },
-    ],
-  },
-  {
     text: 'ATTIC',
     items: [
+      {
+        text: 'aowli (archived)',
+        link: '/aowli',
+        collapsed: true,
+        items: [
+          { text: 'Engines', link: '/aowli/engines' },
+          { text: 'Debugging', link: '/aowli/debugging' },
+          { text: 'Debugging a real bug', link: '/aowli/debugging-a-real-bug' },
+        ],
+      },
       {
         text: 'aowlspt — Tarkov modding',
         link: '/docs/aowlspt',
@@ -465,7 +468,7 @@ const sidebar = [
 export default defineConfig({
   title: 'aoughwl',
   description:
-    'A ground-up, self-hosted reimplementation of the Nimony toolchain — parser, semantic checker, lowering, and code generators — open at every seam and running in your browser.',
+    'A software stack built from scratch in Nimony: a compiler toolchain, a JavaScript engine, a browser engine and a game platform, each checked against the reference it replaces.',
   lang: 'en-US',
   cleanUrls: true,
   // Follow the OS/browser setting (iOS + macOS dark mode, Windows, Android) on
@@ -512,14 +515,14 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'aoughwl' }],
     ['meta', { property: 'og:title', content: 'aoughwl' }],
-    ['meta', { property: 'og:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
+    ['meta', { property: 'og:description', content: 'A software stack built from scratch in Nimony: compiler toolchain, JavaScript engine, browser engine, game platform. Try it in your browser.' }],
     ['meta', { property: 'og:url', content: 'https://aoughwl.com/' }],
     ['meta', { property: 'og:image', content: 'https://aoughwl.com/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'aoughwl' }],
-    ['meta', { name: 'twitter:description', content: 'A self-hosted reimplementation of the Nimony toolchain — open at every seam, running in your browser.' }],
+    ['meta', { name: 'twitter:description', content: 'A software stack built from scratch in Nimony: compiler toolchain, JavaScript engine, browser engine, game platform. Try it in your browser.' }],
     ['meta', { name: 'twitter:image', content: 'https://aoughwl.com/og-image.png' }],
     // Apply the saved sidebar width/offset BEFORE first paint (no flash), and
     // stamp `aowl-boot` for the one-time entrance animation.
@@ -550,7 +553,7 @@ export default defineConfig({
 
     footer: {
       message:
-        'aoughwl — self-hosted platform for things n stuff. <a href="https://discord.gg/nxa3W7w4rJ" target="_blank" rel="noopener">Contact / Support</a> on Discord for access to the private backends.',
+        'aoughwl — a software stack built from scratch in Nimony. <a href="/start">Get started</a> · <a href="https://discord.gg/nxa3W7w4rJ" target="_blank" rel="noopener">Discord</a> · <a href="https://github.com/aoughwl" target="_blank" rel="noopener">GitHub</a>',
       copyright: '© aoughwl',
     },
   },

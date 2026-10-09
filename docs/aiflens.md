@@ -6,7 +6,7 @@ repo: aoughwl/aiflens
 
 > ▶️ **[Try `aoughwl/aiflens` live in the Playground](https://aoughwl.github.io/playground/#clone=aoughwl/aiflens)** — clones the repo into the in-browser IDE, no install.
 
-A thin CLI over [Nimony](../nimony)'s own NIF libraries (`nifreader` /
+A thin CLI over [Nimony](https://github.com/nim-lang/nimony)'s own NIF libraries (`nifreader` /
 `nifstreams` / `nifcursors` / `nifindexes`). It reads `nimcache/*.nif` artifacts
 with the **real parser** and emits compact JSON for a host tool to consume.
 

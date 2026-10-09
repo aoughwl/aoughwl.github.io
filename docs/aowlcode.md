@@ -46,7 +46,6 @@ all hooks, and exposes `/aowlcode:*` commands (see `/help`).
 | [Internals](aowlcode/internals) | Skills, hooks, LSP dispatch, config env vars. |
 | [Fleet](aowlcode/fleet) | **Running sessions from a phone.** The supervisor, the attention filter, projects (standing vs one-job), subscriptions, self-repair with rollback. |
 | [Token budget](aowlcode/token-budget) | **The audit of the thrift claim.** Measured savings per tool, context amplification (355×), the fixed cost of the tool schemas, and the ranked work list. |
-| [Full README](reference/aowlcode) | Verbatim upstream README archive. |
 
 ## Toolchain detection
 

@@ -12,7 +12,7 @@ Repo **`aoughwl/aowlrt`** (public). Status: **working** — `echo "hello"` and 4
 other programs compile to native binaries and pass a **44/44** acceptance suite,
 **ASan/UBSan/LSan-clean, leak-free**. It is the largest single unlock in the
 [aowlmony](aowlmony) rewrite: it lets a program compile *natively* through the
-self-owned stack instead of running under the [aowli](aowli) interpreter.
+self-owned stack instead of running under the [aowli](/aowli) interpreter.
 
 Per the aoughwl convention this C runtime is the **bootstrap seed & oracle** for
 the eventual aowl-source `system` module (Phase 2).

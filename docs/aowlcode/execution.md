@@ -5,7 +5,7 @@
 ---
 
 Nimony-only. `trace` and `debug` go past compiling — they **run** the program
-under the [aowli](../aowli) tree-walking interpreter and report what happened,
+under the [aowli](/aowli) tree-walking interpreter and report what happened,
 without adding `echo`/`write` statements to the source.
 
 ## Pipeline (shared by both tools)

@@ -32,7 +32,7 @@ typed AIF (`.s.nif`) ready for [aowlhexer](../aowlhexer).
 | `--base:<dir>` | The project base directory (for path-relative module resolution). |
 | `--nimcache:<dir>` | Where the driver placed the parsed `.p.nif` inputs (defaults to the input's directory). |
 | `--noSystem` | Do not auto-load `system`. |
-| `--diagnostics:json` | Emit diagnostics as a JSON array (see [Diagnostics → JSON](diagnostics#json-output--the-tooling-seam)). |
+| `--diagnostics:json` | Emit diagnostics as a JSON array (see [Diagnostics → JSON](diagnostics#json-output-—-the-tooling-seam)). |
 | `--macros:<mode>` | How a compile-time plugin is executed — `auto` (default), `interp`, `compiled`, `off`. Append `,verbose` to report each step. |
 | `--ceDepth:<n>` | Internal. How many const-evaluator generations deep this process is; aowlsem sets it on the child it spawns. Not for hand use. |
 

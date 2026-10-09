@@ -116,5 +116,5 @@ The JavaScript backend came first and is the reference. WebAssembly was added as
 a second *instruction selector* over the same layout engine and module loader —
 additive, not a rewrite — which is why its scalar/aggregate/linking story landed
 quickly but the runtime-dependent pieces (heap, indirect calls) trail behind. See
-the top-level [README](../README.md) for the "one memory model, compiled twice"
+the top-level [aowlweb overview](/docs/aowlweb) for the "one memory model, compiled twice"
 design.

@@ -1,5 +1,12 @@
 # Engines — tree-walker vs VM
 
+::: warning Archived
+aowli is archived. Its interpreter and VM continue inside **[engine](/engine)**,
+the aoughwl runtime, where they share one heap and one garbage collector with
+our JavaScript engine. This page is kept as the record of aowli as it was; its
+figures are from September 2026 and are not updated.
+:::
+
 [[toc]]
 
 ---

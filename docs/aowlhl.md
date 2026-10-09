@@ -12,7 +12,7 @@ thin language emitters — [aowlts](aowlts) and [aowlpy](aowlpy) —
 render into TypeScript and Python.
 
 > **Status: reader layer landed** · private repo. The shared HL-IR *reading*
-> layer is live and consumed by two backends ([aowli](aowli) interpreter/VM and
+> layer is live and consumed by two backends ([aowli](/aowli) interpreter/VM and
 > [aowljs](aowljs) emitter); the richer TS/Py *lowering* is the next stage.
 > Access via Discord **timbuktu_guy**.
 

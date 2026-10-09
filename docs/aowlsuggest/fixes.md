@@ -171,7 +171,7 @@ repaired source.
 ## Editor & CI surfacing
 
 The same verified fixes flow out to every consumer of the tool. In an editor
-(through [aowllsp](aowllsp) or the built-in `lsp-server`) each fix is a
+(through [aowllsp](/docs/aowllsp) or the built-in `lsp-server`) each fix is a
 `CodeAction`, and a single **`source.fixAll`** action applies all of them at once
 — ideal for fix-on-save. In CI, `lint --format:sarif` emits each fix as a SARIF
 `fix`, so **GitHub code scanning** renders it as a one-click *Apply fix* button in
@@ -183,7 +183,7 @@ The set covers every repair that is *mechanically unambiguous*; anything that
 needs human judgement (which condition to add, object-vs-enum for a missing type
 `=`) stays a **suggestion**. Because aowlparser's `fix` hint is prose, each code
 needs a hand-written mapping here. The open
-[parser API request](the-contract#when-the-json-isnt-enough) asks aowlparser to
+[parser API request](the-contract#when-the-json-isn-t-enough) asks aowlparser to
 emit a structured `edit` instead — at which point `fix` becomes "apply the edit
 if present", the verify loop is unchanged, and repairs extend to every code the
 parser can fix, with no per-code logic in aowlsuggest.

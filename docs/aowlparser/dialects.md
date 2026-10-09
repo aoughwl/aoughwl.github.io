@@ -92,5 +92,5 @@ counted as agreement: an explicit `? key`, and a collection used as a key
 (`{a: 1}: v`). Anchors and aliases are preserved as text, not resolved — this is
 a concrete-syntax dialect, not a YAML loader.
 
-See [Outside oracles](testing#outside-oracles) for what the yaml-test-suite
+See [Differential testing](testing) for what the yaml-test-suite
 found that the byte-exact round-trip could not.

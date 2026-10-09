@@ -71,8 +71,8 @@ The same tight arithmetic loop, timed per iteration:
 |---|---:|---:|
 | native JS (hand-written) | ~2.9 ns | 1× |
 | **aowljs** (transpiled) | **~2.1 ns** | **~1× — the emitted loop *is* native JS** |
-| bytecode VM ([aowli](aowli)) | ~39 µs | ~15,000× slower |
-| tree-walk ([aowli](aowli)) | ~61 µs | ~24,000× slower |
+| bytecode VM ([aowli](/aowli)) | ~39 µs | ~15,000× slower |
+| tree-walk ([aowli](/aowli)) | ~61 µs | ~24,000× slower |
 
 - **~18,000–28,000× faster** than the interpreter on compute-bound loops.
 - **10,000,000 iterations in ~21 ms** — and *no out-of-memory*: aowljs has no
@@ -106,7 +106,7 @@ function isPrime(n){
 
 aowljs covers a **(growing) subset** of the language. On any node it doesn't
 handle, the emitter throws `Unsupported(…)` and the run falls back to the
-faithful [aowli](aowli) engines — so **correctness is never worse than a normal
+faithful [aowli](/aowli) engines — so **correctness is never worse than a normal
 Run**, and the playground's run footer says *which* engine ran and *why* it fell
 back (e.g. `unsupported expr 'prefix'`).
 
@@ -169,7 +169,7 @@ for programs that actually reach it.
 Native values buy speed and readability by giving up **low-level fidelity**:
 
 - `int64` wraparound and unsigned overflow — JS numbers are exact only to 2⁵³.
-  *(This one is opt-out: `--faithful` mode fixes it — see [export modes](#faithfulness--export-modes) below.)*
+  *(This one is opt-out: `--faithful` mode fixes it — see [export modes](#faithfulness-export-modes) below.)*
 - bitwise/shift ops run in JS's **32-bit** space, so a mask or shift past 2³¹
   diverges (fine for the usual small-flag bit-twiddling).
 - pointer arithmetic, `ptr` / `addr`, object *identity* vs value.

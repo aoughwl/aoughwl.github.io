@@ -96,7 +96,7 @@ Default off. Exit with a **non-zero status** if any **error-level diagnostic** w
 raised — an unknown/illegal byte, an unterminated string, a rejected BOM, or a
 structural bracket problem. Turns a normal `p` parse into a CI lint gate: a clean
 file exits `0`, a malformed one exits `1` (while still emitting best-effort AIF).
-For lint-only output with no AIF, use the [`check`](#check--lint-mode) command.
+For lint-only output with no AIF, use the [`check`](#check-—-lint-mode) command.
 
 ### `--max-depth:N`
 

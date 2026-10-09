@@ -222,5 +222,5 @@ followed by a sibling statement raises `E0900`.
 ---
 
 For the full list of supported constructs see the [main page →
-Capabilities](../aowlsem#capabilities); for how these transformations are driven
+Capabilities](../aowlsem); for how these transformations are driven
 (demand-driven, fused check+lower) see [Architecture](architecture).

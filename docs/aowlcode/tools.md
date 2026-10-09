@@ -8,7 +8,7 @@
 optional `terse: bool` (default = truthiness of `NIMLANG_AGGRESSIVE`) — see
 [Terse mode](#terse-mode). The other 14 — including `search`, the most expensive
 tool in the system — ignore it; `nif_outline` and `build` accept it but are
-measured inert. See [Token budget](token-budget#6-terse-mode-which-tools-honour-it)
+measured inert. See [Token budget](token-budget#_6-terse-mode-which-tools-honour-it)
 for the per-tool numbers. `compile`, `build`, and `defs_uses` also take
 `raw: bool`, echoing the exact argv/contract they ran — see [Raw mode](#raw-mode).
 

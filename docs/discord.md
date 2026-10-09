@@ -143,7 +143,7 @@ observed in the wild, with the resulting message blaming the token.
 The socket-ownership bug above is worth a note about *how* it was found, because
 the answer at the time was "not with a debugger".
 
-[`aowli`](/docs/aowli) could not run **any** net-stack program. `tcp/native.nim`
+[`aowli`](/aowli) could not run **any** net-stack program. `tcp/native.nim`
 declares the POSIX socket constants as bodyless `{.importc.}` globals —
 `SOL_SOCKET`, `SO_REUSEADDR`, `O_NONBLOCK` and the rest — and nothing seeded
 them, so they hit the interpreter's unbound-importc refusal. A `debug_session`

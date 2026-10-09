@@ -24,7 +24,7 @@ parts that aren't green.
 | **semcheck** | [aowlsem](aowlsem) | `nimsem` | ✅ | corpus **924/941** byte-exact (15 of the 17 misses are oracle-side); own dependency closure **31 of 56** modules byte-exact; `std/system` semchecks with **89 differing tokens** over ~92,600 lines — all Windows, 2026-09-09, aowlsem commit `d4955d3e`. Linux `moddiff` baseline: 47 of 55 (2026-08-19). Not comparable across platforms. |
 | **lower** | [aowlhexer](aowlhexer) | `hexer` | ⏳ | runs the reference's 25 passes with **two of our own fixes** on top (below), so it is near-identical rather than identical by construction; the from-scratch rewrite is next |
 | **C codegen** | [aowlc](aowlc) | `lengc` | ✅ | end-to-end correct today (runs, ASan-clean); text byte-parity with `lengc` is the active push |
-| **interpret / VM** | [aowli](/aowli) | *(new)* | ✅ | two independent engines that agree with each other and with native across a 423-program differential corpus — zero in-scope divergence (aowli **v0.3.3**) |
+| **interpret / VM** | the Nimony interpreter in [engine](/engine) (was [aowli](/aowli)) | *(new)* | ✅ | a tree-walker and a bytecode VM over typed `.s.nif`; **460 / 460** runnable corpus programs byte-identical to native compile-and-run, and the cross-check corpus at 461 agree / 0 diverge on the shared-GC runtime (2026-10-08) |
 | **emit → TS / Py / JS / WASM** | [aowlts](aowlts) · [aowlpy](aowlpy) · [aowljs](aowljs) · [aowlweb](aowlweb) | *(nimony backends)* | ✅ | idiomatic, readable output; behaviour-verified against native, run-for-run |
 
 ✅ = written from scratch · ⏳ = still reuses the reference implementation
