@@ -561,6 +561,20 @@ async function runSem(pnif, semEngine, multi){
 // from the module's own embedded index. Same constant, same reasoning, as
 // `webvfs.publishMainModule`.
 const EMPTY_INDEX_NIF = "(.nif27)\n(index\n)\n";
+
+// THE TRANSPORT ESCAPE. A module body crosses into aowli as a JS string, and the
+// nim_js boundary (`.toStr`) re-encodes every char >= 0x80 as TWO UTF-8 bytes —
+// so a frame whose <len> counted latin1 chars ends early, and every module after
+// the first high byte is misaligned. aowli's loader (webvfs.loadWebModules)
+// already expects the packer's side of the contract: bytes >= 0x80 written as
+// `\xHH` (NIF never emits a literal `\x`), frame length counted on the escaped
+// text. This packer never did it. Measured 2026-10-09: ONE "café" in an imported
+// module made every routine in it answer nil on the VM; std/strutils carries 8
+// such bytes, which is why `"a,b,c".split(',').len` printed 0 and
+// `toUpperAscii('q')` printed nil while native aowli printed 3 and Q.
+function escapeHighBytes(s){
+  return s.replace(/[\x80-\xff]/g, c => "\\x" + c.charCodeAt(0).toString(16).padStart(2, "0"));
+}
 async function framedStdModules(pnif){
   await ensureAowlsemMods();
   if(!asMods || !asModsByName) return "";
@@ -572,7 +586,8 @@ async function framedStdModules(pnif){
     if(!mod) continue;
     // webvfs frames a module as "<name>\t<len>\n<body>", and the name is the
     // file `programs.load` will ask for \u2014 which is the module's suffix.
-    out += suffix + ".s.nif\t" + mod.body.length + "\n" + mod.body;
+    const body = escapeHighBytes(mod.body);
+    out += suffix + ".s.nif\t" + body.length + "\n" + body;
     out += suffix + ".s.idx.nif\t" + EMPTY_INDEX_NIF.length + "\n" + EMPTY_INDEX_NIF;
   }
   return out;

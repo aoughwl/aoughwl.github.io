@@ -34,7 +34,10 @@ if (modDir) {
   for (const f of files) {
     if (!f.endsWith(".s.nif") || f.endsWith(".s.idx.nif")) continue;
     const stem = f.slice(0, -".s.nif".length);
-    const body = fs.readFileSync(path.join(modDir, f), "latin1");
+    // `\xHH` for bytes >= 0x80, exactly as worker.js escapeHighBytes: the frame
+    // must stay 7-bit or the nim_js string boundary re-encodes it as UTF-8.
+    const body = fs.readFileSync(path.join(modDir, f), "latin1")
+      .replace(/[\x80-\xff]/g, (c) => "\\x" + c.charCodeAt(0).toString(16).padStart(2, "0"));
     mods += f + "\t" + body.length + "\n" + body;
     const idxName = stem + ".s.idx.nif";
     const idx = files.includes(idxName) ? fs.readFileSync(path.join(modDir, idxName), "latin1") : EMPTY_INDEX_NIF;
