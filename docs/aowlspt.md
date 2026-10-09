@@ -10,7 +10,7 @@ title: aowlspt — mods for post-1.0 Escape From Tarkov (deprecated)
 **[Jester](/docs/jester)**, the modding engine: a small Unity host, mods written
 in [aowlmony](/docs/aowlmony) and hot-swapped while the game runs, with the
 whole boundary between a mod and the engine being
-[220 host calls](/docs/jester/host-surface).
+[440 host calls](/docs/jester/host-surface) (at engine commit `f559ceb`).
 
 What that means for the Tarkov work specifically:
 
