@@ -67,28 +67,36 @@ aowlup rebuild aowlsem --yes  # rebuild from source
 ## Fresh machine — `aowlup setup`
 
 There is no prebuilt nimony binary, so **setup is the build**. `aowlup setup`
-clones the missing repos (components, plus the shared source libs
-`aowlkit`/`aowlhl`) and builds them **nimony first** — the bootstrap compiler,
-via `nim c -r src/hastur build all` with a clean Nim — then each component with
-the freshly-built toolchain on `PATH` and `NIM`/`NIMONY`/`NIMONY_SRC`/`AOWLKIT`
-in its environment. Dry-run by default; `--yes` executes.
+clones the components into your home directory (`~/nimony`, `~/aowlc`,
+`~/aowlparser`, …) and builds them, **nimony first**: it clones the
+[aoughwl nimony fork](https://github.com/aoughwl/nimony), which the components
+are pinned to, and bootstraps it with `nim c -r src/hastur build all`. It then
+builds each component with that compiler, writes the `~/.aowl/bin` shims, and
+registers everything. Dry-run by default; `--yes` executes.
 
 ```sh
 aowlup setup            # show the plan
 aowlup setup --yes      # clone + build everything
+aowlup install aowlmony # the driver, from its public release
 ```
 
-Verified from a genuinely empty machine: **nimony builds from source**, and the
-tooling (`aowllsp`/`aowlsuggest`/`aowlfmt`/`aowllens`) plus node components build
-cleanly. Two things a fully cold run still needs:
+**Measured 2026-10-08** on an empty home directory with no git credentials,
+starting from `install.sh`: setup exits 0 in about 2 minutes, and
+`aowlmony run hello.nim` prints `hello`. The full walkthrough is
+[Get started in 5 minutes](/start).
 
-- **git access** for the private component repos (`aowlsem`, `aowli`, `aowlts`,
-  `aowlpy`, `aowlhl`) — any standard credential helper handles it; anonymous
-  clones are skipped with a note.
-- **a matching nimony** — `aowlsem`/`aowlhexer` and the source-emitter backends
-  are pinned to a specific nimony API, so building them against *latest upstream*
-  can mismatch. Pinning nimony to the version the components target is the
-  `mony.toml` / lockfile layer (roadmap), not yet automated here.
+What a machine without credentials does not get:
+
+- **private components** (`aowlsem`, `aowljs`, `aowlts`, `aowlpy`, `aoughwlup`)
+  report `clone failed` and are skipped; the driver uses Nimony's own pass for
+  each missing slot.
+- **the paid bundle** (the interpreter, its debugger, the TS / Python /
+  JS-WASM backends) comes from `aowlup login YOUR-KEY`, not from setup.
+- **aowlhexer** currently does not build against the fork's published master,
+  so lowering falls back to Nimony's `hexer` (being fixed).
+
+You need Linux x86-64 with glibc 2.34+, `git`, `curl`, `gcc`, Nim 2 (for the
+one-time bootstrap) and Node.js (the C backend's linker driver).
 
 ## Editor — `aowlup vscode`
 
