@@ -87,9 +87,10 @@ starting from `install.sh`: setup exits 0 in about 2 minutes, and
 
 What a machine without credentials does not get:
 
-- **private components** (`aowlsem`, `aowljs`, `aowlts`, `aowlpy`, `aoughwlup`)
-  report `clone failed` and are skipped; the driver uses Nimony's own pass for
-  each missing slot.
+- **private components** (`aowlsem`, `aowli`, `aowljs`, `aowlts`, `aowlpy`,
+  `aoughwlup`) show as `private — skipped` in the plan (since v0.1.0-alpha.5,
+  checked with `git ls-remote` before cloning); the driver uses Nimony's own pass
+  for each missing slot.
 - **the paid bundle** (the interpreter, its debugger, the TS / Python /
   JS-WASM backends) comes from `aowlup login YOUR-KEY`, not from setup.
 - **aowlhexer** currently does not build against the fork's published master,
