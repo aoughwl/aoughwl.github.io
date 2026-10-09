@@ -139,7 +139,7 @@ changes the emitted AIF.
 | [Architecture](aowlparser/architecture) | fused parse+emit, range-splitter, include-file module map, line-info model, `nifler` oracle |
 | [Grammar coverage](aowlparser/grammar) | lexer / expression / statement / section / type constructs reproduced |
 | [Dialects](aowlparser/dialects) | nine byte-exact front ends on one core — nim, css, html, py, js, json, vds, md, yaml |
-| [JSON reader](aowlparser/json-reader) | `jsonfast`: 963–2248 MB/s, held to CPython on 10k files and 494k prefixes |
+| [JSON reader](aowlparser/json-reader) | `jsonfast`: 1,147–1,857 MB/s on a 4.2 MB document (V8 `JSON.parse` 567, CPython 223; `tests/json/bench.sh`, i9-10850K, 2026-10-08), held to CPython on 10k files and 494k prefixes |
 | [The .p.nif format](aowlparser/output-format) | header directives, base62 line-info suffix, operator escaping, tag vocabulary |
 | [Browser & JS](aowlparser/browser) | client-side build, the `globalThis.__np_*` contract, `webdiag` |
 | [Differential testing](aowlparser/testing) | oracle harness, `canon.py`, structural vs byte-exact |
