@@ -883,7 +883,26 @@ self.onmessage = (ev) => {
         // those exact bytes correctly all along, which is what said the VM itself
         // was never the problem.
         const forVm = engine === "vm" ? await framedStdModules(msg.pnif) : "";
-        const res = runByEngine(snif, msg.stdin, engine, forVm + (mods || ""));
+        let res;
+        if(engine === "nifjs"){
+          // Native JS falls back to the VM when it meets something it cannot
+          // compile — and that VM run needs the same std modules as a direct VM
+          // run, or it prints NOTHING and exits 0 (the silence described above).
+          // Measured 2026-10-09: `type Meters = distinct int` + a custom `+`
+          // printed "7" on Bytecode VM and "" on Native JS -> fell back. Frame
+          // the modules only once Native JS has actually given up, so a run it
+          // handles pays nothing extra.
+          try{
+            if(!nifjsApi) throw new Error("nifjs unavailable");
+            res = { stdout: nifjsApi.run(snif), stderr:"", exitCode:0, engine:"nifjs" };
+          }catch(e){
+            const forFallback = await framedStdModules(msg.pnif);
+            res = withFallback(runAowliResult(snif, msg.stdin, false, forFallback + (mods || "")),
+                               "nifjs", nifjsApi ? nifjsFallbackReason(e) : "nifjs unavailable");
+          }
+        } else {
+          res = runByEngine(snif, msg.stdin, engine, forVm + (mods || ""));
+        }
         res.diags = diags;
         if(lastMultiCrash) res.multiCrash = lastMultiCrash;
         self.postMessage(Object.assign({ id, ok:true }, res));
