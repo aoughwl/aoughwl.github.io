@@ -58,7 +58,7 @@ found by pointing this mod at a test suite.
 It renders real pages, runs page scripts and passes about 93.5% of subtests on
 the set we track, against 96.2% for Ladybird on the same set. That figure
 still reflects the original tree-walking engine (`jsinterp`); page scripts now
-run by default on a newer engine, [aowljs-engine](/aowljs-engine), bound in as
+run by default on a newer engine, [aowljs-engine](/docs/aowljs-engine), bound in as
 `EngineAowlJs` (see [The JavaScript engine](/docs/titicaca/javascript)), which
 has not yet been scored the same way but has run real production pages such
 as youtube.com's front end cleanly. It is a browser you can use for reading

@@ -33,7 +33,7 @@ It is one tool with several jobs, not just a transpiler:
 - **Fallback instead of failure.** Anything it cannot lower natively falls back
   rather than emitting wrong code ([coverage and fallback](#coverage-and-fallback)).
 - **FFI through shims.** `importc` calls resolve to JavaScript shims, so programs
-  that touch the outside world still compile ([shims](#shims-the-ffi-importc-path)).
+  that touch the outside world still compile ([shims](#shims-—-the-ffi-importc-path)).
 - **Two fidelity modes.** Fast mode approximates native values; faithful export
   mode uses native `bigint` for exact 64-bit behaviour with no dependencies
   ([faithfulness](#faithfulness-export-modes)).

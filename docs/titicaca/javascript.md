@@ -9,7 +9,7 @@ Titicaca can run page scripts on either of two engines, selected per mod build
 by an existing toggle:
 
 - **`EngineAowlJs`** (the default): a binding of
-  [aowljs-engine](/aowljs-engine), a separate, from-scratch JS engine written
+  [aowljs-engine](/docs/aowljs-engine), a separate, from-scratch JS engine written
   in Nimony with its own lexer, parser, bytecode interpreter and (currently
   disabled, see below) JIT tier. It is a general-purpose engine that is not
   specific to Titicaca; on several test262-adjacent benchmarks it outruns V8.

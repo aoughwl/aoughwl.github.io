@@ -24,7 +24,7 @@ runner.
 5. **Script.** Two engines are available, selected per build: the original
    `jslex`/`jsparse`/`jsvalue`/`jsregex`/`jsinterp` tree-walking engine
    (`EngineAowl`), and `aowljsengine`, a binding of the separate
-   [aowljs-engine](/aowljs-engine) project via a sidecar heap-adapter module
+   [aowljs-engine](/docs/aowljs-engine) project via a sidecar heap-adapter module
    (`aowlheap.nim`) that speaks `jsdom`'s host-indexer and reflection
    conventions. `aowljsengine` is the default (`EngineAowlJs`); see
    [The JavaScript engine](/docs/titicaca/javascript). `jsdom` binds the DOM
