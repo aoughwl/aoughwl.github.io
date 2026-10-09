@@ -24,6 +24,7 @@ const sidebar = [
       { text: 'FAQ', link: '/faq' },
       { text: 'Parity', link: '/docs/parity' },
       { text: 'How we test', link: '/docs/method' },
+      { text: 'Press kit', link: '/press' },
       { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
     ],
   },
