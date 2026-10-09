@@ -62,10 +62,24 @@ Things to try while you are there:
 ::: tip New to Nim?
 Nimony is the next-generation compiler for the [Nim](https://nim-lang.org)
 language: Python-like syntax, static types, compiled to C. If you know Python,
-most of the examples above read as you expect. Two differences that catch
-people early: `echo` needs `import std/syncio`, and a variable may not share
-its name with the module it is in.
+most of the examples above read as you expect. Differences from Nim 2 that
+catch people early:
+
+- `echo` needs `import std/syncio`.
+- A variable may not share its name with the module it is in.
+- A nested procedure that uses an outer local must be marked
+  `{.closure.}`, and so must the procedure type it is returned as.
+- Errors are values of the enum `ErrorCode`: `raise ValueError`, then
+  `except ErrorCode as e`. A routine that can raise is marked `{.raises.}`,
+  and calling it outside `try` is a compile error. `table[key]` is one such
+  routine; `table.getOrDefault(key)` is not.
 :::
+
+The playground is checked by running 17 programs through it in a headless
+browser: strings, tables, sets, options, closures, object variants, method
+dispatch, error handling and a million-iteration loop. 16 pass. The one that
+does not is `std/sequtils`' `mapIt` / `filterIt` / `foldl`, which currently
+print `nil`; use a `for` loop until that is fixed.
 
 ## 2. On your machine (about 3 minutes, mostly compiling)
 
