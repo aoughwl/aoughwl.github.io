@@ -1,5 +1,11 @@
 # Blog
 
+::: warning Archived
+This page stopped on 2026-08-01. The daily changelog continues on the
+[aoughwl GitHub profile](https://github.com/aoughwl#daily-blog). Figures below
+are as of each post's date and are not updated.
+:::
+
 Development updates from the aoughwl toolchain. Newest first.
 
 [[toc]]
