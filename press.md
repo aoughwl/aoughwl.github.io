@@ -30,8 +30,7 @@ browser at aoughwl.github.io.
 |:--|:--|:--|
 | JavaScript conformance | 53,593 / 53,595 test262 | [aowljs-engine](/docs/aowljs-engine) |
 | JavaScript speed | 1.99 s total vs V8 1.29 s, 16 benchmarks | [aowljs-engine](/docs/aowljs-engine) |
-| Browser HTML parser | 1,792 / 1,792 html5lib tree-construction tests | [Titicaca](/docs/titicaca) |
-| Browser URL parser | 896 / 896 WHATWG URL tests | [Titicaca](/docs/titicaca) |
+| Browser conformance | about 93.5% of Web Platform Tests subtests on the tracked directories (Ladybird: 96.2%) | [Titicaca and WPT](/docs/titicaca/wpt) |
 | Compiler parser | byte-identical to Nimony's on all 184 files of the compiler source | [Parity](/docs/parity) |
 | Type checker | byte-identical on 924 of 941 test cases | [Parity](/docs/parity) |
 | Interpreter | identical output to native on 460 / 460 runnable programs | [engine](/engine) |

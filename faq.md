@@ -71,8 +71,8 @@ Some source is private with public documentation, including the type checker
 Each stage that replaces an existing tool is run on the same input as that
 tool, and the output files are compared byte for byte. A stage passes a case
 only when the diff is empty. Conformance numbers for the JavaScript engine and
-the browser come from the standard suites: test262, html5lib and the WHATWG
-URL tests. Every figure has a date, and the [parity page](/docs/parity) lists
+the browser come from the standard suites: test262 and the Web Platform
+Tests. Every figure has a date, and the [parity page](/docs/parity) lists
 the failures next to the passes.
 
 If a number on this site is wrong or out of date, say so on
