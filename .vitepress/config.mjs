@@ -23,6 +23,7 @@ const sidebar = [
       { text: 'Get started in 5 minutes', link: '/start' },
       { text: 'FAQ', link: '/faq' },
       { text: 'Parity', link: '/docs/parity' },
+      { text: 'How we test', link: '/docs/method' },
       { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
     ],
   },
