@@ -5,12 +5,31 @@ description: A Unity host that never leaves Play mode. Gameplay is compiled aowl
 
 # Jester
 
+**A game platform where the whole game is mods, and you edit them while it
+runs.** Jester is a small Unity host that draws nothing on its own. The player,
+the world, the inventory and the menus are all mods, written in Nimony,
+compiled to native code, and swapped in and out without leaving Play mode.
+
+- **Change code mid-game.** Edit a mod, rebuild it and reload it against the
+  game state from a frame earlier. No restart, no lost session.
+- **Step into running code.** Drop the interpreter's wall anywhere in a running
+  mod and step it, inspect it, or hot-swap it, then let it run native again.
+- **Apps, not just games.** [Titicaca](/docs/titicaca), a browser engine
+  written from scratch, and a [Minecraft-compatible client](/docs/minecraft)
+  both run as Jester mods.
+
+**Status:** upcoming, [$19.99/month](/store/jester), Windows. The rest of this
+page explains how it works.
+
+## How it works
+
 [Unity](https://unity.com) 6000.6.0f1 is the host, and the host is a few
 thousand lines that draw nothing and play nothing. Everything else — player,
 weapons, world, inventory, the menu you booted into — is a mod:
 [aowlmony](/docs/aowlmony) source, statically typed, compiled by our own
 toolchain and run **natively** — not interpreted — for speed. What makes that
-compatible with editing a mod while it plays is [aowli](/aowli): a wall you can
+compatible with editing a mod while it plays is the interpreter in
+[engine](/engine) (formerly [aowli](/aowli)): a wall you can
 drop at any point in the running code, below which execution is interpreted
 instead of native. Cross that wall and you can step it, inspect it, hot-swap
 its code, or edit it and rebuild — all without stopping the game — then let it
