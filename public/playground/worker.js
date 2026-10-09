@@ -865,6 +865,16 @@ self.onmessage = (ev) => {
       // its diagnostics instead of trying to run nothing.
       runSem(msg.pnif, msg.semEngine, msg.multi).then(async ({ snif, diags, mods })=>{
         if(!snif){ self.postMessage({ id, ok:true, ranSem:true, snif:"", diags, multiCrash:lastMultiCrash||"" }); return; }
+        // A CHECK THAT REPORTED AN ERROR IS NOT A PROGRAM TO RUN. aowlsem writes a
+        // complete .s.nif even when it diagnoses an error, so a non-empty snif is
+        // not evidence the program type-checked. The editor blocks Run on errors,
+        // but only once its own live check has counted them — a Run that beats it
+        // (or a shared link opened and run at once) executed `echo undefinedThing`
+        // and printed "nil" (measured 2026-10-09). Report the errors instead.
+        if((diags || []).some(d => d && d.severity === "error")){
+          self.postMessage({ id, ok:true, ranSem:true, snif:"", diags, multiCrash:lastMultiCrash||"" });
+          return;
+        }
         // THE BYTECODE VM NEEDS THE MODULES THE TREE-WALKER NEVER ASKED FOR.
         //
         // compileModule walks the whole tree eagerly, so it reaches

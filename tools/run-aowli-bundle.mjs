@@ -24,10 +24,21 @@ const text = fs.readFileSync(bundle, "latin1");
 const snif = fs.readFileSync(main, "latin1");
 let mods = "";
 if (modDir) {
-  for (const f of fs.readdirSync(modDir).sort()) {
-    if (!f.endsWith(".s.nif")) continue;
+  // Framed exactly as worker.js's framedStdModules does today: the FILE NAME
+  // programs.load asks for (`<suffix>.s.nif`), plus a `<suffix>.s.idx.nif`
+  // sidecar (an empty index when MODDIR has none — readIndex asserts on a miss).
+  // This used to frame the bare stem with no sidecar, which made a VM run print
+  // nothing at all and so could not reproduce what the page does.
+  const EMPTY_INDEX_NIF = "(.nif27)\n(index\n)\n";
+  const files = fs.readdirSync(modDir).sort();
+  for (const f of files) {
+    if (!f.endsWith(".s.nif") || f.endsWith(".s.idx.nif")) continue;
+    const stem = f.slice(0, -".s.nif".length);
     const body = fs.readFileSync(path.join(modDir, f), "latin1");
-    mods += f.slice(0, -".s.nif".length) + "\t" + body.length + "\n" + body;
+    mods += f + "\t" + body.length + "\n" + body;
+    const idxName = stem + ".s.idx.nif";
+    const idx = files.includes(idxName) ? fs.readFileSync(path.join(modDir, idxName), "latin1") : EMPTY_INDEX_NIF;
+    mods += idxName + "\t" + idx.length + "\n" + idx;
   }
 }
 

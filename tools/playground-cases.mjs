@@ -13,7 +13,8 @@
 // a std/sets assertion, a 1M-iteration loop that ran out of memory, and a Native
 // JS fallback that printed nothing — none of which any other gate could see.
 //
-// Status column: `ok` must match; `known-bad` is expected to FAIL today and is
+// Status column: `ok` must match and exit 0; `error` must be refused with exactly
+// that diagnostic; `known-bad` is expected to FAIL today and is
 // reported, not counted — and if one starts PASSING the run says so, so the list
 // cannot go stale in the comfortable direction.
 "use strict";
@@ -64,7 +65,12 @@ for (const row of rows) {
   await page.close();
   // the program's own output is everything before the run footer "— exit N · …"
   const out = got.replace(/^.*?ran on Native JS instead\.\s*/, "").split(" — exit ")[0].trim();
-  const ok = out === row.want && / — exit 0 /.test(got);
+  // `error` rows assert the page REFUSES the program with that diagnostic: a
+  // check that reported an error used to run anyway (`echo undefinedThing`
+  // printed "nil"), so a program the checker rejects must not produce output.
+  const ok = row.status === "error"
+    ? out === row.want && !/ — exit 0 /.test(got)
+    : out === row.want && / — exit 0 /.test(got);
   if (row.status === "known-bad") {
     if (ok) { nowPassing++; console.log(`NOW PASSES ${row.name}  (listed known-bad; change its status to ok)`); }
     else { knownBad++; console.log(`known-bad  ${row.name}  got: ${got.slice(0, 120)}`); }
