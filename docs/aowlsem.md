@@ -41,7 +41,7 @@ Linux baselines are listed separately below rather than mixed in.
 
 | gate | what it asserts | verdict |
 |---|---|---|
-| `tests/diff.sh` | corpus cases byte-exact against `nimsem` | **924 pass / 17 fail of 941**, with 0 INFRA / TIMEOUT / CRASH. 15 of the 17 are oracle-side — `nimsem` itself produces no output for the `sumtype_*` / `variant_*` cluster (an assertion inside `nifcursors.nim`) and one case is `std/posix` on a non-POSIX host. The two that are aowlsem's own are `include_fragment` and `macro_arg_infix` (15 tokens). |
+| `tests/diff.sh` | corpus cases byte-exact against `nimsem` | **968 pass / 0 fail of 968** on 2026-10-09, cold plugin cache, 21 s. The `sumtype_*` / `variant_*` cluster that `nimsem` once produced no output for, and `include_fragment` / `macro_arg_infix`, all pass now. |
 | `tests/moddiff.sh --fresh` | aowlsem's own dependency closure, module by module, against the oracle's nimcache | **31 byte-exact / 21 differing / 0 rejected / 4 canonfail of 56** |
 | `tests/sysdiff.sh` | all of `std/system` | **89 differing tokens** over ~92,600 canon lines. It semchecks `system` end to end; it is not yet byte-exact. |
 | `tests/consteval.sh` | compile-time `const` evaluation, both executors | **19/19** byte-exact and agreeing. Two days earlier this read 0/18: the entire CTFE subsystem was inert on Windows behind six swallowed errors (commit `e2b63cf1`). |
@@ -122,7 +122,7 @@ the programmatic `semcheck*` entry point are on the [CLI & API page](aowlsem/cli
 ## What it checks
 
 Everything below is checked construct by construct against the reference
-compiler's own output. The `tests/corpus/` suite — 941 cases on 2026-09-09; the
+compiler's own output. The `tests/corpus/` suite — 968 cases on 2026-10-09; the
 verdict is in the status table above — is the concrete list. What each construct
 lowers to, with worked `.p.nif → .s.nif` examples, is on the
 [Lowering reference](aowlsem/lowering).

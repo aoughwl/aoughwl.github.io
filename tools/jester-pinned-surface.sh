@@ -23,6 +23,13 @@
 set -uo pipefail
 
 PIN=${PIN:-f559ceb}
+# The engine checkout: $JESTER, else the first of the usual places that has the
+# pinned commit. On WSL the checkout lives on the Windows side.
+if [ -z "${JESTER:-}" ]; then
+  for c in "$HOME/Documents/infiniteless-next" "$HOME/Documents/jester" /mnt/c/Users/*/Documents/jester; do
+    if [ -d "$c/.git" ] && git -C "$c" cat-file -e "$PIN^{commit}" 2>/dev/null; then JESTER=$c; break; fi
+  done
+fi
 REPO=${JESTER:-$HOME/Documents/infiniteless-next}
 
 if [ ! -d "$REPO/.git" ]; then
