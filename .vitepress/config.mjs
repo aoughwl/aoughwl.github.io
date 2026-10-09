@@ -21,6 +21,7 @@ const sidebar = [
     items: [
       { text: 'Welcome', link: '/' },
       { text: 'Get started in 5 minutes', link: '/start' },
+      { text: 'FAQ', link: '/faq' },
       { text: 'Parity', link: '/docs/parity' },
       { text: 'Daily Changelog', link: 'https://github.com/aoughwl#daily-blog' },
     ],

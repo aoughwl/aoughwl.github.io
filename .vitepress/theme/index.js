@@ -57,6 +57,7 @@ const DESC_BY_PATH = {
   '/engine': 'The runtime — JavaScript and Nimony in one process, one heap, one GC',
   '/docs/aowljs-engine': 'Our JavaScript engine — interpreter, JIT and optimizing tier; 53,593/53,595 test262',
   '/start': 'From nothing to a running program: in the browser, then on your machine',
+  '/faq': 'What aoughwl is, what is free, what is paid, and how the numbers are measured',
   '/docs/aowlrt': 'The native runtime library that compiled programs link against',
   '/docs/aowlhl': 'Shared high-level IR that the interpreter and JS backend both read',
   '/docs/aowlc': 'C backend — emits C source you can compile to a native binary',
